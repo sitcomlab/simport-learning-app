@@ -9,6 +9,11 @@
       "launchShowDuration": 0
     }
   },
-  "cordova": {},
+  "cordova": {
+    "preferences": {
+      "ANDROID_SUPPORT_LIBRARY_VERSION": "21+",
+      "GOOGLE_PLAY_SERVICES_VERSION": "17+"
+    }
+  },
   "linuxAndroidStudioPath": "/opt/android-studio/bin/studio.sh"
 }
