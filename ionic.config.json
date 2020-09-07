@@ -1,0 +1,7 @@
+{
+  "name": "simport-learning",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
