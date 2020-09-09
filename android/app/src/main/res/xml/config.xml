@@ -7,6 +7,4 @@
   </feature>
 
   
-  <preference name="ANDROID_SUPPORT_LIBRARY_VERSION" value="21+" />
-  <preference name="GOOGLE_PLAY_SERVICES_VERSION" value="17+" />
 </widget>
