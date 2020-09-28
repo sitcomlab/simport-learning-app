@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Analyze New Trajectory</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+
+      <ion-col sizeXs="12" sizeLg="4">
+        <app-mode-card
+          icon="locate-outline"
+          title="Record your own trajectory"
+          subtitle="and get notified in realtime when we find something out about you"
+          (click)="enableTrajectory('tracking')"
+        ></app-mode-card>
+      </ion-col>
+
+      <ion-col sizeXs="12" sizeLg="4">
+        <app-mode-card
+          icon="compass-outline"
+          title="Load example trajectory"
+          subtitle="and interactively explore somones whereabouts"
+          (click)="enableTrajectory('choose')"
+        ></app-mode-card>
+      </ion-col>
+
+      <ion-col sizeXs="12" sizeLg="4">
+        <app-mode-card
+          icon="add-outline"
+          title="Add your own trajectory"
+          subtitle="import a GPX or GeoJSON file"
+          (click)="enableTrajectory('import')"
+        ></app-mode-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>
