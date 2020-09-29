@@ -8,6 +8,8 @@ import { SelectTrajectoryPageRoutingModule } from './select-trajectory-routing.m
 
 import { SelectTrajectoryPage } from './select-trajectory.page';
 import { ModeCardComponent } from './mode-card/mode-card.component';
+import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component';
+import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component';
 
 @NgModule({
   imports: [
@@ -16,6 +18,11 @@ import { ModeCardComponent } from './mode-card/mode-card.component';
     IonicModule,
     SelectTrajectoryPageRoutingModule,
   ],
-  declarations: [SelectTrajectoryPage, ModeCardComponent]
+  declarations: [
+    SelectTrajectoryPage,
+    ModeCardComponent,
+    TrajectorySelectorComponent,
+    TrajectoryCardComponent,
+  ],
 })
 export class SelectTrajectoryPageModule {}
