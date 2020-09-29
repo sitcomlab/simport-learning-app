@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonRouterOutlet, ModalController } from '@ionic/angular';
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component';
 
@@ -18,6 +19,8 @@ export class SelectTrajectoryPage implements OnInit {
   constructor(
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
@@ -43,7 +46,10 @@ export class SelectTrajectoryPage implements OnInit {
           presentingElement: this.routerOutlet.nativeEl,
           cssClass: 'auto-height'
         })
-        return await modal.present()
+        modal.present()
+        const { data: trajId} = await modal.onWillDismiss()
+        if (trajId) this.router.navigate([`/trajectory/${trajId}`])
+        return
 
       case TrajectoryMode.IMPORT:
         // TODO
@@ -51,6 +57,7 @@ export class SelectTrajectoryPage implements OnInit {
         // persist trajectory, assign id
         // route to /trajectory/{assigned id}
         return
+
       default:
         assertUnreachable(mode)
     }
