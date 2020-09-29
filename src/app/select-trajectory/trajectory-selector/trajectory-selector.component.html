@@ -6,5 +6,6 @@
   <app-trajectory-card
     *ngFor="let t of trajectories"
     [trajectory]="t"
+    (click)="select(t.id)"
   ></app-trajectory-card>
 </div>
