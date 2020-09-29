@@ -1,0 +1,10 @@
+<div class="inner-content">
+  <ion-card-header>
+    <ion-card-title>Available Trajectories</ion-card-title>
+  </ion-card-header>
+
+  <app-trajectory-card
+    *ngFor="let t of trajectories"
+    [trajectory]="t"
+  ></app-trajectory-card>
+</div>

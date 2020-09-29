@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { IonRouterOutlet, ModalController } from '@ionic/angular';
+import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component';
 
 enum TrajectoryMode {
   TRACK = 'tracking',
@@ -13,12 +15,15 @@ enum TrajectoryMode {
 })
 export class SelectTrajectoryPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private modalController: ModalController,
+    private routerOutlet: IonRouterOutlet,
+  ) {}
 
   ngOnInit() {
   }
 
-  enableTrajectory (mode: TrajectoryMode) {
+  async enableTrajectory (mode: TrajectoryMode) {
     console.log(mode)
 
     // TODO: persist selected mode
@@ -32,14 +37,17 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.CHOOSE:
-        // TODO
-        // show selection modal
-        // route to /trajectory/{selected id}
-        return
+        const modal = await this.modalController.create({
+          component: TrajectorySelectorComponent,
+          swipeToClose: true,
+          presentingElement: this.routerOutlet.nativeEl,
+          cssClass: 'auto-height'
+        })
+        return await modal.present()
 
       case TrajectoryMode.IMPORT:
         // TODO
-        // open file browser
+        // open file browser (maybe https://github.com/hinddeep/capacitor-file-selector ?)
         // persist trajectory, assign id
         // route to /trajectory/{assigned id}
         return

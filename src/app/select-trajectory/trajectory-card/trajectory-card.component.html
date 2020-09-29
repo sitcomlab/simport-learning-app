@@ -1,0 +1,23 @@
+<ion-card [href]="'/trajectory/' + t.id">
+  <ion-card-header>
+    <ion-grid>
+      <ion-row>
+
+        <ion-col sizeXs="6" sizeLg="4">
+          <ion-card-title>
+            <ion-icon name="location-outline"></ion-icon>
+            {{ t.placename }}
+          </ion-card-title>
+        </ion-col>
+
+        <ion-col sizeXs="6" sizeLg="4" *ngIf="!!duration">
+          <ion-card-title>
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ duration }}
+          </ion-card-title>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </ion-card-header>
+</ion-card>
