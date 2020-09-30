@@ -7,6 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class InferencesPage implements OnInit {
 
+  inferences: Inference[] = [
+    { name: 'Home', description: 'We do now know where your home is.' },
+    { name: 'Workplace', description: 'We know where you work.' },
+  ]
+
   constructor() { }
 
   ngOnInit() {
