@@ -1,18 +1,8 @@
 class Inference {
-  name: string
-  description: string
-  location?: [number, number]
-  accuracy?: number
-
   constructor(
-    name: string,
-    description: string,
-    location?: [number, number],
-    accuracy?: number
-  ) {
-    this.name = name
-    this.description = description
-    this.location = location
-    this.accuracy = accuracy
-  }
+    public name: string,
+    public description: string,
+    public location?: [number, number],
+    public accuracy?: number
+  ) {}
 }
