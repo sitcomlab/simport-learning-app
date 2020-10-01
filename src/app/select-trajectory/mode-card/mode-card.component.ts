@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core'
 
 @Component({
   selector: 'app-mode-card',
@@ -10,9 +10,7 @@ export class ModeCardComponent implements OnInit {
   @Input() title: string
   @Input() subtitle: string
 
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {}
-
 }

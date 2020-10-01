@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core'
+import { Routes, RouterModule } from '@angular/router'
 
-import { TrajectoryPage } from './trajectory.page';
+import { TrajectoryPage } from './trajectory.page'
 
 const routes: Routes = [
   {
@@ -10,15 +10,20 @@ const routes: Routes = [
     children: [
       {
         path: 'inferences',
-        loadChildren: () => import('./inferences/inferences.module').then( m => m.InferencesPageModule)
+        loadChildren: () =>
+          import('./inferences/inferences.module').then(
+            (m) => m.InferencesPageModule
+          ),
       },
       {
         path: 'map',
-        loadChildren: () => import('./map/map.module').then( m => m.MapPageModule)
+        loadChildren: () =>
+          import('./map/map.module').then((m) => m.MapPageModule),
       },
       {
         path: 'explore',
-        loadChildren: () => import('./explore/explore.module').then( m => m.ExplorePageModule)
+        loadChildren: () =>
+          import('./explore/explore.module').then((m) => m.ExplorePageModule),
       },
       {
         path: '',
@@ -31,9 +36,10 @@ const routes: Routes = [
   },
   {
     path: 'explore',
-    loadChildren: () => import('./explore/explore.module').then( m => m.ExplorePageModule)
+    loadChildren: () =>
+      import('./explore/explore.module').then((m) => m.ExplorePageModule),
   },
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

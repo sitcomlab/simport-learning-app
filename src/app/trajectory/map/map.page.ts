@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import * as L from 'leaflet';
+import { Component, OnInit } from '@angular/core'
+import * as L from 'leaflet'
 
 @Component({
   selector: 'app-map',
@@ -7,33 +7,35 @@ import * as L from 'leaflet';
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit {
+  private map
 
-  private map;
+  constructor() {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {  }
-
-  ionViewDidEnter () {
-    this.initMap();
+  ionViewDidEnter() {
+    this.initMap()
   }
 
-  ionViewDidLeave () {
-    this.map.remove();
+  ionViewDidLeave() {
+    this.map.remove()
   }
 
   private initMap(): void {
     this.map = L.map('map', {
       center: [51.9694, 7.5954],
-      zoom: 3
-    });
+      zoom: 3,
+    })
 
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
+    const tiles = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 19,
+        attribution:
+          '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }
+    )
 
-    tiles.addTo(this.map);
+    tiles.addTo(this.map)
   }
-
 }

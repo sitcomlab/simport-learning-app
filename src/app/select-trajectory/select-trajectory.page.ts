@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component';
+import { Component, OnInit } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
+import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 
 enum TrajectoryMode {
   TRACK = 'tracking',
@@ -15,18 +15,16 @@ enum TrajectoryMode {
   styleUrls: ['./select-trajectory.page.scss'],
 })
 export class SelectTrajectoryPage implements OnInit {
-
   constructor(
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  async enableTrajectory (mode: TrajectoryMode) {
+  async enableTrajectory(mode: TrajectoryMode) {
     console.log(mode)
 
     // TODO: persist selected mode
@@ -44,10 +42,10 @@ export class SelectTrajectoryPage implements OnInit {
           component: TrajectorySelectorComponent,
           swipeToClose: true,
           presentingElement: this.routerOutlet.nativeEl,
-          cssClass: 'auto-height'
+          cssClass: 'auto-height',
         })
         modal.present()
-        const { data: trajId} = await modal.onWillDismiss()
+        const { data: trajId } = await modal.onWillDismiss()
         if (trajId) this.router.navigate([`/trajectory/${trajId}`])
         return
 
@@ -62,7 +60,6 @@ export class SelectTrajectoryPage implements OnInit {
         assertUnreachable(mode)
     }
   }
-
 }
 
 function assertUnreachable(x: never): never {

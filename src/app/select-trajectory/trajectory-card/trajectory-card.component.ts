@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import * as moment from 'moment';
-import { Trajectory } from 'src/app/model/trajectory';
+import { Component, Input, OnInit } from '@angular/core'
+import * as moment from 'moment'
+import { Trajectory } from 'src/app/model/trajectory'
 
 @Component({
   selector: 'app-trajectory-card',
@@ -10,16 +10,15 @@ import { Trajectory } from 'src/app/model/trajectory';
 export class TrajectoryCardComponent implements OnInit {
   @Input('trajectory') t: Trajectory
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {}
 
-  get duration () {
+  get duration() {
     const { timestamps: ts } = this.t
     if (!ts || !ts.length) return ''
     const t1 = moment(ts[0])
     const t2 = moment(ts[ts.length - 1])
     return t1.from(t2, true)
   }
-
 }
