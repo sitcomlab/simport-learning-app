@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { InferenceService } from './inference.service'
 
 @Component({
   selector: 'app-inferences',
@@ -6,12 +7,11 @@ import { Component, OnInit } from '@angular/core'
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit {
-  inferences: Inference[] = [
-    { name: 'Home', description: 'We do now know where your home is.' },
-    { name: 'Workplace', description: 'We know where you work.' },
-  ]
+  inferences: Inference[]
 
-  constructor() {}
+  constructor(private service: InferenceService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.inferences = this.service.getInferences()
+  }
 }
