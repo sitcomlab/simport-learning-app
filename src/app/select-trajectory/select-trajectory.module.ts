@@ -7,9 +7,9 @@ import { IonicModule } from '@ionic/angular'
 import { SelectTrajectoryPageRoutingModule } from './select-trajectory-routing.module'
 
 import { SelectTrajectoryPage } from './select-trajectory.page'
-import { ModeCardComponent } from './mode-card/mode-card.component'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component'
+import { SharedUiModule } from '../shared-ui/shared-ui.module'
 
 @NgModule({
   imports: [
@@ -17,13 +17,12 @@ import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.compo
     FormsModule,
     IonicModule,
     SelectTrajectoryPageRoutingModule,
+    SharedUiModule,
   ],
   declarations: [
     SelectTrajectoryPage,
-    ModeCardComponent,
     TrajectorySelectorComponent,
     TrajectoryCardComponent,
   ],
-  exports: [ModeCardComponent],
 })
 export class SelectTrajectoryPageModule {}

@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular'
 import { InferencesPageRoutingModule } from './inferences-routing.module'
 
 import { InferencesPage } from './inferences.page'
-import { SelectTrajectoryPageModule } from 'src/app/select-trajectory/select-trajectory.module'
+import { SharedUiModule } from 'src/app/shared-ui/shared-ui.module'
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { SelectTrajectoryPageModule } from 'src/app/select-trajectory/select-tra
     FormsModule,
     IonicModule,
     InferencesPageRoutingModule,
-    SelectTrajectoryPageModule,
+    SharedUiModule,
   ],
   declarations: [InferencesPage],
 })
