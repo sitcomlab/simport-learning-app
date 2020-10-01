@@ -34,11 +34,6 @@ const routes: Routes = [
     // TODO: setup canActivate guard, to ensure valid :id param is set.
     // TODO: setup canLeave guard, to ask if background tracking should be stopped?
   },
-  {
-    path: 'explore',
-    loadChildren: () =>
-      import('./explore/explore.module').then((m) => m.ExplorePageModule),
-  },
 ]
 
 @NgModule({
