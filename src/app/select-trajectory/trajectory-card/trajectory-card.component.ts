@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { Trajectory } from 'src/model/trajectory';
+import { Trajectory } from 'src/app/model/trajectory';
 
 @Component({
   selector: 'app-trajectory-card',
