@@ -12,5 +12,13 @@
       <ion-title size="large">Insights</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <app-mode-card
+  *ngFor="let i of inferences"
+  icon="home-outline"
+  title={{i.name}}
+  subtitle={{i.description}}
+  ></app-mode-card>
+
 </ion-content>
 

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { InferencesPageRoutingModule } from './inferences-routing.module';
 
 import { InferencesPage } from './inferences.page';
+import { SelectTrajectoryPageModule } from 'src/app/select-trajectory/select-trajectory.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    InferencesPageRoutingModule
+    InferencesPageRoutingModule,
+    SelectTrajectoryPageModule,
   ],
   declarations: [InferencesPage]
 })

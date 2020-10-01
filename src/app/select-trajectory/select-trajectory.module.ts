@@ -24,5 +24,6 @@ import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.compo
     TrajectorySelectorComponent,
     TrajectoryCardComponent,
   ],
+  exports: [ ModeCardComponent ],
 })
 export class SelectTrajectoryPageModule {}
