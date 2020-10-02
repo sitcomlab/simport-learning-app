@@ -69,8 +69,11 @@
     }
   },
   "lint-staged": {
-    "src/app/*.ts": ["prettier --write", "tslint -p ."],
-    "*.{js,html,css,md}": "prettier --write"
+    "src/app/*.ts": [
+      "prettier --write",
+      "tslint -p ."
+    ],
+    "*.{js,html,css,scss,md,json}": "prettier --write"
   },
   "description": "An Ionic project"
 }
