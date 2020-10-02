@@ -1,5 +1,5 @@
 {
-  "appId": "de.ifgi.simport-learning-app",
+  "appId": "de.ifgi.simport.learning",
   "appName": "simport-learning",
   "bundledWebRuntime": false,
   "npmClient": "npm",
