@@ -1,5 +1,5 @@
 {
-  "appId": "io.ionic.starter",
+  "appId": "de.ifgi.simport.learning",
   "appName": "simport-learning",
   "bundledWebRuntime": false,
   "npmClient": "npm",
