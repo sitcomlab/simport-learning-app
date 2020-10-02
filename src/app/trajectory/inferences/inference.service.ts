@@ -8,10 +8,15 @@ export class InferenceService {
     {
       name: 'Home',
       description: 'We do now know where your home is.',
+      trajectoryId: 'beijing',
       location: [51.968446, 7.60549],
       accuracy: 50,
     },
-    { name: 'Workplace', description: 'We know where you work.' },
+    {
+      name: 'Workplace',
+      description: 'We know where you work.',
+      trajectoryId: 'beijing',
+    },
   ]
   constructor() {}
 
