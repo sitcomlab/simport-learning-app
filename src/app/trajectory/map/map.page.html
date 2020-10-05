@@ -11,5 +11,10 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="map"></div>
+  <div
+    id="map"
+    leaflet
+    [leafletOptions]="mapOptions"
+    (leafletMapReady)="onMapReady($event)"
+  ></div>
 </ion-content>
