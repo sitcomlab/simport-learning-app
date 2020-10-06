@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { latLng, MapOptions, tileLayer, Map } from 'leaflet'
+import { latLng, MapOptions, tileLayer, Map, Circle } from 'leaflet'
 import { InferenceService } from '../inferences/inference.service'
 
 @Component({
@@ -21,6 +21,7 @@ export class MapPage implements OnInit {
 
   ionViewDidEnter() {
     this.map.invalidateSize()
+    this.addInferenceMarkers()
   }
 
   onMapReady(map: Map) {
@@ -41,13 +42,15 @@ export class MapPage implements OnInit {
     }
   }
 
-  // private addInferenceMarkers(): void {
-  //   for (let inference of this.inferences) {
-  //     if (!inference.location || !inference.accuracy) break
-  //     L.circle(inference.location, { radius: inference.accuracy })
-  //       .addTo(this.map)
-  //       .bindPopup(inference.name)
-  //       .openPopup()
-  //   }
-  // }
+  private addInferenceMarkers() {
+    for (let inference of this.inferences) {
+      if (!inference.location || !inference.accuracy) break
+      new Circle(inference.location, {
+        radius: inference.accuracy,
+      })
+        .addTo(this.map)
+        .bindPopup(inference.name)
+        .openPopup()
+    }
+  }
 }
