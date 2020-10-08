@@ -8,19 +8,19 @@ export class InferenceService {
     {
       name: 'Home',
       description: 'We do now know where your home is.',
-      trajectoryId: 'beijing',
+      trajectoryId: 'muenster',
       location: [51.968446, 7.60549],
       accuracy: 50,
     },
     {
       name: 'Workplace',
       description: 'We know where you work.',
-      trajectoryId: 'beijing',
+      trajectoryId: 'muenster',
     },
   ]
   constructor() {}
 
-  getInferences(trajectoryId?: string) {
-    return this.inferences
+  getInferences(trajectoryId: string): Inference[] {
+    return this.inferences.filter((i) => i.trajectoryId === trajectoryId)
   }
 }

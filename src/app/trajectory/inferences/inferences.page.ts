@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { InferenceService } from './inference.service'
 
 @Component({
@@ -10,14 +10,19 @@ import { InferenceService } from './inference.service'
 export class InferencesPage implements OnInit {
   inferences: Inference[]
 
-  constructor(private service: InferenceService, private router: Router) {}
+  constructor(
+    private service: InferenceService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.inferences = this.service.getInferences()
+    let trajectoryId = this.router.url.split('/')[2]
+    this.inferences = this.service.getInferences(trajectoryId)
   }
 
   openMap(inference: Inference) {
     if (!inference.location || !inference.accuracy) return
-    this.router.navigate([`/trajectory/${inference.trajectoryId}/map`])
+    this.router.navigate([`../../../map`], { relativeTo: this.activatedRoute })
   }
 }

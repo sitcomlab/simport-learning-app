@@ -7,21 +7,21 @@ import { Trajectory } from '../model/trajectory'
 export class TrajectoryService {
   private trajectories: Trajectory[] = [
     {
-      id: 'bejing',
+      id: 'bejing01',
       name: 'Test',
       placename: 'Bejing',
       lonLats: [],
       timestamps: [],
     },
     {
-      id: 'bejing',
+      id: 'muenster',
       name: 'Test',
       placename: 'Münster',
       lonLats: [],
       timestamps: [],
     },
     {
-      id: 'bejing',
+      id: 'bejing02',
       name: 'Test',
       placename: 'Bejing',
       lonLats: [

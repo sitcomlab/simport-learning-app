@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
 import { latLng, MapOptions, tileLayer, Map, Circle } from 'leaflet'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -12,11 +13,12 @@ export class MapPage implements OnInit {
   map: Map
   inferences: Inference[]
 
-  constructor(private service: InferenceService) {}
+  constructor(private service: InferenceService, private router: Router) {}
 
   ngOnInit() {
     this.initMapOptions()
-    this.inferences = this.service.getInferences()
+    let trajectoryId = this.router.url.split('/')[2]
+    this.inferences = this.service.getInferences(trajectoryId)
   }
 
   ionViewDidEnter() {
