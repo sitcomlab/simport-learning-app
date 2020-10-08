@@ -10,21 +10,24 @@ export class TrajectoryService {
       id: 'bejing01',
       name: 'Test',
       placename: 'Bejing',
-      lonLats: [],
+      coordinates: [],
       timestamps: [],
     },
     {
       id: 'muenster',
       name: 'Test',
       placename: 'Münster',
-      lonLats: [],
+      coordinates: [
+        [51.968989, 7.602684],
+        [51.967793, 7.610033],
+      ],
       timestamps: [],
     },
     {
       id: 'bejing02',
       name: 'Test',
       placename: 'Bejing',
-      lonLats: [
+      coordinates: [
         [1, 1],
         [2, 2],
       ],
@@ -39,5 +42,9 @@ export class TrajectoryService {
 
   getAllTrajectories(): Trajectory[] {
     return this.trajectories
+  }
+
+  getTrajectory(id: string): Trajectory {
+    return this.trajectories.filter((t) => t.id === id)[0]
   }
 }

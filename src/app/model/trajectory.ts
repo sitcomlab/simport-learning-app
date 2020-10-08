@@ -3,6 +3,6 @@ export interface Trajectory {
   id: string
   name: string
   placename: string
-  lonLats?: number[][]
+  coordinates?: [number, number][]
   timestamps?: Date[]
 }

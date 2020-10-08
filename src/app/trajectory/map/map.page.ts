@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { latLng, MapOptions, tileLayer, Map, Circle } from 'leaflet'
+import { latLng, MapOptions, tileLayer, Map, Circle, Polyline } from 'leaflet'
+import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
 @Component({
@@ -12,18 +13,24 @@ export class MapPage implements OnInit {
   mapOptions: MapOptions
   map: Map
   inferences: Inference[]
+  trajectoryId: string
 
-  constructor(private service: InferenceService, private router: Router) {}
+  constructor(
+    private service: InferenceService,
+    private router: Router,
+    private trajectoryService: TrajectoryService
+  ) {}
 
   ngOnInit() {
     this.initMapOptions()
-    let trajectoryId = this.router.url.split('/')[2]
-    this.inferences = this.service.getInferences(trajectoryId)
+    this.trajectoryId = this.router.url.split('/')[2]
+    this.inferences = this.service.getInferences(this.trajectoryId)
   }
 
   ionViewDidEnter() {
     this.map.invalidateSize()
     this.addInferenceMarkers()
+    this.addTrajectory()
   }
 
   onMapReady(map: Map) {
@@ -54,5 +61,11 @@ export class MapPage implements OnInit {
         .bindPopup(inference.name)
         .openPopup()
     }
+  }
+
+  private addTrajectory() {
+    let coordinates = this.trajectoryService.getTrajectory(this.trajectoryId)
+      .coordinates
+    new Polyline(coordinates).addTo(this.map)
   }
 }
