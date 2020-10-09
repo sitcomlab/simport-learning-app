@@ -34,7 +34,7 @@ export class SelectTrajectoryPage implements OnInit {
         // TODO
         // check location permission
         // enable background tracking
-        // route to /trajectory/tracking
+        this.router.navigate(['/tracking'])
         return
 
       case TrajectoryMode.CHOOSE:

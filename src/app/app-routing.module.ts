@@ -23,6 +23,11 @@ const routes: Routes = [
         (m) => m.SelectTrajectoryPageModule
       ),
   },
+  {
+    path: 'tracking',
+    loadChildren: () =>
+      import('./tracking/tracking.module').then((m) => m.TrackingPageModule),
+  },
 ]
 @NgModule({
   imports: [

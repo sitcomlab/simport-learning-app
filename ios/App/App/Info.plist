@@ -73,5 +73,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>$ALWAYS_USAGE_DESCRIPTION</string>
+	<key>NSMotionUsageDescription</key>
+  <string>$MOTION_USAGE_DESCRIPTION</string>
 </dict>
 </plist>
