@@ -13,16 +13,16 @@ export class InferencesPage implements OnInit {
   constructor(
     private service: InferenceService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
-    let trajectoryId = this.router.url.split('/')[2]
-    this.inferences = this.service.getInferences(trajectoryId)
+    const trajId = this.route.snapshot.paramMap.get('trajectoryId')
+    this.inferences = this.service.getInferences(trajId)
   }
 
   openMap(inference: Inference) {
     if (!inference.location || !inference.accuracy) return
-    this.router.navigate([`../../../map`], { relativeTo: this.activatedRoute })
+    this.router.navigate(['../map'], { relativeTo: this.route })
   }
 }

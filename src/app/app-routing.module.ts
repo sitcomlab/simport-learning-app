@@ -10,7 +10,7 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'trajectory/:id',
+    path: 'trajectory/:trajectoryId',
     loadChildren: () =>
       import('./trajectory/trajectory.module').then(
         (m) => m.TrajectoryPageModule
@@ -27,8 +27,10 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      preloadingStrategy: PreloadAllModules,
+      // preloadingStrategy: PreloadAllModules,
       useHash: true,
+      relativeLinkResolution: 'corrected', // this will be default in angular 11
+      paramsInheritanceStrategy: 'always',
     }),
   ],
   exports: [RouterModule],
