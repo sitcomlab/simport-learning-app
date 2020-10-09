@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
 import { latLng, MapOptions, tileLayer, Map, Circle, Polyline } from 'leaflet'
+import { Subscription } from 'rxjs'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -9,22 +10,30 @@ import { InferenceService } from '../inferences/inference.service'
   templateUrl: './map.page.html',
   styleUrls: ['./map.page.scss'],
 })
-export class MapPage implements OnInit {
+export class MapPage implements OnInit, OnDestroy {
   mapOptions: MapOptions
   map: Map
   inferences: Inference[]
   trajectoryId: string
 
+  private paramSub: Subscription
+
   constructor(
     private service: InferenceService,
-    private router: Router,
+    private route: ActivatedRoute,
     private trajectoryService: TrajectoryService
   ) {}
 
   ngOnInit() {
     this.initMapOptions()
-    this.trajectoryId = this.router.url.split('/')[2]
-    this.inferences = this.service.getInferences(this.trajectoryId)
+    this.paramSub = this.route.paramMap.subscribe(p => {
+      this.trajectoryId = p.get('trajectoryId')
+      this.inferences = this.service.getInferences(this.trajectoryId)
+    })
+  }
+
+  ngOnDestroy() {
+    this.paramSub.unsubscribe()
   }
 
   ionViewDidEnter() {
