@@ -8,9 +8,16 @@ import { TrackingPageRoutingModule } from './tracking-routing.module'
 
 import { TrackingPage } from './tracking.page'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
+import { SharedUiModule } from '../shared-ui/shared-ui.module'
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, TrackingPageRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    TrackingPageRoutingModule,
+    SharedUiModule,
+  ],
   declarations: [TrackingPage],
   providers: [BackgroundGeolocation],
 })
