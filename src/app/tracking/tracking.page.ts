@@ -7,6 +7,7 @@ import {
   BackgroundGeolocationProvider,
   BackgroundGeolocationResponse,
 } from '@ionic-native/background-geolocation/ngx'
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 
 @Component({
@@ -28,18 +29,28 @@ export class TrackingPage implements OnInit {
 
   constructor(
     private backgroundGeolocation: BackgroundGeolocation,
-    private platform: Platform
+    private platform: Platform,
+    private localNotifications: LocalNotifications
   ) {}
 
   ngOnInit() {
     this.state = 'Waiting...'
     this.logToScreen('Nothing has happened so far.')
+    this.scheduleNotification('Initiating page!')
 
     this.backgroundGeolocation.configure(this.config).then(() => {
       this.backgroundGeolocation
         .on(BackgroundGeolocationEvents.location)
         .subscribe((location: BackgroundGeolocationResponse) => {
           this.logToScreen('Last location update: ' + location.time.toString())
+          this.scheduleNotification(
+            'Received location update ' +
+              location.latitude +
+              ' ' +
+              location.longitude +
+              ' ' +
+              location.accuracy
+          )
           this.backgroundGeolocation.finish()
         })
 
@@ -48,6 +59,7 @@ export class TrackingPage implements OnInit {
         .subscribe(() => {
           this.state = 'Started'
           this.logToScreen('Set label to Started')
+          this.scheduleNotification('Background location started.')
         })
 
       this.backgroundGeolocation
@@ -55,6 +67,7 @@ export class TrackingPage implements OnInit {
         .subscribe(() => {
           this.state = 'Stopped'
           this.logToScreen('Set label to Stopped')
+          this.scheduleNotification('Background location stopped.')
         })
     })
   }
@@ -102,5 +115,13 @@ export class TrackingPage implements OnInit {
 
   logToScreen(message: string) {
     this.eventText += message + '\n'
+  }
+
+  scheduleNotification(message: string) {
+    this.localNotifications.schedule({
+      id: Math.random() * 1000000,
+      text: message,
+      data: {},
+    })
   }
 }
