@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, NgZone, OnInit } from '@angular/core'
 import {
   BackgroundGeolocation,
   BackgroundGeolocationAuthorizationStatus,
@@ -30,11 +30,12 @@ export class TrackingPage implements OnInit {
   constructor(
     private backgroundGeolocation: BackgroundGeolocation,
     private platform: Platform,
-    private localNotifications: LocalNotifications
+    private localNotifications: LocalNotifications,
+    private zone: NgZone
   ) {}
 
   ngOnInit() {
-    this.state = 'Waiting...'
+    this.setState('Waiting...')
     this.logToScreen('Nothing has happened so far.')
     this.scheduleNotification('Initiating page!')
 
@@ -42,7 +43,14 @@ export class TrackingPage implements OnInit {
       this.backgroundGeolocation
         .on(BackgroundGeolocationEvents.location)
         .subscribe((location: BackgroundGeolocationResponse) => {
-          this.logToScreen('Last location update: ' + location.time.toString())
+          this.logToScreen(
+            'Received location update ' +
+              location.latitude +
+              ' ' +
+              location.longitude +
+              ' ' +
+              location.accuracy
+          )
           this.scheduleNotification(
             'Received location update ' +
               location.latitude +
@@ -57,7 +65,7 @@ export class TrackingPage implements OnInit {
       this.backgroundGeolocation
         .on(BackgroundGeolocationEvents.start)
         .subscribe(() => {
-          this.state = 'Started'
+          this.setState('Started')
           this.logToScreen('Set label to Started')
           this.scheduleNotification('Background location started.')
         })
@@ -65,7 +73,7 @@ export class TrackingPage implements OnInit {
       this.backgroundGeolocation
         .on(BackgroundGeolocationEvents.stop)
         .subscribe(() => {
-          this.state = 'Stopped'
+          this.setState('Stopped')
           this.logToScreen('Set label to Stopped')
           this.scheduleNotification('Background location stopped.')
         })
@@ -113,8 +121,16 @@ export class TrackingPage implements OnInit {
     })
   }
 
+  setState(state: string) {
+    this.zone.run(() => {
+      this.state = state
+    })
+  }
+
   logToScreen(message: string) {
-    this.eventText += message + '\n'
+    this.zone.run(() => {
+      this.eventText += message + '\n'
+    })
   }
 
   scheduleNotification(message: string) {
