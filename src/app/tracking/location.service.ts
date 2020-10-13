@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, OnDestroy } from '@angular/core'
 import {
   BackgroundGeolocation,
   BackgroundGeolocationAuthorizationStatus,
@@ -8,12 +8,12 @@ import {
 } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
 })
-export class LocationService {
+export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
     desiredAccuracy: 10,
     stationaryRadius: 20,
@@ -21,6 +21,10 @@ export class LocationService {
     debug: false, //  enable this hear sounds for background-geolocation life-cycle. NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
   }
+  private locationUpdateSubscription: Subscription
+  private startEventSubscription: Subscription
+  private stopEventSubscription: Subscription
+
   isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
   constructor(
@@ -31,34 +35,15 @@ export class LocationService {
     if (this.platform.is('ios') == false) return
 
     this.backgroundGeolocation.configure(this.config).then(() => {
-      this.backgroundGeolocation
-        .on(BackgroundGeolocationEvents.location)
-        .subscribe((location: BackgroundGeolocationResponse) => {
-          this.scheduleNotification(
-            'Received location update ' +
-              location.latitude +
-              ' ' +
-              location.longitude +
-              ' ' +
-              location.accuracy
-          )
-          this.backgroundGeolocation.finish()
-        })
-
-      this.backgroundGeolocation
-        .on(BackgroundGeolocationEvents.start)
-        .subscribe(() => {
-          this.isRunning.next(true)
-          this.scheduleNotification('Background location started.')
-        })
-
-      this.backgroundGeolocation
-        .on(BackgroundGeolocationEvents.stop)
-        .subscribe(() => {
-          this.isRunning.next(false)
-          this.scheduleNotification('Background location stopped.')
-        })
+      this.subscribeToLocationUpdates()
+      this.subscribeToStartStopEvents()
     })
+  }
+
+  ngOnDestroy() {
+    this.locationUpdateSubscription.unsubscribe()
+    this.startEventSubscription.unsubscribe()
+    this.stopEventSubscription.unsubscribe()
   }
 
   start() {
@@ -91,6 +76,38 @@ export class LocationService {
         } else return false
       }
     })
+  }
+
+  private subscribeToLocationUpdates() {
+    this.locationUpdateSubscription = this.backgroundGeolocation
+      .on(BackgroundGeolocationEvents.location)
+      .subscribe((location: BackgroundGeolocationResponse) => {
+        this.scheduleNotification(
+          'Received location update ' +
+            location.latitude +
+            ' ' +
+            location.longitude +
+            ' ' +
+            location.accuracy
+        )
+        this.backgroundGeolocation.finish()
+      })
+  }
+
+  private subscribeToStartStopEvents() {
+    this.startEventSubscription = this.backgroundGeolocation
+      .on(BackgroundGeolocationEvents.start)
+      .subscribe(() => {
+        this.isRunning.next(true)
+        this.scheduleNotification('Background location started.')
+      })
+
+    this.stopEventSubscription = this.backgroundGeolocation
+      .on(BackgroundGeolocationEvents.stop)
+      .subscribe(() => {
+        this.isRunning.next(false)
+        this.scheduleNotification('Background location stopped.')
+      })
   }
 
   private scheduleNotification(message: string) {

@@ -1,4 +1,5 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core'
+import { Subscription } from 'rxjs'
 import { LocationService } from './location.service'
 
 @Component({
@@ -9,13 +10,21 @@ import { LocationService } from './location.service'
 export class TrackingPage implements OnInit {
   @Input() state: string
 
+  private locationServiceSubscription: Subscription
+
   constructor(private zone: NgZone, private locationService: LocationService) {}
 
   ngOnInit() {
     this.setState('Waiting...')
-    this.locationService.isRunning.subscribe((state) => {
-      this.setState(state ? 'Running' : 'Stopped')
-    })
+    this.locationServiceSubscription = this.locationService.isRunning.subscribe(
+      (state) => {
+        this.setState(state ? 'Running' : 'Stopped')
+      }
+    )
+  }
+
+  ngOnDestroy() {
+    this.locationServiceSubscription.unsubscribe()
   }
 
   toggleBackgroundGeoLocation() {
