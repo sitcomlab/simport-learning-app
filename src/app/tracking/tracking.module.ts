@@ -10,6 +10,7 @@ import { TrackingPage } from './tracking.page'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { LocationService } from './location.service'
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     SharedUiModule,
   ],
   declarations: [TrackingPage],
-  providers: [BackgroundGeolocation, LocalNotifications],
+  providers: [BackgroundGeolocation, LocalNotifications, LocationService],
 })
 export class TrackingPageModule {}
