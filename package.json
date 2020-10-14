@@ -34,7 +34,7 @@
     "@types/moment": "^2.13.0",
     "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-device": "^2.0.3",
-    "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-local-notification": "git+https://github.com/timkellypa/cordova-plugin-local-notifications.git",
     "leaflet": "^1.7.1",
     "moment": "^2.29.0",
     "rxjs": "~6.5.5",
