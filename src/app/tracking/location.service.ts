@@ -32,7 +32,7 @@ export class LocationService implements OnDestroy {
     private backgroundGeolocation: BackgroundGeolocation,
     private localNotifications: LocalNotifications
   ) {
-    if (this.platform.is('ios') == false) return
+    if (!this.isSupportedPlatform()) return
 
     this.backgroundGeolocation.configure(this.config).then(() => {
       this.subscribeToLocationUpdates()
@@ -47,7 +47,7 @@ export class LocationService implements OnDestroy {
   }
 
   start() {
-    if (this.platform.is('ios') == false) return
+    if (!this.isSupportedPlatform()) return
 
     this.backgroundGeolocation.checkStatus().then((status) => {
       if (status.isRunning) {
@@ -76,6 +76,10 @@ export class LocationService implements OnDestroy {
         } else return false
       }
     })
+  }
+
+  private isSupportedPlatform(): boolean {
+    return this.platform.is('ios') || this.platform.is('android')
   }
 
   private subscribeToLocationUpdates() {
