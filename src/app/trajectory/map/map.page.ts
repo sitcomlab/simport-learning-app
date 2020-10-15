@@ -63,9 +63,9 @@ export class MapPage implements OnInit {
     }
   }
 
-  private addTrajectory() {
-    let coordinates = this.trajectoryService.getTrajectory(this.trajectoryId)
-      .coordinates
+  private async addTrajectory() {
+    const { coordinates } = await this.trajectoryService
+      .getTrajectory(this.trajectoryId)
     new Polyline(coordinates).addTo(this.map)
   }
 }

@@ -15,10 +15,11 @@ export class TrajectorySelectorComponent implements OnInit {
     private modalCtrl: ModalController,
     private trajectoryService: TrajectoryService
   ) {
-    this.trajectories = trajectoryService.getAllTrajectories()
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    this.trajectories = await this.trajectoryService.getAllTrajectories()
+  }
 
   select(id: string) {
     this.modalCtrl.dismiss(id)

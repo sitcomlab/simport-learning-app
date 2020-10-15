@@ -9,7 +9,7 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-
+    implementation project(':capacitor-community-sqlite')
     implementation "com.google.android.gms:play-services-location:11+"
     implementation "com.android.support:support-v4:26+"
     implementation "com.android.support:appcompat-v7:26+"
