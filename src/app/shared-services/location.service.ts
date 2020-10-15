@@ -4,15 +4,12 @@ import {
   BackgroundGeolocationAuthorizationStatus,
   BackgroundGeolocationConfig,
   BackgroundGeolocationEvents,
-  BackgroundGeolocationResponse,
 } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
     desiredAccuracy: 10,

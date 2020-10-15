@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Router } from '@angular/router'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
-import { LocationService } from '../tracking/location.service'
+import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 
 enum TrajectoryMode {

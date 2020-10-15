@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Trajectory } from '../model/trajectory'
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TrajectoryService {
   private trajectories: Trajectory[] = [
     {

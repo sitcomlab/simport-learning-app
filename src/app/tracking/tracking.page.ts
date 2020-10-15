@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core'
 import { Subscription } from 'rxjs'
-import { LocationService } from './location.service'
+import { LocationService } from '../shared-services/location.service'
 
 @Component({
   selector: 'app-tracking',
