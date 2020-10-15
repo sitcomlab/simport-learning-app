@@ -9,10 +9,11 @@
     <ion-row>
       <ion-col sizeXs="12" sizeLg="4">
         <app-item-card
+          [disabled]="!locationService.isSupportedPlatform"
+          (click)="locationService.isSupportedPlatform && enableTrajectory('tracking')"
           icon="locate-outline"
           title="Record your own trajectory"
           subtitle="get notified when information about you could be derived"
-          (click)="enableTrajectory('tracking')"
         ></app-item-card>
       </ion-col>
 

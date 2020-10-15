@@ -7,13 +7,17 @@
 <ion-content>
   <ion-grid fixed>
     <ion-row>
-      <ion-col sizeXs="12" sizeLg="4">
+      <ion-col sizeXs="12" sizeLg="6">
         <app-item-card
+          [disabled]="!locationService.isSupportedPlatform"
           icon="play-circle"
           title="Toggle location tracking"
           subtitle="{{state}}"
           (click)="toggleBackgroundGeoLocation()"
         ></app-item-card>
+        <ion-note *ngIf="!locationService.isSupportedPlatform">
+          This platform doesn't support background location tracking
+        </ion-note>
       </ion-col>
     </ion-row>
   </ion-grid>

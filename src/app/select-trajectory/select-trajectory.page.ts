@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { LocationService } from '../tracking/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 
 enum TrajectoryMode {
@@ -19,21 +20,16 @@ export class SelectTrajectoryPage implements OnInit {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    public locationService: LocationService,
+  ) { }
 
   ngOnInit() {}
 
   async enableTrajectory(mode: TrajectoryMode) {
-    console.log(mode)
-
     // TODO: persist selected mode
 
     switch (mode) {
       case TrajectoryMode.TRACK:
-        // TODO
-        // check location permission
-        // enable background tracking
         this.router.navigate(['/tracking'])
         return
 

@@ -10,6 +10,7 @@ import { SelectTrajectoryPage } from './select-trajectory.page'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { TrackingPageModule } from '../tracking/tracking.module'
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     IonicModule,
     SelectTrajectoryPageRoutingModule,
     SharedUiModule,
+    TrackingPageModule,
   ],
   declarations: [
     SelectTrajectoryPage,
