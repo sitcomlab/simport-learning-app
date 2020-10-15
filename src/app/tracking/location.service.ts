@@ -85,15 +85,8 @@ export class LocationService implements OnDestroy {
   private subscribeToLocationUpdates() {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
-      .subscribe((location: BackgroundGeolocationResponse) => {
-        this.scheduleNotification(
-          'Received location update ' +
-            location.latitude +
-            ' ' +
-            location.longitude +
-            ' ' +
-            location.accuracy
-        )
+      .subscribe(({ latitude, longitude, accuracy }) => {
+        this.scheduleNotification(`Received location update ${latitude} ${longitude} ${accuracy}`)
         this.backgroundGeolocation.finish()
       })
   }
