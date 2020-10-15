@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package de.ifgi.simport.learning;
 
 import android.os.Bundle;
 

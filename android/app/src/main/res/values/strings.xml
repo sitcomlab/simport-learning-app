@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">simport-learning</string>
     <string name="title_activity_main">simport-learning</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">de.ifgi.simport.learning</string>
+    <string name="custom_url_scheme">de.ifgi.simport.learning</string>
 
     <string name="mauron85_bgloc_account_name">@string/app_name</string>
     <string name="mauron85_bgloc_account_type">$PACKAGE_NAME.account</string>
