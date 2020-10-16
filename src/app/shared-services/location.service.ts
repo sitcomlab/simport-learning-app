@@ -34,6 +34,9 @@ export class LocationService implements OnDestroy {
     this.backgroundGeolocation.configure(this.config).then(() => {
       this.subscribeToLocationUpdates()
       this.subscribeToStartStopEvents()
+      this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
+        this.isRunning.next(isRunning)
+      })
     })
   }
 
