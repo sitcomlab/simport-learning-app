@@ -15,7 +15,13 @@ export class TrajectoryCardComponent implements OnInit {
   ngOnInit() {}
 
   get duration() {
-    const { timestamps: ts } = this.trajectory
+    const { durationDays, timestamps: ts } = this.trajectory
+
+    // use hardcoded value if available
+    if (durationDays !== undefined)
+      return moment.duration(durationDays, 'days').humanize()
+
+    // fallback to computing
     if (!ts || !ts.length) return ''
     const t1 = moment(ts[0])
     const t2 = moment(ts[ts.length - 1])

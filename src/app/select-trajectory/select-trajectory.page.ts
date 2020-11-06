@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { TrajectoryMeta } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 
@@ -41,8 +42,8 @@ export class SelectTrajectoryPage implements OnInit {
           cssClass: 'auto-height',
         })
         modal.present()
-        const { data: trajId } = await modal.onWillDismiss()
-        if (trajId) this.router.navigate([`/trajectory/${trajId}`])
+        const { data: t } = await modal.onWillDismiss<TrajectoryMeta>()
+        if (t) this.router.navigate([`/trajectory/${t.type}/${t.id}`])
         return
 
       case TrajectoryMode.IMPORT:
