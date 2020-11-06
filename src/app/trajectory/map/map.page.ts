@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { latLng, MapOptions, tileLayer, Map, Circle, Polyline } from 'leaflet'
+import { Circle, latLng, Map, MapOptions, Polyline, tileLayer } from 'leaflet'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -13,7 +14,7 @@ export class MapPage implements OnInit {
   mapOptions: MapOptions
   map: Map
   inferences: Inference[]
-  trajectoryId: string
+  polyline: Polyline
 
   constructor(
     private service: InferenceService,
@@ -23,14 +24,20 @@ export class MapPage implements OnInit {
 
   ngOnInit() {
     this.initMapOptions()
-    this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    this.inferences = this.service.getInferences(this.trajectoryId)
+
+    const trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
+    const trajectoryType = this.route.snapshot.paramMap.get('trajectoryType') as TrajectoryType
+
+    this.inferences = this.service.getInferences(trajectoryId)
+    this.trajectoryService.getOne(trajectoryType, trajectoryId)
+      .subscribe(t => {
+        this.addTrajectory(t)
+      })
   }
 
   ionViewDidEnter() {
     this.map.invalidateSize()
     this.addInferenceMarkers()
-    this.addTrajectory()
   }
 
   onMapReady(map: Map) {
@@ -63,9 +70,8 @@ export class MapPage implements OnInit {
     }
   }
 
-  private async addTrajectory() {
-    const { coordinates } = await this.trajectoryService
-      .getTrajectory(this.trajectoryId)
-    new Polyline(coordinates).addTo(this.map)
+  private async addTrajectory({ coordinates }: Trajectory) {
+    if (this.polyline) this.polyline.removeFrom(this.map)
+    this.polyline = new Polyline(coordinates).addTo(this.map)
   }
 }

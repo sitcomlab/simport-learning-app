@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ModalController } from '@ionic/angular'
-import { Trajectory } from 'src/app/model/trajectory'
+import { Subscription } from 'rxjs'
+import { TrajectoryMeta } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 
 @Component({
@@ -8,8 +9,9 @@ import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
   templateUrl: './trajectory-selector.component.html',
   styleUrls: ['./trajectory-selector.component.scss'],
 })
-export class TrajectorySelectorComponent implements OnInit {
-  trajectories: Trajectory[]
+export class TrajectorySelectorComponent implements OnInit, OnDestroy {
+  trajectories: TrajectoryMeta[]
+  trajectoriesSub: Subscription
 
   constructor(
     private modalCtrl: ModalController,
@@ -18,10 +20,16 @@ export class TrajectorySelectorComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.trajectories = await this.trajectoryService.getAllTrajectories()
+    this.trajectoriesSub = this.trajectoryService.getAllMeta().subscribe(ts => {
+      this.trajectories = ts
+    })
   }
 
-  select(id: string) {
-    this.modalCtrl.dismiss(id)
+  async ngOnDestroy () {
+    this.trajectoriesSub.unsubscribe()
+  }
+
+  select(t: TrajectoryMeta) {
+    this.modalCtrl.dismiss(t)
   }
 }

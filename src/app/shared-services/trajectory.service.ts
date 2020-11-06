@@ -1,9 +1,27 @@
+import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { Plugins } from '@capacitor/core'
 import { CapacitorSQLite } from '@capacitor-community/sqlite'
-import { Trajectory } from '../model/trajectory'
+import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
+import {
+  combineLatest,
+  from,
+  Observable
+} from 'rxjs'
+import { map } from 'rxjs/operators'
+import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 
+/**
+ * TrajectoryService provides access to persisted Trajectories.
+ * There are different persistence mechanisms to support most platforms:
+ * Example trajectories are stored as JSON under src/assets/trajectories
+ * and can be loaded readonly on any platform.
+ * On mobile platforms, writable storage is available via SQLite, where
+ * user-provided trajectories can be stored & retrieved.
+ *
+ * The highlevel API aims to unify/hide these persistence mechanisms, throwing
+ * errors if not available on the current platform.
+ */
 @Injectable()
 export class TrajectoryService {
   private db = Plugins.CapacitorSQLite
@@ -11,20 +29,68 @@ export class TrajectoryService {
 
   constructor(
     private platform: Platform,
+    private http: HttpClient,
   ) {
-    this.dbReady = this.initDb()
-    this.insertDemoTrajectories()
+    this.dbReady = this.isDbSupported()
+      ? this.initDb()
+      : new Promise(() => {}) // never resolve..
   }
 
-  async getAllTrajectories(): Promise<Trajectory[]> {
-    await this.dbReady
-    const statement = `SELECT id FROM trajectories;`
-    const { values } = await this.db.query({ statement })
-    const ts = values as Omit<Trajectory, 'timestamps' | 'coordinates'>[]
-    return Promise.all(ts.map(t => this.getTrajectory(t.id)))
+  // Returns an observable yielding metadata of all available trajectory metadata
+  getAllMeta(): Observable<TrajectoryMeta[]> {
+    // yield on each source update, once all sources have yielded once.
+    return combineLatest([
+      this.getReadonlyMeta(),
+      this.getWritableMeta(),
+    ]).pipe(
+      map(val => [].concat(...val)), // flatten result arrays
+    )
   }
 
-  async getTrajectory(id: string) {
+  // Returns metadata of all trajectories stored in the (writable) database
+  getWritableMeta(): Observable<TrajectoryMeta[]> {
+    if (!this.isDbSupported())
+      return from(Promise.resolve([]))
+
+    // TODO: make this reactive on DB updates/inserts..?
+
+    const promise = this.dbReady.then(async () => {
+      const statement = `SELECT * FROM trajectories;`
+      const { values } = await this.db.query({ statement })
+      console.log(JSON.stringify(values, null, 2))
+      return values
+    })
+    return from(promise)
+  }
+
+  // returns metadata of all included example (readonly) trajectories
+  getReadonlyMeta(): Observable<TrajectoryMeta[]> {
+    return this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
+  }
+
+  // Returns any trajectory data by slug. slug consists of `type/id`.
+  // TODO: catch 404 properly?
+  getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
+    switch (type) {
+      case TrajectoryType.EXAMPLE:
+        // get data from trajectory-specific json and merge with meta
+        return combineLatest([
+          this.getReadonlyMeta().pipe(map(ts => ts.find(t => t.id === id))),
+          this.http.get<Trajectory>(`assets/trajectories/${id}.json`),
+        ]).pipe(
+          map(([meta, data]) => ({ ...meta, ...data }))
+        )
+
+      default:
+        return from(this.getOneFromDb(id))
+    }
+  }
+
+  private isDbSupported () {
+    return this.platform.is("hybrid")
+  }
+
+  private async getOneFromDb(id: string): Promise<Trajectory> {
     // PERFORMANCE: can't we do this with a join?
     await this.dbReady
     const { values } = await this.db.query({
@@ -43,7 +109,9 @@ export class TrajectoryService {
   }
 
   private async initDb () {
-    // TODO: handle web platform..
+    if (!this.isDbSupported())
+      throw new Error('DB only supported on Android or iOS')
+
      if (this.platform.is('android'))
         await CapacitorSQLite.requestPermissions()
 
@@ -56,22 +124,23 @@ export class TrajectoryService {
     })
     if (changes === -1)
       throw new Error(`db init failed: ${msg}`)
+
+    // this.insertDemoTrajectories()
   }
 
-  private async insertDemoTrajectories() {
-    await this.dbReady
-    const statements = [
-      'INSERT OR REPLACE INTO `trajectories` (id,placename) VALUES ("muenster", "Münster")',
-      `INSERT OR REPLACE INTO \`points\` (trajectory,lon,lat,time) VALUES
-        ("muenster", 7.6026, 51.969,  "2020-10-01 12:00:00"),
-        ("muenster", 7.61,   51.9678, "2020-09-01 12:00:00")
-        `,
-    ].join(';\n')
+  // private async insertDemoTrajectories() {
+  //   const statements = [
+  //     'INSERT OR REPLACE INTO `trajectories` (id,placename) VALUES ("muenster", "Münster")',
+  //     `INSERT OR REPLACE INTO \`points\` (trajectory,lon,lat,time) VALUES
+  //       ("muenster", 7.6026, 51.969,  "2020-10-01 12:00:00"),
+  //       ("muenster", 7.61,   51.9678, "2020-09-01 12:00:00")
+  //       `,
+  //   ].join(';\n')
 
-    const { changes: { changes }, message } = await this.db.execute({ statements })
-    if (changes === -1)
-      throw new Error(`insert demo trajectories failed: ${message}`)
-  }
+  //   const { changes: { changes }, message } = await this.db.execute({ statements })
+  //   if (changes === -1)
+  //     throw new Error(`insert demo trajectories failed: ${message}`)
+  // }
 }
 
 const DBSCHEMA = `

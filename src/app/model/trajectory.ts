@@ -1,7 +1,19 @@
-// WIP. this should probably be a class, implementing an active record to some DB connection?
-export interface Trajectory {
-  id: string
-  placename: string
-  coordinates?: [number, number][]
-  timestamps?: Date[]
+export enum TrajectoryType {
+  EXAMPLE   = 'example',
+  IMPORT    = 'import',
+  USERTRACK = 'track',
 }
+
+export interface TrajectoryMeta {
+  id: string,
+  type: TrajectoryType,
+  placename: string,
+  durationDays?: number,
+}
+
+export interface TrajectoryData {
+  coordinates: [number, number][],
+  timestamps: Date[],
+}
+
+export interface Trajectory extends TrajectoryMeta, TrajectoryData { }
