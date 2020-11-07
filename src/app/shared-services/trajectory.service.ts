@@ -3,14 +3,13 @@ import { Injectable } from '@angular/core'
 import { CapacitorSQLite } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
-import { LatLngTuple } from 'leaflet'
 import {
   combineLatest,
   from,
   Observable
 } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
+import { Trajectory, TrajectoryData, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.
@@ -90,25 +89,35 @@ export class TrajectoryService {
   }
 
   private async getOneFromDb(id: string): Promise<Trajectory> {
-    // PERFORMANCE: can't we do this with a join?
+    // TODO: make this a reactive observable?
     await this.dbReady
-    const { values: [meta] } = await this.db.query({
-      statement: 'SELECT * FROM `trajectories` WHERE id = ?;',
+    const { values } = await this.db.query({
+      statement: `SELECT t.placename, p.lon, p.lat, p.time FROM trajectories AS t
+        LEFT JOIN points p ON t.id = p.trajectory
+        WHERE t.id = ?
+        ORDER BY time`,
       values: [id],
     })
 
-    const { values: points } = await this.db.query({
-      statement: 'SELECT * FROM `points` WHERE `trajectory` = ? ORDER BY `time`;',
-      values: [id]
-    })
-    const coordinates: LatLngTuple[] = []
-    const timestamps: Date[] = []
-    for (const { lon, lat, time } of points) {
-      coordinates.push([lat, lon])
-      timestamps.push(new Date(time))
+    if (!values.length) throw new Error('not found')
+
+    const meta: TrajectoryMeta = {
+      id,
+      type: TrajectoryType.USERTRACK, // FIXME: this should come from DB..
+      placename: values[0].placename,
     }
 
-    return new Trajectory(meta, { coordinates, timestamps})
+    const data = values
+      // if there's no points, left join still returns one partial entry with the meta only
+      .filter(({ lon }) => !!lon)
+
+      .reduce<TrajectoryData>((data, { lon, lat, time }) => {
+        data.coordinates.push([lat, lon])
+        data.timestamps.push(new Date(time))
+        return data
+      }, { coordinates: [], timestamps: [] })
+
+    return new Trajectory(meta, data)
   }
 
   private async initDb () {
