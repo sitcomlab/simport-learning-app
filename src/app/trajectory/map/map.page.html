@@ -15,6 +15,10 @@
     id="map"
     leaflet
     [leafletOptions]="mapOptions"
+    [leafletFitBounds]="mapBounds"
     (leafletMapReady)="onMapReady($event)"
-  ></div>
+  >
+    <div [leafletLayer]="polyline"></div>
+    <div [leafletLayer]="inferenceMarkers"></div>
+  </div>
 </ion-content>

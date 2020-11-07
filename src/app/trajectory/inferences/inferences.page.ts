@@ -21,8 +21,15 @@ export class InferencesPage implements OnInit {
     this.inferences = this.service.getInferences(trajId)
   }
 
-  openMap(inference: Inference) {
+  showInferenceOnMap(inference: Inference) {
     if (!inference.location || !inference.accuracy) return
-    this.router.navigate(['../map'], { relativeTo: this.route })
+    this.openMap(inference.location)
+  }
+
+  openMap(centerLatLng?: [number, number]) {
+    this.router.navigate(['../map'], {
+      relativeTo: this.route,
+      state: { center: centerLatLng },
+    })
   }
 }
