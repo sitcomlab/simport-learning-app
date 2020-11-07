@@ -3,6 +3,10 @@
     <ion-card-title>Available Trajectories</ion-card-title>
   </ion-card-header>
 
+  <div *ngIf="loading" style="display: flex; justify-content: center">
+    <ion-spinner></ion-spinner>
+  </div>
+
   <app-trajectory-card
     *ngFor="let t of trajectories"
     [trajectory]="t"
