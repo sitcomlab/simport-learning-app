@@ -12,6 +12,7 @@ import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 export class TrajectorySelectorComponent implements OnInit, OnDestroy {
   trajectories: TrajectoryMeta[]
   trajectoriesSub: Subscription
+  loading = true
 
   constructor(
     private modalCtrl: ModalController,
@@ -21,6 +22,7 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.trajectoriesSub = this.trajectoryService.getAllMeta().subscribe(ts => {
+      this.loading = false
       this.trajectories = ts
     })
   }
