@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { CapacitorSQLite } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
+import { LatLngTuple } from 'leaflet'
 import {
   combineLatest,
   from,
@@ -57,8 +58,7 @@ export class TrajectoryService {
     const promise = this.dbReady.then(async () => {
       const statement = `SELECT * FROM trajectories;`
       const { values } = await this.db.query({ statement })
-      console.log(JSON.stringify(values, null, 2))
-      return values
+      return values.map(v => new Trajectory(v))
     })
     return from(promise)
   }
@@ -66,6 +66,7 @@ export class TrajectoryService {
   // returns metadata of all included example (readonly) trajectories
   getReadonlyMeta(): Observable<TrajectoryMeta[]> {
     return this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
+      .pipe(map(ts => ts.map(meta => new Trajectory(meta))))
   }
 
   // Returns any trajectory data by slug. slug consists of `type/id`.
@@ -73,13 +74,11 @@ export class TrajectoryService {
   getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
     switch (type) {
       case TrajectoryType.EXAMPLE:
-        // get data from trajectory-specific json and merge with meta
-        return combineLatest([
-          this.getReadonlyMeta().pipe(map(ts => ts.find(t => t.id === id))),
-          this.http.get<Trajectory>(`assets/trajectories/${id}.json`),
-        ]).pipe(
-          map(([meta, data]) => ({ ...meta, ...data }))
-        )
+        const getData = this.http.get<Trajectory>(`assets/trajectories/${id}.json`)
+        const getMeta = this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
+          .pipe(map(ts => ts.find(t => t.id === id)))
+        return combineLatest([getMeta, getData])
+          .pipe(map(([meta, data]) => new Trajectory(meta, data)))
 
       default:
         return from(this.getOneFromDb(id))
@@ -93,19 +92,23 @@ export class TrajectoryService {
   private async getOneFromDb(id: string): Promise<Trajectory> {
     // PERFORMANCE: can't we do this with a join?
     await this.dbReady
-    const { values } = await this.db.query({
+    const { values: [meta] } = await this.db.query({
       statement: 'SELECT * FROM `trajectories` WHERE id = ?;',
       values: [id],
     })
-    const t = values[0] as Trajectory
 
     const { values: points } = await this.db.query({
       statement: 'SELECT * FROM `points` WHERE `trajectory` = ? ORDER BY `time`;',
       values: [id]
     })
-    t.coordinates = points.map(({ lon, lat }) => [lat, lon])
-    t.timestamps  = points.map(({ time }) => new Date(time))
-    return t
+    const coordinates: LatLngTuple[] = []
+    const timestamps: Date[] = []
+    for (const { lon, lat, time } of points) {
+      coordinates.push([lat, lon])
+      timestamps.push(new Date(time))
+    }
+
+    return new Trajectory(meta, { coordinates, timestamps})
   }
 
   private async initDb () {
