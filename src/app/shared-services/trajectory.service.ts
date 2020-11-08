@@ -92,7 +92,7 @@ export class TrajectoryService {
     // TODO: make this a reactive observable?
     await this.dbReady
     const { values } = await this.db.query({
-      statement: `SELECT t.placename, p.lon, p.lat, p.time FROM trajectories AS t
+      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -101,11 +101,8 @@ export class TrajectoryService {
 
     if (!values.length) throw new Error('not found')
 
-    const meta: TrajectoryMeta = {
-      id,
-      type: TrajectoryType.USERTRACK, // FIXME: this should come from DB..
-      placename: values[0].placename,
-    }
+    const { type, placename, durationDays } = values[0]
+    const meta: TrajectoryMeta = { id, type, placename, durationDays }
 
     const data = values
       // if there's no points, left join still returns one partial entry with the meta only
@@ -165,6 +162,10 @@ const MIGRATIONS = [
     trajectory,
     time);`,
 
+  `ALTER TABLE trajectories ADD COLUMN
+    type varchar(20) CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import";
+  ALTER TABLE trajectories ADD COLUMN
+    durationDays float NULL;`,
 ]
 
 
