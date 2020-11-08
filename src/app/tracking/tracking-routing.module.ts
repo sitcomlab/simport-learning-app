@@ -1,14 +1,14 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core'
+import { Routes, RouterModule } from '@angular/router'
 
-import { TrackingPage } from './tracking.page';
+import { TrackingPage } from './tracking.page'
 
 const routes: Routes = [
   {
     path: '',
-    component: TrackingPage
-  }
-];
+    component: TrackingPage,
+  },
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

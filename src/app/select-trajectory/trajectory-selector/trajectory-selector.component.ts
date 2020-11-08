@@ -17,17 +17,18 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
   constructor(
     private modalCtrl: ModalController,
     private trajectoryService: TrajectoryService
-  ) {
-  }
+  ) {}
 
   async ngOnInit() {
-    this.trajectoriesSub = this.trajectoryService.getAllMeta().subscribe(ts => {
-      this.loading = false
-      this.trajectories = ts
-    })
+    this.trajectoriesSub = this.trajectoryService
+      .getAllMeta()
+      .subscribe((ts) => {
+        this.loading = false
+        this.trajectories = ts
+      })
   }
 
-  async ngOnDestroy () {
+  async ngOnDestroy() {
     this.trajectoriesSub.unsubscribe()
   }
 

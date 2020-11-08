@@ -15,7 +15,7 @@ export class LocationService implements OnDestroy {
     desiredAccuracy: 10,
     stationaryRadius: 20,
     distanceFilter: 30,
-    debug: false, //  enable this hear sounds for background-geolocation life-cycle. NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
+    debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
   }
   private locationUpdateSubscription: Subscription
@@ -55,7 +55,7 @@ export class LocationService implements OnDestroy {
         return false
       }
       if (!status.locationServicesEnabled) {
-        var showSettings = confirm(
+        const showSettings = confirm(
           'Location services disabled. Would you like to open app settings?'
         )
         if (showSettings) {
@@ -63,12 +63,12 @@ export class LocationService implements OnDestroy {
         } else return false
       }
       if (
-        status.authorization == 99 ||
+        status.authorization === 99 ||
         BackgroundGeolocationAuthorizationStatus.AUTHORIZED
       ) {
         this.backgroundGeolocation.start()
       } else {
-        var showSettings = confirm(
+        const showSettings = confirm(
           'App requieres always on location permission. Please grant permission in settings.'
         )
         if (showSettings) {
@@ -86,7 +86,9 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(({ latitude, longitude, accuracy }) => {
-        this.scheduleNotification(`Received location update ${latitude} ${longitude} ${accuracy}`)
+        this.scheduleNotification(
+          `Received location update ${latitude} ${longitude} ${accuracy}`
+        )
         this.backgroundGeolocation.finish()
       })
   }
