@@ -8,7 +8,7 @@ import {
   Map,
   MapOptions,
   Polyline,
-  tileLayer
+  tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
 import { TrajectoryType } from 'src/app/model/trajectory'
@@ -27,7 +27,8 @@ export class MapPage implements OnInit, OnDestroy {
     layers: [
       tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution:
+          '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }),
     ],
   }
@@ -42,15 +43,18 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferences: InferenceService,
     private trajectories: TrajectoryService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     const trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    const trajectoryType = this.route.snapshot.paramMap.get('trajectoryType') as TrajectoryType
+    const trajectoryType = this.route.snapshot.paramMap.get(
+      'trajectoryType'
+    ) as TrajectoryType
 
-    this.trajSub = this.trajectories.getOne(trajectoryType, trajectoryId)
-      .subscribe(t => {
+    this.trajSub = this.trajectories
+      .getOne(trajectoryType, trajectoryId)
+      .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
         this.mapBounds = this.polyline.getBounds()
       })
@@ -72,11 +76,13 @@ export class MapPage implements OnInit, OnDestroy {
       this.mapBounds = latLng(history.state.center).toBounds(100)
   }
 
-  onMapReady(map: Map) { this.map = map }
+  onMapReady(map: Map) {
+    this.map = map
+  }
 
   private addInferenceMarkers(inferences: Inference[]) {
     this.inferenceMarkers.clearLayers()
-    for (let inference of inferences) {
+    for (const inference of inferences) {
       if (!inference.location || !inference.accuracy) continue
       const m = new Circle(inference.location, {
         radius: inference.accuracy,

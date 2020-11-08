@@ -1,36 +1,41 @@
 import * as moment from 'moment'
 
 export enum TrajectoryType {
-  EXAMPLE   = 'example',
-  IMPORT    = 'import',
+  EXAMPLE = 'example',
+  IMPORT = 'import',
   USERTRACK = 'track',
 }
 
 export interface TrajectoryMeta {
-  id: string,
-  type: TrajectoryType,
-  placename: string,
-  durationDays?: number,
+  id: string
+  type: TrajectoryType
+  placename: string
+  durationDays?: number
 }
 
 export interface TrajectoryData {
-  coordinates: [number, number][],
-  timestamps: Date[],
+  coordinates: [number, number][]
+  timestamps: Date[]
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
-  constructor(
-    private meta: TrajectoryMeta,
-    private data?: TrajectoryData,
-  ) {
+  constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
     if (data?.coordinates.length !== data?.timestamps.length)
-      throw new Error('data corruption; coordinates & timestamps don\'t have equal length')
+      throw new Error(
+        `data corruption; coordinates & timestamps don\'t have equal length`
+      )
   }
 
   // implement TrajectoryMeta interface
-  get id() { return this.meta.id }
-  get type() { return this.meta.type }
-  get placename() { return this.meta.placename }
+  get id() {
+    return this.meta.id
+  }
+  get type() {
+    return this.meta.type
+  }
+  get placename() {
+    return this.meta.placename
+  }
   get durationDays() {
     // try to compute durationDays for precision
     const ts = this.data?.timestamps
@@ -43,11 +48,13 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     return this.meta.durationDays || 0
   }
 
-
   // implement TrajectoryData interface
-  get coordinates() { return this.data?.coordinates || [] }
-  get timestamps() { return this.data?.timestamps || [] }
-
+  get coordinates() {
+    return this.data?.coordinates || []
+  }
+  get timestamps() {
+    return this.data?.timestamps || []
+  }
 
   get durationString() {
     return moment.duration(this.durationDays, 'days').humanize()

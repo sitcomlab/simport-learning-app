@@ -1,15 +1,19 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite'
+import {
+  CapacitorSQLite,
+  CapacitorSQLitePlugin,
+} from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
-import {
-  combineLatest,
-  from,
-  Observable
-} from 'rxjs'
+import { combineLatest, from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Trajectory, TrajectoryData, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
+import {
+  Trajectory,
+  TrajectoryData,
+  TrajectoryMeta,
+  TrajectoryType,
+} from '../model/trajectory'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.
@@ -27,45 +31,37 @@ export class TrajectoryService {
   private db = Plugins.CapacitorSQLite
   dbReady: Promise<void>
 
-  constructor(
-    private platform: Platform,
-    private http: HttpClient,
-  ) {
-    this.dbReady = this.isDbSupported()
-      ? this.initDb()
-      : new Promise(() => {}) // never resolve..
+  constructor(private platform: Platform, private http: HttpClient) {
+    this.dbReady = this.isDbSupported() ? this.initDb() : new Promise(() => {}) // never resolve..
   }
 
   // Returns an observable yielding metadata of all available trajectory metadata
   getAllMeta(): Observable<TrajectoryMeta[]> {
     // yield on each source update, once all sources have yielded once.
-    return combineLatest([
-      this.getReadonlyMeta(),
-      this.getWritableMeta(),
-    ]).pipe(
-      map(val => [].concat(...val)), // flatten result arrays
+    return combineLatest([this.getReadonlyMeta(), this.getWritableMeta()]).pipe(
+      map((val) => [].concat(...val)) // flatten result arrays
     )
   }
 
   // Returns metadata of all trajectories stored in the (writable) database
   getWritableMeta(): Observable<TrajectoryMeta[]> {
-    if (!this.isDbSupported())
-      return from(Promise.resolve([]))
+    if (!this.isDbSupported()) return from(Promise.resolve([]))
 
     // TODO: make this reactive on DB updates/inserts..?
 
     const promise = this.dbReady.then(async () => {
       const statement = `SELECT * FROM trajectories;`
       const { values } = await this.db.query({ statement })
-      return values.map(v => new Trajectory(v))
+      return values.map((v) => new Trajectory(v))
     })
     return from(promise)
   }
 
   // returns metadata of all included example (readonly) trajectories
   getReadonlyMeta(): Observable<TrajectoryMeta[]> {
-    return this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
-      .pipe(map(ts => ts.map(meta => new Trajectory(meta))))
+    return this.http
+      .get<TrajectoryMeta[]>('assets/trajectories/index.json')
+      .pipe(map((ts) => ts.map((meta) => new Trajectory(meta))))
   }
 
   // Returns any trajectory data by slug. slug consists of `type/id`.
@@ -73,19 +69,24 @@ export class TrajectoryService {
   getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
     switch (type) {
       case TrajectoryType.EXAMPLE:
-        const getData = this.http.get<Trajectory>(`assets/trajectories/${id}.json`)
-        const getMeta = this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
-          .pipe(map(ts => ts.find(t => t.id === id)))
-        return combineLatest([getMeta, getData])
-          .pipe(map(([meta, data]) => new Trajectory(meta, data)))
+        const getData = this.http.get<Trajectory>(
+          `assets/trajectories/${id}.json`
+        )
+        const getMeta = this.http
+          .get<TrajectoryMeta[]>('assets/trajectories/index.json')
+          .pipe(map((ts) => ts.find((t) => t.id === id)))
+
+        return combineLatest([getMeta, getData]).pipe(
+          map(([meta, data]) => new Trajectory(meta, data))
+        )
 
       default:
         return from(this.getOneFromDb(id))
     }
   }
 
-  private isDbSupported () {
-    return this.platform.is("hybrid")
+  private isDbSupported() {
+    return this.platform.is('hybrid')
   }
 
   private async getOneFromDb(id: string): Promise<Trajectory> {
@@ -105,24 +106,25 @@ export class TrajectoryService {
     const meta: TrajectoryMeta = { id, type, placename, durationDays }
 
     const data = values
-      // if there's no points, left join still returns one partial entry with the meta only
+      // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
-
-      .reduce<TrajectoryData>((data, { lon, lat, time }) => {
-        data.coordinates.push([lat, lon])
-        data.timestamps.push(new Date(time))
-        return data
-      }, { coordinates: [], timestamps: [] })
+      .reduce<TrajectoryData>(
+        (d, { lon, lat, time }) => {
+          d.coordinates.push([lat, lon])
+          d.timestamps.push(new Date(time))
+          return d
+        },
+        { coordinates: [], timestamps: [] }
+      )
 
     return new Trajectory(meta, data)
   }
 
-  private async initDb () {
+  private async initDb() {
     if (!this.isDbSupported())
       throw new Error('DB only supported on Android or iOS')
 
-     if (this.platform.is('android'))
-        await CapacitorSQLite.requestPermissions()
+    if (this.platform.is('android')) await CapacitorSQLite.requestPermissions()
 
     // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
     const { result, message } = await this.db.open({ database: 'trajectories' })
@@ -168,36 +170,47 @@ const MIGRATIONS = [
     durationDays float NULL;`,
 ]
 
-
-async function runMigrations (db: CapacitorSQLitePlugin, migrations: string[]) {
+async function runMigrations(db: CapacitorSQLitePlugin, migrations: string[]) {
   const init = `CREATE TABLE IF NOT EXISTS migrations (
     version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     up TEXT NOT NULL,
     down TEXT);`
-  const { changes: { changes }, message } = await db.execute({ statements: init })
-  if (changes === -1)
-    throw new Error(`can't run DB migrations: ${message}`)
+  const {
+    changes: { changes },
+    message,
+  } = await db.execute({ statements: init })
+  if (changes === -1) throw new Error(`can't run DB migrations: ${message}`)
 
-  const { values } = await db.query({ statement: `SELECT count() FROM migrations;` });
-  const currentVersion = parseInt(values[0]['count()'])
+  const { values } = await db.query({
+    statement: `SELECT count() FROM migrations;`,
+  })
+  const currentVersion = parseInt(values[0]['count()'], 10)
 
   for (let v = currentVersion; v < migrations.length; v++)
-    await runMigration(db, migrations[v], v+1)
+    await runMigration(db, migrations[v], v + 1)
 }
 
-async function runMigration (db: CapacitorSQLitePlugin, migration: string, targetVersion: number) {
+async function runMigration(
+  db: CapacitorSQLitePlugin,
+  migration: string,
+  targetVersion: number
+) {
   const set = [
     {
       statement: 'INSERT INTO migrations (version, up) VALUES (?, ?);',
-      values: [targetVersion, migration]
+      values: [targetVersion, migration],
     },
-    ...migration.split(';')
-      .map(s => s.trim())
-      .filter(s => !!s)
-      .map(statement => ({ statement, values: [] })),
+    ...migration
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => !!s)
+      .map((statement) => ({ statement, values: [] })),
   ]
 
-  const { changes: { changes }, message } = await db.executeSet({ set })
+  const {
+    changes: { changes },
+    message,
+  } = await db.executeSet({ set })
   if (changes === -1)
     throw new Error(`DB migration to v${targetVersion} failed: ${message}`)
 }
