@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { CapacitorSQLite } from '@capacitor-community/sqlite'
+import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import {
@@ -131,13 +131,8 @@ export class TrajectoryService {
     const { result, message } = await this.db.open({ database: 'trajectories' })
     if (!result) throw new Error(`unable to open DB: ${message}`)
 
-    const { changes: { changes }, message: msg } = await this.db.execute({
-      statements: DBSCHEMA,
-    })
-    if (changes === -1)
-      throw new Error(`db init failed: ${msg}`)
-
-    // this.insertDemoTrajectories()
+    await runMigrations(this.db, MIGRATIONS)
+    // await this.insertDemoTrajectories()
   }
 
   // private async insertDemoTrajectories() {
@@ -155,23 +150,53 @@ export class TrajectoryService {
   // }
 }
 
-const DBSCHEMA = `
-  CREATE TABLE IF NOT EXISTS \`trajectories\` (
-    \`id\` varchar(255) NOT NULL PRIMARY KEY,
-    \`placename\` varchar(255)
-  );
+const MIGRATIONS = [
+  `CREATE TABLE IF NOT EXISTS trajectories (
+    id varchar(255) NOT NULL PRIMARY KEY,
+    placename varchar(255));
+  CREATE TABLE IF NOT EXISTS points (
+    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    trajectory varchar(255),
+    lon float,
+    lat float,
+    time datetime,
+    FOREIGN KEY(trajectory) REFERENCES trajectories(id));
+  CREATE INDEX IF NOT EXISTS points_trajectory_time_index ON points (
+    trajectory,
+    time);`,
 
-  CREATE TABLE IF NOT EXISTS \`points\` (
-    \`id\` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-    \`trajectory\` varchar(255),
-    \`lon\` float,
-    \`lat\` float,
-    \`time\` datetime,
-    FOREIGN KEY(\`trajectory\`) REFERENCES \`trajectories\`(\`id\`)
-  );
+]
 
-  CREATE INDEX IF NOT EXISTS\`points_trajectory_time_index\` ON \`points\` (
-    \`trajectory\`,
-    \`time\`
-    );
-`
+
+async function runMigrations (db: CapacitorSQLitePlugin, migrations: string[]) {
+  const init = `CREATE TABLE IF NOT EXISTS migrations (
+    version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    up TEXT NOT NULL,
+    down TEXT);`
+  const { changes: { changes }, message } = await db.execute({ statements: init })
+  if (changes === -1)
+    throw new Error(`can't run DB migrations: ${message}`)
+
+  const { values } = await db.query({ statement: `SELECT count() FROM migrations;` });
+  const currentVersion = parseInt(values[0]['count()'])
+
+  for (let v = currentVersion; v < migrations.length; v++)
+    await runMigration(db, migrations[v], v+1)
+}
+
+async function runMigration (db: CapacitorSQLitePlugin, migration: string, targetVersion: number) {
+  const set = [
+    {
+      statement: 'INSERT INTO migrations (version, up) VALUES (?, ?);',
+      values: [targetVersion, migration]
+    },
+    ...migration.split(';')
+      .map(s => s.trim())
+      .filter(s => !!s)
+      .map(statement => ({ statement, values: [] })),
+  ]
+
+  const { changes: { changes }, message } = await db.executeSet({ set })
+  if (changes === -1)
+    throw new Error(`DB migration to v${targetVersion} failed: ${message}`)
+}
