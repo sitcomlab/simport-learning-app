@@ -151,40 +151,24 @@ export class TrajectoryService {
 }
 
 const MIGRATIONS = [
+  // drop database schema from before migrations introduction
+  `DROP TABLE IF EXISTS trajectories;
+  DROP TABLE IF EXISTS points; `,
+
   // initial schema: trajectories & points table
   `CREATE TABLE IF NOT EXISTS trajectories (
     id varchar(255) NOT NULL PRIMARY KEY,
-    placename varchar(255));
+    durationDays FLOAT NULL,
+    placename TEXT,
+    type TEXT CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import");
   CREATE TABLE IF NOT EXISTS points (
-    id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-    trajectory varchar(255),
-    lon float,
-    lat float,
-    time datetime,
-    FOREIGN KEY(trajectory) REFERENCES trajectories(id));
-  CREATE INDEX IF NOT EXISTS points_trajectory_time_index ON points (
-    trajectory,
-    time);`,
-
-  // add type & durationDays column to trajectories
-  `ALTER TABLE trajectories ADD COLUMN
-    type varchar(20) CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import";
-  ALTER TABLE trajectories ADD COLUMN
-    durationDays float NULL;`,
-
-  // add accuracy column to points, change primary key to (trajectory,time)
-  `CREATE TABLE points_new (
     trajectory TEXT NOT NULL,
     time datetime NOT NULL,
     lat float NOT NULL,
     lon float NOT NULL,
     accuracy float,
     PRIMARY KEY (trajectory, time),
-    FOREIGN KEY (trajectory) REFERENCES trajectories(id));
-  INSERT INTO points_new (trajectory, time, lat, lon)
-    SELECT trajectory, time, lat, lon FROM points;
-  DROP TABLE points;
-  ALTER TABLE points_new RENAME TO points;`,
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id));`,
 ]
 
 async function runMigrations(db: CapacitorSQLitePlugin, migrations: string[]) {
