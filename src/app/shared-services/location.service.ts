@@ -9,7 +9,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
-import { TrajectoryService } from './trajectory.service'
+import { SqliteService } from './db/sqlite.service'
 
 const TRACKING_TRAJ_ID = 'user'
 
@@ -32,7 +32,7 @@ export class LocationService implements OnDestroy {
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
     private localNotifications: LocalNotifications,
-    private trajectories: TrajectoryService
+    private db: SqliteService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -91,7 +91,7 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy }) => {
-        await this.trajectories.upsertPoint(TRACKING_TRAJ_ID, {
+        await this.db.upsertPoint(TRACKING_TRAJ_ID, {
           latLng: [latitude, longitude],
           time: new Date(),
           accuracy,
@@ -109,7 +109,7 @@ export class LocationService implements OnDestroy {
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
         try {
-          await this.trajectories.upsertTrajectory(
+          await this.db.upsertTrajectory(
             new Trajectory({
               id: TRACKING_TRAJ_ID,
               type: TrajectoryType.USERTRACK,
