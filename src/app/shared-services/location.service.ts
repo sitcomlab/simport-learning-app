@@ -8,6 +8,10 @@ import {
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
+import { Trajectory, TrajectoryType } from '../model/trajectory'
+import { TrajectoryService } from './trajectory.service'
+
+const TRACKING_TRAJ_ID = 'user'
 
 @Injectable()
 export class LocationService implements OnDestroy {
@@ -27,7 +31,8 @@ export class LocationService implements OnDestroy {
   constructor(
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
-    private localNotifications: LocalNotifications
+    private localNotifications: LocalNotifications,
+    private trajectories: TrajectoryService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -85,7 +90,13 @@ export class LocationService implements OnDestroy {
   private subscribeToLocationUpdates() {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
-      .subscribe(({ latitude, longitude, accuracy }) => {
+      .subscribe(async ({ latitude, longitude, accuracy }) => {
+        await this.trajectories.upsertPoint(TRACKING_TRAJ_ID, {
+          latLng: [latitude, longitude],
+          time: new Date(),
+          accuracy,
+        })
+
         this.scheduleNotification(
           `Received location update ${latitude} ${longitude} ${accuracy}`
         )
@@ -96,7 +107,19 @@ export class LocationService implements OnDestroy {
   private subscribeToStartStopEvents() {
     this.startEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.start)
-      .subscribe(() => {
+      .subscribe(async () => {
+        try {
+          await this.trajectories.upsertTrajectory(
+            new Trajectory({
+              id: TRACKING_TRAJ_ID,
+              type: TrajectoryType.USERTRACK,
+              placename: 'Your Trajectory',
+            })
+          )
+        } catch (err) {
+          console.error(err)
+        }
+
         this.isRunning.next(true)
         this.scheduleNotification('Background location started.')
       })
