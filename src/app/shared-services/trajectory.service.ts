@@ -6,9 +6,11 @@ import {
 } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
+import * as moment from 'moment'
 import { combineLatest, from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
+  Point,
   Trajectory,
   TrajectoryData,
   TrajectoryMeta,
@@ -82,6 +84,72 @@ export class TrajectoryService {
 
       default:
         return from(this.getOneFromDb(id))
+    }
+  }
+
+  async upsertTrajectory(t: Trajectory): Promise<void> {
+    const { id, type, placename, durationDays } = t
+    await this.dbReady
+
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run({
+      statement:
+        'INSERT OR REPLACE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
+      values: [id, type, placename, durationDays],
+    })
+    if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
+
+    if (t.coordinates.length) {
+      const pointsQuery = 'INSERT OR REPLACE INTO points VALUES '
+      const pointsValues = t.points
+        .map(
+          ({ time, accuracy, latLng: [lat, lon] }) =>
+            `(${t.id},${time.toISOString()},${lon},${lat},${
+              accuracy || 'NULL'
+            })`
+        )
+        .join(', ')
+      const {
+        changes: { changes: ch2 },
+        message: m2,
+      } = await this.db.run({
+        statement: `${pointsQuery} ${pointsValues};`,
+      })
+      if (ch2 === -1) throw new Error(`couldnt insert trajectory: ${m2}`)
+    }
+  }
+
+  async upsertPoint(trajectoryId: string, p: Point): Promise<void> {
+    const time = p.time || new Date()
+
+    // insert new point
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run({
+      statement: 'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?)',
+      values: [trajectoryId, time.toISOString(), ...p.latLng, p.accuracy],
+    })
+    if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
+
+    // update durationDays of trajectory
+    const {
+      values: [firstPoint],
+    } = await this.db.query({
+      statement:
+        'SELECT time FROM points WHERE trajectory = ? ORDER BY TIME LIMIT 1;',
+      values: [trajectoryId],
+    })
+
+    if (firstPoint) {
+      const durationDays =
+        moment(time).diff(moment(firstPoint.time), 'minutes') / 1440
+      await this.db.run({
+        statement: 'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
+        values: [durationDays, trajectoryId],
+      })
     }
   }
 
