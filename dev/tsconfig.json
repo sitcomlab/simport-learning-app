@@ -1,0 +1,13 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "target": "es2015",
+    "lib": ["es2018", "dom"],
+    "types": ["node"]
+  }
+}
