@@ -93,7 +93,7 @@ export class TrajectoryService {
     // TODO: make this a reactive observable?
     await this.dbReady
     const { values } = await this.db.query({
-      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time FROM trajectories AS t
+      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -109,12 +109,13 @@ export class TrajectoryService {
       // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
-        (d, { lon, lat, time }) => {
-          d.coordinates.push([lat, lon])
+        (d, { lon, lat, time, accuracy }) => {
           d.timestamps.push(new Date(time))
+          d.coordinates.push([lat, lon])
+          d.accuracy.push(accuracy)
           return d
         },
-        { coordinates: [], timestamps: [] }
+        { coordinates: [], timestamps: [], accuracy: [] }
       )
 
     return new Trajectory(meta, data)
@@ -150,6 +151,7 @@ export class TrajectoryService {
 }
 
 const MIGRATIONS = [
+  // initial schema: trajectories & points table
   `CREATE TABLE IF NOT EXISTS trajectories (
     id varchar(255) NOT NULL PRIMARY KEY,
     placename varchar(255));
@@ -164,10 +166,25 @@ const MIGRATIONS = [
     trajectory,
     time);`,
 
+  // add type & durationDays column to trajectories
   `ALTER TABLE trajectories ADD COLUMN
     type varchar(20) CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import";
   ALTER TABLE trajectories ADD COLUMN
     durationDays float NULL;`,
+
+  // add accuracy column to points, change primary key to (trajectory,time)
+  `CREATE TABLE points_new (
+    trajectory TEXT NOT NULL,
+    time datetime NOT NULL,
+    lat float NOT NULL,
+    lon float NOT NULL,
+    accuracy float,
+    PRIMARY KEY (trajectory, time),
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id));
+  INSERT INTO points_new (trajectory, time, lat, lon)
+    SELECT trajectory, time, lat, lon FROM points;
+  DROP TABLE points;
+  ALTER TABLE points_new RENAME TO points;`,
 ]
 
 async function runMigrations(db: CapacitorSQLitePlugin, migrations: string[]) {

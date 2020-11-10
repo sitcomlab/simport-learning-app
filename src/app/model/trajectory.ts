@@ -16,6 +16,13 @@ export interface TrajectoryMeta {
 export interface TrajectoryData {
   coordinates: [number, number][]
   timestamps: Date[]
+  accuracy?: number[]
+}
+
+export interface Point {
+  latLng: [number, number]
+  time?: Date
+  accuracy?: number
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
@@ -42,7 +49,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     if (ts?.length) {
       const t1 = moment(ts[0])
       const t2 = moment(ts[ts.length - 1])
-      return t1.diff(t2, 'days')
+      return t1.diff(t2, 'minutes') / 1440
     }
     // fall back to stored value
     return this.meta.durationDays || 0
@@ -55,22 +62,30 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   get timestamps() {
     return this.data?.timestamps || []
   }
+  get accuracy() {
+    return this.data?.accuracy || []
+  }
 
   get durationString() {
     return moment.duration(this.durationDays, 'days').humanize()
   }
 
-  get points(): [number, number, Date][] {
-    const points = []
+  get points(): Point[] {
+    const points: Point[] = []
     const n = this.data?.coordinates.length || 0
     for (let i = 0; i < n; i++) {
-      points.push([...this.data.coordinates[i], this.data.timestamps[i]])
+      points.push({
+        latLng: this.data.coordinates[i],
+        accuracy: this.data.accuracy[i],
+        time: this.data.timestamps[i],
+      })
     }
     return points
   }
 
-  addPoint(latLng: [number, number], time?: Date) {
-    this.coordinates.push(latLng)
-    this.timestamps.push(time || new Date())
+  addPoint({ latLng, time, accuracy }: Point) {
+    this.data.coordinates.push(latLng)
+    this.data.accuracy.push(accuracy)
+    this.data.timestamps.push(time || new Date())
   }
 }
