@@ -1,4 +1,5 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core'
+import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
+import { Platform } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { LocationService } from '../shared-services/location.service'
 
@@ -7,12 +8,16 @@ import { LocationService } from '../shared-services/location.service'
   templateUrl: './tracking.page.html',
   styleUrls: ['./tracking.page.scss'],
 })
-export class TrackingPage implements OnInit {
+export class TrackingPage implements OnInit, OnDestroy {
   @Input() state: string
 
   private locationServiceSubscription: Subscription
 
-  constructor(private zone: NgZone, private locationService: LocationService) {}
+  constructor(
+    private zone: NgZone,
+    public platform: Platform,
+    private locationService: LocationService
+  ) {}
 
   ngOnInit() {
     this.setState('Waiting...')

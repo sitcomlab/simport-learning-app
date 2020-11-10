@@ -21,6 +21,11 @@
         <ion-note *ngIf="!locationService.isSupportedPlatform">
           This platform doesn't support background location tracking
         </ion-note>
+        <ion-note *ngIf="platform.is('android')">
+          In order for this app to work correctly, you should disable battery
+          optimizations in the settings for this app. For more information check
+          <a href="https://dontkillmyapp.com">this site</a>.
+        </ion-note>
       </ion-col>
     </ion-row>
   </ion-grid>
