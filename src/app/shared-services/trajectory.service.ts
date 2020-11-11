@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
+import * as polyline from '@mapbox/polyline'
 import { combineLatest, from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
@@ -52,9 +53,23 @@ export class TrajectoryService {
   getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
     switch (type) {
       case TrajectoryType.EXAMPLE:
-        const getData = this.http.get<Trajectory>(
-          `assets/trajectories/${id}.json`
-        )
+        const getData = this.http
+          .get<{ coordinates: string; timestamps: number[]; time0: string }>(
+            `assets/trajectories/${id}.json`
+          )
+          .pipe(
+            map(({ coordinates, timestamps, time0 }) => ({
+              coordinates: polyline.decode(coordinates) as [number, number][],
+              timestamps: timestamps.reduce<Date[]>((ts, t, i, deltas) => {
+                if (i === 0) ts.push(new Date(time0))
+                const t1 = ts[i]
+                const deltaMs = deltas[i] * 1000
+                ts.push(new Date(t1.getTime() + deltaMs))
+                return ts
+              }, []),
+            }))
+          )
+
         const getMeta = this.http
           .get<TrajectoryMeta[]>('assets/trajectories/index.json')
           .pipe(map((ts) => ts.find((t) => t.id === id)))

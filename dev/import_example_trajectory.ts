@@ -3,8 +3,8 @@
 
 const USAGE = `ts-node --dir dev import_example_trajectory.ts <gpx-or-geojson-file> <placename>`
 
+import * as polyline from '@mapbox/polyline'
 import * as fs from 'fs'
-// @ts-ignore
 import * as GPX from 'gpx-parse'
 import * as path from 'path'
 import { Trajectory, TrajectoryType } from '../src/app/model/trajectory'
@@ -73,17 +73,38 @@ function getParser(extension: string): Parser {
   }
 }
 
+// optimize for storage size:
+// - coords as with google polyline encoding is almost optimal (apart from further general purpose compression)
+// - similarly, we don't store full timestamps, but only the difference between each.
+function encodeData(t: Trajectory) {
+  const coordinates = polyline.encode(t.coordinates)
+  const timestamps = t.timestamps.reduce<number[]>((res, t, i, ts) => {
+    if (i === 0) return res
+    const t1 = new Date(ts[i - 1])
+    const t2 = new Date(ts[i])
+    const seconds = Math.round((+t2 - +t1) / 1000)
+    res.push(seconds)
+    return res
+  }, [])
+
+  return JSON.stringify({
+    coordinates,
+    timestamps,
+    time0: t.timestamps[0],
+    timeN: t.timestamps[t.timestamps.length - 1],
+  })
+}
+
 function addToExamples(t: Trajectory) {
   const dir = path.resolve(__dirname, '../src/assets/trajectories')
   const indexPath = `${dir}/index.json`
+
   const index = JSON.parse(fs.readFileSync(indexPath, { encoding: 'utf-8' }))
-  const { id, placename, type, durationDays, coordinates, timestamps } = t
+  const { id, placename, type, durationDays } = t
   index.push({ id, type, placename, durationDays })
   fs.writeFileSync(indexPath, JSON.stringify(index, null, 2))
-  fs.writeFileSync(
-    `${dir}/${t.id}.json`,
-    JSON.stringify({ coordinates, timestamps })
-  )
+
+  fs.writeFileSync(`${dir}/${t.id}.json`, encodeData(t))
 }
 
 async function main() {
@@ -95,7 +116,6 @@ async function main() {
   const parser = getParser(ext)
   const traj = await parser(id, placename, content)
 
-  // TODO: format into internal json format
   addToExamples(traj)
 }
 
