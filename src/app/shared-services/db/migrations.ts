@@ -16,6 +16,7 @@ export async function runMigrations(
 
   const { values } = await db.query({
     statement: `SELECT count() FROM migrations;`,
+    values: [],
   })
   const currentVersion = parseInt(values[0]['count()'], 10)
 
