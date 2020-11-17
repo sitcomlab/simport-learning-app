@@ -66,19 +66,6 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     return this.data?.accuracy || []
   }
 
-  get points(): Point[] {
-    const points: Point[] = []
-    const n = this.data?.coordinates.length || 0
-    for (let i = 0; i < n; i++) {
-      points.push({
-        latLng: this.data.coordinates[i],
-        accuracy: this.data.accuracy[i],
-        time: this.data.timestamps[i],
-      })
-    }
-    return points
-  }
-
   addPoint({ latLng, time, accuracy }: Point) {
     this.data.coordinates.push(latLng)
     this.data.accuracy.push(accuracy)
