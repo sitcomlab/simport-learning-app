@@ -19,7 +19,7 @@ export class SqliteService {
   constructor(private platform: Platform) {}
 
   isSupported() {
-    return this.platform.is('hybrid')
+    return this.platform.is('hybrid') // equivalent to android && ios
   }
 
   private ensureDbReady() {
@@ -31,9 +31,6 @@ export class SqliteService {
   }
 
   private async initDb() {
-    if (!this.isSupported())
-      throw new Error('DB only supported on Android or iOS')
-
     if (this.platform.is('android')) await CapacitorSQLite.requestPermissions()
 
     // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)

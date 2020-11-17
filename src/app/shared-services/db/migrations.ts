@@ -14,10 +14,10 @@ export async function runMigrations(
   if (changes === -1) throw new Error(`can't run DB migrations: ${message}`)
 
   const { values } = await db.query({
-    statement: `SELECT count() FROM migrations;`,
+    statement: `SELECT version FROM migrations ORDER BY version DESC LIMIT 1;`,
     values: [],
   })
-  const currentVersion = parseInt(values[0]['count()'], 10)
+  const currentVersion = parseInt(values[0].version, 10)
 
   for (let v = currentVersion; v < migrations.length; v++)
     await runMigration(db, migrations[v], v + 1)
