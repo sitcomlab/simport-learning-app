@@ -52,7 +52,7 @@ function getParser(extension: string): Parser {
     case 'geojson':
       return async (id, placename, input) => {
         const json = JSON.parse(input)
-        if (json.type !== 'Feature' && json.geometry?.type !== 'Polyline')
+        if (json.type !== 'Feature' || json.geometry.type !== 'Polyline')
           throw new Error('expected GeoJSON Feature<Polyline>')
         if (Array.isArray(json.properties?.timestamps))
           throw new Error('expected timestamps array in properties')

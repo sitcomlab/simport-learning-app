@@ -6,8 +6,7 @@ export async function runMigrations(
 ) {
   const init = `CREATE TABLE IF NOT EXISTS migrations (
     version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-    up TEXT NOT NULL,
-    down TEXT);`
+    up TEXT NOT NULL);`
   const {
     changes: { changes },
     message,
@@ -29,15 +28,17 @@ export async function runMigration(
   migration: string,
   targetVersion: number
 ) {
+  // run migration as transaction
   const set = [
     {
       statement: 'INSERT INTO migrations (version, up) VALUES (?, ?);',
       values: [targetVersion, migration],
     },
+    // separate sql statements from migration
     ...migration
       .split(';')
-      .map((s) => s.trim())
-      .filter((s) => !!s)
+      .map((statement) => statement.trim())
+      .filter((statement) => !!statement)
       .map((statement) => ({ statement, values: [] })),
   ]
 

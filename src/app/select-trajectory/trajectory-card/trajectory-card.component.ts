@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { Trajectory } from 'src/app/model/trajectory'
+import * as moment from 'moment'
+import { TrajectoryMeta } from 'src/app/model/trajectory'
 
 @Component({
   selector: 'app-trajectory-card',
@@ -7,9 +8,14 @@ import { Trajectory } from 'src/app/model/trajectory'
   styleUrls: ['./trajectory-card.component.scss'],
 })
 export class TrajectoryCardComponent implements OnInit {
-  @Input() trajectory: Trajectory
+  @Input() trajectory: TrajectoryMeta
 
   constructor() {}
 
   ngOnInit() {}
+
+  durationString() {
+    const days = this.trajectory.durationDays
+    return days ? moment.duration(days, 'days').humanize() : '—'
+  }
 }
