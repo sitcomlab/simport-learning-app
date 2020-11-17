@@ -85,36 +85,38 @@ export class SqliteService {
     const { id, type, placename, durationDays } = t
     await this.ensureDbReady()
 
-    // insert or update trajectory
+    const set = [
+      {
+        // insert or update trajectory
+        statement:
+          'INSERT OR REPLACE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
+        values: [id, type, placename, durationDays],
+      },
+    ]
+
+    // insert or update new points query
+    const numPoints = t.coordinates.length
+    if (numPoints) {
+      // construct query & values array
+      const placeholders = []
+      const values = []
+      for (let i = 0; i < numPoints; i++) {
+        const time = t.timestamps[i].toISOString()
+        const [lat, lon] = t.coordinates[i]
+        const accuracy = t.accuracy[i]
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(t.id, time, lat, lon, accuracy)
+      }
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
+      set.push({ statement, values })
+    }
+
     const {
       changes: { changes },
       message,
-    } = await this.db.run({
-      statement:
-        'INSERT OR REPLACE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
-      values: [id, type, placename, durationDays],
-    })
+    } = await this.db.executeSet({ set })
     if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
-
-    // insert or update new points.
-    if (t.coordinates.length) {
-      const pointsQuery = 'INSERT OR REPLACE INTO points VALUES '
-      const pointsValues = t.points
-        .map(
-          ({ time, accuracy, latLng: [lat, lon] }) =>
-            `(${t.id},${time.toISOString()},${lon},${lat},${
-              accuracy || 'NULL'
-            })`
-        )
-        .join(', ')
-      const {
-        changes: { changes: ch2 },
-        message: m2,
-      } = await this.db.run({
-        statement: `${pointsQuery} ${pointsValues};`,
-      })
-      if (ch2 === -1) throw new Error(`couldnt insert trajectory: ${m2}`)
-    }
   }
 
   async upsertPoint(trajectoryId: string, p: Point): Promise<void> {
