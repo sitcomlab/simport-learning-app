@@ -43,14 +43,14 @@ export class SqliteService {
     await runMigrations(this.db, MIGRATIONS)
   }
 
-  async getAllTrajectoryMeta() {
+  async getAllTrajectoryMeta(): Promise<TrajectoryMeta[]> {
     await this.ensureDbReady()
     const statement = `SELECT * FROM trajectories;`
     const { values } = await this.db.query({ statement })
-    return values.map((v) => new Trajectory(v))
+    return values
   }
 
-  async getFullTrajectory(id: string) {
+  async getFullTrajectory(id: string): Promise<Trajectory> {
     await this.ensureDbReady()
     const { values } = await this.db.query({
       statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy FROM trajectories AS t
@@ -141,8 +141,11 @@ export class SqliteService {
     })
 
     if (firstPoint) {
-      const durationDays =
-        moment(time).diff(moment(firstPoint.time), 'minutes') / 1440
+      const durationDays = moment(time).diff(
+        moment(firstPoint.time),
+        'days',
+        true
+      )
       await this.db.run({
         statement: 'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
         values: [durationDays, trajectoryId],

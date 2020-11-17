@@ -26,7 +26,7 @@ import { SqliteService } from './db/sqlite.service'
 export class TrajectoryService {
   constructor(private http: HttpClient, private db: SqliteService) {}
 
-  // Returns an observable yielding metadata of all available trajectory metadata
+  // Returns an observable yielding metadata of all available trajectories
   getAllMeta(): Observable<TrajectoryMeta[]> {
     // yield on each source update, once all sources have yielded once.
     return combineLatest([this.getReadonlyMeta(), this.getWritableMeta()]).pipe(
@@ -43,9 +43,7 @@ export class TrajectoryService {
 
   // returns metadata of all included example (readonly) trajectories
   getReadonlyMeta(): Observable<TrajectoryMeta[]> {
-    return this.http
-      .get<TrajectoryMeta[]>('assets/trajectories/index.json')
-      .pipe(map((ts) => ts.map((meta) => new Trajectory(meta))))
+    return this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
   }
 
   // Returns any trajectory data by slug. slug consists of `type/id`.
@@ -61,6 +59,9 @@ export class TrajectoryService {
             map(({ coordinates, timestamps, time0 }) => ({
               coordinates: polyline.decode(coordinates) as [number, number][],
               timestamps: timestamps.reduce<Date[]>((ts, t, i, deltas) => {
+                // The array from the JSON has one element less than locations,
+                // as it contains time deltas. To restore absolute dates, we add
+                // the first timestamp & in the same iteration also add the first delta
                 if (i === 0) ts.push(new Date(time0))
                 const t1 = ts[i]
                 const deltaMs = deltas[i] * 1000

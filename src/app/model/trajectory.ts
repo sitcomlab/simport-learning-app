@@ -49,7 +49,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     if (ts?.length) {
       const t1 = moment(ts[0])
       const t2 = moment(ts[ts.length - 1])
-      return t1.diff(t2, 'minutes') / 1440
+      return t2.diff(t1, 'days', true)
     }
     // fall back to stored value
     return this.meta.durationDays || 0
@@ -64,10 +64,6 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   }
   get accuracy() {
     return this.data?.accuracy || []
-  }
-
-  get durationString() {
-    return moment.duration(this.durationDays, 'days').humanize()
   }
 
   get points(): Point[] {
