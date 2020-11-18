@@ -17,7 +17,7 @@ export async function runMigrations(
     statement: `SELECT version FROM migrations ORDER BY version DESC LIMIT 1;`,
     values: [],
   })
-  const currentVersion = parseInt(values[0].version, 10)
+  const currentVersion = values.length ? parseInt(values[0].version, 10) : 0
 
   for (let v = currentVersion; v < migrations.length; v++)
     await runMigration(db, migrations[v], v + 1)
