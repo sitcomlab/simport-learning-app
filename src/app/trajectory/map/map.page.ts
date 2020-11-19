@@ -57,6 +57,7 @@ export class MapPage implements OnInit, OnDestroy {
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
         this.mapBounds = this.polyline.getBounds()
+        this.map?.invalidateSize()
       })
 
     this.addInferenceMarkers(this.inferences.getInferences(trajectoryId))
