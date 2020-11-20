@@ -64,3 +64,6 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// see https://github.com/Wykks/ngx-mapbox-gl
+(window as any).global = window;

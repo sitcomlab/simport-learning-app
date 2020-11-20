@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-title>Tracking</ion-title>
   </ion-toolbar>
@@ -29,5 +29,26 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <div style="white-space: pre-wrap">{{eventText}}</div>
+  <ion-card>
+    <mgl-map
+      [style]="'mapbox://styles/mapbox/streets-v9'"
+      [zoom]="[12]"
+      [center]="center"
+      (load)="onMapLoad($event)"
+    >
+      <mgl-geojson-source id="coordinates">
+        <mgl-feature [geometry]="geometry"> </mgl-feature>
+      </mgl-geojson-source>
+      <mgl-layer
+        id="coordinates"
+        type="circle"
+        source="coordinates"
+        [paint]="{
+          'circle-color': '#800080',
+          'circle-radius': 4
+        }"
+      >
+      </mgl-layer>
+    </mgl-map>
+  </ion-card>
 </ion-content>

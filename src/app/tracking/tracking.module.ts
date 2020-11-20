@@ -6,6 +6,8 @@ import { IonicModule } from '@ionic/angular'
 import { TrackingPageRoutingModule } from './tracking-routing.module'
 import { TrackingPage } from './tracking.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { NgxMapboxGLModule } from 'ngx-mapbox-gl'
+import { environment } from 'src/environments/environment'
 
 @NgModule({
   imports: [
@@ -14,6 +16,9 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     IonicModule,
     TrackingPageRoutingModule,
     SharedUiModule,
+    NgxMapboxGLModule.withConfig({
+      accessToken: environment.mapboxAccessToken, // Optional, can also be set per map (accessToken input of mgl-map)
+    }),
   ],
   declarations: [TrackingPage],
 })
