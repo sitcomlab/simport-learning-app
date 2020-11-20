@@ -126,9 +126,16 @@ export class SqliteService {
       message,
     } = await this.db.run({
       statement: 'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?)',
-      values: [trajectoryId, time.toISOString(), ...p.latLng, p.accuracy],
+      // IDK why but with iOS simulator it was not possible to run this without .toFixed()
+      values: [
+        trajectoryId,
+        time.toISOString(),
+        p.latLng[1].toFixed(8),
+        p.latLng[0].toFixed(8),
+        p.accuracy,
+      ],
     })
-    if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
+    if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
 
     // update durationDays of trajectory
     const {
