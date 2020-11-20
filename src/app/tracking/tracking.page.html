@@ -31,7 +31,7 @@
   </ion-grid>
   <ion-card>
     <mgl-map
-      [style]="'mapbox://styles/mapbox/streets-v9'"
+      [style]="'mapbox://styles/mapbox/light-v9'"
       [zoom]="[12]"
       [center]="center"
       (load)="onMapLoad($event)"
@@ -44,7 +44,7 @@
         type="circle"
         source="coordinates"
         [paint]="{
-          'circle-color': '#800080',
+          'circle-color': '#3880ff',
           'circle-radius': 4
         }"
       >
