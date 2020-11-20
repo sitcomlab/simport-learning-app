@@ -130,8 +130,8 @@ export class SqliteService {
       values: [
         trajectoryId,
         time.toISOString(),
-        p.latLng[1].toFixed(8),
         p.latLng[0].toFixed(8),
+        p.latLng[1].toFixed(8),
         p.accuracy,
       ],
     })

@@ -46,9 +46,14 @@ export class TrackingPage implements OnInit, OnDestroy {
       .getOne(TrajectoryType.USERTRACK, 'user')
       .subscribe((trajecotry) => {
         if (trajecotry.coordinates.length > 0) {
-          this.geometry.coordinates = trajecotry.coordinates
-          this.center =
-            trajecotry.coordinates[trajecotry.coordinates.length - 1]
+          // mapbox is using lngLat coordinates ==> reverse() each pair
+          this.geometry.coordinates = trajecotry.coordinates.map((c) =>
+            c.reverse()
+          )
+          const lastCoord = this.geometry.coordinates[
+            this.geometry.coordinates.length - 1
+          ]
+          this.center = lastCoord
         }
       })
   }
