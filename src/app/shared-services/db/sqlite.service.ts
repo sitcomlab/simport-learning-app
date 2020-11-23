@@ -43,7 +43,7 @@ export class SqliteService {
   async getAllTrajectoryMeta(): Promise<TrajectoryMeta[]> {
     await this.ensureDbReady()
     const statement = `SELECT * FROM trajectories;`
-    const { values } = await this.db.query({ statement })
+    const { values } = await this.db.query({ statement, values: [] })
     return values
   }
 
