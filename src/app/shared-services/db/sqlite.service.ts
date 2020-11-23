@@ -87,7 +87,7 @@ export class SqliteService {
         // insert or update trajectory
         statement:
           'INSERT OR REPLACE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
-        values: [id, type, placename, durationDays],
+        values: [id, type, placename, durationDays].map(normalize),
       },
     ]
 
@@ -98,7 +98,7 @@ export class SqliteService {
       const placeholders = []
       const values = []
       for (let i = 0; i < numPoints; i++) {
-        const time = t.timestamps[i].toISOString()
+        const time = t.timestamps[i]
         const [lat, lon] = t.coordinates[i]
         const accuracy = t.accuracy[i]
         placeholders.push(`(?,?,?,?,?)`)
@@ -106,7 +106,7 @@ export class SqliteService {
       }
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
-      set.push({ statement, values })
+      set.push({ statement, values: values.map(normalize) })
     }
 
     const {
@@ -126,14 +126,7 @@ export class SqliteService {
       message,
     } = await this.db.run({
       statement: 'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?)',
-      // IDK why but with iOS simulator it was not possible to run this without .toFixed()
-      values: [
-        trajectoryId,
-        time.toISOString(),
-        p.latLng[0].toFixed(8),
-        p.latLng[1].toFixed(8),
-        p.accuracy,
-      ],
+      values: [trajectoryId, time, ...p.latLng, p.accuracy].map(normalize),
     })
     if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
 
@@ -143,7 +136,7 @@ export class SqliteService {
     } = await this.db.query({
       statement:
         'SELECT time FROM points WHERE trajectory = ? ORDER BY TIME LIMIT 1;',
-      values: [trajectoryId],
+      values: [trajectoryId].map(normalize),
     })
 
     if (firstPoint) {
@@ -154,8 +147,27 @@ export class SqliteService {
       )
       await this.db.run({
         statement: 'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
-        values: [durationDays, trajectoryId],
+        values: [durationDays, trajectoryId].map(normalize),
       })
     }
   }
+}
+
+type SqlValue = Date | number | string | object
+
+// Normalize values into a format accepted by sqlite, which is not handled correctly by
+// the SqlitePlugin. There are platform-specific (sqlite-version specific?) differences.
+// Does not do sql-escaping, this is done by the sql driver.
+function normalize(v: SqlValue) {
+  if (v === undefined) return null
+
+  if (typeof v === 'string') return v
+
+  // max 8 decimals, needed on iOS (emulator at least).
+  // handle ints by dropping all trailing 0s
+  if (typeof v === 'number') return v.toFixed(8).replace(/\.?0+$/, '')
+
+  if (v instanceof Date) return v.toISOString()
+
+  if (v instanceof Object) return JSON.stringify(v)
 }
