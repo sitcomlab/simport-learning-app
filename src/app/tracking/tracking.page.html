@@ -26,6 +26,12 @@
           optimizations in the settings for this app. For more information check
           <a href="https://dontkillmyapp.com">this site</a>.
         </ion-note>
+        <app-item-card
+          *ngIf="trajectoryExists"
+          icon="compass-outline"
+          title="Explore your trajectory"
+          (click)="navigateUserTrajectory()"
+        ></app-item-card>
       </ion-col>
     </ion-row>
   </ion-grid>
