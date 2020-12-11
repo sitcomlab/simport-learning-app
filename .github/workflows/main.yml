@@ -21,8 +21,9 @@ jobs:
           cordova-version: 8
 
       - name: Build
+        working-directory: ./
         run: |
-          npm install -g @ionic/cli
+          pwd
           npm install
           ionic serve
           ionic build
