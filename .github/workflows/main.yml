@@ -28,6 +28,11 @@ jobs:
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build android --no-interactive --no-open --confirm
           
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1.0.3
+        with:
+          ndk-version: r21d
+
       - name: Run Android build
         uses: sparkfabrik/android-build-action@v1.0.0
         with:
