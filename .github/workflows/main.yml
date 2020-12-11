@@ -25,7 +25,9 @@ jobs:
 
       - name: Build Android
         run: |
-          ionic cap build android --prod --no-interactive --confirm
+          # TODO: add flag --prod (currently not building)
+          ionic cap build android --no-interactive --no-open --confirm
+          
           
       - name: Publish
         run: |
