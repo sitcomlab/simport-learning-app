@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         
       - name: Prepare ionic build
         uses: coturiv/setup-ionic@v1
@@ -39,16 +39,41 @@ jobs:
           project-path: android
           output-path: simport-learning-app.apk
           
-      - name: Publish
-        run: |
-          echo "TODO: publish"
+      - name: Archive build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: apk-artifact
+          path: simport-learning-app.apk
         
+  deploy-android:
+    needs: [build-android]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@master
+      
+      - name: Download build artifact
+        uses: actions/download-artifact@master
+        with:
+          name: apk-artifact
+          path: simport-learning-app.apk
+      
+      # TODO: add firebase secret to run this step
+      - name: Deploy to Firebase
+        run: echo "TODO"
+      #  uses: w9jds/firebase-action@master
+      #  with:
+      #    args: deploy --only hosting
+      #  env:
+      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    
   build-ios:
     runs-on: macOS-latest
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
         
       - name: Prepare ionic build
         uses: coturiv/setup-ionic@v1
@@ -58,18 +83,40 @@ jobs:
           npm install --silent
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
-          
-      - name: Run iOS build
-        uses: sparkfabrik/ios-build-action@v1.1.0
-        with:
-          project-path: ios/App/App.xcodeproj
-          workspace-path: ios/App/App.xcworkspace
-          pods-path: ios/App/Podfile
-          p12-base64: ${{ secrets.P12_BASE64 }}
-          mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
-          code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
-          team-id: ${{ secrets.TEAM_ID }}
-        
-      - name: Publish
-        run: |
-          echo "TODO: publish"
+      
+    # TODO: add keys to run this step    
+     # - name: Run iOS build
+     #   uses: sparkfabrik/ios-build-action@v1.1.0
+     #   with:
+     #     project-path: ios/App/App.xcodeproj
+     #     workspace-path: ios/App/App.xcworkspace
+     #     pods-path: ios/App/Podfile
+     #     p12-base64: ${{ secrets.P12_BASE64 }}
+     #     mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+     #     code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+     #     team-id: ${{ secrets.TEAM_ID }}
+
+  deploy-ios:
+    needs: [build-ios]
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@master
+      
+      # TODO: get build artifacts
+      - name: Download build artifact
+        run: echo "TODO"
+      #  uses: actions/download-artifact@master
+      #  with:
+      #    name: ipa-artifact
+      #    path: simport-learning-app.ipa
+      
+      # TODO: add firebase secret to run this step
+      - name: Deploy to Firebase
+        run: echo "TODO"
+      #  uses: w9jds/firebase-action@master
+      #  with:
+      #    args: deploy --only hosting
+      #  env:
+      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
