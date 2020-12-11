@@ -15,7 +15,8 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout project
+        uses: actions/checkout@v2
         
       - name: Use coturiv/setup-ionic
         uses: coturiv/setup-ionic@v1
@@ -25,7 +26,7 @@ jobs:
       - name: Build
         run: |
           npm install
-          ionic serve
+          ionic serve --no-open --no-interactive --confirm
           ionic build
           ionic cap build android --prod
           
