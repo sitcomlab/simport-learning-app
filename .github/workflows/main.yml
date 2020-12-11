@@ -19,9 +19,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Prepare ionic build
-        run: |
-          npm install npm install -g @ionic/cli
-          npm install
+        uses: coturiv/setup-ionic@v1
 
       # TODO: add flag --prod (currently not building)
       - name: Run ionic build
