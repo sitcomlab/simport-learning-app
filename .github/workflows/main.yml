@@ -18,22 +18,23 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
         
-      - name: Use coturiv/setup-ionic
+      - name: Prepare ionic build
         uses: coturiv/setup-ionic@v1
         with:
           cordova-version: 8
 
       # TODO: add flag --prod (currently not building)
-      - name: Android Ionic Build
+      - name: Run ionic build
         run: |
           ionic cap build android --no-interactive --no-open --confirm
           
-      - name: Prepare Android Gradle Build
+      - name: Prepare gradle build
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
       
-      - name: Android Gradle Build
+      - name: Run gradle build
+        working-directory: android
         run: ./gradlew build
           
       - name: Publish
