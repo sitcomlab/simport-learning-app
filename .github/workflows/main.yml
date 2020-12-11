@@ -23,11 +23,8 @@ jobs:
         with:
           cordova-version: 8
 
-      - name: Build
+      - name: Build Android
         run: |
-          npm install
-          ionic serve --no-open --no-interactive --confirm
-          ionic build
           ionic cap build android --prod
           
       - name: Publish
