@@ -24,6 +24,8 @@ jobs:
         working-directory: ./
         run: |
           pwd
+          cd ..
+          ls -lah
           npm install
           ionic serve
           ionic build
