@@ -22,6 +22,8 @@ jobs:
 
       - name: Build
         run: |
+          ionic serve
+          ionic build
           ionic cap build android --prod
           
       - name: Publish
