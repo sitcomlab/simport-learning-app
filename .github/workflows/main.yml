@@ -23,9 +23,7 @@ jobs:
       - name: Build
         working-directory: ./
         run: |
-          pwd
-          cd ..
-          ls -lah
+          mkdir -p www
           npm install
           ionic serve
           ionic build
