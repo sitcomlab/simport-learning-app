@@ -12,16 +12,16 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
         
       - name: Prepare ionic build
-        uses: coturiv/setup-ionic@v1
-        with:
-          cordova-version: 8
+        run: |
+          npm install npm install -g @ionic/cli
+          npm install
 
       # TODO: add flag --prod (currently not building)
       - name: Run ionic build
@@ -35,7 +35,9 @@ jobs:
       
       - name: Run gradle build
         working-directory: android
-        run: ./gradlew build
+        run: |
+          ./gradlew build
+          ./gradlew assembleDebug
           
       - name: Publish
         run: |
