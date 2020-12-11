@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "760522136731",
+    "project_id": "learning-tool-119f1",
+    "storage_bucket": "learning-tool-119f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760522136731:android:d33c91ac674ca02b59ba3e",
+        "android_client_info": {
+          "package_name": "de.ifgi.simport.learning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760522136731-i2ppo3sevdibic5k4m2628db8k02brsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB25Rw76p_DubY9ec7ILopbLZk0xRBW7RM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760522136731-i2ppo3sevdibic5k4m2628db8k02brsl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
