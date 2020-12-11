@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Android
         run: |
-          ionic cap build android --prod
+          ionic cap build android --prod --no-interactive --confirm
           
       - name: Publish
         run: |
