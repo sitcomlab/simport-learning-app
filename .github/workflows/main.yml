@@ -24,7 +24,7 @@ jobs:
       # TODO: add flag --prod (currently not building)
       - name: Run ionic build
         run: |
-          ionic cap update 
+          ionic cap update --no-interactive --no-open --confirm
           ionic cap build android --no-interactive --no-open --confirm
           
       - name: Run Android build
@@ -49,7 +49,7 @@ jobs:
 
       - name: Run ionic build
         run: |
-          ionic cap update 
+          ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
           
       - name: Run iOS build
