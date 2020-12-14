@@ -49,7 +49,7 @@ jobs:
         working-directory: ./android
         run: ./gradlew assembleRelease
         env:
-          ANDROID_PATH_TO_KEYSTORE: 'simport.keystore'
+          ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
           ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
