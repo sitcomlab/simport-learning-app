@@ -61,12 +61,13 @@ jobs:
       
       # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
         with:
           appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
           token: ${{secrets.FIREBASE_TOKEN}}
           groups: testers
           file: simport-learning-app.apk
+          debug: true
     
   build-ios:
     runs-on: macOS-latest
