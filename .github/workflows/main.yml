@@ -33,18 +33,18 @@ jobs:
         with:
           ndk-version: r21d
 
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - name: Setup Android keystore
         working-directory: ./android
         run: |
               echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
         env:
           ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
-
-      - name: Setup JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-  
+        
       - name: Build with Gradle
         working-directory: ./android
         run: ./gradlew assembleRelease
