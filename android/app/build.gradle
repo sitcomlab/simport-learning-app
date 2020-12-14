@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+def keystoreProperties = new Properties()
 try {
     // when building CI server, use signing properties from environment variables
-    def keystoreProperties = new Properties()
     keystoreProperties.setProperty('storePassword', System.getenv('ANDROID_KEY_STORE_PASSWORD'))
     keystoreProperties.setProperty('keyPassword', System.getenv('ANDROID_KEY_PASSWORD'))
     keystoreProperties.setProperty('keyAlias', System.getenv('ANDROID_KEY_ALIAS'))
@@ -26,14 +26,10 @@ android {
 
     signingConfigs {
         release {
-            try {
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-            } catch (Exception e) {
-                logger.warn("No keyStore or passwords set, build of release-apk will fail.")
-            }
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
         }
     }
 
