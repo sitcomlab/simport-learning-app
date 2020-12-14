@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: apk-artifact
-          path: ./
+          path: simport-learning-app.apk
         
   deploy-android:
     needs: [build-android]
@@ -57,7 +57,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: apk-artifact
-          path: simport-learning-app.apk
+          path: ./
       
       # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
