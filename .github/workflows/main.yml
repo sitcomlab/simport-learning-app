@@ -34,6 +34,7 @@ jobs:
           ndk-version: r21d
 
       - name: Setup Android keystore
+        working-directory: ./android
         run: |
               echo $SIGNING_KEY | base64 -di > $PATH_TO_KEYSTORE
         env:
@@ -46,13 +47,14 @@ jobs:
           java-version: 1.8
   
       - name: Build with Gradle
+        working-directory: ./android
         run: ./gradlew assembleRelease
         
       - name: Archive build artifact
         uses: actions/upload-artifact@master
         with:
           name: apk-artifact
-          path: app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
         
   deploy-android:
     needs: [build-android]
