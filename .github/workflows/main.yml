@@ -33,17 +33,26 @@ jobs:
         with:
           ndk-version: r21d
 
-      - name: Run Android build
-        uses: sparkfabrik/android-build-action@v1.0.0
+      - name: Setup Android keystore
+        run: |
+              echo $SIGNING_KEY | base64 -di > $PATH_TO_KEYSTORE
+        env:
+          SIGNING_KEY: ${{ secrets.ANDROID_KEYSTORE }}
+          PATH_TO_KEYSTORE: ${{ secrets.ANDROID_PATH_TO_KEYSTORE }}
+
+      - name: Setup JDK
+        uses: actions/setup-java@v1
         with:
-          project-path: android
-          output-path: simport-learning-app.apk
-          
+          java-version: 1.8
+  
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease
+        
       - name: Archive build artifact
         uses: actions/upload-artifact@master
         with:
           name: apk-artifact
-          path: simport-learning-app.apk
+          path: app/build/outputs/apk/release/app-release.apk
         
   deploy-android:
     needs: [build-android]
@@ -66,8 +75,7 @@ jobs:
           appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
           token: ${{secrets.FIREBASE_TOKEN}}
           groups: testers
-          file: simport-learning-app.apk
-          debug: true
+          file: app-release.apk
     
   build-ios:
     runs-on: macOS-latest
