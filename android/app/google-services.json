@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:760522136731:android:d33c91ac674ca02b59ba3e",
         "android_client_info": {
-          "package_name": "de.ifgi.simport.learning"
+          "package_name": "io.ionic.starter"
         }
       },
       "oauth_client": [
