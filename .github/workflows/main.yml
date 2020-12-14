@@ -61,12 +61,13 @@ jobs:
       
       # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-        run: echo "TODO"
-      #  uses: w9jds/firebase-action@master
-      #  with:
-      #    args: deploy --only hosting
-      #  env:
-      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: testers
+          file: simport-learning-app.apk
     
   build-ios:
     runs-on: macOS-latest
