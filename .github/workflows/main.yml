@@ -61,7 +61,6 @@ jobs:
       
       # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-      - name: upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
