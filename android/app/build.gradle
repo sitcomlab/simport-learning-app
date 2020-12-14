@@ -29,7 +29,7 @@ android {
             try {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
             } catch (Exception e) {
                 logger.warn("No keyStore or passwords set, build of release-apk will fail.")
