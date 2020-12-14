@@ -57,16 +57,17 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: apk-artifact
-          path: simport-learning-app.apk
+          path: ./
       
       # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-        run: echo "TODO"
-      #  uses: w9jds/firebase-action@master
-      #  with:
-      #    args: deploy --only hosting
-      #  env:
-      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: testers
+          file: simport-learning-app.apk
+          debug: true
     
   build-ios:
     runs-on: macOS-latest
