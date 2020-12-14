@@ -12,10 +12,31 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        release {
+            try {
+                // when building CI server, use signing properties from environment variables
+                def keystoreProperties = new Properties()
+                keystoreProperties.setProperty('storePassword', System.getenv('ANDROID_KEY_STORE_PASSWORD'))
+                keystoreProperties.setProperty('keyPassword', System.getenv('ANDROID_KEY_PASSWORD'))
+                keystoreProperties.setProperty('keyAlias', System.getenv('ANDROID_KEY_ALIAS'))
+                keystoreProperties.setProperty('storeFile', System.getenv('ANDROID_PATH_TO_KEYSTORE'))
+                storePassword keystoreProperties['storePassword']
+                keyPassword keystoreProperties['keyPassword']
+                keyAlias keystoreProperties['keyAlias']
+                storeFile file(keystoreProperties['storeFile'])
+            } catch (Exception e) {
+                logger.warn("keyStore couldn't be initialized, resulting .apk may be unsigned.")
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
