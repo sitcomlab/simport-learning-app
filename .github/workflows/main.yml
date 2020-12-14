@@ -36,10 +36,9 @@ jobs:
       - name: Setup Android keystore
         working-directory: ./android
         run: |
-              echo $SIGNING_KEY | base64 -di > $PATH_TO_KEYSTORE
+              echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
         env:
-          SIGNING_KEY: ${{ secrets.ANDROID_KEYSTORE }}
-          PATH_TO_KEYSTORE: ${{ secrets.ANDROID_PATH_TO_KEYSTORE }}
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
 
       - name: Setup JDK
         uses: actions/setup-java@v1
@@ -50,7 +49,7 @@ jobs:
         working-directory: ./android
         run: ./gradlew assembleRelease
         env:
-          ANDROID_PATH_TO_KEYSTORE: ${{ secrets.ANDROID_PATH_TO_KEYSTORE }}
+          ANDROID_PATH_TO_KEYSTORE: 'simport.keystore'
           ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
