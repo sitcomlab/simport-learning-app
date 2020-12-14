@@ -5,7 +5,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     ndkVersion rootProject.ext.ndkVersion
     defaultConfig {
-        applicationId "io.ionic.starter"
+        applicationId "de.ifgi.simport.learning"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
