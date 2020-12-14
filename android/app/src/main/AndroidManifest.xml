@@ -40,6 +40,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- disable firebase analytics -->
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     </application>
 
     <!-- Permissions -->
