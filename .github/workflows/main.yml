@@ -36,10 +36,9 @@ jobs:
       - name: Setup Android keystore
         working-directory: ./android
         run: |
-              echo $SIGNING_KEY | base64 -di > $PATH_TO_KEYSTORE
+              echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
         env:
-          SIGNING_KEY: ${{ secrets.ANDROID_KEYSTORE }}
-          PATH_TO_KEYSTORE: ${{ secrets.ANDROID_PATH_TO_KEYSTORE }}
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
 
       - name: Setup JDK
         uses: actions/setup-java@v1
@@ -49,6 +48,11 @@ jobs:
       - name: Build with Gradle
         working-directory: ./android
         run: ./gradlew assembleRelease
+        env:
+          ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
+          ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         
       - name: Archive build artifact
         uses: actions/upload-artifact@master
@@ -74,8 +78,8 @@ jobs:
       - name: Deploy to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
         with:
-          appId: ${{secrets.FIREBASE_ANDROID_APP_ID}}
-          token: ${{secrets.FIREBASE_TOKEN}}
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testers
           file: app-release.apk
     
