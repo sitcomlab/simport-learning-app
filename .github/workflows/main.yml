@@ -48,7 +48,7 @@ jobs:
         
       - name: Build with Gradle
         working-directory: ./android
-        run: ./gradlew assembleRelease
+        run: ./gradlew app:assembleRelease
         env:
           ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
           ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
@@ -74,8 +74,7 @@ jobs:
         with:
           name: apk-artifact
           path: ./
-      
-      # TODO: add firebase secret to run this step
+
       - name: Deploy to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
         with:
