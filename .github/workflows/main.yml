@@ -45,6 +45,12 @@ jobs:
               ls -lah
         env:
           ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+
+      - name: Bump version
+        uses: chkfung/android-version-actions@v1.1
+        with:
+          gradlePath: ./android/app/build.gradle
+          versionCode: ${{ github.run_number }}
         
       - name: Build with Gradle
         working-directory: ./android
