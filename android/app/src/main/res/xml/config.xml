@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="de.ifgi.simport.learning"  version="1.0.0">
   <access origin="*" />
   
   <feature name="BackgroundGeolocation">
@@ -18,5 +18,4 @@
     <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
   </feature>
 
-  
 </widget>

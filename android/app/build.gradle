@@ -2,18 +2,24 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 def keystoreProperties = new Properties()
-try {
-    // when building CI server, use signing properties from environment variables
-    keystoreProperties.setProperty('storePassword', System.getenv('ANDROID_KEY_STORE_PASSWORD'))
-    keystoreProperties.setProperty('keyPassword', System.getenv('ANDROID_KEY_PASSWORD'))
-    keystoreProperties.setProperty('keyAlias', System.getenv('ANDROID_KEY_ALIAS'))
-    keystoreProperties.setProperty('storeFile', System.getenv('ANDROID_PATH_TO_KEYSTORE'))
+try {def keystorePropertiesFile = rootProject.file('key.properties')
+    if (keystorePropertiesFile.exists()) {
+        // when building locally, use signing properties from key.properties
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    } else {
+        // when building CI server, use signing properties from environment variables
+        keystoreProperties.setProperty('storePassword', System.getenv('ANDROID_KEY_STORE_PASSWORD'))
+        keystoreProperties.setProperty('keyPassword', System.getenv('ANDROID_KEY_PASSWORD'))
+        keystoreProperties.setProperty('keyAlias', System.getenv('ANDROID_KEY_ALIAS'))
+        keystoreProperties.setProperty('storeFile', System.getenv('ANDROID_PATH_TO_KEYSTORE'))
+    }
 } catch (Exception e) {
-    logger.warn("keyStore couldn't be initialized, build of release-apk will fail.")
+    logger.warn("KeyStore couldn't be initialized, build of release-apk will fail.")
 }
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     ndkVersion rootProject.ext.ndkVersion
     defaultConfig {
         applicationId "de.ifgi.simport.learning"
