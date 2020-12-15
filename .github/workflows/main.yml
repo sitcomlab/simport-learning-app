@@ -42,6 +42,7 @@ jobs:
         working-directory: ./android
         run: |
               echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
+              ls -lah
         env:
           ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
         
