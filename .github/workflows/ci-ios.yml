@@ -40,6 +40,12 @@ jobs:
           team-id: ${{ secrets.IOS_TEAM_ID }}
           export-method: "ad-hoc"
 
+      - name: Archive build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./output.ipa
+      
   deploy-ios:
     needs: [build-ios]
     runs-on: macOS-latest
@@ -48,19 +54,16 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@master
       
-      # TODO: get build artifacts
       - name: Download build artifact
-        run: echo "TODO"
-      #  uses: actions/download-artifact@master
-      #  with:
-      #    name: ipa-artifact
-      #    path: simport-learning-app.ipa
+        uses: actions/download-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./
       
-      # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-        run: echo "TODO"
-      #  uses: w9jds/firebase-action@master
-      #  with:
-      #    args: deploy --only hosting
-      #  env:
-      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: output.ipa
