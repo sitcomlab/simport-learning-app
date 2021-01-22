@@ -28,7 +28,7 @@ jobs:
           ionic cap build ios --no-interactive --no-open --confirm
   
       - name: Run iOS build
-        uses: sparkfabrik/ios-build-action@v1.1.0
+        uses: yukiarrr/ios-build-action@v1.3.2
         with:
           project-path: ./ios/App/App.xcodeproj
           workspace-path: ./ios/App/App.xcworkspace
@@ -38,6 +38,7 @@ jobs:
           mobileprovision-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
           code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
+          export-method: "ad-hoc"
 
   deploy-ios:
     needs: [build-ios]
