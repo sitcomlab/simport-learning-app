@@ -26,18 +26,18 @@ jobs:
           npm install --silent
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
-      
-    # TODO: add keys to run this step    
-     # - name: Run iOS build
-     #   uses: sparkfabrik/ios-build-action@v1.1.0
-     #   with:
-     #     project-path: ios/App/App.xcodeproj
-     #     workspace-path: ios/App/App.xcworkspace
-     #     pods-path: ios/App/Podfile
-     #     p12-base64: ${{ secrets.P12_BASE64 }}
-     #     mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
-     #     code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
-     #     team-id: ${{ secrets.TEAM_ID }}
+  
+      - name: Run iOS build
+        uses: sparkfabrik/ios-build-action@v1.1.0
+        with:
+          project-path: ./ios/App/App.xcodeproj
+          workspace-path: ./ios/App/App.xcworkspace
+          pods-path: ./ios/App/Podfile
+          p12-base64: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          certificate-password: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          mobileprovision-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
+          code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
+          team-id: ${{ secrets.IOS_TEAM_ID }}
 
   deploy-ios:
     needs: [build-ios]
