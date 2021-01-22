@@ -48,7 +48,7 @@ jobs:
       
   deploy-ios:
     needs: [build-ios]
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout project
