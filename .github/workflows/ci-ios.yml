@@ -27,6 +27,12 @@ jobs:
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
   
+      - name: Bump version
+        uses: yanamura/ios-bump-version@v1
+        with:
+          build-number: ${{ github.run_number }}
+          project-path: ./ios/App/App.xcodeproj
+  
       - name: Run iOS build
         uses: yukiarrr/ios-build-action@v1.3.2
         with:
