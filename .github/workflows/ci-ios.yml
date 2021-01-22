@@ -27,8 +27,14 @@ jobs:
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
   
+      - name: Bump version
+        uses: yanamura/ios-bump-version@master
+        with:
+          build-number: ${{ github.run_number }}
+          project-path: ios/App/App.xcodeproj
+  
       - name: Run iOS build
-        uses: sparkfabrik/ios-build-action@v1.1.0
+        uses: yukiarrr/ios-build-action@v1.3.2
         with:
           project-path: ./ios/App/App.xcodeproj
           workspace-path: ./ios/App/App.xcworkspace
@@ -38,28 +44,32 @@ jobs:
           mobileprovision-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
           code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
+          export-method: "ad-hoc"
 
+      - name: Archive build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./output.ipa
+      
   deploy-ios:
     needs: [build-ios]
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout project
         uses: actions/checkout@master
       
-      # TODO: get build artifacts
       - name: Download build artifact
-        run: echo "TODO"
-      #  uses: actions/download-artifact@master
-      #  with:
-      #    name: ipa-artifact
-      #    path: simport-learning-app.ipa
+        uses: actions/download-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./
       
-      # TODO: add firebase secret to run this step
       - name: Deploy to Firebase
-        run: echo "TODO"
-      #  uses: w9jds/firebase-action@master
-      #  with:
-      #    args: deploy --only hosting
-      #  env:
-      #    FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: output.ipa
