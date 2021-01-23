@@ -30,7 +30,7 @@ jobs:
       - name: Bump version
         run: |
           cd ios/App
-          agvtool new-version -all {{ github.run_number }}
+          agvtool new-version -all ${{ github.run_number }}
   
       - name: Run iOS build
         uses: yukiarrr/ios-build-action@v1.3.2
