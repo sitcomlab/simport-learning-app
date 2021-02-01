@@ -27,6 +27,9 @@ export class LocationService implements OnDestroy {
   private stopEventSubscription: Subscription
 
   isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  )
 
   constructor(
     private platform: Platform,
@@ -49,6 +52,10 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription.unsubscribe()
     this.startEventSubscription.unsubscribe()
     this.stopEventSubscription.unsubscribe()
+  }
+
+  enableNotifications(enabled: boolean) {
+    this.notificationsEnabled.next(enabled)
   }
 
   start() {
@@ -133,6 +140,7 @@ export class LocationService implements OnDestroy {
   }
 
   private scheduleNotification(message: string) {
+    if (this.notificationsEnabled.value == false) return
     this.localNotifications.schedule({
       id: Math.random() * 1000000,
       text: message,

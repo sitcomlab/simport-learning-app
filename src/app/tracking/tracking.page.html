@@ -18,6 +18,10 @@
           subtitle="{{state}}"
           (click)="toggleBackgroundGeoLocation()"
         ></app-item-card>
+        <ion-toggle
+          [(ngModel)]="notificationsEnabled"
+          (ionChange)="notificationToggleChanged()"
+        ></ion-toggle>
         <ion-note *ngIf="!locationService.isSupportedPlatform">
           This platform doesn't support background location tracking
         </ion-note>
