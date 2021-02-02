@@ -13,8 +13,10 @@ import { TrajectoryService } from '../shared-services/trajectory.service'
 })
 export class TrackingPage implements OnInit, OnDestroy {
   @Input() state: string
+  @Input() notificationsEnabled: boolean
 
-  private locationServiceSubscription: Subscription
+  private locationServiceStateSubscription: Subscription
+  private locationServiceNotificationToggleSubscription: Subscription
   private trajectoryServiceSubscription: Subscription
 
   private trajectoryExists: boolean
@@ -29,12 +31,16 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setState('Waiting...')
-    this.locationServiceSubscription = this.locationService.isRunning.subscribe(
+    this.locationServiceStateSubscription = this.locationService.isRunning.subscribe(
       (state) => {
         this.setState(state ? 'Running' : 'Stopped')
       }
     )
-
+    this.locationServiceNotificationToggleSubscription = this.locationService.notificationsEnabled.subscribe(
+      (enabled) => {
+        this.setNotificationToggle(enabled)
+      }
+    )
     // check if user trajectory is existent
     this.trajectoryServiceSubscription = this.trajectoryService
       .getWritableMeta()
@@ -44,7 +50,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.locationServiceSubscription.unsubscribe()
+    this.locationServiceStateSubscription.unsubscribe()
+    this.locationServiceNotificationToggleSubscription.unsubscribe()
     this.trajectoryServiceSubscription.unsubscribe()
   }
 
@@ -56,6 +63,16 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.zone.run(() => {
       this.state = state
     })
+  }
+
+  setNotificationToggle(enabled: boolean) {
+    this.zone.run(() => {
+      this.notificationsEnabled = enabled
+    })
+  }
+
+  notificationToggleChanged() {
+    this.locationService.enableNotifications(this.notificationsEnabled)
   }
 
   navigateUserTrajectory() {
