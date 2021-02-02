@@ -34,11 +34,11 @@
         ></app-item-card>
       </ion-col>
     </ion-row>
-    <ion-row>
-      <ion-col>
+    <ion-row class="ion-padding ion-justify-content-between">
+      <ion-col size="auto">
         <ion-label>Show Notifications</ion-label>
       </ion-col>
-      <ion-col>
+      <ion-col size="auto">
         <ion-toggle
           [(ngModel)]="notificationsEnabled"
           (ionChange)="notificationToggleChanged()"
