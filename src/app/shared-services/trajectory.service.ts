@@ -88,6 +88,10 @@ export class TrajectoryService {
     return this.db.upsertTrajectory(t)
   }
 
+  deleteTrajectory(t: TrajectoryMeta) {
+    return this.db.deleteTrajectory(t)
+  }
+
   addPoint(trajectoryId: string, p: Point) {
     return this.db.upsertPoint(trajectoryId, p)
   }

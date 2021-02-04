@@ -68,5 +68,5 @@ export const MIGRATIONS = [
     lon float NOT NULL,
     accuracy float,
     PRIMARY KEY (trajectory, time),
-    FOREIGN KEY (trajectory) REFERENCES trajectories(id));`,
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 ]
