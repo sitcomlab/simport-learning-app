@@ -151,6 +151,13 @@ export class SqliteService {
       })
     }
   }
+
+  async deleteTrajectory(t: TrajectoryMeta): Promise<void> {
+    await this.ensureDbReady()
+    const statement = `DELETE  FROM trajectories WHERE id = '${t.id}';`
+    const { changes, message } = await this.db.run({ statement, values: [] })
+    if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+  }
 }
 
 type SqlValue = Date | number | string | object

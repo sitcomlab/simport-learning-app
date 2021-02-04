@@ -1,0 +1,14 @@
+.flex-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  > ion-card {
+    flex-grow: 1;
+  }
+
+  > ion-icon {
+    font-size: x-large;
+    margin-right: 1rem;
+  }
+}
