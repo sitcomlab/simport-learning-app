@@ -10,6 +10,7 @@ import {
   TrajectoryType,
 } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
+import { LocationService } from './location.service'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.
@@ -24,7 +25,11 @@ import { SqliteService } from './db/sqlite.service'
  */
 @Injectable()
 export class TrajectoryService {
-  constructor(private http: HttpClient, private db: SqliteService) {}
+  constructor(
+    private http: HttpClient,
+    private db: SqliteService,
+    private locationService: LocationService
+  ) {}
 
   // Returns an observable yielding metadata of all available trajectories
   getAllMeta(): Observable<TrajectoryMeta[]> {
@@ -89,6 +94,7 @@ export class TrajectoryService {
   }
 
   deleteTrajectory(t: TrajectoryMeta) {
+    this.locationService.stop()
     return this.db.deleteTrajectory(t)
   }
 

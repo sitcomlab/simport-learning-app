@@ -63,7 +63,7 @@ export class LocationService implements OnDestroy {
 
     this.backgroundGeolocation.checkStatus().then((status) => {
       if (status.isRunning) {
-        this.backgroundGeolocation.stop()
+        this.stop()
         return false
       }
       if (!status.locationServicesEnabled) {
@@ -86,6 +86,16 @@ export class LocationService implements OnDestroy {
         if (showSettings) {
           return this.backgroundGeolocation.showAppSettings()
         } else return false
+      }
+    })
+  }
+
+  stop() {
+    if (!this.isSupportedPlatform) return
+
+    this.backgroundGeolocation.checkStatus().then((status) => {
+      if (status.isRunning) {
+        this.backgroundGeolocation.stop()
       }
     })
   }
@@ -140,7 +150,7 @@ export class LocationService implements OnDestroy {
   }
 
   private scheduleNotification(message: string) {
-    if (this.notificationsEnabled.value == false) return
+    if (this.notificationsEnabled.value === false) return
     this.localNotifications.schedule({
       id: Math.random() * 1000000,
       text: message,
