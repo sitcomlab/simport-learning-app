@@ -40,6 +40,7 @@ export class TrajectoryCardComponent implements OnInit {
           cssClass: 'danger',
           handler: async () => {
             await this.trajectoryService.deleteTrajectory(this.trajectory)
+            this.modalCtrl.dismiss()
           },
         },
       ],
