@@ -1,3 +1,4 @@
+import { Inference } from 'src/app/model/inference'
 import { Point, TrajectoryData } from 'src/app/model/trajectory'
 
 export interface IInferenceEngine {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Inference } from 'src/app/model/inference'
 import { AllInferences } from 'src/app/shared-services/inferences/definitions'
 import { InferenceService } from './inference.service'
 

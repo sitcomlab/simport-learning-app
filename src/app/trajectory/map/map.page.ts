@@ -11,6 +11,7 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
+import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'

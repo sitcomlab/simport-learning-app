@@ -1,4 +1,4 @@
-class Inference {
+export class Inference {
   constructor(
     public name: string,
     public description: string,

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { Inference } from 'src/app/model/inference'
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ export class InferenceService {
     {
       name: 'Workplace',
       description: 'We know where you work.',
+      location: [51.968446, 7.61249],
       trajectoryId: 'muenster',
     },
   ]
