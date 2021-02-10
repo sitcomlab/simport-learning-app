@@ -63,7 +63,7 @@ export const MIGRATIONS = [
     type TEXT CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import");
   CREATE TABLE IF NOT EXISTS points (
     trajectory TEXT NOT NULL,
-    time datetime NOT NULL,
+    time TEXT NOT NULL,
     lat float NOT NULL,
     lon float NOT NULL,
     accuracy float,
