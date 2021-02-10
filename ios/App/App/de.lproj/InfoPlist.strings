@@ -1,0 +1,3 @@
+"NSLocationAlwaysUsageDescription" = "Dein Standort wird verwendet, um Standortverläufe aufzuzeichnen und mögliche Inferenzen zu zeigen.";
+"NSLocationWhenInUseUsageDescription" = "Dein Standort wird verwendet, um Standortverläufe aufzuzeichnen und mögliche Inferenzen zu zeigen.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Dein Standort wird verwendet, um Standortverläufe aufzuzeichnen und mögliche Inferenzen zu zeigen.";

@@ -1,0 +1,3 @@
+"NSLocationAlwaysUsageDescription" = "Your location is used to record location histories and show possible inferences.";
+"NSLocationWhenInUseUsageDescription" = "Your location is used to record location histories and show possible inferences.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Your location is used to record location histories and show possible inferences.";
