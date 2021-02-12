@@ -13,9 +13,9 @@
       <ion-col sizeXs="12" sizeLg="6">
         <app-item-card
           [disabled]="!locationService.isSupportedPlatform"
-          icon="play-circle"
+          icon="{{ stateIcon }}"
           title="Toggle location tracking"
-          subtitle="{{state}}"
+          subtitle="{{ state }}"
           (click)="toggleBackgroundGeoLocation()"
         ></app-item-card>
         <ion-note *ngIf="!locationService.isSupportedPlatform">
@@ -45,5 +45,5 @@
         ></ion-toggle> </ion-col
     ></ion-row>
   </ion-grid>
-  <div style="white-space: pre-wrap">{{eventText}}</div>
+  <div style="white-space: pre-wrap">{{ eventText }}</div>
 </ion-content>
