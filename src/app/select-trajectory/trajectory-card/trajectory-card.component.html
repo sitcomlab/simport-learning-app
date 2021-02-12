@@ -1,27 +1,33 @@
-<div class="flex-wrapper">
-  <ion-card (click)="selectTrajectory()">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-item lines="none">
-          <ion-icon name="location-outline"></ion-icon>
-          <ion-label>
-            {{ trajectory.placename }}
-          </ion-label>
-        </ion-item>
-        <ion-item lines="none">
-          <ion-icon name="calendar-outline"></ion-icon>
-          <ion-label>
-            {{ durationString() }}
-          </ion-label>
-        </ion-item>
-      </ion-card-title>
-      <ion-card-subtitle> </ion-card-subtitle>
-    </ion-card-header>
-  </ion-card>
+<ion-card class="flex-wrapper" (click)="selectTrajectory()">
+  <ion-badge *ngIf="trajectory.type == 'track'" color="dark"
+    >recorded</ion-badge
+  >
+  <ion-badge *ngIf="trajectory.type == 'import'" color="medium"
+    >imported</ion-badge
+  >
+  <ion-badge *ngIf="trajectory.type == 'example'" color="light"
+    >example</ion-badge
+  >
+  <ion-card-header>
+    <ion-card-title>
+      <ion-item lines="none">
+        <ion-icon name="location-outline"></ion-icon>
+        <ion-label>
+          {{ trajectory.placename }}
+        </ion-label>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <ion-label>
+          {{ durationString() }}
+        </ion-label>
+      </ion-item>
+    </ion-card-title>
+  </ion-card-header>
   <ion-icon
-    *ngIf="trajectory.type == 'track'"
+    *ngIf="trajectory.type == 'track' || trajectory.type == 'import'"
     name="trash-outline"
     color="danger"
     (click)="deleteTrajectory($event)"
   ></ion-icon>
-</div>
+</ion-card>
