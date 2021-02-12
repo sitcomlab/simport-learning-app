@@ -1,3 +1,4 @@
+import * as polyline from '@mapbox/polyline'
 import * as moment from 'moment'
 
 export enum TrajectoryType {
@@ -26,6 +27,28 @@ export interface Point {
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
+  // Decodes a trajectory that was encoded for assets/trajectories/ via
+  // dev/import_example_trajectory.ts
+  static fromJSON({
+    coordinates,
+    timestamps,
+    time0,
+  }: TrajectoryJSON): TrajectoryData {
+    return {
+      coordinates: polyline.decode(coordinates) as [number, number][],
+      timestamps: timestamps.reduce<Date[]>((ts, t, i, deltas) => {
+        // The array from the JSON has one element less than locations,
+        // as it contains time deltas. To restore absolute dates, we add
+        // the first timestamp & in the same iteration also add the first delta
+        if (i === 0) ts.push(new Date(time0))
+        const t1 = ts[i]
+        const deltaMs = deltas[i] * 1000
+        ts.push(new Date(t1.getTime() + deltaMs))
+        return ts
+      }, []),
+    }
+  }
+
   constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
     if (data?.coordinates.length !== data?.timestamps.length)
       throw new Error(
@@ -71,4 +94,11 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())
   }
+}
+
+type TrajectoryJSON = {
+  coordinates: string // polyline6 encoded
+  timestamps: number[]
+  time0: string // isodates
+  timeN?: string
 }

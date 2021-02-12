@@ -1,7 +1,8 @@
 import { async } from '@angular/core/testing'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
+import nepal from 'src/assets/trajectories/3384596.json'
 import { AllInferences, HomeInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
 import { trajEmpty, trajMobileOnly } from './simple-engine.spec.fixtures'
@@ -25,7 +26,9 @@ describe('inferences/SimpleEngine', () => {
       t.test(new SimpleEngine())
     })
 
-    it('should infer with low confidence for low point count', () => {}) // TODO
+    it('should infer with low confidence for low stationary point count', () => {}) // TODO
+
+    it('should infer with low confidence for low total point count', () => {}) // TODO
 
     it('should not infer for mobile only trajectory', () => {
       const t = new InferenceTestCase(trajMobileOnly, [HomeInference], [])
@@ -33,9 +36,22 @@ describe('inferences/SimpleEngine', () => {
     })
 
     it('should infer for single night location', () => {}) // TODO
-    it('should infer with low confidence for single 2 different night locations', () => {}) // TODO
+
+    it('should infer with low confidence for 2 different night locations', () => {}) // TODO
+
     it('should infer for realworld data (1 day)', () => {}) // TODO
-    it('should infer for realworld data (1 month)', () => {}) // TODO: nepal dataset?
+
+    it('should infer for realworld data (1 month)', () => {
+      // NOTE: nepal trajectory seems to be partially everyday-life, partially dedicated OSM-mapping activities
+      expect(nepal).toBeDefined('nepal fixture not loaded')
+      const t = new InferenceTestCase(
+        Trajectory.fromJSON(nepal),
+        [HomeInference],
+        [] // TODO
+      )
+      t.test(new SimpleEngine())
+    })
+
     it('should infer for realworld data (1 year)', () => {}) // TODO: find data
 
     // TODO: test temporally, spatially sparse trajectories
