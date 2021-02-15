@@ -21,25 +21,24 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
       .subscribe((ts) => {
         this.loading = false
         this.trajectories = ts.sort((a, b) => {
-          // sort in order: USERTRACK - IMPORT - EXAMPLE
-          if (a.type !== b.type) {
-            if (
-              a.type === TrajectoryType.USERTRACK ||
-              (a.type === TrajectoryType.IMPORT &&
-                b.type === TrajectoryType.EXAMPLE)
-            ) {
-              return -1
-            } else if (
-              b.type === TrajectoryType.USERTRACK ||
-              (a.type === TrajectoryType.EXAMPLE &&
-                b.type === TrajectoryType.IMPORT)
-            ) {
-              return 1
-            }
-          }
-          return 0
+          return (
+            0 - (this.getSortingIndex(a) > this.getSortingIndex(b) ? -1 : 1)
+          )
         })
       })
+  }
+
+  private getSortingIndex(meta: TrajectoryMeta): number {
+    switch (meta.type) {
+      case TrajectoryType.USERTRACK:
+        return 0
+      case TrajectoryType.IMPORT:
+        return 1
+      case TrajectoryType.EXAMPLE:
+        return 2
+      default:
+        return -1
+    }
   }
 
   async ngOnDestroy() {
