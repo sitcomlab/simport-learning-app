@@ -21,9 +21,7 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
       .subscribe((ts) => {
         this.loading = false
         this.trajectories = ts.sort((a, b) => {
-          return (
-            0 - (this.getSortingIndex(a) > this.getSortingIndex(b) ? -1 : 1)
-          )
+          return this.getSortingIndex(a) - this.getSortingIndex(b)
         })
       })
   }
