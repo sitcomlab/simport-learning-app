@@ -67,7 +67,7 @@ export class SqliteService {
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
         (d, { lon, lat, time, accuracy }) => {
-          d.timestamps.push(new Date(time))
+          d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
           d.accuracy.push(accuracy)
           return d
@@ -140,8 +140,9 @@ export class SqliteService {
     })
 
     if (firstPoint) {
+      const firstPointTime = convertTimestampToDate(firstPoint.time)
       const durationDays = moment(time).diff(
-        moment(firstPoint.time),
+        moment(firstPointTime),
         'days',
         true
       )
@@ -174,7 +175,13 @@ function normalize(v: SqlValue) {
   // handle ints by dropping all trailing 0s
   if (typeof v === 'number') return v.toFixed(8).replace(/\.?0+$/, '')
 
-  if (v instanceof Date) return v.toISOString()
+  // convert date to timestamp (in seconds)
+  if (v instanceof Date) return Math.floor(v.getTime() / 1000).toString()
 
   if (v instanceof Object) return JSON.stringify(v)
+}
+
+function convertTimestampToDate(timestamp: number): Date {
+  // convert timestamp from seconds to milliseconds and create Date-object
+  return new Date(timestamp * 1000)
 }

@@ -63,10 +63,13 @@ export const MIGRATIONS = [
     type TEXT CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import");
   CREATE TABLE IF NOT EXISTS points (
     trajectory TEXT NOT NULL,
-    time TEXT NOT NULL,
+    time DATETIME NOT NULL,
     lat float NOT NULL,
     lon float NOT NULL,
     accuracy float,
     PRIMARY KEY (trajectory, time),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // update date from iso-strings to timestamps
+  `UPDATE points SET time=CAST(strftime('%s', time) AS INT);`,
 ]
