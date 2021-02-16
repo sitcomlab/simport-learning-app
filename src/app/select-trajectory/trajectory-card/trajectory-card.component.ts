@@ -26,6 +26,7 @@ export class TrajectoryCardComponent implements OnInit {
   }
 
   async deleteTrajectory(e: Event) {
+    e.stopPropagation()
     const alert = await this.alertCtrl.create({
       cssClass: 'my-custom-class',
       header: `Delete ${this.trajectory.placename}`,

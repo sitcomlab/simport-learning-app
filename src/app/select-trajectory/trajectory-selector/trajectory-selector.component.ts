@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { Subscription } from 'rxjs'
-import { TrajectoryMeta } from 'src/app/model/trajectory'
+import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 
 @Component({
@@ -20,8 +20,23 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
       .getAllMeta()
       .subscribe((ts) => {
         this.loading = false
-        this.trajectories = ts
+        this.trajectories = ts.sort((a, b) => {
+          return this.getSortingIndex(a) - this.getSortingIndex(b)
+        })
       })
+  }
+
+  private getSortingIndex(meta: TrajectoryMeta): number {
+    switch (meta.type) {
+      case TrajectoryType.USERTRACK:
+        return 0
+      case TrajectoryType.IMPORT:
+        return 1
+      case TrajectoryType.EXAMPLE:
+        return 2
+      default:
+        return -1
+    }
   }
 
   async ngOnDestroy() {
