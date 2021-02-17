@@ -85,8 +85,8 @@ export class SqliteService {
     const set = [
       {
         // insert or update trajectory
-        statement:
-          'INSERT OR UPDATE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
+        statement: `INSERT INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)
+          ON CONFLICT(id) DO UPDATE SET type=?, placename=?, durationDays=?;`,
         values: [id, type, placename, durationDays].map(normalize),
       },
     ]
