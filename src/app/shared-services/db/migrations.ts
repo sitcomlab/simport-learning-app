@@ -70,6 +70,10 @@ export const MIGRATIONS = [
     PRIMARY KEY (trajectory, time),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 
-  // update date from iso-strings to timestamps
-  `UPDATE points SET time=CAST(strftime('%s', time) AS INT);`,
+  // remove potential duplicate points with very similar timestamp
+  // update date from iso-strings to timestamps and invalidate durationDays for recalculation
+  `DELETE FROM points WHERE time NOT IN (
+    SELECT TIME FROM points GROUP BY strftime('%s', time));
+  UPDATE points SET time=strftime('%s', time);
+  UPDATE trajectories SET durationDays=null;`,
 ]
