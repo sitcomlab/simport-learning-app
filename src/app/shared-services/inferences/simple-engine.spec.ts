@@ -1,4 +1,5 @@
 import { async } from '@angular/core/testing'
+import distance from '@turf/distance'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
 import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
@@ -66,7 +67,7 @@ class InferenceTestCase {
   constructor(
     public trajectory: TrajectoryData,
     public inferences: InferenceDefinition[],
-    public results: InferenceResultTest[],
+    public expected: InferenceResultTest[],
     public deltaMeters: number = 50
   ) {}
 
@@ -75,24 +76,28 @@ class InferenceTestCase {
 
     // inference count
     expect(results.length).toEqual(
-      Object.keys(this.results).length,
+      Object.keys(this.expected).length,
       'wrong inferences'
     )
 
-    for (const res of this.results) {
+    for (const res of this.expected) {
       const hasID = results.some((r) => r.name === res.name)
       expect(hasID).toEqual(true, `'${res.name}' expected, but not inferred`)
     }
 
     for (const r of results) {
+      const expectation = this.expected.find(({ name }) => r.name === name)
+
       // inference type matches
-      expect(this.results[r.name]).toBeDefined(
-        `'${r.name}' inferred, but not expected`
-      )
+      expect(expectation).toBeDefined(`'${r.name}' inferred, but not expected`)
 
       // inference location
-      const deltaMeters = 0.0 // TODO turf.distance()
-      expect(deltaMeters).toBeLessThanOrEqual(
+      const expectedLonLat = [expectation.location[1], expectation.location[0]]
+      const inferredLonLat = [r.location[1], r.location[0]]
+      const dist = distance(expectedLonLat, inferredLonLat, {
+        units: 'kilometers',
+      })
+      expect(dist * 1000).toBeLessThanOrEqual(
         this.deltaMeters,
         `'${r.name}' location didn't match`
       )
