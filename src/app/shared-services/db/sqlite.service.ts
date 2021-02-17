@@ -86,7 +86,7 @@ export class SqliteService {
       {
         // insert or update trajectory
         statement:
-          'INSERT OR REPLACE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
+          'INSERT OR UPDATE INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)',
         values: [id, type, placename, durationDays].map(normalize),
       },
     ]
