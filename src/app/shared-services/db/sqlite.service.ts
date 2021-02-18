@@ -44,6 +44,19 @@ export class SqliteService {
     await this.ensureDbReady()
     const statement = `SELECT * FROM trajectories;`
     const { values } = await this.db.query({ statement, values: [] })
+
+    // ensure valid duration in days
+    values.forEach(async (trajectoryMeta: TrajectoryMeta) => {
+      if (
+        isNaN(trajectoryMeta.durationDays) ||
+        trajectoryMeta.durationDays < 0
+      ) {
+        const durationDays = await this.updateDurationDaysInTrajectory(
+          trajectoryMeta.id
+        )
+        trajectoryMeta.durationDays = durationDays
+      }
+    })
     return values
   }
 
@@ -67,7 +80,7 @@ export class SqliteService {
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
         (d, { lon, lat, time, accuracy }) => {
-          d.timestamps.push(new Date(time))
+          d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
           d.accuracy.push(accuracy)
           return d
@@ -131,25 +144,7 @@ export class SqliteService {
     if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
 
     // update durationDays of trajectory
-    const {
-      values: [firstPoint],
-    } = await this.db.query({
-      statement:
-        'SELECT time FROM points WHERE trajectory = ? ORDER BY TIME LIMIT 1;',
-      values: [trajectoryId].map(normalize),
-    })
-
-    if (firstPoint) {
-      const durationDays = moment(time).diff(
-        moment(firstPoint.time),
-        'days',
-        true
-      )
-      await this.db.run({
-        statement: 'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
-        values: [durationDays, trajectoryId].map(normalize),
-      })
-    }
+    await this.updateDurationDaysInTrajectory(trajectoryId)
   }
 
   async deleteTrajectory(t: TrajectoryMeta): Promise<void> {
@@ -157,6 +152,30 @@ export class SqliteService {
     const statement = `DELETE  FROM trajectories WHERE id = '${t.id}';`
     const { changes, message } = await this.db.run({ statement, values: [] })
     if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+  }
+
+  private async updateDurationDaysInTrajectory(
+    trajectoryId: string
+  ): Promise<number> {
+    // update durationDays of trajectory
+    const { values } = await this.db.query({
+      statement:
+        'SELECT MIN(time) as firstPointTime, MAX(time) as lastPointTime FROM points WHERE trajectory = ?;',
+      values: [trajectoryId].map(normalize),
+    })
+    const { firstPointTime, lastPointTime } = values[0]
+    const firstPointDate = convertTimestampToDate(firstPointTime)
+    const lastPointDate = convertTimestampToDate(lastPointTime)
+    const durationDays = moment(lastPointDate).diff(
+      moment(firstPointDate),
+      'days',
+      true
+    )
+    await this.db.run({
+      statement: 'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
+      values: [durationDays, trajectoryId].map(normalize),
+    })
+    return durationDays
   }
 }
 
@@ -174,7 +193,13 @@ function normalize(v: SqlValue) {
   // handle ints by dropping all trailing 0s
   if (typeof v === 'number') return v.toFixed(8).replace(/\.?0+$/, '')
 
-  if (v instanceof Date) return v.toISOString()
+  // convert date to timestamp (in seconds)
+  if (v instanceof Date) return Math.floor(v.getTime() / 1000).toString()
 
   if (v instanceof Object) return JSON.stringify(v)
+}
+
+function convertTimestampToDate(timestamp: number): Date {
+  // convert timestamp from seconds to milliseconds and create Date-object
+  return new Date(timestamp * 1000)
 }

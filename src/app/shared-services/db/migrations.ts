@@ -63,10 +63,17 @@ export const MIGRATIONS = [
     type TEXT CHECK(type IN ("import", "track")) NOT NULL DEFAULT "import");
   CREATE TABLE IF NOT EXISTS points (
     trajectory TEXT NOT NULL,
-    time datetime NOT NULL,
+    time DATETIME NOT NULL,
     lat float NOT NULL,
     lon float NOT NULL,
     accuracy float,
     PRIMARY KEY (trajectory, time),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // remove potential duplicate points with very similar timestamp
+  // update date from iso-strings to timestamps and invalidate durationDays for recalculation
+  `DELETE FROM points WHERE time NOT IN (
+    SELECT TIME FROM points GROUP BY strftime('%s', time));
+  UPDATE points SET time=strftime('%s', time);
+  UPDATE trajectories SET durationDays=null;`,
 ]
