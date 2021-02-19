@@ -25,9 +25,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-icon
-    *ngIf="trajectory.type == 'track' || trajectory.type == 'import'"
-    name="trash-outline"
-    color="danger"
-    (click)="deleteTrajectory($event)"
+    name="ellipsis-vertical"
+    (click)="presentPopover($event)"
   ></ion-icon>
 </ion-card>

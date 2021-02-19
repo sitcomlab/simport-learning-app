@@ -1,0 +1,15 @@
+<ion-content>
+  <ion-list lines="full">
+    <ion-item (click)="exportTrajectory($event)">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label>Export</ion-label>
+    </ion-item>
+    <ion-item
+      *ngIf="trajectory.type == 'track' || trajectory.type == 'import'"
+      (click)="deleteTrajectory($event)"
+    >
+      <ion-icon name="trash-outline" color="danger" slot="start"></ion-icon>
+      <ion-label color="danger">Delete</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
