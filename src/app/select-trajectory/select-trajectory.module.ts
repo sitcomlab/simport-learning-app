@@ -11,6 +11,7 @@ import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-se
 import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component'
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 
 @NgModule({
   imports: [
@@ -26,5 +27,6 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     TrajectoryCardComponent,
     TrajectoryCardPopoverPage,
   ],
+  providers: [SocialSharing],
 })
 export class SelectTrajectoryPageModule {}
