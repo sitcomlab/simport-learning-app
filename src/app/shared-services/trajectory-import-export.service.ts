@@ -63,7 +63,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
   }
 
   private async importFile(file: Blob, name: string, extension: string) {
-    if (extension.toLowerCase() !== 'json') {
+    if (!extension.toLowerCase().endsWith('json')) {
       await this.showToast('Please select JSON-files', true)
     } else {
       try {
