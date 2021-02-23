@@ -11,6 +11,7 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
+import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
@@ -84,8 +85,8 @@ export class MapPage implements OnInit, OnDestroy {
   private addInferenceMarkers(inferences: Inference[]) {
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      if (!inference.location || !inference.accuracy) continue
-      const m = new Circle(inference.location, {
+      if (!inference.lonLat || !inference.accuracy) continue
+      const m = new Circle(inference.lonLat, {
         radius: inference.accuracy,
       })
       m.addTo(this.inferenceMarkers).bindPopup(inference.name)
