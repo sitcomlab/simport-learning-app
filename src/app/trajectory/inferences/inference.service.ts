@@ -10,13 +10,13 @@ export class InferenceService {
       name: 'Home',
       description: 'We do now know where your home is.',
       trajectoryId: 'muenster',
-      location: [51.968446, 7.60549],
+      lonLat: [51.968446, 7.60549],
       accuracy: 50,
     },
     {
       name: 'Workplace',
       description: 'We know where you work.',
-      location: [51.968446, 7.61249],
+      lonLat: [51.968446, 7.61249],
       trajectoryId: 'muenster',
     },
   ]

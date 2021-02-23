@@ -36,8 +36,8 @@ export class InferencesPage implements OnInit {
   }
 
   showInferenceOnMap(inference: Inference) {
-    if (!inference.location || !inference.accuracy) return
-    this.openMap(inference.location)
+    if (!inference.lonLat || !inference.accuracy) return
+    this.openMap(inference.lonLat)
   }
 
   openMap(centerLatLng?: [number, number]) {

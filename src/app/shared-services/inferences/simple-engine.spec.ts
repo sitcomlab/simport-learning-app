@@ -93,7 +93,7 @@ class InferenceTestCase {
 
       // inference location
       const expectedLonLat = [expectation.location[1], expectation.location[0]]
-      const inferredLonLat = [r.location[1], r.location[0]]
+      const inferredLonLat = [r.lonLat[1], r.lonLat[0]]
       const dist = distance(expectedLonLat, inferredLonLat, {
         units: 'kilometers',
       })
