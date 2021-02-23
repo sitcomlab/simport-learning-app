@@ -4,6 +4,7 @@ import { IonRouterOutlet, ModalController } from '@ionic/angular'
 import { TrajectoryMeta } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
+import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
 
 enum TrajectoryMode {
   TRACK = 'tracking',
@@ -21,8 +22,9 @@ export class SelectTrajectoryPage implements OnInit {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    public locationService: LocationService,
-  ) { }
+    private trajectoryImportExportService: TrajectoryImportExportService,
+    public locationService: LocationService
+  ) {}
 
   ngOnInit() {}
 
@@ -47,10 +49,7 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
-        // TODO
-        // open file browser (maybe https://github.com/hinddeep/capacitor-file-selector ?)
-        // persist trajectory, assign id
-        // route to /trajectory/{assigned id}
+        await this.trajectoryImportExportService.selectAndImportFile()
         return
 
       default:

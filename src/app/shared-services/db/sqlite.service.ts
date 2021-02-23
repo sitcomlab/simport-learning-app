@@ -121,9 +121,9 @@ export class SqliteService {
       for (let i = 0; i < numPoints; i++) {
         const time = t.timestamps[i]
         const [lat, lon] = t.coordinates[i]
-        const accuracy = t.accuracy[i]
+        const accuracy = t.accuracy[i] ?? 0
         placeholders.push(`(?,?,?,?,?)`)
-        values.push(t.id, time, lat, lon, accuracy)
+        values.push(id, time, lat, lon, accuracy)
       }
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
