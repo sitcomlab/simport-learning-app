@@ -49,7 +49,7 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
-        await this.trajectoryImportExportService.selectAndImportFile()
+        await this.trajectoryImportExportService.selectAndImportTrajectory()
         return
 
       default:
