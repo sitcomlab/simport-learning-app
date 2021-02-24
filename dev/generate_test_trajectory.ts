@@ -68,6 +68,20 @@ function createCluster(
   return trajectory
 }
 
+function addTimestampsForTrajectory(
+  first: Date,
+  last: Date,
+  trajectory: Trajectory
+): Trajectory {
+  const duration = last.getTime() - first.getTime()
+  const numberTimestamps = trajectory.coordinates.length
+  const stepLength = duration / numberTimestamps
+  for (let i = 0; i < numberTimestamps; i++) {
+    trajectory.timestamps[i] = new Date(first.getTime() + i * stepLength)
+  }
+  return trajectory
+}
+
 function randomGeo(
   latitude: number,
   longitude: number,
@@ -96,7 +110,7 @@ function exportToCsv(trajectories: Trajectory[]) {
   trajectories.forEach((trajectory) => {
     csvContent += trajectory.coordinates
       .map((c, i) => {
-        return [c[0], c[1], trajectory.timestamps[i]].join(',')
+        return [c[0], c[1], trajectory.timestamps[i]?.toISOString()].join(',')
       })
       .join('\n')
     csvContent += '\n'
@@ -123,6 +137,8 @@ async function main() {
     filepath_work,
     filepath_work_to_home,
   } = argparse()
+
+  // laod data
   let trajectory_home = await loadTrajectoryFromGpxFile(filepath_home)
   let trajectory_home_to_work = await loadTrajectoryFromGpxFile(
     filepath_home_to_work
@@ -131,13 +147,47 @@ async function main() {
   let trajectory_work_to_home = await loadTrajectoryFromGpxFile(
     filepath_work_to_home
   )
+
+  // add spatial clusters
   trajectory_home = createCluster(trajectory_home)
   trajectory_work = createCluster(trajectory_work)
+
+  // add temporal information
+  const home_start = new Date('2021-02-23T18:00:00Z')
+  const home_end = new Date('2021-02-24T08:45:00Z')
+  const work_start = new Date('2021-02-24T09:00:00Z')
+  const work_end = new Date('2021-02-24T17:00:00Z')
+  const home_after_work = new Date('2021-02-24T17:15:00Z')
+
+  trajectory_home = addTimestampsForTrajectory(
+    home_start,
+    home_end,
+    trajectory_home
+  )
+
+  trajectory_home_to_work = addTimestampsForTrajectory(
+    home_end,
+    work_start,
+    trajectory_home_to_work
+  )
+
+  trajectory_work = addTimestampsForTrajectory(
+    work_start,
+    work_end,
+    trajectory_work
+  )
+
+  trajectory_work_to_home = addTimestampsForTrajectory(
+    work_end,
+    home_after_work,
+    trajectory_work_to_home
+  )
+
   exportToCsv([
     trajectory_home,
     trajectory_home_to_work,
-    trajectory_work_to_home,
     trajectory_work,
+    trajectory_work_to_home,
   ])
 }
 
