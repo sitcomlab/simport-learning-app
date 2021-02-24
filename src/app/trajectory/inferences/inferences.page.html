@@ -16,8 +16,8 @@
   <app-item-card
     *ngFor="let i of inferences"
     icon="home-outline"
-    title="{{i.name}}"
-    subtitle="{{i.description}}"
+    title="{{formatInferenceName(i)}}"
+    subtitle="{{formatInferenceInfo(i)}}"
     (click)="showInferenceOnMap(i)"
   ></app-item-card>
 </ion-content>

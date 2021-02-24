@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import * as polyline from '@mapbox/polyline'
 import { combineLatest, from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
@@ -60,21 +59,7 @@ export class TrajectoryService {
           .get<{ coordinates: string; timestamps: number[]; time0: string }>(
             `assets/trajectories/${id}.json`
           )
-          .pipe(
-            map(({ coordinates, timestamps, time0 }) => ({
-              coordinates: polyline.decode(coordinates) as [number, number][],
-              timestamps: timestamps.reduce<Date[]>((ts, t, i, deltas) => {
-                // The array from the JSON has one element less than locations,
-                // as it contains time deltas. To restore absolute dates, we add
-                // the first timestamp & in the same iteration also add the first delta
-                if (i === 0) ts.push(new Date(time0))
-                const t1 = ts[i]
-                const deltaMs = deltas[i] * 1000
-                ts.push(new Date(t1.getTime() + deltaMs))
-                return ts
-              }, []),
-            }))
-          )
+          .pipe(map(Trajectory.fromJSON))
 
         const getMeta = this.http
           .get<TrajectoryMeta[]>('assets/trajectories/index.json')
