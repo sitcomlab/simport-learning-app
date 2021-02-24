@@ -10,7 +10,9 @@ This is an hybrid [Ionic][ionic] app, using Capacitator (a drop-in replacement
 for Cordova) to access native APIs and [Angular][angular] for UI.
 
 ### version control
-Let's use `master` for releases only, `develop` as the main branch, and build features on feature branches `<dev name>/<feature name>`, merging into `develop`.
+We use `develop` as the main branch and build features on feature branches `feature/<feature name>`, merging into `develop`. For your commits, please use the following commit message if applicable: `#<issue number>: <commit message>`
+
+Releases are automatically triggered on push to `develop` using GitHub Actions
 
 ### dev env setup
 For basic UI development you'll only need [node.js][node] installed.
