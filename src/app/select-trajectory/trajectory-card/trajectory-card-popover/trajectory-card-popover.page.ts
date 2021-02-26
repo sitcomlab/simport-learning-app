@@ -3,6 +3,8 @@ import {
   ModalController,
   AlertController,
   PopoverController,
+  LoadingController,
+  ToastController,
 } from '@ionic/angular'
 import { TrajectoryMeta } from 'src/app/model/trajectory'
 import { TrajectoryImportExportService } from 'src/app/shared-services/trajectory-import-export.service'
@@ -19,6 +21,8 @@ export class TrajectoryCardPopoverPage implements OnInit {
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
     private trajectoryImportExportService: TrajectoryImportExportService
   ) {}
 
@@ -45,15 +49,39 @@ export class TrajectoryCardPopoverPage implements OnInit {
           text: 'Delete',
           cssClass: 'danger',
           handler: async () => {
-            await this.trajectoryImportExportService.deleteTrajectory(
-              this.trajectory
-            )
+            await this.showLoadingDialog('Deleting trajectory...')
+            await this.trajectoryImportExportService
+              .deleteTrajectory(this.trajectory)
+              .then(async () => {
+                await this.loadingCtrl.dismiss()
+                await this.showToast('Trajectory successfully deleted', false)
+              })
+              .catch(async () => {
+                await this.loadingCtrl.dismiss()
+                await this.showToast('Trajectory could not be deleted', true)
+              })
             this.modalCtrl.dismiss()
           },
         },
       ],
     })
-
     await alert.present()
+  }
+
+  private async showLoadingDialog(message: string) {
+    const loading = await this.loadingCtrl.create({
+      message,
+      translucent: true,
+    })
+    await loading.present()
+  }
+
+  private async showToast(message: string, isError: boolean) {
+    const toast = await this.toastCtrl.create({
+      message,
+      color: isError ? 'danger' : 'medium',
+      duration: 1000,
+    })
+    toast.present()
   }
 }

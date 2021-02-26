@@ -54,7 +54,6 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       (ts, t, i, dates) => {
         // we don't store a first value, but only following deltas
         if (i === 0) return []
-        const t1 = ts[i]
         const date1 = dates[i - 1].getTime() / 1000
         const date2 = dates[i].getTime() / 1000
         ts.push(date2 - date1)
@@ -74,6 +73,12 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       timeN,
     }
     return trajectoryJson
+  }
+
+  static toJSONString(t: Trajectory, useBase64: boolean): string {
+    const trajectoryJson = Trajectory.toJSON(t)
+    const trajectoryJsonString = JSON.stringify(trajectoryJson)
+    return useBase64 ? btoa(trajectoryJsonString) : trajectoryJsonString
   }
 
   constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {

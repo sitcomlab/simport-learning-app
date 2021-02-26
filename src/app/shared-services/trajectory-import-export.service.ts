@@ -2,13 +2,23 @@ import { Injectable } from '@angular/core'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { TrajectoryService } from '../shared-services/trajectory.service'
 import { v4 as uuid } from 'uuid'
-import { LoadingController, Platform, ToastController } from '@ionic/angular'
+import {
+  ActionSheetController,
+  LoadingController,
+  Platform,
+  ToastController,
+} from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
-import { Plugins } from '@capacitor/core'
+import {
+  Plugins,
+  FilesystemDirectory,
+  FilesystemEncoding,
+} from '@capacitor/core'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
-const { FileSelector } = Plugins
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
+const { FileSelector, Filesystem } = Plugins
 
 @Injectable()
 export class TrajectoryImportExportService extends TrajectoryService {
@@ -19,43 +29,11 @@ export class TrajectoryImportExportService extends TrajectoryService {
     private socialSharing: SocialSharing,
     private loadingController: LoadingController,
     private toastController: ToastController,
+    private actionSheetController: ActionSheetController,
+    private androidPermissions: AndroidPermissions,
     private platform: Platform
   ) {
     super(http, db, locationService)
-  }
-
-  async exportTrajectory(trajectoryMeta: TrajectoryMeta) {
-    await this.showLoadingDialog('Exporting trajectory...')
-    this.getOne(trajectoryMeta.type, trajectoryMeta.id).subscribe((t) => {
-      this.exportFullTrajectory(t)
-    })
-  }
-
-  /**
-   * TODO: this works fine for iOS, Android may need adjustments
-   * @param t trajectory to share
-   */
-  private exportFullTrajectory(t: Trajectory) {
-    const trajectoryJson = Trajectory.toJSON(t)
-    const trajectoryBase64 = btoa(JSON.stringify(trajectoryJson))
-    const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
-    const sharingOptions = {
-      files: [
-        `df:${fileName}.json;data:application/json;base64,${trajectoryBase64}`,
-      ],
-      chooserTitle: 'Exporting trajectory', // android-only dialog-title
-    }
-    this.hideLoadingDialog()
-    this.socialSharing
-      .shareWithOptions(sharingOptions)
-      .then(async (result: { completed: boolean; app: string }) => {
-        if (result.completed) {
-          await this.showToast('Trajectory export successful', false)
-        }
-      })
-      .catch(async () => {
-        await this.showToast('Trajectory export failed', true)
-      })
   }
 
   async selectAndImportTrajectory() {
@@ -99,6 +77,68 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
   }
 
+  async exportTrajectory(trajectoryMeta: TrajectoryMeta) {
+    this.getOne(trajectoryMeta.type, trajectoryMeta.id).subscribe(async (t) => {
+      if (this.platform.is('android')) {
+        await this.presentExportActionSheet(t)
+      } else {
+        await this.exportTrajectoryViaShareDialog(t)
+      }
+    })
+  }
+
+  /**
+   * This is android-only.
+   * @param t trajectory to export
+   */
+  private async exportTrajectoryToDownloads(t: Trajectory) {
+    await this.showLoadingDialog('Exporting trajectory...')
+    const trajectoryString = Trajectory.toJSONString(t, false)
+    try {
+      const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
+      await Filesystem.writeFile({
+        path: `Download/${fileName}.json`,
+        data: trajectoryString,
+        directory: FilesystemDirectory.ExternalStorage,
+        encoding: FilesystemEncoding.UTF8,
+      })
+      this.hideLoadingDialog()
+      await this.showToast('Trajectory export successful', false)
+    } catch (e) {
+      this.hideLoadingDialog()
+      await this.showToast(
+        'Trajectory export failed ' + JSON.stringify(e),
+        true
+      )
+    }
+  }
+
+  /**
+   * @param t trajectory to share
+   */
+  private async exportTrajectoryViaShareDialog(t: Trajectory) {
+    await this.showLoadingDialog('Exporting trajectory...')
+    const trajectoryBase64 = Trajectory.toJSONString(t, true)
+    const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
+    const sharingOptions = {
+      files: [
+        `df:${fileName}.json;data:application/json;base64,${trajectoryBase64}`,
+      ],
+      chooserTitle: 'Exporting trajectory', // android-only dialog-title
+    }
+    this.hideLoadingDialog()
+    this.socialSharing
+      .shareWithOptions(sharingOptions)
+      .then(async (result: { completed: boolean; app: string }) => {
+        if (result.completed) {
+          await this.showToast('Trajectory export successful', false)
+        }
+      })
+      .catch(async () => {
+        await this.showToast('Trajectory export failed', true)
+      })
+  }
+
   private async importFile(file: Blob, name: string, extension: string) {
     if (!extension.toLowerCase().endsWith('json')) {
       await this.showToast('Please select JSON-files', true)
@@ -138,6 +178,61 @@ export class TrajectoryImportExportService extends TrajectoryService {
         await this.showToast('Trajectory could not be imported', true)
       }
     }
+  }
+
+  private assurePermissionsAndExportToDownloads(t: Trajectory) {
+    this.androidPermissions
+      .checkPermission(
+        this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+      )
+      .then(async (status) => {
+        if (status.hasPermission) {
+          await this.exportTrajectoryToDownloads(t)
+        } else {
+          this.androidPermissions
+            .requestPermission(
+              this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
+            )
+            .then(async (requestStatus) => {
+              if (requestStatus.hasPermission) {
+                await this.exportTrajectoryToDownloads(t)
+              } else {
+                await this.showToast(
+                  'Trajectory could not be exported as permissions were denied',
+                  true
+                )
+              }
+            })
+        }
+      })
+  }
+
+  private async presentExportActionSheet(t: Trajectory) {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Export trajectory',
+      buttons: [
+        {
+          text: 'Save to downloads',
+          icon: 'save-outline',
+          handler: () => {
+            this.assurePermissionsAndExportToDownloads(t)
+          },
+        },
+        {
+          text: 'Share',
+          icon: 'share-social-outline',
+          handler: async () => {
+            await this.exportTrajectoryViaShareDialog(t)
+          },
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+        },
+      ],
+    })
+    await actionSheet.present()
   }
 
   private async showLoadingDialog(message: string) {
