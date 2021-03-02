@@ -28,6 +28,7 @@
 
       <ion-col sizeXs="12" sizeLg="4">
         <app-item-card
+          [disabled]="!locationService.isSupportedPlatform"
           icon="add-outline"
           title="Add your own trajectory"
           subtitle="import a GPX or GeoJSON file"

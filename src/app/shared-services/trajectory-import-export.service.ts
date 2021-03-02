@@ -64,16 +64,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
           selectedFile.extensions[index]
         )
       }
-    } else {
-      FileSelector.addListener('onFilesSelected', async (data: FileList) => {
-        for (let index = 0; index < data.length; index++) {
-          await this.importFile(
-            data.item(index),
-            data.item(index).name,
-            data.item(index).type
-          )
-        }
-      })
     }
   }
 
@@ -106,10 +96,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
       await this.showToast('Trajectory export successful', false)
     } catch (e) {
       this.hideLoadingDialog()
-      await this.showToast(
-        'Trajectory export failed ' + JSON.stringify(e),
-        true
-      )
+      await this.showToast('Trajectory export failed', true)
     }
   }
 
