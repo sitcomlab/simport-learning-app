@@ -1,4 +1,4 @@
-name: CI-iOS
+name: iOS-Build
 
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
@@ -42,5 +42,3 @@ jobs:
           code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
           export-method: "ad-hoc"
-
-      # TODO: run tests
