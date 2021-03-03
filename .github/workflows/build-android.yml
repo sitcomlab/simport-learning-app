@@ -1,4 +1,4 @@
-name: CI-Android
+name: Android-Build
 
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
@@ -58,31 +58,4 @@ jobs:
           ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        
-      - name: Archive build artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: apk-artifact
-          path: android/app/build/outputs/apk/release/app-release.apk
-        
-  deploy-android:
-    needs: [build-android]
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@master
-      
-      - name: Download build artifact
-        uses: actions/download-artifact@master
-        with:
-          name: apk-artifact
-          path: ./
-
-      - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
-        with:
-          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: ${{ secrets.FIREBASE_INTERNAL_TEST_GROUP }}
-          file: app-release.apk
