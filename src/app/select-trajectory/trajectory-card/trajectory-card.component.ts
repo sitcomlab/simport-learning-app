@@ -20,7 +20,7 @@ export class TrajectoryCardComponent implements OnInit {
   ngOnInit() {}
 
   durationString() {
-    const days = this.trajectory.durationDays
+    const days = this.trajectory?.durationDays
     return days ? moment.duration(days, 'days').humanize() : '—'
   }
 

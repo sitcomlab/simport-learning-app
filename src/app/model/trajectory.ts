@@ -75,12 +75,6 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     return trajectoryJson
   }
 
-  static toJSONString(t: Trajectory, useBase64: boolean): string {
-    const trajectoryJson = Trajectory.toJSON(t)
-    const trajectoryJsonString = JSON.stringify(trajectoryJson)
-    return useBase64 ? btoa(trajectoryJsonString) : trajectoryJsonString
-  }
-
   constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
     if (data?.coordinates.length !== data?.timestamps.length)
       throw new Error(

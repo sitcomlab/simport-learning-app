@@ -67,6 +67,23 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
   }
 
+  createTrajectoryFromImport(json: string, name: string): Trajectory {
+    const trajectoryJson: {
+      coordinates: string
+      timestamps: number[]
+      time0: string
+      timeN?: string
+    } = JSON.parse(json)
+    const data = Trajectory.fromJSON(trajectoryJson)
+    const meta: TrajectoryMeta = {
+      id: uuid(),
+      placename: name?.replace(/\.[^/.]+$/, '') ?? 'trajectory', // remove extension from name (e.g. '.json')
+      type: TrajectoryType.IMPORT,
+      durationDays: null,
+    }
+    return new Trajectory(meta, data)
+  }
+
   async exportTrajectory(trajectoryMeta: TrajectoryMeta) {
     this.getOne(trajectoryMeta.type, trajectoryMeta.id).subscribe(async (t) => {
       if (this.platform.is('android')) {
@@ -77,13 +94,19 @@ export class TrajectoryImportExportService extends TrajectoryService {
     })
   }
 
+  createTrajectoryStringForExport(t: Trajectory, useBase64: boolean): string {
+    const trajectoryJson = Trajectory.toJSON(t)
+    const trajectoryJsonString = JSON.stringify(trajectoryJson)
+    return useBase64 ? btoa(trajectoryJsonString) : trajectoryJsonString
+  }
+
   /**
    * This is android-only.
    * @param t trajectory to export
    */
   private async exportTrajectoryToDownloads(t: Trajectory) {
     await this.showLoadingDialog('Exporting trajectory...')
-    const trajectoryString = Trajectory.toJSONString(t, false)
+    const trajectoryString = this.createTrajectoryStringForExport(t, false)
     try {
       const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
       await Filesystem.writeFile({
@@ -105,7 +128,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    */
   private async exportTrajectoryViaShareDialog(t: Trajectory) {
     await this.showLoadingDialog('Exporting trajectory...')
-    const trajectoryBase64 = Trajectory.toJSONString(t, true)
+    const trajectoryBase64 = this.createTrajectoryStringForExport(t, true)
     const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
     const sharingOptions = {
       files: [
@@ -136,20 +159,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
         reader.readAsText(file)
         reader.onload = () => {
           const json = reader.result.toString()
-          const trajectoryJson: {
-            coordinates: string
-            timestamps: number[]
-            time0: string
-            timeN?: string
-          } = JSON.parse(json)
-          const data = Trajectory.fromJSON(trajectoryJson)
-          const meta: TrajectoryMeta = {
-            id: uuid(),
-            placename: name.replace(/\.[^/.]+$/, ''), // remove extension from name (e.g. '.json')
-            type: TrajectoryType.IMPORT,
-            durationDays: null,
-          }
-          const trajectory = new Trajectory(meta, data)
+          const trajectory = this.createTrajectoryFromImport(json, name)
           this.addTrajectory(trajectory)
             .then(async () => {
               await this.hideLoadingDialog()
