@@ -9,21 +9,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ios:
+  run-tests:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [14.15]
 
     steps:
       - name: Checkout project
         uses: actions/checkout@master
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Install dependencies
+        run: npm install --silent
         
-      - name: Prepare ionic build
-        uses: coturiv/setup-ionic@v1
-
-      - name: Run ionic build
-        run: |
-          npm install --silent
-          ionic cap update --no-interactive --no-open --confirm
-  
       - name: Run tests
-        run: |
-          npm test
+        run: npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
