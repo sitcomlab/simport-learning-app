@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core'
 import {
-  ModalController,
   AlertController,
-  PopoverController,
   LoadingController,
+  ModalController,
+  PopoverController,
   ToastController,
 } from '@ionic/angular'
 import { TrajectoryMeta } from 'src/app/model/trajectory'
@@ -38,7 +38,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
     e.stopPropagation()
     this.popoverCtrl.dismiss()
     const alert = await this.alertCtrl.create({
-      header: `Delete ${this.trajectory.placename}`,
+      header: `Delete ${this.trajectory?.placename ?? 'trajectory'}`,
       message: 'Are you sure you want to delete the trajectory?',
       buttons: [
         {
