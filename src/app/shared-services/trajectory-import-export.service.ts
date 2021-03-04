@@ -36,6 +36,10 @@ export class TrajectoryImportExportService extends TrajectoryService {
     super(http, db, locationService)
   }
 
+  /**
+   * Invokes a UI that enables the user to select and import
+   * a trajectory-json on iOS and Android.
+   */
   async selectAndImportTrajectory() {
     const selectedFile = await FileSelector.fileSelector({
       multiple_selection: false,
@@ -67,6 +71,15 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
   }
 
+  /**
+   * Translates a trajectory in form of a JSON {@linkcode TrajectoryJSON}
+   * into a model class {@linkcode Trajectory}
+   *
+   * @param json trajectory-file as JSON, see {@linkcode TrajectoryJSON}
+   * @param name file name of imported JSON
+   *
+   * @returns trajectory
+   */
   createTrajectoryFromImport(json: string, name: string): Trajectory {
     const trajectoryJson: {
       coordinates: string
@@ -84,6 +97,12 @@ export class TrajectoryImportExportService extends TrajectoryService {
     return new Trajectory(meta, data)
   }
 
+  /**
+   * Loads full trajectory from persistent storage and invokes a UI
+   * that enables the user to export a trajectory as JSON.
+   *
+   * @param trajectoryMeta metadata of a trajectory
+   */
   async exportTrajectory(trajectoryMeta: TrajectoryMeta) {
     this.getOne(trajectoryMeta.type, trajectoryMeta.id).subscribe(async (t) => {
       if (this.platform.is('android')) {
@@ -94,6 +113,13 @@ export class TrajectoryImportExportService extends TrajectoryService {
     })
   }
 
+  /**
+   * Translates trajectory from model class {@linkcode Trajectory}
+   * into JSON-format specified by {@linkcode TrajectoryJSON}
+   *
+   * @param t trajectory
+   * @param useBase64 flag that indicates, whether to encode with base64 or not
+   */
   createTrajectoryStringForExport(t: Trajectory, useBase64: boolean): string {
     const trajectoryJson = Trajectory.toJSON(t)
     const trajectoryJsonString = JSON.stringify(trajectoryJson)
