@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { ModalController, AlertController } from '@ionic/angular'
 import * as moment from 'moment'
-import { TrajectoryMeta } from 'src/app/model/trajectory'
+import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 
 @Component({
@@ -21,7 +21,7 @@ export class TrajectoryCardComponent implements OnInit {
   ngOnInit() {}
 
   durationString() {
-    const days = this.trajectory.durationDays
+    const days = this.trajectory?.durationDays
     return days ? moment.duration(days, 'days').humanize() : '—'
   }
 
@@ -29,7 +29,7 @@ export class TrajectoryCardComponent implements OnInit {
     e.stopPropagation()
     const alert = await this.alertCtrl.create({
       cssClass: 'my-custom-class',
-      header: `Delete ${this.trajectory.placename}`,
+      header: `Delete ${this.trajectory?.placename ?? 'trajectory'}`,
       message: 'Are you sure you want to delete the trajectory?',
       buttons: [
         {

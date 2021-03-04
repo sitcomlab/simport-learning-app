@@ -1,5 +1,11 @@
 # SIMPORT Learning App
 
+<p align="center">
+<a href="https://github.com/sitcomlab/simport-learning-app/actions/workflows/build-android.yml"><img src="https://github.com/sitcomlab/simport-learning-app/actions/workflows/build-android.yml/badge.svg"></a>
+<a href="https://github.com/sitcomlab/simport-learning-app/actions/workflows/build-ios.yml"><img src="https://github.com/sitcomlab/simport-learning-app/actions/workflows/build-ios.yml/badge.svg"></a>
+<a href="https://github.com/sitcomlab/simport-learning-app/actions/workflows/run-tests.yml"><img src="https://github.com/sitcomlab/simport-learning-app/actions/workflows/run-tests.yml/badge.svg"></a>
+</p>
+
 learning tool on location privacy
 
 > **status**: prototyping
