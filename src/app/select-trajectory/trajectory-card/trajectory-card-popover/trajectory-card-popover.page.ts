@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import {
-  ModalController,
   AlertController,
-  PopoverController,
   LoadingController,
+  ModalController,
+  PopoverController,
   ToastController,
   Platform,
   ActionSheetController,
@@ -132,7 +132,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
     e.stopPropagation()
     this.popoverController.dismiss()
     const alert = await this.alertController.create({
-      header: `Delete ${this.trajectory.placename}`,
+      header: `Delete ${this.trajectory?.placename ?? 'trajectory'}`,
       message: 'Are you sure you want to delete the trajectory?',
       buttons: [
         {
