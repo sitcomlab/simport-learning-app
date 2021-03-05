@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import {
   IonRouterOutlet,
+  LoadingController,
   ModalController,
   ToastController,
 } from '@ionic/angular'
@@ -26,6 +27,7 @@ export class SelectTrajectoryPage implements OnInit {
   constructor(
     private modalController: ModalController,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
@@ -55,13 +57,14 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
+        await this.showLoadingDialog('Importing trajectory...')
         await this.trajectoryImportExportService
           .selectAndImportTrajectory()
           .then(async (result) => {
+            this.hideLoadingDialog()
             if (result.success) {
               const viewTrajectoryButton = {
                 text: 'View',
-                icon: 'compass-outline',
                 handler: async () => {
                   this.router.navigate([
                     `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
@@ -100,6 +103,18 @@ export class SelectTrajectoryPage implements OnInit {
       buttons,
     })
     toast.present()
+  }
+
+  private async showLoadingDialog(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      translucent: true,
+    })
+    await loading.present()
+  }
+
+  private async hideLoadingDialog() {
+    await this.loadingController.dismiss()
   }
 }
 

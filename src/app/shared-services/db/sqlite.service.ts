@@ -124,43 +124,39 @@ export class SqliteService {
   async upsertPointsForTrajectory(t: Trajectory) {
     // insert or update new points query
     const numPoints = t.coordinates.length
-    if (numPoints) {
-      // construct query & values array in chunks to prevent to many sql-statements at once
-      // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
-      const chunkSize = 1000
-      let pointsIndex = 0
+    if (!numPoints) {
+      return
+    }
+    // construct query & values array in chunks to prevent to many sql-statements at once
+    // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
+    const chunkSize = 1000
+    let pointsIndex = 0
+    for (let chunkIndex = 0; chunkIndex < numPoints; chunkIndex += chunkSize) {
+      const placeholders = []
+      const values = []
       for (
-        let chunkIndex = 0;
-        chunkIndex < numPoints;
-        chunkIndex += chunkSize
+        ;
+        pointsIndex < chunkIndex + chunkSize && pointsIndex < numPoints;
+        pointsIndex++
       ) {
-        const placeholders = []
-        const values = []
-        for (
-          ;
-          pointsIndex < chunkIndex + chunkSize && pointsIndex < numPoints;
-          pointsIndex++
-        ) {
-          const time = t.timestamps[pointsIndex]
-          const [lat, lon] = t.coordinates[pointsIndex]
-          const accuracy = t.accuracy[pointsIndex] ?? 0
-          placeholders.push(`(?,?,?,?,?)`)
-          values.push(t.id, time, lat, lon, accuracy)
-        }
+        const time = t.timestamps[pointsIndex]
+        const [lat, lon] = t.coordinates[pointsIndex]
+        const accuracy = t.accuracy[pointsIndex] ?? 0
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(t.id, time, lat, lon, accuracy)
+      }
 
-        const placeholderString = placeholders.join(', ')
-        const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
-        const set: capSQLiteSet[] = [
-          { statement, values: values.map(normalize) },
-        ]
-        const {
-          changes: { pointsChanges },
-          message: pointsMessage,
-        } = await this.db.executeSet({ set })
-        if (pointsChanges === -1)
-          throw new Error(
-            `couldnt insert points for trajectory ${t.id}: ${pointsMessage}`
-          )
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { pointsChanges },
+        message: pointsMessage,
+      } = await this.db.executeSet({ set })
+      if (pointsChanges === -1) {
+        throw new Error(
+          `couldnt insert points for trajectory ${t.id}: ${pointsMessage}`
+        )
       }
     }
   }
