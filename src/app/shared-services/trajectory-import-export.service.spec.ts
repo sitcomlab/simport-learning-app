@@ -39,7 +39,7 @@ describe('TrajectoryImportExportService', () => {
     expect(service).toBeTruthy()
   })
 
-  it('should import and export a trajectory', () => {
+  it('should import and export a trajectory', async () => {
     const importedTrajectory = service.createTrajectoryFromImport(
       testTrajectoryString,
       testTrajectoryName
@@ -54,16 +54,18 @@ describe('TrajectoryImportExportService', () => {
     expect(importedTrajectory.coordinates).toEqual(testTrajectory.coordinates)
 
     // re-exported trajectory should match the original trajectory (with and without base64 encoding)
-    const exportJson = service.createTrajectoryStringForExport(
+    const exportFile = await service.createTrajectoryExportFile(
       importedTrajectory,
       false
     )
-    expect(exportJson).toMatch(testTrajectoryString.replace(/\s/g, ''))
-    const exportBase64Json = service.createTrajectoryStringForExport(
+    expect(exportFile.trajectory).toMatch(
+      testTrajectoryString.replace(/\s/g, '')
+    )
+    const exportBase64File = await service.createTrajectoryExportFile(
       importedTrajectory,
       true
     )
-    expect(exportBase64Json).toMatch(
+    expect(exportBase64File.trajectory).toMatch(
       testTrajectoryBase64String.replace(/\s/g, '')
     )
   })

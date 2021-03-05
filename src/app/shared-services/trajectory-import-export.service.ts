@@ -160,7 +160,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
   async exportTrajectoryViaShareDialog(
     trajectoryMeta: TrajectoryMeta
   ): Promise<TrajectoryExportResult> {
-    const trajectoryFile = await this.createTrajectoryStringForExport(
+    const trajectoryFile = await this.createTrajectoryExportFileFromMeta(
       trajectoryMeta,
       true
     )
@@ -193,7 +193,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
   async exportTrajectoryToDownloads(
     trajectoryMeta: TrajectoryMeta
   ): Promise<TrajectoryExportResult> {
-    const trajectoryFile = await this.createTrajectoryStringForExport(
+    const trajectoryFile = await this.createTrajectoryExportFileFromMeta(
       trajectoryMeta,
       false
     )
@@ -220,7 +220,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * @param trajectoryMeta metadata of trajectory
    * @param useBase64 flag that indicates, whether to encode with base64 or not
    */
-  async createTrajectoryStringForExport(
+  async createTrajectoryExportFileFromMeta(
     trajectoryMeta: TrajectoryMeta,
     useBase64: boolean
   ): Promise<TrajectoryExportFile> {
@@ -228,15 +228,20 @@ export class TrajectoryImportExportService extends TrajectoryService {
       trajectoryMeta.type,
       trajectoryMeta.id
     ).toPromise()
+    return this.createTrajectoryExportFile(trajectory, useBase64)
+  }
+
+  async createTrajectoryExportFile(
+    trajectory: Trajectory,
+    useBase64: boolean
+  ): Promise<TrajectoryExportFile> {
     const trajectoryJson = Trajectory.toJSON(trajectory)
     const trajectoryJsonString = JSON.stringify(trajectoryJson)
     const trajectoryJsonStringEncoded = useBase64
       ? btoa(trajectoryJsonString)
       : trajectoryJsonString
     const filename =
-      trajectoryMeta.placename.length > 0
-        ? trajectoryMeta.placename
-        : 'trajectory'
+      trajectory.placename.length > 0 ? trajectory.placename : 'trajectory'
     return { trajectory: trajectoryJsonStringEncoded, filename }
   }
 }
