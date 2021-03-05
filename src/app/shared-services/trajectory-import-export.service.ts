@@ -119,37 +119,37 @@ export class TrajectoryImportExportService extends TrajectoryService {
         trajectoryId: null,
         errorMessage: 'Please select JSON-files',
       }
-    } else {
-      try {
-        const reader = new FileReader()
-        reader.readAsText(file)
-        return new Promise((resolve) => {
-          reader.onload = async () => {
-            const json = reader.result.toString()
-            const trajectory = this.createTrajectoryFromImport(json, name)
-            return this.addTrajectory(trajectory)
-              .then(async () => {
-                resolve({
-                  success: true,
-                  trajectoryId: trajectory.id,
-                  errorMessage: null,
-                })
+    }
+
+    try {
+      const reader = new FileReader()
+      reader.readAsText(file)
+      return new Promise((resolve) => {
+        reader.onload = async () => {
+          const json = reader.result.toString()
+          const trajectory = this.createTrajectoryFromImport(json, name)
+          return this.addTrajectory(trajectory)
+            .then(async () => {
+              resolve({
+                success: true,
+                trajectoryId: trajectory.id,
+                errorMessage: null,
               })
-              .catch(async () => {
-                resolve({
-                  success: false,
-                  trajectoryId: trajectory.id,
-                  errorMessage: 'Trajectory could not be imported',
-                })
+            })
+            .catch(async () => {
+              resolve({
+                success: false,
+                trajectoryId: trajectory.id,
+                errorMessage: 'Trajectory could not be imported',
               })
-          }
-        })
-      } catch (e) {
-        return {
-          success: false,
-          trajectoryId: null,
-          errorMessage: 'Trajectory could not be imported',
+            })
         }
+      })
+    } catch (e) {
+      return {
+        success: false,
+        trajectoryId: null,
+        errorMessage: 'Trajectory could not be imported',
       }
     }
   }
