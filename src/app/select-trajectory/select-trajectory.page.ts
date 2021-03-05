@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { IonRouterOutlet, ModalController } from '@ionic/angular'
-import { TrajectoryMeta } from '../model/trajectory'
+import {
+  IonRouterOutlet,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
+import { ToastButton } from '@ionic/core'
+import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
@@ -20,6 +25,7 @@ enum TrajectoryMode {
 export class SelectTrajectoryPage implements OnInit {
   constructor(
     private modalController: ModalController,
+    private toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
@@ -49,12 +55,51 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
-        await this.trajectoryImportExportService.selectAndImportTrajectory()
+        await this.trajectoryImportExportService
+          .selectAndImportTrajectory()
+          .then(async (result) => {
+            if (result.success) {
+              const viewTrajectoryButton = {
+                text: 'View',
+                icon: 'compass-outline',
+                handler: async () => {
+                  this.router.navigate([
+                    `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
+                  ])
+                },
+              }
+              await this.showToastWithButtons(
+                'Trajectory successfully imported',
+                false,
+                [viewTrajectoryButton]
+              )
+            } else {
+              await this.showToast(result.errorMessage, true)
+            }
+          })
         return
 
       default:
         assertUnreachable(mode)
     }
+  }
+
+  private async showToast(message: string, isError: boolean) {
+    await this.showToastWithButtons(message, isError, null)
+  }
+
+  private async showToastWithButtons(
+    message: string,
+    isError: boolean,
+    buttons: ToastButton[]
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      color: isError ? 'danger' : 'success',
+      duration: buttons.length > 0 ? 4000 : 2000,
+      buttons,
+    })
+    toast.present()
   }
 }
 

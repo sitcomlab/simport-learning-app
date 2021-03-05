@@ -2,12 +2,7 @@ import { Injectable } from '@angular/core'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { TrajectoryService } from '../shared-services/trajectory.service'
 import { v4 as uuid } from 'uuid'
-import {
-  ActionSheetController,
-  LoadingController,
-  Platform,
-  ToastController,
-} from '@ionic/angular'
+import { Platform } from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
@@ -17,8 +12,23 @@ import {
   FilesystemEncoding,
 } from '@capacitor/core'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 const { FileSelector, Filesystem } = Plugins
+
+export interface TrajectoryExportFile {
+  trajectory: string
+  filename: string
+}
+
+export interface TrajectoryExportResult {
+  success: boolean
+  errorMessage: string
+}
+
+export interface TrajectoryImportResult {
+  success: boolean
+  trajectoryId: string
+  errorMessage: string
+}
 
 @Injectable()
 export class TrajectoryImportExportService extends TrajectoryService {
@@ -27,10 +37,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
     db: SqliteService,
     locationService: LocationService,
     private socialSharing: SocialSharing,
-    private loadingController: LoadingController,
-    private toastController: ToastController,
-    private actionSheetController: ActionSheetController,
-    private androidPermissions: AndroidPermissions,
     private platform: Platform
   ) {
     super(http, db, locationService)
@@ -40,7 +46,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * Invokes a UI that enables the user to select and import
    * a trajectory-json on iOS and Android.
    */
-  async selectAndImportTrajectory() {
+  async selectAndImportTrajectory(): Promise<TrajectoryImportResult> {
     const selectedFile = await FileSelector.fileSelector({
       multiple_selection: false,
       ext: ['*'],
@@ -51,7 +57,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
       const parsedExtensions = JSON.parse(selectedFile.extensions)
       for (let index = 0; index < parsedPaths.length; index++) {
         const file = await fetch(parsedPaths[index]).then((r) => r.blob())
-        await this.importFile(
+        return await this.importFile(
           file,
           parsedOriginalNames[index],
           parsedExtensions[index]
@@ -62,12 +68,17 @@ export class TrajectoryImportExportService extends TrajectoryService {
         const file = await fetch(selectedFile.paths[index]).then((r) =>
           r.blob()
         )
-        await this.importFile(
+        return await this.importFile(
           file,
           selectedFile.original_names[index],
           selectedFile.extensions[index]
         )
       }
+    }
+    return {
+      success: false,
+      errorMessage: 'Trajectory could not be exported',
+      trajectoryId: null,
     }
   }
 
@@ -97,185 +108,135 @@ export class TrajectoryImportExportService extends TrajectoryService {
     return new Trajectory(meta, data)
   }
 
-  /**
-   * Loads full trajectory from persistent storage and invokes a UI
-   * that enables the user to export a trajectory as JSON.
-   *
-   * @param trajectoryMeta metadata of a trajectory
-   */
-  async exportTrajectory(trajectoryMeta: TrajectoryMeta) {
-    this.getOne(trajectoryMeta.type, trajectoryMeta.id).subscribe(async (t) => {
-      if (this.platform.is('android')) {
-        await this.presentExportActionSheet(t)
-      } else {
-        await this.exportTrajectoryViaShareDialog(t)
+  private async importFile(
+    file: Blob,
+    name: string,
+    extension: string
+  ): Promise<TrajectoryImportResult> {
+    if (!extension.toLowerCase().endsWith('json')) {
+      return {
+        success: false,
+        trajectoryId: null,
+        errorMessage: 'Please select JSON-files',
       }
-    })
-  }
-
-  /**
-   * Translates trajectory from model class {@linkcode Trajectory}
-   * into JSON-format specified by {@linkcode TrajectoryJSON}
-   *
-   * @param t trajectory
-   * @param useBase64 flag that indicates, whether to encode with base64 or not
-   */
-  createTrajectoryStringForExport(t: Trajectory, useBase64: boolean): string {
-    const trajectoryJson = Trajectory.toJSON(t)
-    const trajectoryJsonString = JSON.stringify(trajectoryJson)
-    return useBase64 ? btoa(trajectoryJsonString) : trajectoryJsonString
-  }
-
-  /**
-   * This is android-only.
-   * @param t trajectory to export
-   */
-  private async exportTrajectoryToDownloads(t: Trajectory) {
-    await this.showLoadingDialog('Exporting trajectory...')
-    const trajectoryString = this.createTrajectoryStringForExport(t, false)
-    try {
-      const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
-      await Filesystem.writeFile({
-        path: `Download/${fileName}.json`,
-        data: trajectoryString,
-        directory: FilesystemDirectory.ExternalStorage,
-        encoding: FilesystemEncoding.UTF8,
-      })
-      this.hideLoadingDialog()
-      await this.showToast('Trajectory export successful', false)
-    } catch (e) {
-      this.hideLoadingDialog()
-      await this.showToast('Trajectory export failed', true)
+    } else {
+      try {
+        const reader = new FileReader()
+        reader.readAsText(file)
+        return new Promise((resolve) => {
+          reader.onload = async () => {
+            const json = reader.result.toString()
+            const trajectory = this.createTrajectoryFromImport(json, name)
+            return this.addTrajectory(trajectory)
+              .then(async () => {
+                resolve({
+                  success: true,
+                  trajectoryId: trajectory.id,
+                  errorMessage: null,
+                })
+              })
+              .catch(async () => {
+                resolve({
+                  success: false,
+                  trajectoryId: trajectory.id,
+                  errorMessage: 'Trajectory could not be imported',
+                })
+              })
+          }
+        })
+      } catch (e) {
+        return {
+          success: false,
+          trajectoryId: null,
+          errorMessage: 'Trajectory could not be imported',
+        }
+      }
     }
   }
 
   /**
    * @param t trajectory to share
    */
-  private async exportTrajectoryViaShareDialog(t: Trajectory) {
-    await this.showLoadingDialog('Exporting trajectory...')
-    const trajectoryBase64 = this.createTrajectoryStringForExport(t, true)
-    const fileName = t.placename.length > 0 ? t.placename : 'trajectory'
+  async exportTrajectoryViaShareDialog(
+    trajectoryMeta: TrajectoryMeta
+  ): Promise<TrajectoryExportResult> {
+    const trajectoryFile = await this.createTrajectoryStringForExport(
+      trajectoryMeta,
+      true
+    )
     const sharingOptions = {
       files: [
-        `df:${fileName}.json;data:application/json;base64,${trajectoryBase64}`,
+        `df:${trajectoryFile.filename}.json;data:application/json;base64,${trajectoryFile.trajectory}`,
       ],
       chooserTitle: 'Exporting trajectory', // android-only dialog-title
     }
-    this.hideLoadingDialog()
-    this.socialSharing
+    return this.socialSharing
       .shareWithOptions(sharingOptions)
       .then(async (result: { completed: boolean; app: string }) => {
-        if (result.completed) {
-          await this.showToast('Trajectory export successful', false)
+        return {
+          success: result.completed,
+          errorMessage: 'Trajectory could not be exported',
         }
       })
       .catch(async () => {
-        await this.showToast('Trajectory export failed', true)
+        return {
+          success: false,
+          errorMessage: 'Trajectory could not be exported',
+        }
       })
   }
 
-  private async importFile(file: Blob, name: string, extension: string) {
-    if (!extension.toLowerCase().endsWith('json')) {
-      await this.showToast('Please select JSON-files', true)
-    } else {
-      try {
-        await this.showLoadingDialog('Importing trajectory...')
-        const reader = new FileReader()
-        reader.readAsText(file)
-        reader.onload = () => {
-          const json = reader.result.toString()
-          const trajectory = this.createTrajectoryFromImport(json, name)
-          this.addTrajectory(trajectory)
-            .then(async () => {
-              await this.hideLoadingDialog()
-              await this.showToast('Trajectory successfully imported', false)
-            })
-            .catch(async () => {
-              await this.hideLoadingDialog()
-              await this.showToast('Trajectory could not be imported', true)
-            })
-        }
-      } catch (e) {
-        await this.hideLoadingDialog()
-        await this.showToast('Trajectory could not be imported', true)
+  /**
+   * This is android-only.
+   * @param t trajectory to export
+   */
+  async exportTrajectoryToDownloads(
+    trajectoryMeta: TrajectoryMeta
+  ): Promise<TrajectoryExportResult> {
+    const trajectoryFile = await this.createTrajectoryStringForExport(
+      trajectoryMeta,
+      false
+    )
+    try {
+      await Filesystem.writeFile({
+        path: `Download/${trajectoryFile.filename}.json`,
+        data: trajectoryFile.trajectory,
+        directory: FilesystemDirectory.ExternalStorage,
+        encoding: FilesystemEncoding.UTF8,
+      })
+      return { success: true, errorMessage: null }
+    } catch (e) {
+      return {
+        success: false,
+        errorMessage: 'Trajectory could not be exported',
       }
     }
   }
 
-  private assurePermissionsAndExportToDownloads(t: Trajectory) {
-    this.androidPermissions
-      .checkPermission(
-        this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-      )
-      .then(async (status) => {
-        if (status.hasPermission) {
-          await this.exportTrajectoryToDownloads(t)
-        } else {
-          this.androidPermissions
-            .requestPermission(
-              this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-            )
-            .then(async (requestStatus) => {
-              if (requestStatus.hasPermission) {
-                await this.exportTrajectoryToDownloads(t)
-              } else {
-                await this.showToast(
-                  'Trajectory could not be exported as permissions were denied',
-                  true
-                )
-              }
-            })
-        }
-      })
-  }
-
-  private async presentExportActionSheet(t: Trajectory) {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Export trajectory',
-      buttons: [
-        {
-          text: 'Save to downloads',
-          icon: 'save-outline',
-          handler: () => {
-            this.assurePermissionsAndExportToDownloads(t)
-          },
-        },
-        {
-          text: 'Share',
-          icon: 'share-social-outline',
-          handler: async () => {
-            await this.exportTrajectoryViaShareDialog(t)
-          },
-        },
-        {
-          text: 'Cancel',
-          icon: 'close',
-          role: 'cancel',
-        },
-      ],
-    })
-    await actionSheet.present()
-  }
-
-  private async showLoadingDialog(message: string) {
-    const loading = await this.loadingController.create({
-      message,
-      translucent: true,
-    })
-    await loading.present()
-  }
-
-  private async hideLoadingDialog() {
-    await this.loadingController.dismiss()
-  }
-
-  private async showToast(message: string, isError: boolean) {
-    const toast = await this.toastController.create({
-      message,
-      color: isError ? 'danger' : 'medium',
-      duration: 1000,
-    })
-    toast.present()
+  /**
+   * Translates trajectory from model class {@linkcode TrajectoryMeta}
+   * into JSON-format specified by {@linkcode TrajectoryJSON}
+   *
+   * @param trajectoryMeta metadata of trajectory
+   * @param useBase64 flag that indicates, whether to encode with base64 or not
+   */
+  async createTrajectoryStringForExport(
+    trajectoryMeta: TrajectoryMeta,
+    useBase64: boolean
+  ): Promise<TrajectoryExportFile> {
+    const trajectory = await this.getOne(
+      trajectoryMeta.type,
+      trajectoryMeta.id
+    ).toPromise()
+    const trajectoryJson = Trajectory.toJSON(trajectory)
+    const trajectoryJsonString = JSON.stringify(trajectoryJson)
+    const trajectoryJsonStringEncoded = useBase64
+      ? btoa(trajectoryJsonString)
+      : trajectoryJsonString
+    const filename =
+      trajectoryMeta.placename.length > 0
+        ? trajectoryMeta.placename
+        : 'trajectory'
+    return { trajectory: trajectoryJsonStringEncoded, filename }
   }
 }

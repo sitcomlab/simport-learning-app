@@ -1,8 +1,5 @@
-import { getInterpolationArgsLength } from '@angular/compiler/src/render3/view/util'
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-import { title } from 'process'
-
 import { TrajectoryPage } from './trajectory.page'
 
 export enum TrajectoryPagePath {

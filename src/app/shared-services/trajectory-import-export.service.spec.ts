@@ -8,7 +8,6 @@ import { HttpClient, HttpHandler } from '@angular/common/http'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import {
   testTrajectory,
   testTrajectoryBase64String,
@@ -31,7 +30,6 @@ describe('TrajectoryImportExportService', () => {
         BackgroundGeolocation,
         LocalNotifications,
         SocialSharing,
-        AndroidPermissions,
       ],
     })
     service = TestBed.inject(TrajectoryImportExportService)
