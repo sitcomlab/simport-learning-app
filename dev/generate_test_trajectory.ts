@@ -120,6 +120,14 @@ function exportToCsv(trajectories: Trajectory[]) {
   })
 }
 
+function exportToJson(trajectories: Trajectory[]) {
+  fs.writeFile('trajectories.json', JSON.stringify(trajectories), function (
+    error
+  ) {
+    if (error) return console.log(error)
+  })
+}
+
 function loadTrajectoryFromGpxFile(filepath: string): Promise<Trajectory> {
   const ext = path.extname(filepath)
   if (ext != '.gpx') throw new Error('unsupported format: gpx expected')
@@ -184,6 +192,13 @@ async function main() {
   )
 
   exportToCsv([
+    trajectory_home,
+    trajectory_home_to_work,
+    trajectory_work,
+    trajectory_work_to_home,
+  ])
+
+  exportToJson([
     trajectory_home,
     trajectory_home_to_work,
     trajectory_work,
