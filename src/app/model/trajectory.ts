@@ -90,6 +90,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   }
 
   addPoint({ latLng, time, accuracy }: Point) {
+    if (this.data == null)
+      this.data = { coordinates: [], timestamps: [], accuracy: [] }
     this.data.coordinates.push(latLng)
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())

@@ -3,7 +3,11 @@ const USAGE = `ts-node --dir dev generate_test_trajectory.ts <gpx-file-home> <gp
 import * as fs from 'fs'
 import * as GPX from 'gpx-parse'
 import * as path from 'path'
-import { Trajectory, TrajectoryType } from '../src/app/model/trajectory'
+import {
+  Trajectory,
+  TrajectoryMeta,
+  TrajectoryType,
+} from '../src/app/model/trajectory'
 
 function argparse() {
   const args = process.argv.slice(2)
@@ -120,7 +124,20 @@ function exportToCsv(trajectories: Trajectory[]) {
   })
 }
 
-function exportToJson(trajectories: Trajectory[]) {
+function combineTrajectories(
+  meta: TrajectoryMeta,
+  trajectories: Trajectory[]
+): Trajectory {
+  var combinedTrajectory = new Trajectory(meta)
+  trajectories.forEach((trajectory) => {
+    trajectory.coordinates.forEach((latLng, i) => {
+      combinedTrajectory.addPoint({ latLng, time: trajectory.timestamps[i] })
+    })
+  })
+  return combinedTrajectory
+}
+
+function exportToJson(trajectories: Trajectory) {
   fs.writeFile('trajectories.json', JSON.stringify(trajectories), function (
     error
   ) {
@@ -198,12 +215,17 @@ async function main() {
     trajectory_work_to_home,
   ])
 
-  exportToJson([
-    trajectory_home,
-    trajectory_home_to_work,
-    trajectory_work,
-    trajectory_work_to_home,
-  ])
+  const testTrajectory = combineTrajectories(
+    { id: 'test', placename: 'institute', type: TrajectoryType.EXAMPLE },
+    [
+      trajectory_home,
+      trajectory_home_to_work,
+      trajectory_work,
+      trajectory_work_to_home,
+    ]
+  )
+
+  exportToJson(testTrajectory)
 }
 
 main().catch((err) => console.error(err))
