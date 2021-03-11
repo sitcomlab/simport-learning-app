@@ -11,18 +11,18 @@ import {
 
 var filepaths = {
   home: 'test-data-gpx/track_home.gpx',
-  home_to_work: 'test-data-gpx/track_home_to_work.gpx',
+  homeToWork: 'test-data-gpx/track_home_to_work.gpx',
   work: 'test-data-gpx/track_work.gpx',
-  work_to_home: 'test-data-gpx/track_work_to_home.gpx',
+  workToHome: 'test-data-gpx/track_work_to_home.gpx',
 }
 
 function argparse() {
   const args = process.argv.slice(2)
   if (args.length == 4) {
     filepaths.home = args[0]
-    filepaths.home_to_work = args[1]
+    filepaths.homeToWork = args[1]
     filepaths.work = args[2]
-    filepaths.work_to_home = args[3]
+    filepaths.workToHome = args[3]
   } else if (args.length != 0) {
     console.error(`usage: ${USAGE}`)
     process.exit(1)
@@ -63,13 +63,14 @@ function createCluster(
   numberPoints: number = 30,
   radius: number = 15
 ): Trajectory {
-  const seed = trajectory.coordinates[trajectory.coordinates.length - 1]
+  const resultTrajectory = trajectory.getCopy()
+  const seed = resultTrajectory.coordinates[resultTrajectory.coordinates.length - 1]
   for (var i: number = 0; i < numberPoints; i++) {
     const rand = randomGeo(seed[0], seed[1], radius)
-    trajectory.coordinates.push([rand.latitude, rand.longitude])
-    trajectory.timestamps.push(null)
+    resultTrajectory.coordinates.push([rand.latitude, rand.longitude])
+    resultTrajectory.timestamps.push(null)
   }
-  return trajectory
+  return resultTrajectory
 }
 
 function addTimestampsForTrajectory(
@@ -80,10 +81,11 @@ function addTimestampsForTrajectory(
   const duration = last.getTime() - first.getTime()
   const numberTimestamps = trajectory.coordinates.length
   const stepLength = duration / numberTimestamps
+  const resultTrajectory = trajectory.getCopy()
   for (let i = 0; i < numberTimestamps; i++) {
-    trajectory.timestamps[i] = new Date(first.getTime() + i * stepLength)
+    resultTrajectory.timestamps[i] = new Date(first.getTime() + i * stepLength)
   }
-  return trajectory
+  return resultTrajectory
 }
 
 function randomGeo(
@@ -139,9 +141,10 @@ function combineTrajectories(
 
 function exportToJson(
   trajectories: Trajectory,
-  filepath: string = 'trajectories.json'
+  filepath: string = '../src/app/shared-services/inferences/test-data/'
 ) {
-  fs.writeFile(filepath, JSON.stringify(trajectories), function (error) {
+  const fullpath = `${filepath}${trajectories.placename}.json`
+  fs.writeFile(fullpath, JSON.stringify(trajectories), function (error) {
     if (error) return console.log(error)
   })
 }
@@ -156,68 +159,110 @@ function loadTrajectoryFromGpxFile(filepath: string): Promise<Trajectory> {
   return parser(id, id, content)
 }
 
+function getTimeDiffInMinutes(firstDate: Date, secondDate: Date): number {
+  return Math.abs(firstDate.getTime() - secondDate.getTime()) / 60000
+}
+
+function getTimeDiffInHours(firstDate: Date, secondDate: Date): number {
+  return getTimeDiffInMinutes(firstDate, secondDate) / 60
+}
+
 async function main() {
   argparse()
 
-  // laod data
-  let trajectory_home = await loadTrajectoryFromGpxFile(filepaths.home)
-  let trajectory_home_to_work = await loadTrajectoryFromGpxFile(
-    filepaths.home_to_work
+  // load data
+  const baseTrajectoryHome = await loadTrajectoryFromGpxFile(filepaths.home)
+  const baseTrajectoryHomeToWork = await loadTrajectoryFromGpxFile(
+    filepaths.homeToWork
   )
-  let trajectory_work = await loadTrajectoryFromGpxFile(filepaths.work)
-  let trajectory_work_to_home = await loadTrajectoryFromGpxFile(
-    filepaths.work_to_home
+  const baseTrajectoryWork = await loadTrajectoryFromGpxFile(filepaths.work)
+  const baseTrajectoryWorkToHome = await loadTrajectoryFromGpxFile(
+    filepaths.workToHome
   )
-
-  // add spatial clusters
-  trajectory_home = createCluster(trajectory_home)
-  trajectory_work = createCluster(trajectory_work)
 
   // add temporal information
-  const home_start = new Date('2021-02-23T18:00:00Z')
-  const home_end = new Date('2021-02-24T08:45:00Z')
-  const work_start = new Date('2021-02-24T09:00:00Z')
-  const work_end = new Date('2021-02-24T17:00:00Z')
-  const home_after_work = new Date('2021-02-24T17:15:00Z')
+  const homeStartDate = new Date('2021-02-23T18:00:00Z')
+  const homeEndDate = new Date('2021-02-24T08:45:00Z')
+  const workStartDate = new Date('2021-02-24T09:00:00Z')
+  const workEndDate = new Date('2021-02-24T17:00:00Z')
+  const homeAfterWorkStartDate = new Date('2021-02-24T17:15:00Z')
+  const homeAfterWorkEndDate = new Date('2021-02-25T08:45:00Z')
 
-  trajectory_home = addTimestampsForTrajectory(
-    home_start,
-    home_end,
-    trajectory_home
+  const trajectoryHomeToWork = addTimestampsForTrajectory(
+    homeEndDate,
+    workStartDate,
+    baseTrajectoryHomeToWork
   )
 
-  trajectory_home_to_work = addTimestampsForTrajectory(
-    home_end,
-    work_start,
-    trajectory_home_to_work
+  const trajectoryWorkToHome = addTimestampsForTrajectory(
+    workEndDate,
+    homeAfterWorkStartDate,
+    baseTrajectoryWorkToHome
   )
 
-  trajectory_work = addTimestampsForTrajectory(
-    work_start,
-    work_end,
-    trajectory_work
-  )
-
-  trajectory_work_to_home = addTimestampsForTrajectory(
-    work_end,
-    home_after_work,
-    trajectory_work_to_home
-  )
-
-  const testTrajectory = combineTrajectories(
-    { id: 'test', placename: 'institute', type: TrajectoryType.EXAMPLE },
+  /**
+   * Trajectory with movement data between work and home,
+   * but no clusters at either of these locations.
+   */
+  const trajectoryMobileOnly = combineTrajectories(
+    { id: 'test-mobile-only', placename: 'test-mobile-only', type: TrajectoryType.EXAMPLE },
     [
-      trajectory_home,
-      trajectory_home_to_work,
-      trajectory_work,
-      trajectory_work_to_home,
+      trajectoryHomeToWork,
+      trajectoryWorkToHome
     ]
   )
+  exportToJson(trajectoryMobileOnly)
 
-  exportToJson(
-    testTrajectory,
-    '../src/app/shared-services/inferences/test-data/trajectories.json'
+  /**
+   * Trajectory with movement data between work and home,
+   * which includes temporally sparse clusters at both locations.
+   * Contains roughly one location per hour per cluster.
+   */
+  const trajectoryHomeTemporallySparse = addTimestampsForTrajectory(
+    homeStartDate,
+    homeEndDate,
+    createCluster(
+      baseTrajectoryHome,
+      Math.round(getTimeDiffInHours(homeStartDate, homeEndDate))
+    )
   )
+  const trajectoryHomeToWorkTemporallySparse = addTimestampsForTrajectory(
+    homeEndDate,
+    workStartDate,
+    baseTrajectoryHomeToWork
+  )
+  const trajectoryWorkTemporallySparse = addTimestampsForTrajectory(
+    homeStartDate,
+    homeEndDate,
+    createCluster(
+      baseTrajectoryWork,
+      Math.round(getTimeDiffInHours(workStartDate, workEndDate))
+    )
+  )
+  const trajectoryWorkToHomeTemporallySparse = addTimestampsForTrajectory(
+    workEndDate,
+    homeAfterWorkStartDate,
+    baseTrajectoryWorkToHome
+  )
+  const trajectoryAfterWorkTemporallySparse = addTimestampsForTrajectory(
+    homeAfterWorkStartDate,
+    homeAfterWorkEndDate,
+    createCluster(
+      baseTrajectoryHome,
+      Math.round(getTimeDiffInHours(homeAfterWorkStartDate, homeAfterWorkEndDate))
+    )
+  )
+  const trajectoryHomeWorkTemporallySparse = combineTrajectories(
+    { id: 'test-home-work-temporally-sparse', placename: 'test-home-work-temporally-sparse', type: TrajectoryType.EXAMPLE },
+    [
+      trajectoryHomeTemporallySparse,
+      trajectoryHomeToWorkTemporallySparse,
+      trajectoryWorkTemporallySparse,
+      trajectoryWorkToHomeTemporallySparse,
+      trajectoryAfterWorkTemporallySparse
+    ]
+  )
+  exportToJson(trajectoryHomeWorkTemporallySparse)
 }
 
 main().catch((err) => console.error(err))

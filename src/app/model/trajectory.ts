@@ -96,6 +96,15 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())
   }
+
+  getCopy(): Trajectory {
+    const data: TrajectoryData = {
+      coordinates: [...this.data?.coordinates],
+      timestamps: [...this.data?.timestamps],
+      accuracy: [...(this.data?.accuracy || [])],
+    }
+    return new Trajectory({ ...this.meta }, data)
+  }
 }
 
 type TrajectoryJSON = {
