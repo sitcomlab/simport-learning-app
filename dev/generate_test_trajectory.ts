@@ -1,4 +1,4 @@
-const USAGE = `ts-node --dir dev generate_test_trajectory.ts <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home>`
+const USAGE = `ts-node --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
 
 import * as fs from 'fs'
 import * as GPX from 'gpx-parse'
@@ -9,23 +9,23 @@ import {
   TrajectoryType,
 } from '../src/app/model/trajectory'
 
+var filepaths = {
+  home: 'test-data-gpx/track_home.gpx',
+  home_to_work: 'test-data-gpx/track_home_to_work.gpx',
+  work: 'test-data-gpx/track_work.gpx',
+  work_to_home: 'test-data-gpx/track_work_to_home.gpx',
+}
+
 function argparse() {
   const args = process.argv.slice(2)
-  if (args.length !== 4) {
+  if (args.length == 4) {
+    filepaths.home = args[0]
+    filepaths.home_to_work = args[1]
+    filepaths.work = args[2]
+    filepaths.work_to_home = args[3]
+  } else if (args.length != 0) {
     console.error(`usage: ${USAGE}`)
     process.exit(1)
-  }
-  const [
-    filepath_home,
-    filepath_home_to_work,
-    filepath_work,
-    filepath_work_to_home,
-  ] = args
-  return {
-    filepath_home,
-    filepath_home_to_work,
-    filepath_work,
-    filepath_work_to_home,
   }
 }
 
@@ -137,10 +137,11 @@ function combineTrajectories(
   return combinedTrajectory
 }
 
-function exportToJson(trajectories: Trajectory) {
-  fs.writeFile('trajectories.json', JSON.stringify(trajectories), function (
-    error
-  ) {
+function exportToJson(
+  trajectories: Trajectory,
+  filepath: string = 'trajectories.json'
+) {
+  fs.writeFile(filepath, JSON.stringify(trajectories), function (error) {
     if (error) return console.log(error)
   })
 }
@@ -156,21 +157,16 @@ function loadTrajectoryFromGpxFile(filepath: string): Promise<Trajectory> {
 }
 
 async function main() {
-  const {
-    filepath_home,
-    filepath_home_to_work,
-    filepath_work,
-    filepath_work_to_home,
-  } = argparse()
+  argparse()
 
   // laod data
-  let trajectory_home = await loadTrajectoryFromGpxFile(filepath_home)
+  let trajectory_home = await loadTrajectoryFromGpxFile(filepaths.home)
   let trajectory_home_to_work = await loadTrajectoryFromGpxFile(
-    filepath_home_to_work
+    filepaths.home_to_work
   )
-  let trajectory_work = await loadTrajectoryFromGpxFile(filepath_work)
+  let trajectory_work = await loadTrajectoryFromGpxFile(filepaths.work)
   let trajectory_work_to_home = await loadTrajectoryFromGpxFile(
-    filepath_work_to_home
+    filepaths.work_to_home
   )
 
   // add spatial clusters
@@ -208,13 +204,6 @@ async function main() {
     trajectory_work_to_home
   )
 
-  exportToCsv([
-    trajectory_home,
-    trajectory_home_to_work,
-    trajectory_work,
-    trajectory_work_to_home,
-  ])
-
   const testTrajectory = combineTrajectories(
     { id: 'test', placename: 'institute', type: TrajectoryType.EXAMPLE },
     [
@@ -225,7 +214,10 @@ async function main() {
     ]
   )
 
-  exportToJson(testTrajectory)
+  exportToJson(
+    testTrajectory,
+    '../src/app/shared-services/inferences/test-data/trajectories.json'
+  )
 }
 
 main().catch((err) => console.error(err))
