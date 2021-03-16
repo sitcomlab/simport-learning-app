@@ -75,7 +75,7 @@ function getParser(input: string): Parser {
 function createCluster(
   trajectory: Trajectory,
   numberPoints: number = 30,
-  radius: number = 15
+  radius: number = 30
 ): Trajectory {
   const resultTrajectory = trajectory.getCopy()
   const seed =
@@ -99,6 +99,33 @@ function addTimestampsForTrajectory(
   const resultTrajectory = trajectory.getCopy()
   for (let i = 0; i < numberTimestamps; i++) {
     resultTrajectory.timestamps[i] = new Date(first.getTime() + i * stepLength)
+  }
+  return resultTrajectory
+}
+
+function insertCoordinates(
+  trajectory: Trajectory,
+  numberOfInsertSteps: number = 1
+) {
+  const resultTrajectory = trajectory.getCopy()
+  const numberCoordinates = trajectory.coordinates.length
+  for (
+    let i = 0, j = 0;
+    i < numberCoordinates - 1;
+    i++, j += numberOfInsertSteps
+  ) {
+    const firstCoordinate = trajectory.coordinates[i]
+    const secondCoordinate = trajectory.coordinates[i + 1]
+    const insertCoordinate = randomGeo(
+      (firstCoordinate[0] + secondCoordinate[0]) / 2,
+      (firstCoordinate[1] + secondCoordinate[1]) / 2,
+      0.5
+    )
+    resultTrajectory.coordinates.splice(i + j + 1, 0, [
+      insertCoordinate.latitude,
+      insertCoordinate.longitude,
+    ])
+    resultTrajectory.timestamps.splice(i + j + 1, 0, null)
   }
   return resultTrajectory
 }
@@ -289,7 +316,7 @@ function exportHomeWorkTemporallySparseTrajectory(
       )
     )
   )
-  const trajectoryHomeWorkTemporallySparse = combineTrajectories(
+  const trajectoryTemporallySparse = combineTrajectories(
     {
       id: 'test-home-work-temporally-sparse',
       placename: 'test-home-work-temporally-sparse',
@@ -303,18 +330,92 @@ function exportHomeWorkTemporallySparseTrajectory(
       trajectoryAfterWorkTemporallySparse,
     ]
   )
-  exportToJson(trajectoryHomeWorkTemporallySparse)
+  exportToJson(trajectoryTemporallySparse)
 
   if (isDebugGpxExportEnabled) {
-    exportToGpx(trajectoryHomeWorkTemporallySparse)
+    exportToGpx(trajectoryTemporallySparse)
   }
 }
 
+/**
+ * Exports trajectory with movement data between work and home,
+ * which includes spacially dense clusters at both locations.
+ */
 function exportHomeWorkSpatiallyDenseTrajectory(
   trajectoryTestBase: TrajectoryTestBase,
   isDebugGpxExportEnabled: boolean
 ) {
-  // TODO
+  const homeStartDate = new Date('2021-02-23T18:00:00Z')
+  const homeEndDate = new Date('2021-02-24T08:45:00Z')
+  const workStartDate = new Date('2021-02-24T09:00:00Z')
+  const workEndDate = new Date('2021-02-24T17:00:00Z')
+  const homeAfterWorkStartDate = new Date('2021-02-24T17:15:00Z')
+  const homeAfterWorkEndDate = new Date('2021-02-25T08:45:00Z')
+
+  const trajectoryHomeSpatiallyDense = addTimestampsForTrajectory(
+    homeStartDate,
+    homeEndDate,
+    createCluster(
+      trajectoryTestBase.homeTrajectory,
+      Math.round(getTimeDiffInMinutes(homeStartDate, homeEndDate) / 20),
+      15
+    )
+  )
+  const trajectoryHomeToWorkSpatiallyDenseWithoutTime = insertCoordinates(
+    trajectoryTestBase.homeToWorkTrajectory
+  )
+  const trajectoryHomeToWorkSpatiallyDense = addTimestampsForTrajectory(
+    homeEndDate,
+    workStartDate,
+    trajectoryHomeToWorkSpatiallyDenseWithoutTime
+  )
+  const trajectoryWorkSpatiallyDense = addTimestampsForTrajectory(
+    workStartDate,
+    workEndDate,
+    createCluster(
+      trajectoryTestBase.workTrajectory,
+      Math.round(getTimeDiffInHours(workStartDate, workEndDate) / 20),
+      15
+    )
+  )
+  const trajectoryWorkToHomeSpatiallyDenseWithoutTime = insertCoordinates(
+    trajectoryTestBase.workToHomeTrajectory
+  )
+  const trajectoryWorkToHomeSpatiallyDense = addTimestampsForTrajectory(
+    workEndDate,
+    homeAfterWorkStartDate,
+    trajectoryWorkToHomeSpatiallyDenseWithoutTime
+  )
+  const trajectoryAfterWorkSpatiallyDense = addTimestampsForTrajectory(
+    homeAfterWorkStartDate,
+    homeAfterWorkEndDate,
+    createCluster(
+      trajectoryTestBase.homeTrajectory,
+      Math.round(
+        getTimeDiffInMinutes(homeAfterWorkStartDate, homeAfterWorkEndDate) / 20
+      ),
+      15
+    )
+  )
+  const trajectorySpatiallyDense = combineTrajectories(
+    {
+      id: 'test-home-work-spatially-dense',
+      placename: 'test-home-work-spatially-dense',
+      type: TrajectoryType.EXAMPLE,
+    },
+    [
+      trajectoryHomeSpatiallyDense,
+      trajectoryHomeToWorkSpatiallyDense,
+      trajectoryWorkSpatiallyDense,
+      trajectoryWorkToHomeSpatiallyDense,
+      trajectoryAfterWorkSpatiallyDense,
+    ]
+  )
+  exportToJson(trajectorySpatiallyDense)
+
+  if (isDebugGpxExportEnabled) {
+    exportToGpx(trajectorySpatiallyDense)
+  }
 }
 
 /**
