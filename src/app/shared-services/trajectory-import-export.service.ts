@@ -46,11 +46,14 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * Invokes a UI that enables the user to select and import
    * a trajectory-json on iOS and Android.
    */
-  async selectAndImportTrajectory(): Promise<TrajectoryImportResult> {
+  async selectAndImportTrajectory(
+    didSelectFileCallback: () => void
+  ): Promise<TrajectoryImportResult> {
     const selectedFile = await FileSelector.fileSelector({
       multiple_selection: false,
       ext: ['*'],
     })
+    didSelectFileCallback()
     if (this.platform.is('android')) {
       const parsedPaths = JSON.parse(selectedFile.paths)
       const parsedOriginalNames = JSON.parse(selectedFile.original_names)
@@ -77,7 +80,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
     return {
       success: false,
-      errorMessage: 'Trajectory could not be exported',
+      errorMessage: 'Trajectory could not be imported',
       trajectoryId: null,
     }
   }

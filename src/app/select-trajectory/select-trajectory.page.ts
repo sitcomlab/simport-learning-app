@@ -57,11 +57,13 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
-        await this.showLoadingDialog('Importing trajectory...')
         await this.trajectoryImportExportService
-          .selectAndImportTrajectory()
+          .selectAndImportTrajectory(async () => {
+            // did select file
+            await this.showLoadingDialog('Importing trajectory...')
+          })
           .then(async (result) => {
-            this.hideLoadingDialog()
+            await this.hideLoadingDialog()
             if (result.success) {
               const viewTrajectoryButton = {
                 text: 'View',
