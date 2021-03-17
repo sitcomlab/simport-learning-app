@@ -1,6 +1,6 @@
 const USAGE = `ts-node --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
 
-import { TestTrajectoryIO } from '../dev/export_test_trajectory'
+import { TestTrajectoryIO } from './test_trajectory_io'
 import {
   Trajectory,
   TrajectoryMeta,
