@@ -1,14 +1,14 @@
 const USAGE = `ts-node --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
 
-import * as fs from 'fs'
-import * as GPX from 'gpx-parse'
-import * as path from 'path'
-import createGpx from 'gps-to-gpx'
+import { TestTrajectoryIO } from '../dev/export_test_trajectory'
 import {
   Trajectory,
   TrajectoryMeta,
   TrajectoryType,
 } from '../src/app/model/trajectory'
+
+const isGpxExportEnabled = false
+const isCsvExportEnabled = false
 
 type TrajectoryTestBase = {
   homeTrajectory: Trajectory
@@ -17,23 +17,20 @@ type TrajectoryTestBase = {
   workToHomeTrajectory: Trajectory
 }
 
-type Parser = (
-  id: string,
-  placename: string,
-  data: string
-) => Promise<Trajectory>
-
-type GpxWaypoint = {
-  latitude: number
-  longitude: number
-  time: string
-}
-
-var filepaths = {
+const filepaths = {
   home: 'test-data-gpx/track_home.gpx',
   homeToWork: 'test-data-gpx/track_home_to_work.gpx',
   work: 'test-data-gpx/track_work.gpx',
   workToHome: 'test-data-gpx/track_work_to_home.gpx',
+}
+
+const trajectoryTimes = {
+  homeStartDate: new Date('2021-02-23T18:00:00Z'),
+  homeEndDate: new Date('2021-02-24T08:45:00Z'),
+  workStartDate: new Date('2021-02-24T09:00:00Z'),
+  workEndDate: new Date('2021-02-24T17:00:00Z'),
+  homeAfterWorkStartDate: new Date('2021-02-24T17:15:00Z'),
+  homeAfterWorkEndDate: new Date('2021-02-25T08:45:00Z'),
 }
 
 function argparse() {
@@ -46,29 +43,6 @@ function argparse() {
   } else if (args.length != 0) {
     console.error(`usage: ${USAGE}`)
     process.exit(1)
-  }
-}
-
-function getParser(input: string): Parser {
-  return (id, placename, input) => {
-    return new Promise((resolve, reject) => {
-      GPX.parseGpx(input, (err, parsed) => {
-        if (err) return reject(err)
-        const coordinates = []
-        const timestamps = []
-        for (const track of parsed.tracks) {
-          for (const waypoints of track.segments) {
-            for (const { lat, lon, time } of waypoints) {
-              coordinates.push([lat, lon])
-              timestamps.push(time)
-            }
-          }
-        }
-        const meta = { id, placename, type: TrajectoryType.EXAMPLE }
-        const data = { coordinates, timestamps }
-        resolve(new Trajectory(meta, data))
-      })
-    })
   }
 }
 
@@ -166,57 +140,6 @@ function combineTrajectories(
   return combinedTrajectory
 }
 
-function exportToJson(
-  trajectory: Trajectory,
-  filepath: string = '../src/app/shared-services/inferences/test-data/'
-) {
-  if (!fs.existsSync(filepath)) {
-    fs.mkdirSync(filepath)
-  }
-  const fullpath = `${filepath}${trajectory.placename}.json`
-  fs.writeFile(fullpath, JSON.stringify(trajectory), function (error) {
-    if (error) return console.log(error)
-  })
-}
-
-function exportToGpx(
-  trajectory: Trajectory,
-  filepath: string = '../src/app/shared-services/inferences/test-data/'
-) {
-  if (!fs.existsSync(filepath)) {
-    fs.mkdirSync(filepath)
-  }
-  const waypoints = trajectory.coordinates.reduce<GpxWaypoint[]>(
-    (waypoint, c, index, coords) => {
-      waypoint.push({
-        latitude: coords[index][0],
-        longitude: coords[index][1],
-        time: trajectory.timestamps[index].toISOString(),
-      })
-      return waypoint
-    },
-    []
-  )
-  const gpx = createGpx(waypoints, {
-    activityName: trajectory.placename,
-    startTime: trajectory.timestamps[0],
-  })
-  const fullpath = `${filepath}${trajectory.placename}.gpx`
-  fs.writeFile(fullpath, gpx, function (error) {
-    if (error) return console.log(error)
-  })
-}
-
-function loadTrajectoryFromGpxFile(filepath: string): Promise<Trajectory> {
-  const ext = path.extname(filepath)
-  if (ext != '.gpx') throw new Error('unsupported format: gpx expected')
-
-  const id = path.basename(filepath, ext)
-  const content = fs.readFileSync(filepath, { encoding: 'utf-8' })
-  const parser = getParser(ext)
-  return parser(id, id, content)
-}
-
 function getTimeDiffInMinutes(firstDate: Date, secondDate: Date): number {
   return Math.abs(firstDate.getTime() - secondDate.getTime()) / 60000
 }
@@ -229,39 +152,29 @@ function getTimeDiffInHours(firstDate: Date, secondDate: Date): number {
  * Exports trajectory with movement data between work and home,
  * but no clusters at either of these locations.
  */
-function exportMobileOnlyTrajectory(
-  trajectoryTestBase: TrajectoryTestBase,
-  isDebugGpxExportEnabled: boolean
-) {
-  const homeEndDate = new Date('2021-02-24T08:45:00Z')
-  const workStartDate = new Date('2021-02-24T09:00:00Z')
-  const workEndDate = new Date('2021-02-24T17:00:00Z')
-  const homeAfterWorkStartDate = new Date('2021-02-24T17:15:00Z')
+function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
+  const trajectoryId = 'test-mobile-only'
 
   const trajectoryHomeToWork = addTimestampsForTrajectory(
-    homeEndDate,
-    workStartDate,
-    trajectoryTestBase.homeToWorkTrajectory
+    trajectoryTimes.homeEndDate,
+    trajectoryTimes.workStartDate,
+    testBase.homeToWorkTrajectory
   )
 
   const trajectoryWorkToHome = addTimestampsForTrajectory(
-    workEndDate,
-    homeAfterWorkStartDate,
-    trajectoryTestBase.workToHomeTrajectory
+    trajectoryTimes.workEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
+    testBase.workToHomeTrajectory
   )
   const trajectoryMobileOnly = combineTrajectories(
     {
-      id: 'test-mobile-only',
-      placename: 'test-mobile-only',
+      id: trajectoryId,
+      placename: trajectoryId,
       type: TrajectoryType.EXAMPLE,
     },
     [trajectoryHomeToWork, trajectoryWorkToHome]
   )
-  exportToJson(trajectoryMobileOnly)
-
-  if (isDebugGpxExportEnabled) {
-    exportToGpx(trajectoryMobileOnly)
-  }
+  return trajectoryMobileOnly
 }
 
 /**
@@ -269,57 +182,64 @@ function exportMobileOnlyTrajectory(
  * which includes temporally sparse clusters at both locations.
  * Contains roughly one location per hour per cluster.
  */
-function exportHomeWorkTemporallySparseTrajectory(
-  trajectoryTestBase: TrajectoryTestBase,
-  isDebugGpxExportEnabled: boolean
-) {
-  const homeStartDate = new Date('2021-02-23T18:00:00Z')
-  const homeEndDate = new Date('2021-02-24T08:45:00Z')
-  const workStartDate = new Date('2021-02-24T09:00:00Z')
-  const workEndDate = new Date('2021-02-24T17:00:00Z')
-  const homeAfterWorkStartDate = new Date('2021-02-24T17:15:00Z')
-  const homeAfterWorkEndDate = new Date('2021-02-25T08:45:00Z')
+function createTemporallySparseTrajectory(
+  testBase: TrajectoryTestBase
+): Trajectory {
+  const trajectoryId = 'test-home-work-temporally-sparse'
 
   const trajectoryHomeTemporallySparse = addTimestampsForTrajectory(
-    homeStartDate,
-    homeEndDate,
+    trajectoryTimes.homeStartDate,
+    trajectoryTimes.homeEndDate,
     createCluster(
-      trajectoryTestBase.homeTrajectory,
-      Math.round(getTimeDiffInHours(homeStartDate, homeEndDate))
+      testBase.homeTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.homeStartDate,
+          trajectoryTimes.homeEndDate
+        )
+      )
     )
   )
   const trajectoryHomeToWorkTemporallySparse = addTimestampsForTrajectory(
-    homeEndDate,
-    workStartDate,
-    trajectoryTestBase.homeToWorkTrajectory
+    trajectoryTimes.homeEndDate,
+    trajectoryTimes.workStartDate,
+    testBase.homeToWorkTrajectory
   )
   const trajectoryWorkTemporallySparse = addTimestampsForTrajectory(
-    workStartDate,
-    workEndDate,
+    trajectoryTimes.workStartDate,
+    trajectoryTimes.workEndDate,
     createCluster(
-      trajectoryTestBase.workTrajectory,
-      Math.round(getTimeDiffInHours(workStartDate, workEndDate))
+      testBase.workTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.workStartDate,
+          trajectoryTimes.workEndDate
+        )
+      )
     )
   )
   const trajectoryWorkToHomeTemporallySparse = addTimestampsForTrajectory(
-    workEndDate,
-    homeAfterWorkStartDate,
-    trajectoryTestBase.workToHomeTrajectory
+    trajectoryTimes.workEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
+    testBase.workToHomeTrajectory
   )
   const trajectoryAfterWorkTemporallySparse = addTimestampsForTrajectory(
-    homeAfterWorkStartDate,
-    homeAfterWorkEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
+    trajectoryTimes.homeAfterWorkEndDate,
     createCluster(
-      trajectoryTestBase.homeTrajectory,
+      testBase.homeTrajectory,
       Math.round(
-        getTimeDiffInHours(homeAfterWorkStartDate, homeAfterWorkEndDate)
+        getTimeDiffInHours(
+          trajectoryTimes.homeAfterWorkStartDate,
+          trajectoryTimes.homeAfterWorkEndDate
+        )
       )
     )
   )
   const trajectoryTemporallySparse = combineTrajectories(
     {
-      id: 'test-home-work-temporally-sparse',
-      placename: 'test-home-work-temporally-sparse',
+      id: trajectoryId,
+      placename: trajectoryId,
       type: TrajectoryType.EXAMPLE,
     },
     [
@@ -330,77 +250,80 @@ function exportHomeWorkTemporallySparseTrajectory(
       trajectoryAfterWorkTemporallySparse,
     ]
   )
-  exportToJson(trajectoryTemporallySparse)
-
-  if (isDebugGpxExportEnabled) {
-    exportToGpx(trajectoryTemporallySparse)
-  }
+  return trajectoryTemporallySparse
 }
 
 /**
  * Exports trajectory with movement data between work and home,
  * which includes spacially dense clusters at both locations.
  */
-function exportHomeWorkSpatiallyDenseTrajectory(
-  trajectoryTestBase: TrajectoryTestBase,
-  isDebugGpxExportEnabled: boolean
-) {
-  const homeStartDate = new Date('2021-02-23T18:00:00Z')
-  const homeEndDate = new Date('2021-02-24T08:45:00Z')
-  const workStartDate = new Date('2021-02-24T09:00:00Z')
-  const workEndDate = new Date('2021-02-24T17:00:00Z')
-  const homeAfterWorkStartDate = new Date('2021-02-24T17:15:00Z')
-  const homeAfterWorkEndDate = new Date('2021-02-25T08:45:00Z')
+function createSpatiallyDenseTrajectory(
+  testBase: TrajectoryTestBase
+): Trajectory {
+  const trajectoryId = 'test-home-work-spatially-dense'
 
   const trajectoryHomeSpatiallyDense = addTimestampsForTrajectory(
-    homeStartDate,
-    homeEndDate,
+    trajectoryTimes.homeStartDate,
+    trajectoryTimes.homeEndDate,
     createCluster(
-      trajectoryTestBase.homeTrajectory,
-      Math.round(getTimeDiffInMinutes(homeStartDate, homeEndDate) / 20),
+      testBase.homeTrajectory,
+      Math.round(
+        getTimeDiffInMinutes(
+          trajectoryTimes.homeStartDate,
+          trajectoryTimes.homeEndDate
+        ) / 10
+      ),
       15
     )
   )
   const trajectoryHomeToWorkSpatiallyDenseWithoutTime = insertCoordinates(
-    trajectoryTestBase.homeToWorkTrajectory
+    testBase.homeToWorkTrajectory
   )
   const trajectoryHomeToWorkSpatiallyDense = addTimestampsForTrajectory(
-    homeEndDate,
-    workStartDate,
+    trajectoryTimes.homeEndDate,
+    trajectoryTimes.workStartDate,
     trajectoryHomeToWorkSpatiallyDenseWithoutTime
   )
   const trajectoryWorkSpatiallyDense = addTimestampsForTrajectory(
-    workStartDate,
-    workEndDate,
+    trajectoryTimes.workStartDate,
+    trajectoryTimes.workEndDate,
     createCluster(
-      trajectoryTestBase.workTrajectory,
-      Math.round(getTimeDiffInHours(workStartDate, workEndDate) / 20),
+      testBase.workTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.workStartDate,
+          trajectoryTimes.workEndDate
+        ) / 10
+      ),
       15
     )
   )
   const trajectoryWorkToHomeSpatiallyDenseWithoutTime = insertCoordinates(
-    trajectoryTestBase.workToHomeTrajectory
+    testBase.workToHomeTrajectory
   )
   const trajectoryWorkToHomeSpatiallyDense = addTimestampsForTrajectory(
-    workEndDate,
-    homeAfterWorkStartDate,
+    trajectoryTimes.workEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
     trajectoryWorkToHomeSpatiallyDenseWithoutTime
   )
   const trajectoryAfterWorkSpatiallyDense = addTimestampsForTrajectory(
-    homeAfterWorkStartDate,
-    homeAfterWorkEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
+    trajectoryTimes.homeAfterWorkEndDate,
     createCluster(
-      trajectoryTestBase.homeTrajectory,
+      testBase.homeTrajectory,
       Math.round(
-        getTimeDiffInMinutes(homeAfterWorkStartDate, homeAfterWorkEndDate) / 20
+        getTimeDiffInMinutes(
+          trajectoryTimes.homeAfterWorkStartDate,
+          trajectoryTimes.homeAfterWorkEndDate
+        ) / 10
       ),
       15
     )
   )
   const trajectorySpatiallyDense = combineTrajectories(
     {
-      id: 'test-home-work-spatially-dense',
-      placename: 'test-home-work-spatially-dense',
+      id: trajectoryId,
+      placename: trajectoryId,
       type: TrajectoryType.EXAMPLE,
     },
     [
@@ -411,11 +334,7 @@ function exportHomeWorkSpatiallyDenseTrajectory(
       trajectoryAfterWorkSpatiallyDense,
     ]
   )
-  exportToJson(trajectorySpatiallyDense)
-
-  if (isDebugGpxExportEnabled) {
-    exportToGpx(trajectorySpatiallyDense)
-  }
+  return trajectorySpatiallyDense
 }
 
 /**
@@ -426,12 +345,12 @@ async function main() {
   argparse()
 
   // load data
-  const baseTrajectoryHome = await loadTrajectoryFromGpxFile(filepaths.home)
-  const baseTrajectoryHomeToWork = await loadTrajectoryFromGpxFile(
+  const baseTrajectoryHome = await TestTrajectoryIO.loadFromGpx(filepaths.home)
+  const baseTrajectoryHomeToWork = await TestTrajectoryIO.loadFromGpx(
     filepaths.homeToWork
   )
-  const baseTrajectoryWork = await loadTrajectoryFromGpxFile(filepaths.work)
-  const baseTrajectoryWorkToHome = await loadTrajectoryFromGpxFile(
+  const baseTrajectoryWork = await TestTrajectoryIO.loadFromGpx(filepaths.work)
+  const baseTrajectoryWorkToHome = await TestTrajectoryIO.loadFromGpx(
     filepaths.workToHome
   )
   const trajectoryTestBase = {
@@ -440,18 +359,19 @@ async function main() {
     workTrajectory: baseTrajectoryWork,
     workToHomeTrajectory: baseTrajectoryWorkToHome,
   }
-  const isDebugGpxExportEnabled = false
 
   // export various test-trajectories
-  exportMobileOnlyTrajectory(trajectoryTestBase, isDebugGpxExportEnabled)
-  exportHomeWorkTemporallySparseTrajectory(
-    trajectoryTestBase,
-    isDebugGpxExportEnabled
-  )
-  exportHomeWorkSpatiallyDenseTrajectory(
-    trajectoryTestBase,
-    isDebugGpxExportEnabled
-  )
+  const exportTrajectories = [
+    createMobileOnlyTrajectory(trajectoryTestBase),
+    createTemporallySparseTrajectory(trajectoryTestBase),
+    createSpatiallyDenseTrajectory(trajectoryTestBase),
+  ]
+
+  exportTrajectories.forEach((trajectory) => {
+    TestTrajectoryIO.exportToJson(trajectory)
+    if (isGpxExportEnabled) TestTrajectoryIO.exportToGpx(trajectory)
+    if (isCsvExportEnabled) TestTrajectoryIO.exportToCsv(trajectory)
+  })
 }
 
 main().catch((err) => console.error(err))
