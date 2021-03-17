@@ -7,7 +7,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
+    "test": "cd dev && npx ts-node generate_test_trajectory.ts ; ng test",
     "test:inferences": "ng test --include src/app/shared-services/inferences/",
     "lint": "prettier --loglevel=warn --write src/app && tslint -p . \"src/app/**/*.ts\"",
     "e2e": "ng e2e",
