@@ -81,7 +81,7 @@ function addTimestampsForTrajectory(
 /**
  * Interpolates and adds additional coordinates in between given set of coordinates.
  * @param trajectory which holds coordinates
- * @param numberOfInsertsPerCoordinate number of interpolated points between each pair of coordinates
+ * @param numberOfInsertsPerCoordinate number of interpolated points between each pair of subsequent coordinates
  * @returns interpolated trajectory
  */
 function interpolateCoordinates(
@@ -200,6 +200,55 @@ function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
     [trajectoryHomeToWork, trajectoryWorkToHome]
   )
   return trajectoryMobileOnly
+}
+
+/**
+ * Exports trajectory with movement data between work and home.
+ * Contains few  basic locations at home & work, but no clusters.
+ */
+function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
+  const trajectoryId = 'test-home-work'
+
+  const trajectoryHome = addTimestampsForTrajectory(
+    trajectoryTimes.homeStartDate,
+    trajectoryTimes.homeEndDate,
+    testBase.homeTrajectory
+  )
+  const trajectoryHomeToWork = addTimestampsForTrajectory(
+    trajectoryTimes.homeEndDate,
+    trajectoryTimes.workStartDate,
+    testBase.homeToWorkTrajectory
+  )
+  const trajectoryWork = addTimestampsForTrajectory(
+    trajectoryTimes.workStartDate,
+    trajectoryTimes.workEndDate,
+    testBase.workTrajectory
+  )
+  const trajectoryWorkToHome = addTimestampsForTrajectory(
+    trajectoryTimes.workEndDate,
+    trajectoryTimes.homeAfterWorkStartDate,
+    testBase.workToHomeTrajectory
+  )
+  const trajectoryHomeAfterWork = addTimestampsForTrajectory(
+    trajectoryTimes.homeAfterWorkStartDate,
+    trajectoryTimes.homeAfterWorkEndDate,
+    testBase.homeTrajectory
+  )
+  const trajectoryHomeWork = combineTrajectories(
+    {
+      id: trajectoryId,
+      placename: trajectoryId,
+      type: TrajectoryType.EXAMPLE,
+    },
+    [
+      trajectoryHome,
+      trajectoryHomeToWork,
+      trajectoryWork,
+      trajectoryWorkToHome,
+      trajectoryHomeAfterWork,
+    ]
+  )
+  return trajectoryHomeWork
 }
 
 /**
@@ -385,6 +434,7 @@ async function main() {
   // export various test-trajectories
   const exportTrajectories = [
     createMobileOnlyTrajectory(trajectoryTestBase),
+    createHomeWorkTrajectory(trajectoryTestBase),
     createTemporallySparseTrajectory(trajectoryTestBase),
     createSpatiallyDenseTrajectory(trajectoryTestBase),
   ]
