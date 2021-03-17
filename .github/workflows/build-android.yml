@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@master
         
       - name: Prepare ionic build
-        uses: coturiv/setup-ionic@v1
+        uses: coturiv/setup-ionic@master
 
       # TODO: add flag --prod (currently not building)
       - name: Run ionic build
