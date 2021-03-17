@@ -49,13 +49,14 @@ function argparse() {
 function createCluster(
   trajectory: Trajectory,
   numberPoints: number = 30,
-  radius: number = 30
+  minRadius: number = 3,
+  maxRadius: number = 30
 ): Trajectory {
   const resultTrajectory = trajectory.getCopy()
   const seed =
     resultTrajectory.coordinates[resultTrajectory.coordinates.length - 1]
   for (var i: number = 0; i < numberPoints; i++) {
-    const rand = randomGeo(seed[0], seed[1], radius)
+    const rand = randomGeo(seed[0], seed[1], minRadius, maxRadius)
     resultTrajectory.coordinates.push([rand.latitude, rand.longitude])
     resultTrajectory.timestamps.push(null)
   }
@@ -77,29 +78,42 @@ function addTimestampsForTrajectory(
   return resultTrajectory
 }
 
-function insertCoordinates(
+/**
+ * Interpolates and adds additional coordinates in between given set of coordinates.
+ * @param trajectory which holds coordinates
+ * @param numberOfInsertsPerCoordinate number of interpolated points between each pair of coordinates
+ * @returns interpolated trajectory
+ */
+function interpolateCoordinates(
   trajectory: Trajectory,
-  numberOfInsertSteps: number = 1
+  numberOfInsertsPerCoordinate: number = 1
 ) {
+  if (numberOfInsertsPerCoordinate < 1) {
+    return trajectory
+  }
   const resultTrajectory = trajectory.getCopy()
   const numberCoordinates = trajectory.coordinates.length
-  for (
-    let i = 0, j = 0;
-    i < numberCoordinates - 1;
-    i++, j += numberOfInsertSteps
-  ) {
-    const firstCoordinate = trajectory.coordinates[i]
-    const secondCoordinate = trajectory.coordinates[i + 1]
-    const insertCoordinate = randomGeo(
-      (firstCoordinate[0] + secondCoordinate[0]) / 2,
-      (firstCoordinate[1] + secondCoordinate[1]) / 2,
-      0.5
-    )
-    resultTrajectory.coordinates.splice(i + j + 1, 0, [
-      insertCoordinate.latitude,
-      insertCoordinate.longitude,
-    ])
-    resultTrajectory.timestamps.splice(i + j + 1, 0, null)
+  for (let index = 0, indexShift = 0; index < numberCoordinates - 1; index++) {
+    const [firstLat, firstLng] = trajectory.coordinates[index]
+    const [secondLat, secondLng] = trajectory.coordinates[index + 1]
+    const latDiff = firstLat - secondLat
+    const lngDiff = firstLng - secondLng
+    for (
+      let insertIndex = 1;
+      insertIndex <= numberOfInsertsPerCoordinate;
+      insertIndex++, indexShift++
+    ) {
+      const latSeed =
+        firstLat + latDiff * (insertIndex / numberOfInsertsPerCoordinate)
+      const lngSeed =
+        firstLng + lngDiff * (insertIndex / numberOfInsertsPerCoordinate)
+      const insertCoordinate = randomGeo(latSeed, lngSeed, 0.25, 0.5)
+      resultTrajectory.coordinates.splice(index + indexShift + 1, 0, [
+        insertCoordinate.latitude,
+        insertCoordinate.longitude,
+      ])
+      resultTrajectory.timestamps.splice(index + indexShift + 1, 0, null)
+    }
   }
   return resultTrajectory
 }
@@ -107,11 +121,16 @@ function insertCoordinates(
 function randomGeo(
   latitude: number,
   longitude: number,
-  radiusInMeters: number
+  minRadiusInMeters: number,
+  maxRadiusInMeters: number
 ) {
   const y0 = latitude
   const x0 = longitude
-  const rd = radiusInMeters / 111300
+  const randRadius =
+    (minRadiusInMeters +
+      Math.random() * (maxRadiusInMeters - minRadiusInMeters)) *
+    randomSign()
+  const rd = randRadius / 111300
 
   const u = Math.random()
   const v = Math.random()
@@ -120,11 +139,17 @@ function randomGeo(
   const t = 2 * Math.PI * v
   const x = w * Math.cos(t)
   const y = w * Math.sin(t)
+  const signedX = x * randomSign()
+  const signedY = y * randomSign()
 
   return {
-    latitude: y + y0,
-    longitude: x + x0,
+    latitude: y0 + signedY,
+    longitude: x0 + signedX,
   }
+}
+
+function randomSign(): number {
+  return Math.random() < 0.5 ? -1 : 1
 }
 
 function combineTrajectories(
@@ -272,11 +297,10 @@ function createSpatiallyDenseTrajectory(
           trajectoryTimes.homeStartDate,
           trajectoryTimes.homeEndDate
         ) / 10
-      ),
-      15
+      )
     )
   )
-  const trajectoryHomeToWorkSpatiallyDenseWithoutTime = insertCoordinates(
+  const trajectoryHomeToWorkSpatiallyDenseWithoutTime = interpolateCoordinates(
     testBase.homeToWorkTrajectory
   )
   const trajectoryHomeToWorkSpatiallyDense = addTimestampsForTrajectory(
@@ -290,15 +314,14 @@ function createSpatiallyDenseTrajectory(
     createCluster(
       testBase.workTrajectory,
       Math.round(
-        getTimeDiffInHours(
+        getTimeDiffInMinutes(
           trajectoryTimes.workStartDate,
           trajectoryTimes.workEndDate
         ) / 10
-      ),
-      15
+      )
     )
   )
-  const trajectoryWorkToHomeSpatiallyDenseWithoutTime = insertCoordinates(
+  const trajectoryWorkToHomeSpatiallyDenseWithoutTime = interpolateCoordinates(
     testBase.workToHomeTrajectory
   )
   const trajectoryWorkToHomeSpatiallyDense = addTimestampsForTrajectory(
@@ -316,8 +339,7 @@ function createSpatiallyDenseTrajectory(
           trajectoryTimes.homeAfterWorkStartDate,
           trajectoryTimes.homeAfterWorkEndDate
         ) / 10
-      ),
-      15
+      )
     )
   )
   const trajectorySpatiallyDense = combineTrajectories(
