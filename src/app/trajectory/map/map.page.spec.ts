@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { RouterTestingModule } from '@angular/router/testing'
+import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { IonicModule } from '@ionic/angular'
@@ -17,9 +18,10 @@ describe('MapPage', () => {
     TestBed.configureTestingModule({
       declarations: [MapPage],
       imports: [
-        IonicModule.forRoot(),
+        IonicModule,
         RouterTestingModule,
         HttpClientTestingModule,
+        LeafletModule,
       ],
       providers: [
         LocationService,

@@ -10,7 +10,7 @@ describe('TrajectoryPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectoryPage],
-      imports: [IonicModule.forRoot(), RouterTestingModule],
+      imports: [IonicModule, RouterTestingModule],
     }).compileComponents()
 
     fixture = TestBed.createComponent(TrajectoryPage)
