@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-
 import { TrajectoryPage } from './trajectory.page'
+
+export enum TrajectoryPagePath {
+  INFERENCES = 'inferences',
+  MAP = 'map',
+  EXPLORE = 'explore',
+}
 
 const routes: Routes = [
   {
@@ -9,25 +14,25 @@ const routes: Routes = [
     component: TrajectoryPage,
     children: [
       {
-        path: 'inferences',
+        path: TrajectoryPagePath.INFERENCES,
         loadChildren: () =>
           import('./inferences/inferences.module').then(
             (m) => m.InferencesPageModule
           ),
       },
       {
-        path: 'map',
+        path: TrajectoryPagePath.MAP,
         loadChildren: () =>
           import('./map/map.module').then((m) => m.MapPageModule),
       },
       {
-        path: 'explore',
+        path: TrajectoryPagePath.EXPLORE,
         loadChildren: () =>
           import('./explore/explore.module').then((m) => m.ExplorePageModule),
       },
       {
         path: '',
-        redirectTo: 'inferences',
+        redirectTo: TrajectoryPagePath.INFERENCES,
         pathMatch: 'full',
       },
     ],

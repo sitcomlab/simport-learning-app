@@ -76,4 +76,8 @@ export const MIGRATIONS = [
     SELECT TIME FROM points GROUP BY strftime('%s', time));
   UPDATE points SET time=strftime('%s', time);
   UPDATE trajectories SET durationDays=null;`,
+
+  // add index to column 'trajectory' in table 'points', since points are mostly accessed via trajectories
+  // this indexing improves performance sql-requests
+  `CREATE INDEX pointsTrajectoryIndex ON points(trajectory);`,
 ]

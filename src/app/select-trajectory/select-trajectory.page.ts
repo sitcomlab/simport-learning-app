@@ -1,9 +1,16 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { IonRouterOutlet, ModalController } from '@ionic/angular'
-import { TrajectoryMeta } from '../model/trajectory'
+import {
+  IonRouterOutlet,
+  LoadingController,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
+import { ToastButton } from '@ionic/core'
+import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
+import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
 
 enum TrajectoryMode {
   TRACK = 'tracking',
@@ -19,10 +26,13 @@ enum TrajectoryMode {
 export class SelectTrajectoryPage implements OnInit {
   constructor(
     private modalController: ModalController,
+    private toastController: ToastController,
+    private loadingController: LoadingController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    public locationService: LocationService,
-  ) { }
+    private trajectoryImportExportService: TrajectoryImportExportService,
+    public locationService: LocationService
+  ) {}
 
   ngOnInit() {}
 
@@ -47,15 +57,66 @@ export class SelectTrajectoryPage implements OnInit {
         return
 
       case TrajectoryMode.IMPORT:
-        // TODO
-        // open file browser (maybe https://github.com/hinddeep/capacitor-file-selector ?)
-        // persist trajectory, assign id
-        // route to /trajectory/{assigned id}
+        await this.trajectoryImportExportService
+          .selectAndImportTrajectory(async () => {
+            // did select file
+            await this.showLoadingDialog('Importing trajectory...')
+          })
+          .then(async (result) => {
+            await this.hideLoadingDialog()
+            if (result.success) {
+              const viewTrajectoryButton = {
+                text: 'View',
+                handler: async () => {
+                  this.router.navigate([
+                    `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
+                  ])
+                },
+              }
+              await this.showToastWithButtons(
+                'Trajectory successfully imported',
+                false,
+                [viewTrajectoryButton]
+              )
+            } else {
+              await this.showToast(result.errorMessage, true)
+            }
+          })
         return
 
       default:
         assertUnreachable(mode)
     }
+  }
+
+  private async showToast(message: string, isError: boolean) {
+    await this.showToastWithButtons(message, isError, null)
+  }
+
+  private async showToastWithButtons(
+    message: string,
+    isError: boolean,
+    buttons: ToastButton[]
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      color: isError ? 'danger' : 'success',
+      duration: buttons.length > 0 ? 4000 : 2000,
+      buttons,
+    })
+    toast.present()
+  }
+
+  private async showLoadingDialog(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      translucent: true,
+    })
+    await loading.present()
+  }
+
+  private async hideLoadingDialog() {
+    await this.loadingController.dismiss()
   }
 }
 
