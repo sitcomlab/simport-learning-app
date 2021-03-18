@@ -5,6 +5,7 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
+import { TrajectoryImportExportService } from './trajectory-import-export.service'
 import { TrajectoryService } from './trajectory.service'
 
 @NgModule({
@@ -16,6 +17,7 @@ import { TrajectoryService } from './trajectory.service'
     // providers
     LocationService,
     TrajectoryService,
+    TrajectoryImportExportService,
     SqliteService,
   ],
   imports: [CommonModule, HttpClientModule],
