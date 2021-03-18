@@ -16,11 +16,7 @@ describe('TrackingPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrackingPage],
-      imports: [
-        IonicModule.forRoot(),
-        RouterTestingModule,
-        HttpClientTestingModule,
-      ],
+      imports: [IonicModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         LocationService,
         TrajectoryService,

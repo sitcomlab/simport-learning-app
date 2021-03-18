@@ -16,11 +16,7 @@ describe('TrajectorySelectorComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectorySelectorComponent],
-      imports: [
-        IonicModule.forRoot(),
-        RouterTestingModule,
-        HttpClientTestingModule,
-      ],
+      imports: [IonicModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         TrajectoryService,
         SqliteService,

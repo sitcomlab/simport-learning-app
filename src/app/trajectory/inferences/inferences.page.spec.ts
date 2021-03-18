@@ -10,7 +10,7 @@ describe('InferencesPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [InferencesPage],
-      imports: [IonicModule.forRoot(), RouterTestingModule],
+      imports: [IonicModule, RouterTestingModule],
     }).compileComponents()
 
     fixture = TestBed.createComponent(InferencesPage)

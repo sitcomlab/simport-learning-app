@@ -16,11 +16,7 @@ describe('TrajectoryCardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectoryCardComponent],
-      imports: [
-        IonicModule.forRoot(),
-        RouterTestingModule,
-        HttpClientTestingModule,
-      ],
+      imports: [IonicModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         TrajectoryService,
         SqliteService,
