@@ -444,6 +444,8 @@ async function main() {
     if (isGpxExportEnabled) TestTrajectoryIO.exportToGpx(trajectory)
     if (isCsvExportEnabled) TestTrajectoryIO.exportToCsv(trajectory)
   })
+
+  TestTrajectoryIO.logGeneratedTestFiles()
 }
 
 main().catch((err) => console.error(err))

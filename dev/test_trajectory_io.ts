@@ -4,6 +4,8 @@ import * as GPX from 'gpx-parse'
 import createGpx from 'gps-to-gpx'
 import { Trajectory, TrajectoryType } from '../src/app/model/trajectory'
 
+const exportFilepath = '../src/app/shared-services/inferences/test-data/'
+
 type Parser = (
   id: string,
   placename: string,
@@ -59,7 +61,7 @@ export class TestTrajectoryIO {
 
   static exportToJson(
     trajectory: Trajectory,
-    filepath: string = '../src/app/shared-services/inferences/test-data/'
+    filepath: string = exportFilepath
   ) {
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath)
@@ -72,7 +74,7 @@ export class TestTrajectoryIO {
 
   static exportToGpx(
     trajectory: Trajectory,
-    filepath: string = '../src/app/shared-services/inferences/test-data/'
+    filepath: string = exportFilepath
   ) {
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath)
@@ -100,7 +102,7 @@ export class TestTrajectoryIO {
 
   static exportToCsv(
     trajectory: Trajectory,
-    filepath: string = '../src/app/shared-services/inferences/test-data/'
+    filepath: string = exportFilepath
   ) {
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath)
@@ -115,6 +117,17 @@ export class TestTrajectoryIO {
     const fullpath = `${filepath}${trajectory.placename}.csv`
     fs.writeFile(fullpath, csvContent, function (error) {
       if (error) return console.log(error)
+    })
+  }
+
+  static logGeneratedTestFiles() {
+    fs.readdir(exportFilepath, (_, files) => {
+      console.log(
+        `${files.length || 0} test files created in ${exportFilepath}`
+      )
+      files.forEach((file) => {
+        console.log(` - ${file}`)
+      })
     })
   }
 }
