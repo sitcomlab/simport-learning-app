@@ -25,6 +25,7 @@
     </ion-card-title>
   </ion-card-header>
   <ion-icon
+    *ngIf="showTrajectoryMenu()"
     name="ellipsis-vertical"
     (click)="presentPopover($event)"
   ></ion-icon>

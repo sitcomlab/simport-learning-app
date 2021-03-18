@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { ModalController, PopoverController } from '@ionic/angular'
+import { ModalController, Platform, PopoverController } from '@ionic/angular'
 import * as moment from 'moment'
-import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
+import { TrajectoryMeta } from 'src/app/model/trajectory'
 import { TrajectoryCardPopoverPage } from './trajectory-card-popover/trajectory-card-popover.page'
 
 @Component({
@@ -14,10 +14,15 @@ export class TrajectoryCardComponent implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private platform: Platform
   ) {}
 
   ngOnInit() {}
+
+  showTrajectoryMenu(): boolean {
+    return this.platform.is('mobile')
+  }
 
   durationString() {
     const days = this.trajectory?.durationDays
