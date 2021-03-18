@@ -24,6 +24,13 @@ const filepaths = {
   workToHome: 'test-data-gpx/track_work_to_home.gpx',
 }
 
+const testDataNames = {
+  mobileOnly: 'test-mobile-only',
+  homeWork: 'test-home-work',
+  spatiallyDense: 'test-home-work-spatially-dense',
+  temporallySparse: 'test-home-work-temporally-sparse',
+}
+
 const trajectoryTimes = {
   homeStartDate: new Date('2021-02-23T18:00:00Z'),
   homeEndDate: new Date('2021-02-24T08:45:00Z'),
@@ -178,8 +185,6 @@ function getTimeDiffInHours(firstDate: Date, secondDate: Date): number {
  * but no clusters at either of these locations.
  */
 function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
-  const trajectoryId = 'test-mobile-only'
-
   const trajectoryHomeToWork = addTimestampsForTrajectory(
     trajectoryTimes.homeEndDate,
     trajectoryTimes.workStartDate,
@@ -193,8 +198,8 @@ function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
   )
   const trajectoryMobileOnly = combineTrajectories(
     {
-      id: trajectoryId,
-      placename: trajectoryId,
+      id: testDataNames.mobileOnly,
+      placename: testDataNames.mobileOnly,
       type: TrajectoryType.EXAMPLE,
     },
     [trajectoryHomeToWork, trajectoryWorkToHome]
@@ -207,8 +212,6 @@ function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
  * Contains few  basic locations at home & work, but no clusters.
  */
 function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
-  const trajectoryId = 'test-home-work'
-
   const trajectoryHome = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
@@ -236,8 +239,8 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
   )
   const trajectoryHomeWork = combineTrajectories(
     {
-      id: trajectoryId,
-      placename: trajectoryId,
+      id: testDataNames.homeWork,
+      placename: testDataNames.homeWork,
       type: TrajectoryType.EXAMPLE,
     },
     [
@@ -259,8 +262,6 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
 function createTemporallySparseTrajectory(
   testBase: TrajectoryTestBase
 ): Trajectory {
-  const trajectoryId = 'test-home-work-temporally-sparse'
-
   const trajectoryHomeTemporallySparse = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
@@ -312,8 +313,8 @@ function createTemporallySparseTrajectory(
   )
   const trajectoryTemporallySparse = combineTrajectories(
     {
-      id: trajectoryId,
-      placename: trajectoryId,
+      id: testDataNames.temporallySparse,
+      placename: testDataNames.temporallySparse,
       type: TrajectoryType.EXAMPLE,
     },
     [
@@ -334,8 +335,6 @@ function createTemporallySparseTrajectory(
 function createSpatiallyDenseTrajectory(
   testBase: TrajectoryTestBase
 ): Trajectory {
-  const trajectoryId = 'test-home-work-spatially-dense'
-
   const trajectoryHomeSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
@@ -393,8 +392,8 @@ function createSpatiallyDenseTrajectory(
   )
   const trajectorySpatiallyDense = combineTrajectories(
     {
-      id: trajectoryId,
-      placename: trajectoryId,
+      id: testDataNames.spatiallyDense,
+      placename: testDataNames.spatiallyDense,
       type: TrajectoryType.EXAMPLE,
     },
     [

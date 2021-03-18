@@ -67,7 +67,8 @@ export class TestTrajectoryIO {
       fs.mkdirSync(filepath)
     }
     const fullpath = `${filepath}${trajectory.placename}.json`
-    fs.writeFile(fullpath, JSON.stringify(trajectory), function (error) {
+    const trajectoryJson = Trajectory.toJSON(trajectory)
+    fs.writeFile(fullpath, JSON.stringify(trajectoryJson), function (error) {
       if (error) return console.log(error)
     })
   }
