@@ -17,11 +17,7 @@ describe('SelectTrajectoryPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SelectTrajectoryPage],
-      imports: [
-        IonicModule.forRoot(),
-        RouterTestingModule,
-        HttpClientTestingModule,
-      ],
+      imports: [IonicModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         LocationService,
         BackgroundGeolocation,
