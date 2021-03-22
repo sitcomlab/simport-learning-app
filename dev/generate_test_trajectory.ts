@@ -87,6 +87,9 @@ function addTimestampsForTrajectory(
 
 /**
  * Interpolates and adds additional coordinates in between given set of coordinates.
+ * For simplicity this treats latitude and longitude like Cartesian coordinates on a flat plane.
+ * Lat and lon are coordinates on an ellipsoid and this should rather interpolate between two coordinates on an arc than a straight line.
+ *
  * @param trajectory which holds coordinates
  * @param numberOfInsertsPerCoordinate number of interpolated points between each pair of subsequent coordinates
  * @returns interpolated trajectory
@@ -131,8 +134,6 @@ function randomGeo(
   minRadiusInMeters: number,
   maxRadiusInMeters: number
 ) {
-  const y0 = latitude
-  const x0 = longitude
   const randRadius =
     (minRadiusInMeters +
       Math.random() * (maxRadiusInMeters - minRadiusInMeters)) *
@@ -146,12 +147,10 @@ function randomGeo(
   const t = 2 * Math.PI * v
   const x = w * Math.cos(t)
   const y = w * Math.sin(t)
-  const signedX = x * randomSign()
-  const signedY = y * randomSign()
 
   return {
-    latitude: y0 + signedY,
-    longitude: x0 + signedX,
+    latitude: latitude + y,
+    longitude: longitude + x,
   }
 }
 
@@ -275,7 +274,7 @@ function createTemporallySparseTrajectory(
       )
     )
   )
-  const trajectoryHomeToWorkTemporallySparse = addTimestampsForTrajectory(
+  const trajectoryHomeToWork = addTimestampsForTrajectory(
     trajectoryTimes.homeEndDate,
     trajectoryTimes.workStartDate,
     testBase.homeToWorkTrajectory
@@ -293,7 +292,7 @@ function createTemporallySparseTrajectory(
       )
     )
   )
-  const trajectoryWorkToHomeTemporallySparse = addTimestampsForTrajectory(
+  const trajectoryWorkToHome = addTimestampsForTrajectory(
     trajectoryTimes.workEndDate,
     trajectoryTimes.homeAfterWorkStartDate,
     testBase.workToHomeTrajectory
@@ -319,9 +318,9 @@ function createTemporallySparseTrajectory(
     },
     [
       trajectoryHomeTemporallySparse,
-      trajectoryHomeToWorkTemporallySparse,
+      trajectoryHomeToWork,
       trajectoryWorkTemporallySparse,
-      trajectoryWorkToHomeTemporallySparse,
+      trajectoryWorkToHome,
       trajectoryAfterWorkTemporallySparse,
     ]
   )
