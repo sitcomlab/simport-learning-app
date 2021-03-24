@@ -10,7 +10,7 @@ describe('ItemCardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ItemCardComponent],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule],
     }).compileComponents()
 
     fixture = TestBed.createComponent(ItemCardComponent)

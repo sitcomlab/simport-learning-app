@@ -1,4 +1,4 @@
-name: CI-iOS
+name: iOS-Build
 
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@master
         
       - name: Prepare ionic build
-        uses: coturiv/setup-ionic@v1
+        uses: coturiv/setup-ionic@master
 
       - name: Run ionic build
         run: |
@@ -42,31 +42,3 @@ jobs:
           code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
           export-method: "ad-hoc"
-
-      - name: Archive build artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: ipa-artifact
-          path: ./output.ipa
-      
-  deploy-ios:
-    needs: [build-ios]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@master
-      
-      - name: Download build artifact
-        uses: actions/download-artifact@master
-        with:
-          name: ipa-artifact
-          path: ./
-      
-      - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
-        with:
-          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: ${{ secrets.FIREBASE_INTERNAL_TEST_GROUP }}
-          file: output.ipa

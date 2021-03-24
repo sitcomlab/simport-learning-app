@@ -1,11 +1,11 @@
 <ion-card class="flex-wrapper" (click)="selectTrajectory()">
-  <ion-badge *ngIf="trajectory.type == 'track'" color="dark"
+  <ion-badge *ngIf="trajectory?.type == 'track'" color="dark"
     >recorded</ion-badge
   >
-  <ion-badge *ngIf="trajectory.type == 'import'" color="medium"
+  <ion-badge *ngIf="trajectory?.type == 'import'" color="medium"
     >imported</ion-badge
   >
-  <ion-badge *ngIf="trajectory.type == 'example'" color="light"
+  <ion-badge *ngIf="trajectory?.type == 'example'" color="light"
     >example</ion-badge
   >
   <ion-card-header>
@@ -13,7 +13,7 @@
       <ion-item lines="none">
         <ion-icon name="location-outline"></ion-icon>
         <ion-label>
-          {{ trajectory.placename }}
+          {{ trajectory?.placename }}
         </ion-label>
       </ion-item>
       <ion-item lines="none">
@@ -25,9 +25,8 @@
     </ion-card-title>
   </ion-card-header>
   <ion-icon
-    *ngIf="trajectory.type == 'track' || trajectory.type == 'import'"
-    name="trash-outline"
-    color="danger"
-    (click)="deleteTrajectory($event)"
+    *ngIf="showTrajectoryMenu()"
+    name="ellipsis-vertical"
+    (click)="presentPopover($event)"
   ></ion-icon>
 </ion-card>

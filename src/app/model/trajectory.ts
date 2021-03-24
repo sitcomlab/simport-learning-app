@@ -49,6 +49,32 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     }
   }
 
+  static toJSON(trajectory: Trajectory): TrajectoryJSON {
+    const timestamps = trajectory.timestamps.reduce<number[]>(
+      (ts, t, i, dates) => {
+        // we don't store a first value, but only following deltas
+        if (i === 0) return []
+        const date1 = dates[i - 1].getTime() / 1000
+        const date2 = dates[i].getTime() / 1000
+        ts.push(date2 - date1)
+        return ts
+      },
+      []
+    )
+    const time0 = trajectory.timestamps[0].toISOString()
+    const timeN =
+      trajectory.timestamps.length > 1
+        ? trajectory.timestamps[trajectory.timestamps.length - 1].toISOString()
+        : null
+    const trajectoryJson: TrajectoryJSON = {
+      coordinates: polyline.encode(trajectory.coordinates),
+      timestamps,
+      time0,
+      timeN,
+    }
+    return trajectoryJson
+  }
+
   constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
     if (data?.coordinates.length !== data?.timestamps.length)
       throw new Error(

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { CapacitorSQLite } from '@capacitor-community/sqlite'
+import { CapacitorSQLite, capSQLiteSet } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import * as moment from 'moment'
@@ -112,29 +112,53 @@ export class SqliteService {
       },
     ]
 
-    // insert or update new points query
-    const numPoints = t.coordinates.length
-    if (numPoints) {
-      // construct query & values array
-      const placeholders = []
-      const values = []
-      for (let i = 0; i < numPoints; i++) {
-        const time = t.timestamps[i]
-        const [lat, lon] = t.coordinates[i]
-        const accuracy = t.accuracy[i]
-        placeholders.push(`(?,?,?,?,?)`)
-        values.push(t.id, time, lat, lon, accuracy)
-      }
-      const placeholderString = placeholders.join(', ')
-      const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
-      set.push({ statement, values: values.map(normalize) })
-    }
-
     const {
       changes: { changes },
       message,
     } = await this.db.executeSet({ set })
     if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
+
+    await this.upsertPointsForTrajectory(t)
+  }
+
+  async upsertPointsForTrajectory(t: Trajectory) {
+    // insert or update new points query
+    const numPoints = t.coordinates.length
+    if (!numPoints) {
+      return
+    }
+    // construct query & values array in chunks to prevent to many sql-statements at once
+    // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
+    const chunkSize = 1000
+    let pointsIndex = 0
+    for (let chunkIndex = 0; chunkIndex < numPoints; chunkIndex += chunkSize) {
+      const placeholders = []
+      const values = []
+      for (
+        ;
+        pointsIndex < chunkIndex + chunkSize && pointsIndex < numPoints;
+        pointsIndex++
+      ) {
+        const time = t.timestamps[pointsIndex]
+        const [lat, lon] = t.coordinates[pointsIndex]
+        const accuracy = t.accuracy[pointsIndex] ?? 0
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(t.id, time, lat, lon, accuracy)
+      }
+
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { pointsChanges },
+        message: pointsMessage,
+      } = await this.db.executeSet({ set })
+      if (pointsChanges === -1) {
+        throw new Error(
+          `couldnt insert points for trajectory ${t.id}: ${pointsMessage}`
+        )
+      }
+    }
   }
 
   async upsertPoint(trajectoryId: string, p: Point): Promise<void> {

@@ -1,0 +1,61 @@
+name: Android-Build
+
+on:
+  # Triggers the workflow on push or pull request events but only for the develop branch
+  push:
+    branches: [ develop ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@master
+        
+      - name: Prepare ionic build
+        uses: coturiv/setup-ionic@master
+
+      # TODO: add flag --prod (currently not building)
+      - name: Run ionic build
+        run: |
+          npm install --silent
+          ionic cap update --no-interactive --no-open --confirm
+          ionic cap build android --no-interactive --no-open --confirm
+          
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1.0.3
+        with:
+          ndk-version: r21d
+
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Setup Android keystore
+        working-directory: ./android
+        run: |
+              echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
+              ls -lah
+        env:
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+
+      - name: Bump version
+        uses: chkfung/android-version-actions@v1.1
+        with:
+          gradlePath: ./android/app/build.gradle
+          versionCode: ${{ github.run_number }}
+        
+      - name: Build with Gradle
+        working-directory: ./android
+        run: ./gradlew app:assembleRelease
+        env:
+          ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
+          ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+

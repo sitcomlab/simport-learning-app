@@ -1,0 +1,72 @@
+name: iOS-Distribution
+
+on:
+  # Triggers the workflow on push or pull request events but only for the develop branch
+  push:
+    branches: [ release-beta ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@master
+        
+      - name: Prepare ionic build
+        uses: coturiv/setup-ionic@master
+
+      - name: Run ionic build
+        run: |
+          npm install --silent
+          ionic cap update --no-interactive --no-open --confirm
+          ionic cap build ios --no-interactive --no-open --confirm
+  
+      - name: Bump version
+        run: |
+          cd ios/App
+          agvtool new-version -all ${{ github.run_number }}
+  
+      - name: Run iOS build
+        uses: yukiarrr/ios-build-action@v1.3.2
+        with:
+          project-path: ./ios/App/App.xcodeproj
+          workspace-path: ./ios/App/App.xcworkspace
+          pods-path: ./ios/App/Podfile
+          p12-base64: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          certificate-password: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          mobileprovision-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
+          code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
+          team-id: ${{ secrets.IOS_TEAM_ID }}
+          export-method: "ad-hoc"
+
+      - name: Archive build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./output.ipa
+      
+  deploy-ios:
+    needs: [build-ios]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@master
+      
+      - name: Download build artifact
+        uses: actions/download-artifact@master
+        with:
+          name: ipa-artifact
+          path: ./
+      
+      - name: Deploy to Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: ${{ secrets.FIREBASE_INTERNAL_TEST_GROUP }}
+          file: output.ipa
