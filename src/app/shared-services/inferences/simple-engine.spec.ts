@@ -2,11 +2,10 @@ import { async } from '@angular/core/testing'
 import distance from '@turf/distance'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
-import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
-import nepal from 'src/assets/trajectories/3384596.json'
+import { TrajectoryData } from 'src/app/model/trajectory'
 import { AllInferences, HomeInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
-import { trajEmpty, trajMobileOnly } from './simple-engine.spec.fixtures'
+import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from './types'
 
 describe('inferences/SimpleEngine', () => {
@@ -20,7 +19,7 @@ describe('inferences/SimpleEngine', () => {
   describe('HomeInference', () => {
     it('should not infer for 0 points', () => {
       const t = new InferenceTestCase(
-        trajEmpty,
+        fixtures.trajectoryEmpty,
         Object.values(AllInferences),
         []
       )
@@ -32,7 +31,38 @@ describe('inferences/SimpleEngine', () => {
     it('should infer with low confidence for low total point count', () => {}) // TODO
 
     it('should not infer for mobile only trajectory', () => {
-      const t = new InferenceTestCase(trajMobileOnly, [HomeInference], [])
+      const t = new InferenceTestCase(
+        fixtures.trajectoryMobileOnly,
+        [HomeInference],
+        []
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for home-work data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWork,
+        [HomeInference],
+        []
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for spatially dense data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWorkSpatiallyDense,
+        [HomeInference],
+        []
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for temporally sparse data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWorkTemporallySparse,
+        [HomeInference],
+        []
+      )
       t.test(new SimpleEngine())
     })
 
@@ -44,9 +74,8 @@ describe('inferences/SimpleEngine', () => {
 
     it('should infer for realworld data (1 month)', () => {
       // NOTE: nepal trajectory seems to be partially everyday-life, partially dedicated OSM-mapping activities
-      expect(nepal).toBeDefined('nepal fixture not loaded')
       const t = new InferenceTestCase(
-        Trajectory.fromJSON(nepal),
+        fixtures.trajectoryNepal,
         [HomeInference],
         [] // TODO
       )
