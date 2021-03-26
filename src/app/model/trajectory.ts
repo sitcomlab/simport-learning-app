@@ -18,12 +18,14 @@ export interface TrajectoryData {
   coordinates: [number, number][]
   timestamps: Date[]
   accuracy?: number[]
+  speeds?: number[]
 }
 
 export interface Point {
   latLng: [number, number]
   time?: Date
-  accuracy?: number
+  accuracy?: number // in meters
+  speed?: number // in meters per second
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
@@ -114,13 +116,17 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   get accuracy() {
     return this.data?.accuracy || []
   }
+  get speeds() {
+    return this.data?.speeds || []
+  }
 
-  addPoint({ latLng, time, accuracy }: Point) {
+  addPoint({ latLng, time, accuracy, speed }: Point) {
     if (this.data == null)
-      this.data = { coordinates: [], timestamps: [], accuracy: [] }
+      this.data = { coordinates: [], timestamps: [], accuracy: [], speeds: [] }
     this.data.coordinates.push(latLng)
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())
+    this.data.speeds.push(speed)
   }
 
   getCopy(): Trajectory {
@@ -128,6 +134,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       coordinates: [...this.data?.coordinates],
       timestamps: [...this.data?.timestamps],
       accuracy: [...(this.data?.accuracy || [])],
+      speeds: [...(this.data?.speeds || [])],
     }
     return new Trajectory({ ...this.meta }, data)
   }

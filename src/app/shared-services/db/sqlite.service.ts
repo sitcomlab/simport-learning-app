@@ -79,13 +79,14 @@ export class SqliteService {
       // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
-        (d, { lon, lat, time, accuracy }) => {
+        (d, { lon, lat, time, accuracy, speed }) => {
           d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
           d.accuracy.push(accuracy)
+          d.speeds.push(speed)
           return d
         },
-        { coordinates: [], timestamps: [], accuracy: [] }
+        { coordinates: [], timestamps: [], accuracy: [], speeds: [] }
       )
 
     return new Trajectory(meta, data)
@@ -142,8 +143,9 @@ export class SqliteService {
         const time = t.timestamps[pointsIndex]
         const [lat, lon] = t.coordinates[pointsIndex]
         const accuracy = t.accuracy[pointsIndex] ?? 0
-        placeholders.push(`(?,?,?,?,?)`)
-        values.push(t.id, time, lat, lon, accuracy)
+        const speed = t.speeds[pointsIndex] ?? -1
+        placeholders.push(`(?,?,?,?,?,?)`)
+        values.push(t.id, time, lat, lon, accuracy, speed)
       }
 
       const placeholderString = placeholders.join(', ')
@@ -170,8 +172,10 @@ export class SqliteService {
       changes: { changes },
       message,
     } = await this.db.run({
-      statement: 'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?)',
-      values: [trajectoryId, time, ...p.latLng, p.accuracy].map(normalize),
+      statement: 'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?)',
+      values: [trajectoryId, time, ...p.latLng, p.accuracy, p.speed].map(
+        normalize
+      ),
     })
     if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
 
