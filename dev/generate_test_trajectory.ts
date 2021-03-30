@@ -1,11 +1,11 @@
-const USAGE = `ts-node --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
+const USAGE = `ts-node -r tsconfig-paths/register --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
 
-import { TestTrajectoryIO } from './test_trajectory_io'
 import {
   Trajectory,
   TrajectoryMeta,
   TrajectoryType,
-} from '../src/app/model/trajectory'
+} from 'src/app/model/trajectory'
+import { TestTrajectoryIO } from './test_trajectory_io'
 
 const isGpxExportEnabled = false
 const isCsvExportEnabled = false
@@ -18,10 +18,10 @@ type TrajectoryTestBase = {
 }
 
 const filepaths = {
-  home: 'test-data-gpx/track_home.gpx',
-  homeToWork: 'test-data-gpx/track_home_to_work.gpx',
-  work: 'test-data-gpx/track_work.gpx',
-  workToHome: 'test-data-gpx/track_work_to_home.gpx',
+  home: __dirname + '/test-data-gpx/track_home.gpx',
+  homeToWork: __dirname + '/test-data-gpx/track_home_to_work.gpx',
+  work: __dirname + '/test-data-gpx/track_work.gpx',
+  workToHome: __dirname + '/test-data-gpx/track_work_to_home.gpx',
 }
 
 const testDataNames = {

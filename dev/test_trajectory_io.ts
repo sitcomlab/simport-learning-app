@@ -1,10 +1,11 @@
 import * as fs from 'fs'
-import * as path from 'path'
-import * as GPX from 'gpx-parse'
 import createGpx from 'gps-to-gpx'
+import * as GPX from 'gpx-parse'
+import * as path from 'path'
 import { Trajectory, TrajectoryType } from '../src/app/model/trajectory'
 
-const exportFilepath = '../src/app/shared-services/inferences/test-data/'
+const exportFilepath =
+  __dirname + '/../src/app/shared-services/inferences/test-data/'
 
 type Parser = (
   id: string,
