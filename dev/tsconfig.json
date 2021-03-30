@@ -8,6 +8,11 @@
     "downlevelIteration": true,
     "target": "es2015",
     "lib": ["es2018", "dom"],
-    "types": ["node"]
+    "types": ["node"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "paths": {
+      "src/*": ["../src/*"]
+    }
   }
 }
