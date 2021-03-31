@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import {
   Circle,
+  CircleMarker,
   latLng,
   LatLngBounds,
   LayerGroup,
@@ -36,6 +37,7 @@ export class MapPage implements OnInit, OnDestroy {
   mapBounds: LatLngBounds
   polyline: Polyline
   inferenceMarkers = new LayerGroup()
+  lastLocation: CircleMarker
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -57,6 +59,17 @@ export class MapPage implements OnInit, OnDestroy {
       .getOne(trajectoryType, trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
+
+        const lastMeasurement = {
+          location: t.coordinates[t.coordinates.length - 1],
+          timestamp: t.timestamps[t.timestamps.length - 1],
+        }
+
+        this.lastLocation = new CircleMarker(lastMeasurement.location, {
+          color: 'white',
+          fillColor: '#428cff', // ionic primary blue
+          fillOpacity: 1,
+        }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
         this.mapBounds = this.polyline.getBounds()
         this.map?.invalidateSize()
       })
