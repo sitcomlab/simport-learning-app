@@ -50,8 +50,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
         ts.push(new Date(t1.getTime() + deltaMs))
         return ts
       }, []),
-      accuracy: accuracy || null,
-      speed: speed || null,
+      accuracy: accuracy || [],
+      speed: speed || [],
     }
   }
 
@@ -75,8 +75,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     const trajectoryJson: TrajectoryJSON = {
       coordinates: polyline.encode(trajectory.coordinates),
       timestamps,
-      accuracy: trajectory.accuracy || null,
-      speed: trajectory.speed || null,
+      accuracy: trajectory.accuracy || [],
+      speed: trajectory.speed || [],
       time0,
       timeN,
     }
