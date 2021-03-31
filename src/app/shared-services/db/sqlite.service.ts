@@ -63,7 +63,7 @@ export class SqliteService {
   async getFullTrajectory(id: string): Promise<Trajectory> {
     await this.ensureDbReady()
     const { values } = await this.db.query({
-      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy FROM trajectories AS t
+      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -82,11 +82,11 @@ export class SqliteService {
         (d, { lon, lat, time, accuracy, speed }) => {
           d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
-          d.accuracy.push(accuracy)
-          d.speeds.push(speed)
+          d.accuracy.push(accuracy || 0)
+          d.speed.push(speed || -1)
           return d
         },
-        { coordinates: [], timestamps: [], accuracy: [], speeds: [] }
+        { coordinates: [], timestamps: [], accuracy: [], speed: [] }
       )
 
     return new Trajectory(meta, data)
@@ -143,7 +143,7 @@ export class SqliteService {
         const time = t.timestamps[pointsIndex]
         const [lat, lon] = t.coordinates[pointsIndex]
         const accuracy = t.accuracy[pointsIndex] ?? 0
-        const speed = t.speeds[pointsIndex] ?? -1
+        const speed = t.speed[pointsIndex] ?? -1
         placeholders.push(`(?,?,?,?,?,?)`)
         values.push(t.id, time, lat, lon, accuracy, speed)
       }
