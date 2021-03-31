@@ -149,13 +149,11 @@ export class TrajectoryCardPopoverPage implements OnInit {
               .then(async () => {
                 await this.hideLoadingDialog()
                 await this.showToast('Trajectory successfully deleted', false)
+                await this.modalController.dismiss()
               })
               .catch(async () => {
                 await this.hideLoadingDialog()
                 await this.showToast('Trajectory could not be deleted', true)
-              })
-              .finally(async () => {
-                await this.modalController.dismiss()
               })
           },
         },

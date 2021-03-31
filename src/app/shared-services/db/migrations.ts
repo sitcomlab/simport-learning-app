@@ -82,5 +82,5 @@ export const MIGRATIONS = [
   `CREATE INDEX pointsTrajectoryIndex ON points(trajectory);`,
 
   // add field 'speed' to table points
-  `ALTER TABLE points ADD COLUMN speed float;`,
+  `ALTER TABLE points ADD COLUMN speed float DEFAULT -1;`,
 ]

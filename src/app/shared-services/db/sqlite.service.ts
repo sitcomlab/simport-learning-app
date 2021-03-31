@@ -184,10 +184,27 @@ export class SqliteService {
   }
 
   async deleteTrajectory(t: TrajectoryMeta): Promise<void> {
+    // delete points of trajectory manually for now, since 'ON DELETE CASCADE' fails sometimes
+    await this.deletePointsOfTrajectory(t)
+
     await this.ensureDbReady()
-    const statement = `DELETE  FROM trajectories WHERE id = '${t.id}';`
-    const { changes, message } = await this.db.run({ statement, values: [] })
+    const statement = `DELETE FROM trajectories WHERE id = '${t.id}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run({ statement, values: [] })
     if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+  }
+
+  async deletePointsOfTrajectory(t: TrajectoryMeta): Promise<void> {
+    await this.ensureDbReady()
+    const statement = `DELETE FROM points WHERE trajectory = '${t.id}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run({ statement, values: [] })
+    if (changes === -1)
+      throw new Error(`couldnt delete points of trajectory: ${message}`)
   }
 
   private async updateDurationDaysInTrajectory(
