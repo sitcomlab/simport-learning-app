@@ -13,6 +13,8 @@
     "resolveJsonModule": true,
     "paths": {
       "src/*": ["../src/*"]
-    }
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   }
 }

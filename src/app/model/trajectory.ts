@@ -1,5 +1,5 @@
 import * as polyline from '@mapbox/polyline'
-import * as moment from 'moment'
+import Moment from 'moment'
 
 export enum TrajectoryType {
   EXAMPLE = 'example',
@@ -96,8 +96,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     // try to compute durationDays for precision
     const ts = this.data?.timestamps
     if (ts?.length) {
-      const t1 = moment(ts[0])
-      const t2 = moment(ts[ts.length - 1])
+      const t1 = Moment(ts[0])
+      const t2 = Moment(ts[ts.length - 1])
       return t2.diff(t1, 'days', true)
     }
     // fall back to stored value
