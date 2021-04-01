@@ -1,0 +1,59 @@
+<div class="inner-content">
+  <ion-card-header>
+    <ion-card-title>Debug Information</ion-card-title>
+  </ion-card-header>
+
+  <!-- Scrollable Segment -->
+  <ion-segment (ionChange)="segmentChanged($event)" [value]="segment">
+    <ion-segment-button value="general">
+      <ion-label>General</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="trajectories">
+      <ion-label>Trajectories</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="device">
+      <ion-label>Device</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="segment == 'general'">
+    <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
+    <p><b>App Build: </b> {{ myDevice.appBuild }}</p>
+
+    <p><b>Location tracking enabled: </b> {{ trackingRunning }}</p>
+    <p><b>Notifications enabled: </b> {{ notificationsEnabled }}</p>
+  </div>
+
+  <div *ngIf="segment == 'trajectories'">
+    <p *ngIf="loading">Loading...</p>
+    <div *ngIf="!loading">
+      <p><b>Total number of trajectories: </b> {{ trajectories.length }}</p>
+      <p><b>Imported trajectories: </b> {{ importedTrajectories.length }}</p>
+    </div>
+
+    <h4>User trajectory</h4>
+    <p *ngIf="!userTrajectory">No user trajectory available</p>
+    <div *ngIf="userTrajectory">
+      <p><b>Recorded points: </b> {{ userTrajectory.coordinates.length }}</p>
+      <p>
+        <b>Latest position: </b>
+        {{
+          userTrajectory.coordinates[userTrajectory.coordinates.length - 1]
+            | json
+        }}
+      </p>
+      <p>
+        <b>Latest timestamp: </b>
+        {{
+          userTrajectory.timestamps[userTrajectory.timestamps.length - 1] | json
+        }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="segment == 'device'">
+    <p *ngFor="let item of myDevice | keyvalue">
+      <b>{{ item.key }}: </b> {{ item.value }}
+    </p>
+  </div>
+</div>
