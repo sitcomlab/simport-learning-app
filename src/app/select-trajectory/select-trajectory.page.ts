@@ -11,6 +11,7 @@ import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
+import { DebugWindowComponent } from '../debug-window/debug-window.component'
 
 enum TrajectoryMode {
   TRACK = 'tracking',
@@ -24,6 +25,8 @@ enum TrajectoryMode {
   styleUrls: ['./select-trajectory.page.scss'],
 })
 export class SelectTrajectoryPage implements OnInit {
+  private lastOnClick = 0
+
   constructor(
     private modalController: ModalController,
     private toastController: ToastController,
@@ -33,6 +36,25 @@ export class SelectTrajectoryPage implements OnInit {
     private trajectoryImportExportService: TrajectoryImportExportService,
     public locationService: LocationService
   ) {}
+
+  // fired on title click
+  // used for double click detection
+  private async onTitleClick() {
+    const now = Date.now()
+
+    if (Math.abs(now - this.lastOnClick) <= 200) {
+      this.lastOnClick = 0
+      const modal = await this.modalController.create({
+        component: DebugWindowComponent,
+        swipeToClose: true,
+        presentingElement: this.routerOutlet.nativeEl,
+        cssClass: 'auto-height',
+      })
+      modal.present()
+    } else {
+      this.lastOnClick = now
+    }
+  }
 
   ngOnInit() {}
 
