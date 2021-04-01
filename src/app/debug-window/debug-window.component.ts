@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { DeviceInfo, Plugins } from '@capacitor/core'
+import { ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
@@ -23,9 +24,12 @@ export class DebugWindowComponent implements OnInit {
 
   segment = 'general'
 
+  showHistory = false
+
   constructor(
     private trajectoryService: TrajectoryService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private modalController: ModalController
   ) {}
 
   async ngOnInit() {
@@ -59,5 +63,9 @@ export class DebugWindowComponent implements OnInit {
 
   segmentChanged(ev: any) {
     this.segment = ev.target.value
+  }
+
+  dismissModal() {
+    this.modalController.dismiss()
   }
 }

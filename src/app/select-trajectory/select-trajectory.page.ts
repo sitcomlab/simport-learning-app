@@ -46,7 +46,7 @@ export class SelectTrajectoryPage implements OnInit {
       this.lastOnClick = 0
       const modal = await this.modalController.create({
         component: DebugWindowComponent,
-        swipeToClose: true,
+        swipeToClose: false,
         presentingElement: this.routerOutlet.nativeEl,
         cssClass: 'auto-height',
       })

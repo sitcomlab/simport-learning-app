@@ -1,0 +1,25 @@
+.inner-content {
+  overflow-x: hidden;
+}
+
+ion-card-header {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > h4 {
+    margin-bottom: 16px;
+  }
+}
+
+.history-container {
+  overflow-x: scroll;
+  > div {
+    min-width: 800px;
+  }
+}
