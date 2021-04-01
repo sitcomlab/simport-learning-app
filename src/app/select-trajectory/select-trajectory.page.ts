@@ -25,8 +25,6 @@ enum TrajectoryMode {
   styleUrls: ['./select-trajectory.page.scss'],
 })
 export class SelectTrajectoryPage implements OnInit {
-  private lastOnClick = 0
-
   constructor(
     private modalController: ModalController,
     private toastController: ToastController,
@@ -37,22 +35,48 @@ export class SelectTrajectoryPage implements OnInit {
     public locationService: LocationService
   ) {}
 
+  private CLICK_INTERVAL = 500
+  private DEBUG_WINDOW_CLICKS = 8
+  private lastOnClicks = []
+
   // fired on title click
-  // used for double click detection
+  // used for multiple click detection
   private async onTitleClick() {
     const now = Date.now()
 
-    if (Math.abs(now - this.lastOnClick) <= 200) {
-      this.lastOnClick = 0
+    if (this.lastOnClicks.length === 0) {
+      this.lastOnClicks.push(now)
+    } else if (this.lastOnClicks.length === this.DEBUG_WINDOW_CLICKS) {
+      this.lastOnClicks = []
       const modal = await this.modalController.create({
         component: DebugWindowComponent,
         swipeToClose: false,
+        backdropDismiss: true,
         presentingElement: this.routerOutlet.nativeEl,
         cssClass: 'auto-height',
       })
       modal.present()
+    } else if (
+      Math.abs(now - this.lastOnClicks[this.lastOnClicks.length - 1]) <=
+      this.CLICK_INTERVAL
+    ) {
+      this.lastOnClicks.push(now)
+
+      // notify the user when he/she is 3, 2 or 1 click(s) away from the debug window
+      // adapted from the android developer settings
+      if (this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length < 3) {
+        const clicksAway =
+          this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length + 1
+        const toast = await this.toastController.create({
+          message: `You are ${clicksAway} ${
+            clicksAway > 1 ? 'clicks' : 'click'
+          } away from the debug window`,
+          duration: 500,
+        })
+        toast.present()
+      }
     } else {
-      this.lastOnClick = now
+      this.lastOnClicks = []
     }
   }
 
