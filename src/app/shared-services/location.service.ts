@@ -21,6 +21,7 @@ export class LocationService implements OnDestroy {
     distanceFilter: 30,
     debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+    startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
   }
   private locationUpdateSubscription: Subscription
   private startEventSubscription: Subscription
@@ -107,11 +108,12 @@ export class LocationService implements OnDestroy {
   private subscribeToLocationUpdates() {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
-      .subscribe(async ({ latitude, longitude, accuracy }) => {
+      .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
         await this.db.upsertPoint(TRACKING_TRAJ_ID, {
           latLng: [latitude, longitude],
-          time: new Date(),
+          time: new Date(time),
           accuracy,
+          speed,
         })
 
         this.scheduleNotification(
