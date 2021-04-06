@@ -17,6 +17,6 @@ export class InferenceDefinition {
   ) {}
 }
 
-export type ScoringFunc = (p: Point) => number
+export type ScoringFunc = (cluster: Point[]) => number
 
 export type InferenceResult = Inference

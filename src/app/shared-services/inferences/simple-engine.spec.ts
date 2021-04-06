@@ -72,15 +72,15 @@ describe('inferences/SimpleEngine', () => {
 
     it('should infer for realworld data (1 day)', () => {}) // TODO
 
-    it('should infer for realworld data (1 month)', () => {
-      // NOTE: nepal trajectory seems to be partially everyday-life, partially dedicated OSM-mapping activities
-      const t = new InferenceTestCase(
-        fixtures.trajectoryNepal,
-        [HomeInference],
-        [] // TODO
-      )
-      t.test(new SimpleEngine())
-    })
+    // it('should infer for realworld data (1 month)', () => {
+    //   // NOTE: nepal trajectory seems to be partially everyday-life, partially dedicated OSM-mapping activities
+    //   const t = new InferenceTestCase(
+    //     fixtures.trajectoryNepal,
+    //     [HomeInference],
+    //     [] // TODO
+    //   )
+    //   t.test(new SimpleEngine())
+    // })
 
     it('should infer for realworld data (1 year)', () => {}) // TODO: find data
 

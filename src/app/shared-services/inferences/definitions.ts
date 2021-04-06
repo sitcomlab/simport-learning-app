@@ -6,7 +6,7 @@ export const WorkInference = new InferenceDefinition(
   (lang?: string) => 'Workplace',
   (r: InferenceResult, lang?: string) =>
     `We assume your workplace is at ${r.lonLat} with a confidence of ${r.confidence}.`,
-  [(p: Point) => 0] // TODO
+  [(points: Point[]) => 0] // TODO
 )
 
 export const HomeInference = new InferenceDefinition(
@@ -14,7 +14,7 @@ export const HomeInference = new InferenceDefinition(
   (lang?: string) => 'Home',
   (r: InferenceResult, lang?: string) =>
     `We assume your home is at ${r.lonLat} with a confidence of ${r.confidence}.`,
-  [(p: Point) => 1] // TODO
+  [(points: Point[]) => 1] // TODO
 )
 
 export const AllInferences = {
