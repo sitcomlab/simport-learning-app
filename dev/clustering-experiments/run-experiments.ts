@@ -2,9 +2,10 @@ const USAGE = 'ts-node -r tsconfig-paths/register run-experiments.ts'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
 import * as fixtures from 'src/app/shared-services/inferences/simple-engine.spec.fixtures'
 import * as fs from 'fs'
+import ownTrajectory from './input/own_trajectory.json'
 
 function cluster(trajectory: TrajectoryData) {
   var dbscan = new clustering.DBSCAN()
@@ -86,7 +87,7 @@ function applyClusteringAndSaveToCsv(
   )
 }
 
-async function main() {
+function applyClusteringOnTestData() {
   applyClusteringAndSaveToCsv(fixtures.trajectoryHomeWork, 'trajectoryHomeWork')
   applyClusteringAndSaveToCsv(
     fixtures.trajectoryHomeWorkSpatiallyDense,
@@ -99,6 +100,15 @@ async function main() {
   applyClusteringAndSaveToCsv(
     fixtures.trajectoryMobileOnly,
     'trajectoryMobileOnly'
+  )
+}
+
+async function main() {
+  applyClusteringOnTestData()
+
+  applyClusteringAndSaveToCsv(
+    Trajectory.fromJSON(ownTrajectory),
+    'ownTrajectory'
   )
 }
 
