@@ -36,7 +36,7 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
     "@mapbox/polyline": "^1.1.1",
-    "@mauron85/cordova-plugin-background-geolocation": "git+https://github.com/noerw/cordova-plugin-background-geolocation.git",
+    "@mauron85/cordova-plugin-background-geolocation": "git+https://github.com/noerw/cordova-plugin-background-geolocation.git#e08ab0f491f1cce738e986c0a493378eb3d6ff85",
     "@types/moment": "^2.13.0",
     "capacitor-file-selector": "0.0.5",
     "cordova-plugin-android-permissions": "^1.1.2",
