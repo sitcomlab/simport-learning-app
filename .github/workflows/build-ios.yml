@@ -3,7 +3,7 @@ name: iOS-Build
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ develop ]
+    branches: [develop]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -12,10 +12,19 @@ jobs:
   build-ios:
     runs-on: macOS-latest
 
+    strategy:
+      matrix:
+        node-version: [15.14.0]
+
     steps:
       - name: Checkout project
         uses: actions/checkout@master
-        
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
       - name: Prepare ionic build
         uses: coturiv/setup-ionic@master
 
@@ -24,12 +33,12 @@ jobs:
           npm install --silent
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm
-  
+
       - name: Bump version
         run: |
           cd ios/App
           agvtool new-version -all ${{ github.run_number }}
-  
+
       - name: Run iOS build
         uses: yukiarrr/ios-build-action@v1.3.2
         with:
@@ -41,4 +50,4 @@ jobs:
           mobileprovision-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
           code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           team-id: ${{ secrets.IOS_TEAM_ID }}
-          export-method: "ad-hoc"
+          export-method: 'ad-hoc'
