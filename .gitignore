@@ -29,3 +29,6 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+
+# do not commit test-data for now
+src/app/shared-services/inferences/test-data/*

@@ -1,13 +1,13 @@
 // assumptions:
 // - geojson is a feature of polyline with properties.timestamps being an array of iso8601 dates.
 
-const USAGE = `ts-node --dir dev import_example_trajectory.ts <gpx-or-geojson-file> <placename>`
+const USAGE = `ts-node -r tsconfig-paths/register --dir dev import_example_trajectory.ts <gpx-or-geojson-file> <placename>`
 
 import * as polyline from '@mapbox/polyline'
 import * as fs from 'fs'
 import * as GPX from 'gpx-parse'
 import * as path from 'path'
-import { Trajectory, TrajectoryType } from '../src/app/model/trajectory'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 
 function argparse() {
   const args = process.argv.slice(2)

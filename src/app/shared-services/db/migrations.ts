@@ -80,4 +80,7 @@ export const MIGRATIONS = [
   // add index to column 'trajectory' in table 'points', since points are mostly accessed via trajectories
   // this indexing improves performance sql-requests
   `CREATE INDEX pointsTrajectoryIndex ON points(trajectory);`,
+
+  // add field 'speed' to table points
+  `ALTER TABLE points ADD COLUMN speed float DEFAULT -1;`,
 ]

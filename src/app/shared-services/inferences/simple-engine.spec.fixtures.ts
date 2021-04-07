@@ -1,35 +1,30 @@
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { Trajectory } from 'src/app/model/trajectory'
 
-export const trajEmpty: TrajectoryData = {
+// trajectory test files
+import trajectoryFileMobileOnly from './test-data/test-mobile-only.json'
+import trajectoryFileHomeWork from './test-data/test-home-work.json'
+import trajectoryFileSpatiallyDense from './test-data/test-home-work-spatially-dense.json'
+import trajectoryFileTemporallySparse from './test-data/test-home-work-temporally-sparse.json'
+import trajectoryNepalFile from 'src/assets/trajectories/3384596.json'
+
+export const trajectoryEmpty = {
   coordinates: [],
   timestamps: [],
   accuracy: [],
 }
 
-// TODO
-export const trajMobileOnly: TrajectoryData = {
-  coordinates: [],
-  timestamps: [],
-  accuracy: [],
-}
+export const trajectoryNepal = Trajectory.fromJSON(trajectoryNepalFile)
 
-// TODO
-export const trajHomeWork: TrajectoryData = {
-  coordinates: [],
-  timestamps: [],
-  accuracy: [],
-}
+export const trajectoryMobileOnly = Trajectory.fromJSON(
+  trajectoryFileMobileOnly
+)
 
-// TODO
-export const trajHomeWorkSpatiallyDense: TrajectoryData = {
-  coordinates: [],
-  timestamps: [],
-  accuracy: [],
-}
+export const trajectoryHomeWork = Trajectory.fromJSON(trajectoryFileHomeWork)
 
-// TODO
-export const trajHomeWorkTemporallySparse: TrajectoryData = {
-  coordinates: [],
-  timestamps: [],
-  accuracy: [],
-}
+export const trajectoryHomeWorkSpatiallyDense = Trajectory.fromJSON(
+  trajectoryFileSpatiallyDense
+)
+
+export const trajectoryHomeWorkTemporallySparse = Trajectory.fromJSON(
+  trajectoryFileTemporallySparse
+)

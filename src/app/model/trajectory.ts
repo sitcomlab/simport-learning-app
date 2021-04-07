@@ -18,12 +18,14 @@ export interface TrajectoryData {
   coordinates: [number, number][]
   timestamps: Date[]
   accuracy?: number[]
+  speed?: number[]
 }
 
 export interface Point {
   latLng: [number, number]
   time?: Date
-  accuracy?: number
+  accuracy?: number // in meters
+  speed?: number // in meters per second
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
@@ -32,6 +34,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   static fromJSON({
     coordinates,
     timestamps,
+    accuracy,
+    speed,
     time0,
   }: TrajectoryJSON): TrajectoryData {
     return {
@@ -46,6 +50,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
         ts.push(new Date(t1.getTime() + deltaMs))
         return ts
       }, []),
+      accuracy: accuracy || [],
+      speed: speed || [],
     }
   }
 
@@ -69,6 +75,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     const trajectoryJson: TrajectoryJSON = {
       coordinates: polyline.encode(trajectory.coordinates),
       timestamps,
+      accuracy: trajectory.accuracy || [],
+      speed: trajectory.speed || [],
       time0,
       timeN,
     }
@@ -114,17 +122,35 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   get accuracy() {
     return this.data?.accuracy || []
   }
+  get speed() {
+    return this.data?.speed || []
+  }
 
-  addPoint({ latLng, time, accuracy }: Point) {
+  addPoint({ latLng, time, accuracy, speed }: Point) {
+    if (this.data == null)
+      this.data = { coordinates: [], timestamps: [], accuracy: [], speed: [] }
     this.data.coordinates.push(latLng)
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())
+    this.data.speed.push(speed)
+  }
+
+  getCopy(): Trajectory {
+    const data: TrajectoryData = {
+      coordinates: [...this.data?.coordinates],
+      timestamps: [...this.data?.timestamps],
+      accuracy: [...(this.data?.accuracy || [])],
+      speed: [...(this.data?.speed || [])],
+    }
+    return new Trajectory({ ...this.meta }, data)
   }
 }
 
 type TrajectoryJSON = {
   coordinates: string // polyline6 encoded
   timestamps: number[]
+  speed?: number[]
+  accuracy?: number[]
   time0: string // isodates
   timeN?: string
 }
