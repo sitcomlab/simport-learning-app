@@ -20,13 +20,13 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@master
 
+      - name: Prepare ionic build
+        uses: coturiv/setup-ionic@master
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Prepare ionic build
-        uses: coturiv/setup-ionic@master
 
       # TODO: add flag --prod (currently not building)
       - name: Run ionic build
