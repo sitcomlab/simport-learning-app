@@ -51,7 +51,7 @@ export class SelectTrajectoryPage implements OnInit {
       const modal = await this.modalController.create({
         component: DebugWindowComponent,
         swipeToClose: false,
-        backdropDismiss: true,
+        backdropDismiss: false,
         presentingElement: this.routerOutlet.nativeEl,
         cssClass: 'auto-height',
       })
