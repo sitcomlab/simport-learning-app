@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { combineLatest, from, Observable } from 'rxjs'
+import { combineLatest, from, merge, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
   Point,
@@ -70,7 +70,13 @@ export class TrajectoryService {
         )
 
       default:
-        return from(this.db.getFullTrajectory(id))
+        const ob = new Observable<Trajectory>((s) => {
+          this.db.addPointSub.subscribe(async () => {
+            s.next(await this.db.getFullTrajectory(id))
+          })
+        })
+
+        return merge(from(this.db.getFullTrajectory(id)), ob)
     }
   }
 
