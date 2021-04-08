@@ -44,39 +44,48 @@ export class SelectTrajectoryPage implements OnInit {
   private async onTitleClick() {
     const now = Date.now()
 
-    if (this.lastOnClicks.length === 0) {
-      this.lastOnClicks.push(now)
-    } else if (this.lastOnClicks.length === this.DEBUG_WINDOW_CLICKS) {
-      this.lastOnClicks = []
-      const modal = await this.modalController.create({
-        component: DebugWindowComponent,
-        swipeToClose: false,
-        backdropDismiss: false,
-        presentingElement: this.routerOutlet.nativeEl,
-        cssClass: 'auto-height',
-      })
-      modal.present()
-    } else if (
+    if (
+      this.lastOnClicks.length === 0 ||
       Math.abs(now - this.lastOnClicks[this.lastOnClicks.length - 1]) <=
-      this.CLICK_INTERVAL
+        this.CLICK_INTERVAL
     ) {
+      // not enough clicks, keep on
       this.lastOnClicks.push(now)
 
       // notify the user when he/she is 3, 2 or 1 click(s) away from the debug window
       // adapted from the android developer settings
-      if (this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length < 3) {
-        const clicksAway =
-          this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length + 1
+      const clicksAway = this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length
+      if (clicksAway <= 3) {
+        const special = ['🦘', '🐬', '🦉']
+        const counterMessage = `${
+          special[clicksAway - 1]
+        } You are ${clicksAway} ${
+          clicksAway > 1 ? 'clicks' : 'click'
+        } away from the debug window`
+        const successMessage = `🦖🎉 You found the secret debug window!`
         const toast = await this.toastController.create({
-          message: `You are ${clicksAway} ${
-            clicksAway > 1 ? 'clicks' : 'click'
-          } away from the debug window`,
-          duration: 500,
+          message: clicksAway > 0 ? counterMessage : successMessage,
+          duration: clicksAway > 0 ? 500 : 1000,
         })
         toast.present()
+
+        // all clicks were in the required interval
+        // presenting debug modal
+        if (clicksAway === 0) {
+          this.lastOnClicks = []
+          const modal = await this.modalController.create({
+            component: DebugWindowComponent,
+            swipeToClose: false,
+            backdropDismiss: false,
+            presentingElement: this.routerOutlet.nativeEl,
+            cssClass: 'auto-height',
+          })
+          modal.present()
+        }
       }
     } else {
-      this.lastOnClicks = []
+      // counter array is either empty or last click was after click interval limit
+      this.lastOnClicks = [now]
     }
   }
 
