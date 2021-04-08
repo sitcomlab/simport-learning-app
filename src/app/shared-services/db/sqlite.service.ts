@@ -17,7 +17,7 @@ export class SqliteService {
   private db = Plugins.CapacitorSQLite
   private dbReady: Promise<void>
 
-  public addPointSub: Subject<void> = new Subject()
+  public addPointSub: Subject<Point> = new Subject()
 
   constructor(private platform: Platform) {}
 
@@ -185,7 +185,7 @@ export class SqliteService {
     // update durationDays of trajectory
     await this.updateDurationDaysInTrajectory(trajectoryId)
 
-    this.addPointSub.next()
+    this.addPointSub.next(p)
   }
 
   async deleteTrajectory(t: TrajectoryMeta): Promise<void> {

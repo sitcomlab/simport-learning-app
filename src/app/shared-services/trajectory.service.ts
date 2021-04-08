@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { combineLatest, from, merge, Observable } from 'rxjs'
+import { combineLatest, from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
   Point,
@@ -29,6 +29,8 @@ export class TrajectoryService {
     private db: SqliteService,
     private locationService: LocationService
   ) {}
+
+  private trajectoryCache: Trajectory
 
   // Returns an observable yielding metadata of all available trajectories
   getAllMeta(): Observable<TrajectoryMeta[]> {
@@ -70,13 +72,22 @@ export class TrajectoryService {
         )
 
       default:
-        const ob = new Observable<Trajectory>((s) => {
-          this.db.addPointSub.subscribe(async () => {
-            s.next(await this.db.getFullTrajectory(id))
+        return new Observable<Trajectory>((subscriber) => {
+          // getting the trajectory from db and store it in cache
+          this.db.getFullTrajectory(id).then((trajectory) => {
+            this.trajectoryCache = trajectory
+
+            // publish trajectory
+            subscriber.next(this.trajectoryCache)
+
+            // subscribe to addPoint events
+            this.db.addPointSub.subscribe(async (point) => {
+              // add new point to cache trajectory and publish it
+              this.trajectoryCache.addPoint(point)
+              subscriber.next(this.trajectoryCache)
+            })
           })
         })
-
-        return merge(from(this.db.getFullTrajectory(id)), ob)
     }
   }
 
