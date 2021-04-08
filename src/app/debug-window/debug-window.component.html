@@ -26,8 +26,10 @@
   </ion-segment>
 
   <div *ngIf="segment == 'general'">
-    <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
-    <p><b>App Build: </b> {{ myDevice.appBuild }}</p>
+    <div *ngIf="myDevice">
+      <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
+      <p><b>App Build: </b> {{ myDevice.appBuild }}</p>
+    </div>
 
     <p><b>Location tracking enabled: </b> {{ trackingRunning }}</p>
     <p><b>Notifications enabled: </b> {{ notificationsEnabled }}</p>
