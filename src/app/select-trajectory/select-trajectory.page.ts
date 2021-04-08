@@ -54,7 +54,7 @@ export class SelectTrajectoryPage {
     const toasts = [
       { message: '🦖🎉 You found the secret debug window!', duration: 1000 },
       { message: '🦉 You are 1 click away from the debug window' },
-      { message: '🐬 You are 2 click away from the debug window' },
+      { message: '🐬 You are 2 clicks away from the debug window' },
       { message: '🦘 You are 3 clicks away from the debug window' },
     ]
 
