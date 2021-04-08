@@ -22,7 +22,7 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   segment = 'general'
   showHistory = false
 
-  private subscriptions: Subscription[]
+  private subscriptions: Subscription[] = []
 
   constructor(
     private trajectoryService: TrajectoryService,
