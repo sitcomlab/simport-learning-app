@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import {
   Circle,
@@ -46,7 +46,8 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferences: InferenceService,
     private trajectories: TrajectoryService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -70,8 +71,13 @@ export class MapPage implements OnInit, OnDestroy {
           fillColor: '#428cff', // ionic primary blue
           fillOpacity: 1,
         }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
-        this.mapBounds = this.polyline.getBounds()
-        this.map?.invalidateSize()
+
+        if (this.mapBounds === undefined) {
+          this.mapBounds = this.polyline.getBounds()
+          this.map?.invalidateSize()
+        }
+
+        this.changeDetector.detectChanges()
       })
 
     this.addInferenceMarkers(this.inferences.getInferences(trajectoryId))
