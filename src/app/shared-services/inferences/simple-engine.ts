@@ -1,9 +1,22 @@
 import { Point, TrajectoryData } from 'src/app/model/trajectory'
-import { IInferenceEngine, InferenceDefinition, InferenceResult } from './types'
+import {
+  IInferenceEngine,
+  InferenceDefinition,
+  InferenceResult,
+  InferenceType,
+} from './types'
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
+import { NightnessScoring } from './scoring/nightness-scoring'
+import {
+  IInferenceScoring,
+  InferenceScoringResult,
+  InferenceScoringType,
+} from './scoring/types'
 
 export class SimpleEngine implements IInferenceEngine {
+  scorings: IInferenceScoring[] = [new NightnessScoring()]
+
   infer(
     trajectory: TrajectoryData,
     inferences: InferenceDefinition[]
@@ -15,32 +28,106 @@ export class SimpleEngine implements IInferenceEngine {
       result.clusters,
       trajectory
     )
+
+    const intermediateInferenceResults: InferenceResult[] = []
     // for each cluster...
     pointClusters.forEach((cluster) => {
       // check all inferences...
       inferences.forEach((inference) => {
-        // by applying the scoring functions of the inferences...
-        inference.scoringFuncs.forEach((scoringFunction) => {
+        // by applying the scoring functions of the engine...
+        const inferenceScores: InferenceScoringResult[] = []
+        this.scorings.forEach((scoring) => {
           // and then actually do sth. that makes sense with the scoring function?
-          scoringFunction(cluster)
+          const score = scoring.score(cluster)
+          inferenceScores.push(score)
         })
+        const inferenceResult = this.interpretInferenceScores(
+          inference,
+          inferenceScores,
+          cluster
+        )
+        if (inferenceResult !== null) {
+          intermediateInferenceResults.push(inferenceResult)
+          if (inferenceResult.confidence || 0 > 0) {
+            console.log(inference.info(inferenceResult))
+          }
+        }
       })
     })
 
-    return []
+    const inferenceResults = this.filterInferenceResults(
+      intermediateInferenceResults
+    )
+
+    return inferenceResults
+  }
+
+  private interpretInferenceScores(
+    inferenceDef: InferenceDefinition,
+    scoringResults: InferenceScoringResult[],
+    cluster: Point[]
+  ): InferenceResult {
+    // TODO: create valid InferenceResults
+    // this is just a static sample interpretation
+    let confidence = 0
+    scoringResults
+      .filter((s) => s.type === InferenceScoringType.nightness)
+      .forEach((scoringResult) => {
+        if (
+          inferenceDef.type === InferenceType.home &&
+          scoringResult.value > 0.55
+        ) {
+          confidence = 1
+        } else if (
+          inferenceDef.type === InferenceType.work &&
+          scoringResult.value < 0.45
+        ) {
+          confidence = 1
+        }
+      })
+
+    const centroid = this.calculateCentroid(cluster)
+    return {
+      name: 'TODO',
+      description: 'TODO',
+      trajectoryId: 'TODO',
+      lonLat: centroid.latLng,
+      confidence,
+      accuracy: -1,
+    }
+  }
+
+  private filterInferenceResults(
+    results: InferenceResult[]
+  ): InferenceResult[] {
+    // TODO: prioritze and filter InferenceResults
+    return results
+  }
+
+  private calculateCentroid(cluster: Point[]): Point {
+    // simple sample centroid calulation
+    const latLng = cluster.map((p) => p.latLng)
+    if (latLng.length === 0) {
+      return null
+    }
+    const centerLat =
+      latLng.map((p) => p[0]).reduce((a, b) => a + b) / latLng.length
+    const centerLng =
+      latLng.map((p) => p[1]).reduce((a, b) => a + b) / latLng.length
+    return { latLng: [centerLat, centerLng] }
   }
 
   private cluster(trajectory: TrajectoryData) {
-    var dbscan = new clustering.DBSCAN()
+    const dbscan = new clustering.DBSCAN()
     // parameters: neighborhood radius, number of points in neighborhood to form a cluster
-    var clusters = dbscan.run(
+    const clusters = dbscan.run(
       trajectory.coordinates,
       5,
       3,
       this.computeHaversineDistance
     )
 
-    return { clusters: clusters, noise: dbscan.noise }
+    return { clusters, noise: dbscan.noise }
   }
 
   private computeHaversineDistance(firstCoordinate, secondCoordinate): number {

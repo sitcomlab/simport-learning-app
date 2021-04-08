@@ -3,7 +3,7 @@ import distance from '@turf/distance'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryData } from 'src/app/model/trajectory'
-import { AllInferences, HomeInference } from './definitions'
+import { AllInferences, HomeInference, WorkInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from './types'
@@ -33,7 +33,7 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for mobile only trajectory', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
-        [HomeInference],
+        [HomeInference, WorkInference],
         []
       )
       t.test(new SimpleEngine())
@@ -42,7 +42,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for home-work data', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWork,
-        [HomeInference],
+        [HomeInference, WorkInference],
         []
       )
       t.test(new SimpleEngine())
@@ -51,7 +51,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for spatially dense data', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
-        [HomeInference],
+        [HomeInference, WorkInference],
         []
       )
       t.test(new SimpleEngine())
@@ -60,7 +60,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for temporally sparse data', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
-        [HomeInference],
+        [HomeInference, WorkInference],
         []
       )
       t.test(new SimpleEngine())

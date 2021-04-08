@@ -1,7 +1,9 @@
 import { Inference } from 'src/app/model/inference'
-import { Point, TrajectoryData } from 'src/app/model/trajectory'
+import { TrajectoryData } from 'src/app/model/trajectory'
+import { IInferenceScoring, InferenceScoringType } from './scoring/types'
 
 export interface IInferenceEngine {
+  scorings: IInferenceScoring[]
   infer(
     trajectory: TrajectoryData,
     inferences: InferenceDefinition[]
@@ -11,12 +13,15 @@ export interface IInferenceEngine {
 export class InferenceDefinition {
   constructor(
     public id: string,
+    public type: InferenceType,
     public name: (lang?: string) => string,
-    public info: (res: InferenceResult, lang?: string) => string,
-    public scoringFuncs: ScoringFunc[]
+    public info: (res: InferenceResult, lang?: string) => string
   ) {}
 }
 
-export type ScoringFunc = (cluster: Point[]) => number
+export enum InferenceType {
+  home,
+  work,
+}
 
 export type InferenceResult = Inference
