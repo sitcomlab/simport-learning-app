@@ -47,7 +47,7 @@ export class MapPage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
     const trajectoryType = this.route.snapshot.paramMap.get(
       'trajectoryType'
@@ -61,7 +61,16 @@ export class MapPage implements OnInit, OnDestroy {
         this.map?.invalidateSize()
       })
 
-    this.addInferenceMarkers(this.inferences.getInferences(trajectoryId))
+    let inferenceResults = this.inferences.getInferences(trajectoryId)
+    if (inferenceResults.length === 0) {
+      console.log('Running inferences')
+      inferenceResults = await this.inferences.generateInferences(
+        trajectoryType,
+        trajectoryId
+      )
+      console.log('Running inferences done')
+    }
+    this.addInferenceMarkers(inferenceResults)
   }
 
   ngOnDestroy() {
@@ -85,11 +94,19 @@ export class MapPage implements OnInit, OnDestroy {
   private addInferenceMarkers(inferences: Inference[]) {
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      if (!inference.lonLat || !inference.accuracy) continue
+      if (
+        !inference.lonLat ||
+        !inference.accuracy ||
+        (inference.confidence || 0) < 0.7
+      )
+        continue
       const m = new Circle(inference.lonLat, {
         radius: inference.accuracy,
+        color: 'red',
       })
-      m.addTo(this.inferenceMarkers).bindPopup(inference.name)
+      m.addTo(this.inferenceMarkers).bindPopup(
+        `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
+      )
     }
   }
 }
