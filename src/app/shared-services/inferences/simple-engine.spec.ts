@@ -52,7 +52,7 @@ describe('inferences/SimpleEngine', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
         [HomeInference, WorkInference],
-        []
+        [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
       )
       t.test(new SimpleEngine())
     })
@@ -61,7 +61,7 @@ describe('inferences/SimpleEngine', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
         [HomeInference, WorkInference],
-        []
+        [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
       )
       t.test(new SimpleEngine())
     })
@@ -136,7 +136,7 @@ class InferenceTestCase {
   }
 }
 
-type InferenceResultTest = {
+export type InferenceResultTest = {
   name: string
   location: LatLngTuple
 }

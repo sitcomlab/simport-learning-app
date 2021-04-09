@@ -82,12 +82,10 @@ export class MapPage implements OnInit, OnDestroy {
 
     let inferenceResults = this.inferences.getInferences(trajectoryId)
     if (inferenceResults.length === 0) {
-      console.log('Running inferences')
       inferenceResults = await this.inferences.generateInferences(
         trajectoryType,
         trajectoryId
       )
-      console.log('Running inferences done')
     }
     this.addInferenceMarkers(inferenceResults)
   }
@@ -113,12 +111,7 @@ export class MapPage implements OnInit, OnDestroy {
   private addInferenceMarkers(inferences: Inference[]) {
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      if (
-        !inference.lonLat ||
-        !inference.accuracy ||
-        (inference.confidence || 0) < 0.7
-      )
-        continue
+      if (!inference.lonLat || !inference.accuracy) continue
       const m = new Circle(inference.lonLat, {
         radius: inference.accuracy,
         color: 'red',

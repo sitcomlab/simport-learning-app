@@ -347,13 +347,10 @@ function createSpatiallyDenseTrajectory(
       )
     )
   )
-  const trajectoryHomeToWorkSpatiallyDenseWithoutTime = interpolateCoordinates(
-    testBase.homeToWorkTrajectory
-  )
   const trajectoryHomeToWorkSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.homeEndDate,
     trajectoryTimes.workStartDate,
-    trajectoryHomeToWorkSpatiallyDenseWithoutTime
+    testBase.workToHomeTrajectory
   )
   const trajectoryWorkSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.workStartDate,
@@ -368,13 +365,10 @@ function createSpatiallyDenseTrajectory(
       )
     )
   )
-  const trajectoryWorkToHomeSpatiallyDenseWithoutTime = interpolateCoordinates(
-    testBase.workToHomeTrajectory
-  )
   const trajectoryWorkToHomeSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.workEndDate,
     trajectoryTimes.homeAfterWorkStartDate,
-    trajectoryWorkToHomeSpatiallyDenseWithoutTime
+    testBase.workToHomeTrajectory
   )
   const trajectoryAfterWorkSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.homeAfterWorkStartDate,

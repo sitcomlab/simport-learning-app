@@ -51,7 +51,6 @@ export class SimpleEngine implements IInferenceEngine {
       intermediateInferenceResults,
       inferences
     )
-
     return inferenceResults
   }
 
@@ -78,7 +77,7 @@ export class SimpleEngine implements IInferenceEngine {
     })
     const centroid = this.calculateCentroid(cluster)
     return {
-      name: `Inference for ${inferenceDef.type}`,
+      name: inferenceDef.type,
       type: inferenceDef.type,
       description: 'TODO',
       trajectoryId: 'TODO',
@@ -93,7 +92,9 @@ export class SimpleEngine implements IInferenceEngine {
     inferenceDefs: InferenceDefinition[]
   ): InferenceResult[] {
     // TODO: prioritze and filter InferenceResults
-    const filteredResults: InferenceResult[] = results
+    const filteredResults: InferenceResult[] = results.filter(
+      (r) => (r.confidence || 0) >= 0.7
+    )
     inferenceDefs.forEach((inferenceDef) => {
       const typedResults = results.filter((r) => r.type === inferenceDef.type)
       // maybe cluster clusters once again to filter really close clusters
@@ -105,10 +106,10 @@ export class SimpleEngine implements IInferenceEngine {
     cluster: Point[]
   ): { centerPoint: Point; maxDistance: number } {
     // simple sample centroid calulation
-    const latLng = cluster.map((p) => p.latLng)
-    if (latLng.length === 0) {
+    if (cluster.length === 0) {
       return null
     }
+    const latLng = cluster.map((p) => p.latLng)
     const centerLat =
       latLng.map((p) => p[0]).reduce((a, b) => a + b) / latLng.length
     const centerLng =
@@ -128,8 +129,8 @@ export class SimpleEngine implements IInferenceEngine {
     // parameters: neighborhood radius, number of points in neighborhood to form a cluster
     const clusters = dbscan.run(
       trajectory.coordinates,
+      7,
       5,
-      3,
       this.computeHaversineDistance
     )
 
