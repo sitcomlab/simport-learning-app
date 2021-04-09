@@ -76,11 +76,14 @@ export class TrajectoryService {
             subscriber.next(trajectory)
 
             // subscribe to addPoint events
-            this.db.addPointSub.subscribe(async (point) => {
+            const inner = this.db.addPointSub.subscribe(async (point) => {
               // add new point to trajectory and publish it
               trajectory.addPoint(point)
               subscriber.next(trajectory)
             })
+
+            // add inner subscription to add tear down for unsubscribe()
+            subscriber.add(inner)
           })
         })
     }
