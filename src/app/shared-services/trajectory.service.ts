@@ -70,7 +70,22 @@ export class TrajectoryService {
         )
 
       default:
-        return from(this.db.getFullTrajectory(id))
+        return new Observable<Trajectory>((subscriber) => {
+          this.db.getFullTrajectory(id).then((trajectory) => {
+            // publish trajectory
+            subscriber.next(trajectory)
+
+            // subscribe to addPoint events
+            const inner = this.db.addPointSub.subscribe(async (point) => {
+              // add new point to trajectory and publish it
+              trajectory.addPoint(point)
+              subscriber.next(trajectory)
+            })
+
+            // add inner subscription to add tear down for unsubscribe()
+            subscriber.add(inner)
+          })
+        })
     }
   }
 

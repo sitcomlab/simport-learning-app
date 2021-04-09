@@ -3,6 +3,7 @@ import { CapacitorSQLite, capSQLiteSet } from '@capacitor-community/sqlite'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import * as moment from 'moment'
+import { Subject } from 'rxjs'
 import {
   Point,
   Trajectory,
@@ -15,6 +16,8 @@ import { MIGRATIONS, runMigrations } from './migrations'
 export class SqliteService {
   private db = Plugins.CapacitorSQLite
   private dbReady: Promise<void>
+
+  public addPointSub: Subject<Point> = new Subject()
 
   constructor(private platform: Platform) {}
 
@@ -181,6 +184,8 @@ export class SqliteService {
 
     // update durationDays of trajectory
     await this.updateDurationDaysInTrajectory(trajectoryId)
+
+    this.addPointSub.next(p)
   }
 
   async deleteTrajectory(t: TrajectoryMeta): Promise<void> {
