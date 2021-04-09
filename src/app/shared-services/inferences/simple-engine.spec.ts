@@ -136,7 +136,7 @@ class InferenceTestCase {
   }
 }
 
-export type InferenceResultTest = {
+type InferenceResultTest = {
   name: string
   location: LatLngTuple
 }

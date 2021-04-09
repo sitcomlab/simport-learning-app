@@ -7,7 +7,7 @@ import trajectoryFileSpatiallyDense from './test-data/test-home-work-spatially-d
 import trajectoryFileTemporallySparse from './test-data/test-home-work-temporally-sparse.json'
 import trajectoryNepalFile from 'src/assets/trajectories/3384596.json'
 import { InferenceType } from './types'
-import { InferenceResultTest } from './simple-engine.spec'
+import { LatLngTuple } from 'leaflet'
 
 export const trajectoryEmpty = {
   coordinates: [],
@@ -31,12 +31,12 @@ export const trajectoryHomeWorkTemporallySparse = Trajectory.fromJSON(
   trajectoryFileTemporallySparse
 )
 
-export const trajectoryHomeResult: InferenceResultTest = {
+export const trajectoryHomeResult = {
   name: InferenceType.home,
-  location: [51.972509, 7.577781],
+  location: [51.972509, 7.577781] as LatLngTuple,
 }
 
-export const trajectoryWorkResult: InferenceResultTest = {
+export const trajectoryWorkResult = {
   name: InferenceType.work,
-  location: [51.969284, 7.595887],
+  location: [51.969284, 7.595887] as LatLngTuple,
 }
