@@ -1,3 +1,4 @@
+import { InferenceScoringType } from './scoring/types'
 import { InferenceDefinition, InferenceResult, InferenceType } from './types'
 
 export const WorkInference = new InferenceDefinition(
@@ -5,7 +6,21 @@ export const WorkInference = new InferenceDefinition(
   InferenceType.work,
   (lang?: string) => 'Workplace',
   (r: InferenceResult, lang?: string) =>
-    `We assume your workplace is at ${r.lonLat} with a confidence of ${r.confidence}.`
+    `We assume your workplace is at ${r.lonLat} with a confidence of ${r.confidence}.`,
+  [
+    {
+      type: InferenceScoringType.nightness,
+      range: [0, 1],
+      confidence: (score) => 1 - score,
+      weight: 1,
+    },
+    {
+      type: InferenceScoringType.workHours9to5,
+      range: [0, 1],
+      confidence: (score) => score,
+      weight: 1,
+    },
+  ]
 )
 
 export const HomeInference = new InferenceDefinition(
@@ -13,7 +28,21 @@ export const HomeInference = new InferenceDefinition(
   InferenceType.home,
   (lang?: string) => 'Home',
   (r: InferenceResult, lang?: string) =>
-    `We assume your home is at ${r.lonLat} with a confidence of ${r.confidence}.`
+    `We assume your home is at ${r.lonLat} with a confidence of ${r.confidence}.`,
+  [
+    {
+      type: InferenceScoringType.nightness,
+      range: [0, 1],
+      confidence: (score) => score,
+      weight: 1,
+    },
+    {
+      type: InferenceScoringType.workHours9to5,
+      range: [0, 1],
+      confidence: (score) => 1 - score,
+      weight: 1,
+    },
+  ]
 )
 
 export const AllInferences = {

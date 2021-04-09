@@ -1,6 +1,10 @@
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryData } from 'src/app/model/trajectory'
-import { IInferenceScoring, InferenceScoringType } from './scoring/types'
+import {
+  IInferenceScoring,
+  InferenceScoringConfig,
+  InferenceScoringType,
+} from './scoring/types'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
@@ -15,13 +19,18 @@ export class InferenceDefinition {
     public id: string,
     public type: InferenceType,
     public name: (lang?: string) => string,
-    public info: (res: InferenceResult, lang?: string) => string
+    public info: (res: InferenceResult, lang?: string) => string,
+    public scoringConfigurations: InferenceScoringConfig[]
   ) {}
+
+  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
+    return this.scoringConfigurations.find((config) => config.type === type)
+  }
 }
 
 export enum InferenceType {
-  home,
-  work,
+  home = 'home',
+  work = 'work',
 }
 
 export type InferenceResult = Inference

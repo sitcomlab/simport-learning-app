@@ -5,14 +5,22 @@ export interface IInferenceScoring {
   score(cluster: Point[]): InferenceScoringResult
 }
 
+export type InferenceScoringConfig = {
+  type: InferenceScoringType
+  range: [number, number]
+  weight: number
+  confidence: (score: number) => number
+}
+
 export type InferenceScoringResult = {
   type: InferenceScoringType
   value: number
 }
 
 export enum InferenceScoringType {
-  spatialVariance,
-  temporalContinuity,
-  pointCount,
-  nightness,
+  spatialVariance = 'spatialVariance',
+  temporalContinuity = 'temporalContinuity',
+  pointCount = 'pointCount',
+  nightness = 'nightness',
+  workHours9to5 = 'workHours9to5',
 }

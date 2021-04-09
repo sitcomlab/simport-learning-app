@@ -1,21 +1,16 @@
 import { Point, TrajectoryData } from 'src/app/model/trajectory'
-import {
-  IInferenceEngine,
-  InferenceDefinition,
-  InferenceResult,
-  InferenceType,
-} from './types'
+import { IInferenceEngine, InferenceDefinition, InferenceResult } from './types'
+import { NightnessScoring } from './scoring/nightness-scoring'
+import { IInferenceScoring, InferenceScoringResult } from './scoring/types'
+import { WorkHoursScoring } from './scoring/work-hours-scoring'
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
-import { NightnessScoring } from './scoring/nightness-scoring'
-import {
-  IInferenceScoring,
-  InferenceScoringResult,
-  InferenceScoringType,
-} from './scoring/types'
 
 export class SimpleEngine implements IInferenceEngine {
-  scorings: IInferenceScoring[] = [new NightnessScoring()]
+  scorings: IInferenceScoring[] = [
+    new NightnessScoring(),
+    new WorkHoursScoring(),
+  ]
 
   infer(
     trajectory: TrajectoryData,
@@ -48,15 +43,13 @@ export class SimpleEngine implements IInferenceEngine {
         )
         if (inferenceResult !== null) {
           intermediateInferenceResults.push(inferenceResult)
-          if (inferenceResult.confidence || 0 > 0) {
-            console.log(inference.info(inferenceResult))
-          }
         }
       })
     })
 
     const inferenceResults = this.filterInferenceResults(
-      intermediateInferenceResults
+      intermediateInferenceResults,
+      inferences
     )
 
     return inferenceResults
@@ -70,41 +63,47 @@ export class SimpleEngine implements IInferenceEngine {
     // TODO: create valid InferenceResults
     // this is just a static sample interpretation
     let confidence = 0
-    scoringResults
-      .filter((s) => s.type === InferenceScoringType.nightness)
-      .forEach((scoringResult) => {
+    let confidenceCount = 0
+    scoringResults.forEach((scoringResult) => {
+      const config = inferenceDef.getScoringConfig(scoringResult.type)
+      if (config !== null) {
         if (
-          inferenceDef.type === InferenceType.home &&
-          scoringResult.value > 0.55
+          scoringResult.value >= config.range[0] &&
+          scoringResult.value <= config.range[1]
         ) {
-          confidence = 1
-        } else if (
-          inferenceDef.type === InferenceType.work &&
-          scoringResult.value < 0.45
-        ) {
-          confidence = 1
+          confidence += config.confidence(scoringResult.value)
+          confidenceCount += 1
         }
-      })
-
+      }
+    })
     const centroid = this.calculateCentroid(cluster)
     return {
-      name: 'TODO',
+      name: `Inference for ${inferenceDef.type}`,
+      type: inferenceDef.type,
       description: 'TODO',
       trajectoryId: 'TODO',
-      lonLat: centroid.latLng,
-      confidence,
-      accuracy: -1,
+      lonLat: centroid.centerPoint.latLng,
+      confidence: confidenceCount > 0 ? confidence / confidenceCount : 0,
+      accuracy: centroid.maxDistance,
     }
   }
 
   private filterInferenceResults(
-    results: InferenceResult[]
+    results: InferenceResult[],
+    inferenceDefs: InferenceDefinition[]
   ): InferenceResult[] {
     // TODO: prioritze and filter InferenceResults
-    return results
+    const filteredResults: InferenceResult[] = results
+    inferenceDefs.forEach((inferenceDef) => {
+      const typedResults = results.filter((r) => r.type === inferenceDef.type)
+      // maybe cluster clusters once again to filter really close clusters
+    })
+    return filteredResults
   }
 
-  private calculateCentroid(cluster: Point[]): Point {
+  private calculateCentroid(
+    cluster: Point[]
+  ): { centerPoint: Point; maxDistance: number } {
     // simple sample centroid calulation
     const latLng = cluster.map((p) => p.latLng)
     if (latLng.length === 0) {
@@ -114,7 +113,14 @@ export class SimpleEngine implements IInferenceEngine {
       latLng.map((p) => p[0]).reduce((a, b) => a + b) / latLng.length
     const centerLng =
       latLng.map((p) => p[1]).reduce((a, b) => a + b) / latLng.length
-    return { latLng: [centerLat, centerLng] }
+    const centerPoint: Point = { latLng: [centerLat, centerLng] }
+    const maxDistance = Math.max.apply(
+      Math,
+      cluster.map((p) =>
+        this.computeHaversineDistance(centerPoint.latLng, p.latLng)
+      )
+    )
+    return { centerPoint, maxDistance }
   }
 
   private cluster(trajectory: TrajectoryData) {

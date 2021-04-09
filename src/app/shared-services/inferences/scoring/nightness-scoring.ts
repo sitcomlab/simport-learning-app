@@ -7,7 +7,7 @@ import {
 
 export class NightnessScoring implements IInferenceScoring {
   public type: InferenceScoringType = InferenceScoringType.nightness
-  private referenceDate = new Date('2021-01-01T00:00:00.000Z')
+  private referenceDate = new Date(Date.UTC(2021, 0, 0, 0, 0, 0))
   private minutesToDecimalHoursFactor = 0.0166
 
   score(cluster: Point[]): InferenceScoringResult {
