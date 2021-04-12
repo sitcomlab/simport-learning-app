@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { LoadingController } from '@ionic/angular'
 import {
   Circle,
   CircleMarker,
@@ -42,22 +43,25 @@ export class MapPage implements OnInit, OnDestroy {
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
   private trajSub: Subscription
+  private trajectoryId: string
+  private trajectoryType: TrajectoryType
 
   constructor(
     private inferences: InferenceService,
     private trajectories: TrajectoryService,
     private route: ActivatedRoute,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private loadingController: LoadingController
   ) {}
 
   async ngOnInit() {
-    const trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    const trajectoryType = this.route.snapshot.paramMap.get(
+    this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
+    this.trajectoryType = this.route.snapshot.paramMap.get(
       'trajectoryType'
     ) as TrajectoryType
 
     this.trajSub = this.trajectories
-      .getOne(trajectoryType, trajectoryId)
+      .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
 
@@ -80,13 +84,7 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    let inferenceResults = this.inferences.getInferences(trajectoryId)
-    if (inferenceResults.length === 0) {
-      inferenceResults = await this.inferences.generateInferences(
-        trajectoryType,
-        trajectoryId
-      )
-    }
+    const inferenceResults = this.inferences.getInferences(this.trajectoryId)
     this.addInferenceMarkers(inferenceResults)
   }
 
@@ -108,6 +106,16 @@ export class MapPage implements OnInit, OnDestroy {
     this.map = map
   }
 
+  async showInferences() {
+    await this.showLoadingDialog('Loading inferences...')
+    const inferenceResults = await this.inferences
+      .generateInferences(this.trajectoryType, this.trajectoryId)
+      .finally(async () => {
+        await this.hideLoadingDialog()
+      })
+    this.addInferenceMarkers(inferenceResults)
+  }
+
   private addInferenceMarkers(inferences: Inference[]) {
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
@@ -120,5 +128,17 @@ export class MapPage implements OnInit, OnDestroy {
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
     }
+  }
+
+  private async showLoadingDialog(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      translucent: true,
+    })
+    await loading.present()
+  }
+
+  private async hideLoadingDialog() {
+    await this.loadingController.dismiss()
   }
 }
