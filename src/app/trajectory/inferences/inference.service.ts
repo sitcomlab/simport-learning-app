@@ -8,6 +8,7 @@ import {
 import { SimpleEngine } from 'src/app/shared-services/inferences/simple-engine'
 import { InferenceType } from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { take } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +49,7 @@ export class InferenceService {
   ): Promise<Inference[]> {
     const traj = await this.trajectoryService
       .getOne(trajectoryType, trajectoryId)
+      .pipe(take(1))
       .toPromise()
     return this.inferenceEngine.infer(traj, [HomeInference, WorkInference])
   }
