@@ -61,8 +61,7 @@ export class SimpleEngine implements IInferenceEngine {
   ): InferenceResult {
     // TODO: create valid InferenceResults
     // this is just a static sample interpretation
-    let confidence = 0
-    let confidenceCount = 0
+    const confidences: { confidence: number; weight: number }[] = []
     scoringResults.forEach((scoringResult) => {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
       if (config !== null) {
@@ -70,11 +69,20 @@ export class SimpleEngine implements IInferenceEngine {
           scoringResult.value >= config.range[0] &&
           scoringResult.value <= config.range[1]
         ) {
-          confidence += config.confidence(scoringResult.value)
-          confidenceCount += 1
+          const scoringConfidence = {
+            confidence: config.confidence(scoringResult.value),
+            weight: config.weight,
+          }
+          confidences.push(scoringConfidence)
         }
       }
     })
+    let confidence = 0
+    if (confidences.length > 0) {
+      confidence =
+        confidences.reduce((p, c) => p + c.confidence * c.weight, 0) /
+        confidences.length
+    }
     const centroid = this.calculateCentroid(cluster)
     return {
       name: inferenceDef.type,
@@ -82,7 +90,7 @@ export class SimpleEngine implements IInferenceEngine {
       description: 'TODO',
       trajectoryId: 'TODO',
       lonLat: centroid.centerPoint.latLng,
-      confidence: confidenceCount > 0 ? confidence / confidenceCount : 0,
+      confidence,
       accuracy: centroid.maxDistance,
     }
   }
@@ -93,7 +101,7 @@ export class SimpleEngine implements IInferenceEngine {
   ): InferenceResult[] {
     // TODO: prioritze and filter InferenceResults
     const filteredResults: InferenceResult[] = results.filter(
-      (r) => (r.confidence || 0) >= 0.7
+      (r) => (r.confidence || 0) >= 0.5
     )
     inferenceDefs.forEach((inferenceDef) => {
       const typedResults = results.filter((r) => r.type === inferenceDef.type)
