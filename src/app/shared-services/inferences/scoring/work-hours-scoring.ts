@@ -9,14 +9,10 @@ export class WorkHoursScoring implements IInferenceScoring {
   public type: InferenceScoringType = InferenceScoringType.workHours9to5
   private referenceStartHours = 9
   private referenceEndHours = 17
-  private minutesToDecimalHoursFactor = 0.0166
 
   score(cluster: Point[]): InferenceScoringResult {
     const workHourPoints = cluster.filter((p) => {
-      if (p.time === null) {
-        return false
-      }
-      return this.isUsualWorkingTime(p.time)
+      return p.time !== null ? this.isUsualWorkingTime(p.time) : false
     })
     const workHourPointPercentage = workHourPoints.length / cluster.length
     return { type: this.type, value: workHourPointPercentage }
@@ -30,7 +26,9 @@ export class WorkHoursScoring implements IInferenceScoring {
   }
 
   private isWorkingHours(hours: number, minutes: number): boolean {
-    const hoursAndMinutes = hours + minutes * this.minutesToDecimalHoursFactor
+    const minutesToDecimalHoursFactor = 0.0166
+
+    const hoursAndMinutes = hours + minutes * minutesToDecimalHoursFactor
     return (
       hoursAndMinutes > this.referenceStartHours &&
       hoursAndMinutes < this.referenceEndHours
