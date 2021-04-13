@@ -130,8 +130,8 @@ export class SimpleEngine implements IInferenceEngine {
     // parameters: neighborhood radius, number of points in neighborhood to form a cluster
     const clusters = dbscan.run(
       trajectory.coordinates,
+      11,
       7,
-      5,
       this.computeHaversineDistance
     )
 
