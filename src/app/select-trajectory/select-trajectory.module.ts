@@ -8,6 +8,7 @@ import { SelectTrajectoryPageRoutingModule } from './select-trajectory-routing.m
 
 import { SelectTrajectoryPage } from './select-trajectory.page'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
+import { DebugWindowComponent } from './../debug-window/debug-window.component'
 import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component'
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
@@ -26,6 +27,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
   declarations: [
     SelectTrajectoryPage,
     TrajectorySelectorComponent,
+    DebugWindowComponent,
     TrajectoryCardComponent,
     TrajectoryCardPopoverPage,
   ],

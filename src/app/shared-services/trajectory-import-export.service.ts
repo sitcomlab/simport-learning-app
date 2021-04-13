@@ -12,6 +12,7 @@ import {
   FilesystemEncoding,
 } from '@capacitor/core'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
+import { take } from 'rxjs/operators'
 const { FileSelector, Filesystem } = Plugins
 
 export interface TrajectoryExportFile {
@@ -227,10 +228,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
     trajectoryMeta: TrajectoryMeta,
     useBase64: boolean
   ): Promise<TrajectoryExportFile> {
-    const trajectory = await this.getOne(
-      trajectoryMeta.type,
-      trajectoryMeta.id
-    ).toPromise()
+    const trajectory = await this.getOne(trajectoryMeta.type, trajectoryMeta.id)
+      .pipe(take(1))
+      .toPromise()
     return this.createTrajectoryExportFile(trajectory, useBase64)
   }
 
