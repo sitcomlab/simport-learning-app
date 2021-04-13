@@ -10,13 +10,13 @@ export const WorkInference = new InferenceDefinition(
   [
     {
       type: InferenceScoringType.nightness,
-      range: [0, 1],
+      validRange: [0, 1],
       confidence: (score) => 1 - score,
-      weight: 1,
+      weight: 0.75,
     },
     {
       type: InferenceScoringType.workHours9to5,
-      range: [0, 1],
+      validRange: [0, 1],
       confidence: (score) => score,
       weight: 1,
     },
@@ -32,15 +32,15 @@ export const HomeInference = new InferenceDefinition(
   [
     {
       type: InferenceScoringType.nightness,
-      range: [0, 1],
+      validRange: [0, 1],
       confidence: (score) => score,
       weight: 1,
     },
     {
       type: InferenceScoringType.workHours9to5,
-      range: [0, 1],
+      validRange: [0, 1],
       confidence: (score) => 1 - score,
-      weight: 1,
+      weight: 0.75,
     },
   ]
 )

@@ -66,8 +66,8 @@ export class SimpleEngine implements IInferenceEngine {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
       if (config !== null) {
         if (
-          scoringResult.value >= config.range[0] &&
-          scoringResult.value <= config.range[1]
+          scoringResult.value >= config.validRange[0] &&
+          scoringResult.value <= config.validRange[1]
         ) {
           const scoringConfidence = {
             confidence: config.confidence(scoringResult.value),
@@ -78,10 +78,10 @@ export class SimpleEngine implements IInferenceEngine {
       }
     })
     let confidence = 0
-    if (confidences.length > 0) {
+    const weights = confidences.reduce((p, c) => p + c.weight, 0)
+    if (confidences.length > 0 && weights > 0) {
       confidence =
-        confidences.reduce((p, c) => p + c.confidence * c.weight, 0) /
-        confidences.length
+        confidences.reduce((p, c) => p + c.confidence * c.weight, 0) / weights
     }
     const centroid = this.calculateCentroid(cluster)
     return {
