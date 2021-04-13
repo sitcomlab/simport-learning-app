@@ -100,14 +100,7 @@ export class SimpleEngine implements IInferenceEngine {
     inferenceDefs: InferenceDefinition[]
   ): InferenceResult[] {
     // TODO: prioritze and filter InferenceResults
-    const filteredResults: InferenceResult[] = results.filter(
-      (r) => (r.confidence || 0) >= 0.5
-    )
-    inferenceDefs.forEach((inferenceDef) => {
-      const typedResults = results.filter((r) => r.type === inferenceDef.type)
-      // maybe cluster clusters once again to filter really close clusters
-    })
-    return filteredResults
+    return results
   }
 
   private calculateCentroid(

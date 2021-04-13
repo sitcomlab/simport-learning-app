@@ -15,6 +15,7 @@ import {
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
+import { InferenceType } from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -45,10 +46,17 @@ export class MapPage implements OnInit, OnDestroy {
   private trajSub: Subscription
   private trajectoryId: string
   private trajectoryType: TrajectoryType
+  private currentInferences: Inference[]
+
+  // inference debug fields
+  private showDebugInferences = true
+  private showHomeInferences = true
+  private showWorkInferences = true
+  private currentConfidenceThreshold = 50
 
   constructor(
-    private inferences: InferenceService,
-    private trajectories: TrajectoryService,
+    private inferenceService: InferenceService,
+    private trajectoryService: TrajectoryService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController
@@ -60,7 +68,7 @@ export class MapPage implements OnInit, OnDestroy {
       'trajectoryType'
     ) as TrajectoryType
 
-    this.trajSub = this.trajectories
+    this.trajSub = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
@@ -84,8 +92,10 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    const inferenceResults = this.inferences.getInferences(this.trajectoryId)
-    this.addInferenceMarkers(inferenceResults)
+    this.currentInferences = this.inferenceService.getInferences(
+      this.trajectoryId
+    )
+    this.updateInferenceMarkers()
   }
 
   ngOnDestroy() {
@@ -108,18 +118,26 @@ export class MapPage implements OnInit, OnDestroy {
 
   async showInferences() {
     await this.showLoadingDialog('Loading inferences...')
-    const inferenceResults = await this.inferences
+    const inferenceResults = await this.inferenceService
       .generateInferences(this.trajectoryType, this.trajectoryId)
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-    this.addInferenceMarkers(inferenceResults)
+    this.currentInferences = inferenceResults
+    this.updateInferenceMarkers()
   }
 
-  private addInferenceMarkers(inferences: Inference[]) {
+  private updateInferenceMarkers() {
+    const inferences = this.currentInferences.filter(
+      (i) =>
+        i.lonLat &&
+        i.accuracy &&
+        (i.confidence || 0) > this.currentConfidenceThreshold / 100.0 &&
+        (this.showHomeInferences || i.type !== InferenceType.home) &&
+        (this.showWorkInferences || i.type !== InferenceType.work)
+    )
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      if (!inference.lonLat || !inference.accuracy) continue
       const m = new Circle(inference.lonLat, {
         radius: inference.accuracy,
         color: 'red',

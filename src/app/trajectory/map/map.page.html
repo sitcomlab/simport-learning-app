@@ -19,7 +19,65 @@
     <div [leafletLayer]="inferenceMarkers"></div>
     <div [leafletLayer]="lastLocation"></div>
   </div>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+
+  <ion-card *ngIf="currentInferences.length !== 0" id="inferenceControls">
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-label>Inferences</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-item lines="none">
+            <ion-toggle
+              [(ngModel)]="showHomeInferences"
+              (ionChange)="updateInferenceMarkers()"
+            ></ion-toggle>
+            <ion-icon name="home"></ion-icon>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-toggle
+              [(ngModel)]="showWorkInferences"
+              (ionChange)="updateInferenceMarkers()"
+            ></ion-toggle>
+            <ion-icon name="business"></ion-icon>
+          </ion-item>
+        </ion-row>
+        <ion-row>
+          <ion-label>Confidence {{ currentConfidenceThreshold }}%</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-range
+            min="0"
+            max="100"
+            value="0"
+            step="5"
+            debounce="10"
+            snaps
+            [(ngModel)]="currentConfidenceThreshold"
+            (ionChange)="updateInferenceMarkers()"
+          >
+            <ion-icon
+              slot="start"
+              size="small"
+              name="lock-open-outline"
+            ></ion-icon>
+            <ion-icon
+              slot="end"
+              size="small"
+              name="lock-closed-outline"
+            ></ion-icon>
+          </ion-range>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-fab
+    *ngIf="showDebugInferences"
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+  >
     <ion-fab-button (click)="showInferences($event)">
       <ion-icon name="analytics-outline"></ion-icon>
     </ion-fab-button>
