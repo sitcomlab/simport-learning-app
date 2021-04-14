@@ -1,11 +1,18 @@
 import { Point, TrajectoryData } from 'src/app/model/trajectory'
-import { IInferenceEngine, InferenceDefinition, InferenceResult } from './types'
+import { Inference } from 'src/app/model/inference'
+import {
+  IInferenceEngine,
+  InferenceDefinition,
+  InferenceResult,
+  InferenceResultStatus,
+} from './types'
 import { NightnessScoring } from './scoring/nightness-scoring'
 import { IInferenceScoring, InferenceScoringResult } from './scoring/types'
 import { WorkHoursScoring } from './scoring/work-hours-scoring'
+import { PointCountScoring } from './scoring/pointcount-scoring'
+
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
-import { PointCountScoring } from './scoring/pointcount-scoring'
 
 export class SimpleEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
@@ -14,10 +21,19 @@ export class SimpleEngine implements IInferenceEngine {
     new PointCountScoring(),
   ]
 
+  private inputCoordinatesLimit = 100000
+
   infer(
     trajectory: TrajectoryData,
     inferences: InferenceDefinition[]
-  ): InferenceResult[] {
+  ): InferenceResult {
+    if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
+      return {
+        status: InferenceResultStatus.tooManyCoordinates,
+        inferences: [],
+      }
+    }
+
     // cluster data
     const result = this.cluster(trajectory)
     // convert cluster of indices to cluster of Point objects
@@ -26,7 +42,7 @@ export class SimpleEngine implements IInferenceEngine {
       trajectory
     )
 
-    const intermediateInferenceResults: InferenceResult[] = []
+    const intermediateInferences: Inference[] = []
     // for each cluster...
     pointClusters.forEach((cluster) => {
       // check all inferences...
@@ -44,23 +60,26 @@ export class SimpleEngine implements IInferenceEngine {
           cluster
         )
         if (inferenceResult !== null) {
-          intermediateInferenceResults.push(inferenceResult)
+          intermediateInferences.push(inferenceResult)
         }
       })
     })
 
     const inferenceResults = this.filterInferenceResults(
-      intermediateInferenceResults,
+      intermediateInferences,
       inferences
     )
-    return inferenceResults
+    return {
+      status: InferenceResultStatus.successful,
+      inferences: inferenceResults,
+    }
   }
 
   private interpretInferenceScores(
     inferenceDef: InferenceDefinition,
     scoringResults: InferenceScoringResult[],
     cluster: Point[]
-  ): InferenceResult {
+  ): Inference {
     // TODO: create valid InferenceResults
     // this is just a static sample interpretation
     const confidences: { confidence: number; weight: number }[] = []
@@ -93,9 +112,9 @@ export class SimpleEngine implements IInferenceEngine {
   }
 
   private filterInferenceResults(
-    results: InferenceResult[],
+    results: Inference[],
     inferenceDefs: InferenceDefinition[]
-  ): InferenceResult[] {
+  ): Inference[] {
     // TODO: prioritze and filter InferenceResults
     return results
   }

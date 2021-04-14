@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { LoadingController } from '@ionic/angular'
+import { LoadingController, ToastController } from '@ionic/angular'
 import {
   Circle,
   CircleMarker,
@@ -15,7 +15,10 @@ import {
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import { InferenceType } from 'src/app/shared-services/inferences/types'
+import {
+  InferenceResultStatus,
+  InferenceType,
+} from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -59,7 +62,8 @@ export class MapPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -122,13 +126,23 @@ export class MapPage implements OnInit, OnDestroy {
 
   async showInferences() {
     await this.showLoadingDialog('Loading inferences...')
-    const inferenceResults = await this.inferenceService
+    const inferenceResult = await this.inferenceService
       .generateInferences(this.trajectoryType, this.trajectoryId)
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-    this.currentInferences = inferenceResults
-    this.updateInferenceMarkers()
+
+    switch (inferenceResult.status) {
+      case InferenceResultStatus.successful:
+        this.currentInferences = inferenceResult.inferences
+        return this.updateInferenceMarkers()
+      case InferenceResultStatus.tooManyCoordinates:
+        return await this.showErrorToast(
+          `Trajectory couldn't be analyzed, because it has too many coordinates`
+        )
+      default:
+        return await this.showErrorToast(`Trajectory couldn't be analyzed`)
+    }
   }
 
   private updateInferenceMarkers() {
@@ -150,6 +164,15 @@ export class MapPage implements OnInit, OnDestroy {
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
     }
+  }
+
+  private async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      color: 'danger',
+      duration: 2000,
+    })
+    await toast.present()
   }
 
   private async showLoadingDialog(message: string) {

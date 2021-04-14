@@ -101,20 +101,20 @@ class InferenceTestCase {
   ) {}
 
   test(e: IInferenceEngine): Inference[] {
-    const results = e.infer(this.trajectory, this.inferences)
+    const result = e.infer(this.trajectory, this.inferences)
 
     // inference count
-    expect(results.length).toEqual(
+    expect(result.inferences.length).toEqual(
       Object.keys(this.expected).length,
       'wrong inferences'
     )
 
     for (const res of this.expected) {
-      const hasID = results.some((r) => r.name === res.name)
+      const hasID = result.inferences.some((r) => r.name === res.name)
       expect(hasID).toEqual(true, `'${res.name}' expected, but not inferred`)
     }
 
-    for (const r of results) {
+    for (const r of result.inferences) {
       const expectation = this.expected.find(({ name }) => r.name === name)
 
       // inference type matches
@@ -132,7 +132,7 @@ class InferenceTestCase {
       )
     }
 
-    return results
+    return result.inferences
   }
 }
 

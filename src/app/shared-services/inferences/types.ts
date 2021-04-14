@@ -11,7 +11,7 @@ export interface IInferenceEngine {
   infer(
     trajectory: TrajectoryData,
     inferences: InferenceDefinition[]
-  ): InferenceResult[]
+  ): InferenceResult
 }
 
 export class InferenceDefinition {
@@ -19,7 +19,7 @@ export class InferenceDefinition {
     public id: string,
     public type: InferenceType,
     public name: (lang?: string) => string,
-    public info: (res: InferenceResult, lang?: string) => string,
+    public info: (res: Inference, lang?: string) => string,
     public scoringConfigurations: InferenceScoringConfig[]
   ) {}
 
@@ -33,4 +33,12 @@ export enum InferenceType {
   work = 'work',
 }
 
-export type InferenceResult = Inference
+export enum InferenceResultStatus {
+  tooManyCoordinates,
+  successful,
+}
+
+export type InferenceResult = {
+  status: InferenceResultStatus
+  inferences: Inference[]
+}

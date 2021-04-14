@@ -6,7 +6,10 @@ import {
   WorkInference,
 } from 'src/app/shared-services/inferences/definitions'
 import { SimpleEngine } from 'src/app/shared-services/inferences/simple-engine'
-import { InferenceType } from 'src/app/shared-services/inferences/types'
+import {
+  InferenceResult,
+  InferenceType,
+} from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { take } from 'rxjs/operators'
 
@@ -33,6 +36,7 @@ export class InferenceService {
     },
   ]
   private inferenceEngine = new SimpleEngine()
+
   constructor(private trajectoryService: TrajectoryService) {}
 
   getInferences(trajectoryId: string): Inference[] {
@@ -46,7 +50,7 @@ export class InferenceService {
   async generateInferences(
     trajectoryType: TrajectoryType,
     trajectoryId: string
-  ): Promise<Inference[]> {
+  ): Promise<InferenceResult> {
     const traj = await this.trajectoryService
       .getOne(trajectoryType, trajectoryId)
       .pipe(take(1))
