@@ -33,7 +33,7 @@ export class SimpleEngine implements IInferenceEngine {
         const inferenceScores: InferenceScoringResult[] = []
         this.scorings.forEach((scoring) => {
           // and then actually do sth. that makes sense with the scoring function?
-          const score = scoring.score(cluster)
+          const score = scoring.score(cluster, pointClusters)
           inferenceScores.push(score)
         })
         const inferenceResult = this.interpretInferenceScores(

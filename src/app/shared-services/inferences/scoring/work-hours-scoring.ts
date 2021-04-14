@@ -10,7 +10,7 @@ export class WorkHoursScoring implements IInferenceScoring {
   private referenceStartHours = 9
   private referenceEndHours = 17
 
-  score(cluster: Point[]): InferenceScoringResult {
+  score(cluster: Point[], allClusters: Point[][]): InferenceScoringResult {
     const workHourPoints = cluster.filter((p) => {
       return p.time !== null ? this.isUsualWorkingTime(p.time) : false
     })

@@ -2,7 +2,7 @@ import { Point } from 'src/app/model/trajectory'
 
 export interface IInferenceScoring {
   type: InferenceScoringType
-  score(cluster: Point[]): InferenceScoringResult
+  score(cluster: Point[], allClusters: Point[][]): InferenceScoringResult
 }
 
 export type InferenceScoringConfig = {

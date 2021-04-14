@@ -9,7 +9,7 @@ export class NightnessScoring implements IInferenceScoring {
   public type: InferenceScoringType = InferenceScoringType.nightness
   private referenceDateMidnight = new Date(Date.UTC(2021, 0, 0, 0, 0, 0))
 
-  score(cluster: Point[]): InferenceScoringResult {
+  score(cluster: Point[], allClusters: Point[][]): InferenceScoringResult {
     // simple average 'nightness' from 1 (midnight) to 0 (midday)
     const diffsToMidnight = cluster
       .filter((p) => p.time !== null)
