@@ -67,16 +67,11 @@ export class SimpleEngine implements IInferenceEngine {
     scoringResults.forEach((scoringResult) => {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
       if (config !== null) {
-        if (
-          scoringResult.value >= config.validRange[0] &&
-          scoringResult.value <= config.validRange[1]
-        ) {
-          const scoringConfidence = {
-            confidence: config.confidence(scoringResult.value),
-            weight: config.weight,
-          }
-          confidences.push(scoringConfidence)
+        const scoringConfidence = {
+          confidence: config.confidence(scoringResult.value),
+          weight: config.weight,
         }
+        confidences.push(scoringConfidence)
       }
     })
     let confidence = 0

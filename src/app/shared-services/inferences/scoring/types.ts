@@ -7,7 +7,6 @@ export interface IInferenceScoring {
 
 export type InferenceScoringConfig = {
   type: InferenceScoringType
-  validRange: [number, number]
   weight: number
   confidence: (score: number) => number
 }
