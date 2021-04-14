@@ -48,8 +48,8 @@ export class MapPage implements OnInit, OnDestroy {
   private trajectoryType: TrajectoryType
   private currentInferences: Inference[]
 
-  // inference debug fields
-  private showDebugInferences = true
+  // inference controls
+  private showInferenceControls = false
   private showHomeInferences = true
   private showWorkInferences = true
   private currentConfidenceThreshold = 50
@@ -114,6 +114,10 @@ export class MapPage implements OnInit, OnDestroy {
 
   onMapReady(map: Map) {
     this.map = map
+  }
+
+  onToggleInferenceControls() {
+    this.showInferenceControls = !this.showInferenceControls
   }
 
   async showInferences() {

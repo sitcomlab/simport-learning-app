@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <div
     id="map"
     leaflet
@@ -20,7 +20,10 @@
     <div [leafletLayer]="lastLocation"></div>
   </div>
 
-  <ion-card *ngIf="currentInferences.length !== 0" id="inferenceControls">
+  <ion-card
+    *ngIf="showInferenceControls && currentInferences.length !== 0"
+    id="inferenceControls"
+  >
     <ion-card-content>
       <ion-grid>
         <ion-row>
@@ -60,14 +63,23 @@
         </ion-row>
       </ion-grid>
     </ion-card-content>
+    <ion-button
+      id="closeButton"
+      fill="clear"
+      (click)="onToggleInferenceControls()"
+    >
+      <ion-icon slot="icon-only" name="close"> </ion-icon>
+    </ion-button>
   </ion-card>
 
-  <ion-fab
-    *ngIf="showDebugInferences"
-    vertical="bottom"
-    horizontal="end"
-    slot="fixed"
-  >
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button
+      *ngIf="!showInferenceControls && currentInferences.length !== 0"
+      (click)="onToggleInferenceControls()"
+      size="small"
+    >
+      <ion-icon name="settings"></ion-icon>
+    </ion-fab-button>
     <ion-fab-button (click)="showInferences($event)">
       <ion-icon name="analytics-outline"></ion-icon>
     </ion-fab-button>
