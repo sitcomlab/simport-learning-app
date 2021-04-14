@@ -5,11 +5,13 @@ import { IInferenceScoring, InferenceScoringResult } from './scoring/types'
 import { WorkHoursScoring } from './scoring/work-hours-scoring'
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
+import { PointCountScoring } from './scoring/pointcount-scoring'
 
 export class SimpleEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
     new NightnessScoring(),
     new WorkHoursScoring(),
+    new PointCountScoring(),
   ]
 
   infer(

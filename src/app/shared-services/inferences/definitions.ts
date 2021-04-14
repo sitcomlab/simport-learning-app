@@ -20,6 +20,12 @@ export const WorkInference = new InferenceDefinition(
       confidence: (score) => score,
       weight: 1,
     },
+    {
+      type: InferenceScoringType.pointCount,
+      validRange: [0, 1],
+      confidence: (score) => score,
+      weight: 1,
+    },
   ]
 )
 
@@ -41,6 +47,12 @@ export const HomeInference = new InferenceDefinition(
       validRange: [0, 1],
       confidence: (score) => 1 - score,
       weight: 0.75,
+    },
+    {
+      type: InferenceScoringType.pointCount,
+      validRange: [0, 1],
+      confidence: (score) => score,
+      weight: 1,
     },
   ]
 )
