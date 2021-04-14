@@ -7,6 +7,7 @@ import { AllInferences, HomeInference, WorkInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from './types'
+import haversine from 'haversine-distance'
 
 describe('inferences/SimpleEngine', () => {
   beforeEach(async(() => {}))
@@ -121,12 +122,15 @@ class InferenceTestCase {
       expect(expectation).toBeDefined(`'${r.name}' inferred, but not expected`)
 
       // inference location
+      console.log('#########')
       const expectedLonLat = [expectation.location[1], expectation.location[0]]
-      const inferredLonLat = [r.lonLat[1], r.lonLat[0]]
-      const dist = distance(expectedLonLat, inferredLonLat, {
-        units: 'kilometers',
-      })
-      expect(dist * 1000).toBeLessThanOrEqual(
+      console.log('expected lon lat ' + expectedLonLat)
+      const inferredLonLat = [r.lonLat[0], r.lonLat[1]]
+      console.log('inferred lon lat ' + inferredLonLat)
+      const dist = computeHaversineDistance(expectedLonLat, inferredLonLat)
+      console.log('dist ' + dist)
+      console.log('#########')
+      expect(dist).toBeLessThanOrEqual(
         this.deltaMeters,
         `'${r.name}' location didn't match`
       )
@@ -134,6 +138,12 @@ class InferenceTestCase {
 
     return result.inferences
   }
+}
+
+function computeHaversineDistance(firstCoordinate, secondCoordinate): number {
+  const a = { latitude: firstCoordinate[1], longitude: firstCoordinate[0] }
+  const b = { latitude: secondCoordinate[1], longitude: secondCoordinate[0] }
+  return haversine(a, b)
 }
 
 type InferenceResultTest = {

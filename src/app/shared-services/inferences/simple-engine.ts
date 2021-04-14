@@ -105,7 +105,7 @@ export class SimpleEngine implements IInferenceEngine {
       type: inferenceDef.type,
       description: 'TODO',
       trajectoryId: 'TODO',
-      lonLat: centroid.centerPoint.latLng,
+      lonLat: [centroid.centerPoint.latLng[1], centroid.centerPoint.latLng[0]],
       confidence,
       accuracy: centroid.maxDistance,
     }

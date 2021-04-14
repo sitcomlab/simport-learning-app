@@ -156,7 +156,7 @@ export class MapPage implements OnInit, OnDestroy {
     )
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      const m = new Circle(inference.lonLat, {
+      const m = new Circle([inference.lonLat[1], inference.lonLat[0]], {
         radius: inference.accuracy,
         color: 'red',
       })
