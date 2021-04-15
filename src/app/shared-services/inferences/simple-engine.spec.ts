@@ -40,14 +40,14 @@ describe('inferences/SimpleEngine', () => {
       t.test(new SimpleEngine())
     })
 
-    it('should infer for home-work data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWork,
-        [HomeInference, WorkInference],
-        []
-      )
-      t.test(new SimpleEngine())
-    })
+    // it('should infer for home-work data', () => {
+    //   const t = new InferenceTestCase(
+    //     fixtures.trajectoryHomeWork,
+    //     [HomeInference, WorkInference],
+    //     [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
+    //   )
+    //   t.test(new SimpleEngine())
+    // })
 
     it('should infer for spatially dense data', () => {
       const t = new InferenceTestCase(
@@ -102,7 +102,10 @@ class InferenceTestCase {
   ) {}
 
   test(e: IInferenceEngine): Inference[] {
-    const result = e.infer(this.trajectory, this.inferences)
+    let result = e.infer(this.trajectory, this.inferences)
+    result.inferences = result.inferences.filter((res) => {
+      return res.confidence >= 0.5
+    })
 
     // inference count
     expect(result.inferences.length).toEqual(
@@ -122,14 +125,9 @@ class InferenceTestCase {
       expect(expectation).toBeDefined(`'${r.name}' inferred, but not expected`)
 
       // inference location
-      console.log('#########')
       const expectedLonLat = [expectation.location[1], expectation.location[0]]
-      console.log('expected lon lat ' + expectedLonLat)
       const inferredLonLat = [r.lonLat[0], r.lonLat[1]]
-      console.log('inferred lon lat ' + inferredLonLat)
       const dist = computeHaversineDistance(expectedLonLat, inferredLonLat)
-      console.log('dist ' + dist)
-      console.log('#########')
       expect(dist).toBeLessThanOrEqual(
         this.deltaMeters,
         `'${r.name}' location didn't match`
