@@ -42,7 +42,7 @@ export class SimpleEngine implements IInferenceEngine {
       trajectory
     )
 
-    const intermediateInferences: Inference[] = []
+    const inferenceResults: Inference[] = []
     // for each cluster...
     pointClusters.forEach((cluster) => {
       // check all inferences...
@@ -50,25 +50,22 @@ export class SimpleEngine implements IInferenceEngine {
         // by applying the scoring functions of the engine...
         const inferenceScores: InferenceScoringResult[] = []
         this.scorings.forEach((scoring) => {
-          // and then actually do sth. that makes sense with the scoring function?
+          // and then apply scorings
           const score = scoring.score(cluster, pointClusters)
           inferenceScores.push(score)
         })
+        // interpret scorings
         const inferenceResult = this.interpretInferenceScores(
           inference,
           inferenceScores,
           cluster
         )
         if (inferenceResult !== null) {
-          intermediateInferences.push(inferenceResult)
+          inferenceResults.push(inferenceResult)
         }
       })
     })
 
-    const inferenceResults = this.filterInferenceResults(
-      intermediateInferences,
-      inferences
-    )
     return {
       status: InferenceResultStatus.successful,
       inferences: inferenceResults,
@@ -80,8 +77,6 @@ export class SimpleEngine implements IInferenceEngine {
     scoringResults: InferenceScoringResult[],
     cluster: Point[]
   ): Inference {
-    // TODO: create valid InferenceResults
-    // this is just a static sample interpretation
     const confidences: { confidence: number; weight: number }[] = []
     scoringResults.forEach((scoringResult) => {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
@@ -103,7 +98,9 @@ export class SimpleEngine implements IInferenceEngine {
       confidence =
         confidences.reduce((p, c) => p + c.confidence * c.weight, 0) / weights
     }
+
     const centroid = this.calculateCentroid(cluster)
+
     return {
       name: inferenceDef.type,
       type: inferenceDef.type,
@@ -113,14 +110,6 @@ export class SimpleEngine implements IInferenceEngine {
       confidence,
       accuracy: centroid.maxDistance,
     }
-  }
-
-  private filterInferenceResults(
-    results: Inference[],
-    inferenceDefs: InferenceDefinition[]
-  ): Inference[] {
-    // TODO: prioritze and filter InferenceResults
-    return results
   }
 
   private calculateCentroid(

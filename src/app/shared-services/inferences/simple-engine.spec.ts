@@ -1,5 +1,4 @@
 import { async } from '@angular/core/testing'
-import distance from '@turf/distance'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryData } from 'src/app/model/trajectory'
