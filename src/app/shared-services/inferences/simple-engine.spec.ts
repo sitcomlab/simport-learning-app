@@ -20,39 +20,35 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for 0 points', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryEmpty,
-        Object.values(AllInferences),
+        [HomeInference],
         []
       )
       t.test(new SimpleEngine())
     })
-
-    it('should infer with low confidence for low stationary point count', () => {}) // TODO
-
-    it('should infer with low confidence for low total point count', () => {}) // TODO
 
     it('should not infer for mobile only trajectory', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
-        [HomeInference, WorkInference],
+        [HomeInference],
         []
       )
       t.test(new SimpleEngine())
     })
 
-    // it('should infer for home-work data', () => {
-    //   const t = new InferenceTestCase(
-    //     fixtures.trajectoryHomeWork,
-    //     [HomeInference, WorkInference],
-    //     [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
-    //   )
-    //   t.test(new SimpleEngine())
-    // })
+    it('should infer for home-work data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWork,
+        [HomeInference],
+        [fixtures.trajectoryHomeResult]
+      )
+      t.test(new SimpleEngine())
+    })
 
     it('should infer for spatially dense data', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
-        [HomeInference, WorkInference],
-        [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
+        [HomeInference],
+        [fixtures.trajectoryHomeResult]
       )
       t.test(new SimpleEngine())
     })
@@ -60,35 +56,73 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for temporally sparse data', () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
-        [HomeInference, WorkInference],
-        [fixtures.trajectoryHomeResult, fixtures.trajectoryWorkResult]
+        [HomeInference],
+        [fixtures.trajectoryHomeResult]
       )
       t.test(new SimpleEngine())
     })
 
-    it('should infer for single night location', () => {}) // TODO
+    // TODOs
+    it('should infer with low confidence for low stationary point count', () => {})
 
-    it('should infer with low confidence for 2 different night locations', () => {}) // TODO
+    it('should infer with low confidence for low total point count', () => {})
 
-    it('should infer for realworld data (1 day)', () => {}) // TODO
+    it('should infer for single night location', () => {})
 
-    // it('should infer for realworld data (1 month)', () => {
-    //   // NOTE: nepal trajectory seems to be partially everyday-life, partially dedicated OSM-mapping activities
-    //   const t = new InferenceTestCase(
-    //     fixtures.trajectoryNepal,
-    //     [HomeInference],
-    //     [] // TODO
-    //   )
-    //   t.test(new SimpleEngine())
-    // })
+    it('should infer with low confidence for 2 different night locations', () => {})
 
-    it('should infer for realworld data (1 year)', () => {}) // TODO: find data
+    it('should infer for realworld data (1 day)', () => {})
 
-    // TODO: test temporally, spatially sparse trajectories
+    it('should infer for realworld data (1 year)', () => {})
   })
 
   describe('WorkInference', () => {
     // TODO: migrate from HomeInference, once done
+
+    it('should not infer for 0 points', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryEmpty,
+        [WorkInference],
+        []
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should not infer for mobile only trajectory', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryMobileOnly,
+        [WorkInference],
+        []
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for home-work data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWork,
+        [WorkInference],
+        [fixtures.trajectoryWorkResult]
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for spatially dense data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWorkSpatiallyDense,
+        [WorkInference],
+        [fixtures.trajectoryWorkResult]
+      )
+      t.test(new SimpleEngine())
+    })
+
+    it('should infer for temporally sparse data', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryHomeWorkTemporallySparse,
+        [WorkInference],
+        [fixtures.trajectoryWorkResult]
+      )
+      t.test(new SimpleEngine())
+    })
   })
 })
 
@@ -101,7 +135,7 @@ class InferenceTestCase {
   ) {}
 
   test(e: IInferenceEngine): Inference[] {
-    let result = e.infer(this.trajectory, this.inferences)
+    const result = e.infer(this.trajectory, this.inferences)
     result.inferences = result.inferences.filter((res) => {
       return res.confidence >= 0.5
     })

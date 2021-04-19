@@ -211,10 +211,19 @@ function createMobileOnlyTrajectory(testBase: TrajectoryTestBase): Trajectory {
  * Contains few  basic locations at home & work, but no clusters.
  */
 function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
+  const clusterPointsPerHour = 10
   const trajectoryHome = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
-    testBase.homeTrajectory
+    createCluster(
+      testBase.homeTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.homeStartDate,
+          trajectoryTimes.homeEndDate
+        ) * clusterPointsPerHour
+      )
+    )
   )
   const trajectoryHomeToWork = addTimestampsForTrajectory(
     trajectoryTimes.homeEndDate,
@@ -224,7 +233,15 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
   const trajectoryWork = addTimestampsForTrajectory(
     trajectoryTimes.workStartDate,
     trajectoryTimes.workEndDate,
-    testBase.workTrajectory
+    createCluster(
+      testBase.workTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.workStartDate,
+          trajectoryTimes.workEndDate
+        ) * clusterPointsPerHour
+      )
+    )
   )
   const trajectoryWorkToHome = addTimestampsForTrajectory(
     trajectoryTimes.workEndDate,
@@ -234,7 +251,15 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
   const trajectoryHomeAfterWork = addTimestampsForTrajectory(
     trajectoryTimes.homeAfterWorkStartDate,
     trajectoryTimes.homeAfterWorkEndDate,
-    testBase.homeTrajectory
+    createCluster(
+      testBase.homeTrajectory,
+      Math.round(
+        getTimeDiffInHours(
+          trajectoryTimes.homeAfterWorkStartDate,
+          trajectoryTimes.homeAfterWorkEndDate
+        ) * clusterPointsPerHour
+      )
+    )
   )
   const trajectoryHomeWork = combineTrajectories(
     {
@@ -334,6 +359,8 @@ function createTemporallySparseTrajectory(
 function createSpatiallyDenseTrajectory(
   testBase: TrajectoryTestBase
 ): Trajectory {
+  const spatiallyDenseMinRadius = 1
+  const spatiallyDenseMaxRadius = 20
   const trajectoryHomeSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
@@ -344,7 +371,9 @@ function createSpatiallyDenseTrajectory(
           trajectoryTimes.homeStartDate,
           trajectoryTimes.homeEndDate
         ) / 10
-      )
+      ),
+      spatiallyDenseMinRadius,
+      spatiallyDenseMaxRadius
     )
   )
   const trajectoryHomeToWorkSpatiallyDense = addTimestampsForTrajectory(
@@ -362,7 +391,9 @@ function createSpatiallyDenseTrajectory(
           trajectoryTimes.workStartDate,
           trajectoryTimes.workEndDate
         ) / 10
-      )
+      ),
+      spatiallyDenseMinRadius,
+      spatiallyDenseMaxRadius
     )
   )
   const trajectoryWorkToHomeSpatiallyDense = addTimestampsForTrajectory(
@@ -380,7 +411,9 @@ function createSpatiallyDenseTrajectory(
           trajectoryTimes.homeAfterWorkStartDate,
           trajectoryTimes.homeAfterWorkEndDate
         ) / 10
-      )
+      ),
+      spatiallyDenseMinRadius,
+      spatiallyDenseMaxRadius
     )
   )
   const trajectorySpatiallyDense = combineTrajectories(
