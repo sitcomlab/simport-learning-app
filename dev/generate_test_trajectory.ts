@@ -361,6 +361,7 @@ function createSpatiallyDenseTrajectory(
 ): Trajectory {
   const spatiallyDenseMinRadius = 1
   const spatiallyDenseMaxRadius = 20
+  const clusterPointsPerMinute = 0.1
   const trajectoryHomeSpatiallyDense = addTimestampsForTrajectory(
     trajectoryTimes.homeStartDate,
     trajectoryTimes.homeEndDate,
@@ -370,7 +371,7 @@ function createSpatiallyDenseTrajectory(
         getTimeDiffInMinutes(
           trajectoryTimes.homeStartDate,
           trajectoryTimes.homeEndDate
-        ) / 10
+        ) * clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
@@ -390,7 +391,7 @@ function createSpatiallyDenseTrajectory(
         getTimeDiffInMinutes(
           trajectoryTimes.workStartDate,
           trajectoryTimes.workEndDate
-        ) / 10
+        ) * clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
@@ -410,7 +411,7 @@ function createSpatiallyDenseTrajectory(
         getTimeDiffInMinutes(
           trajectoryTimes.homeAfterWorkStartDate,
           trajectoryTimes.homeAfterWorkEndDate
-        ) / 10
+        ) * clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
