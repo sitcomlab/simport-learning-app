@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <div
     id="map"
     leaflet
@@ -19,4 +19,69 @@
     <div [leafletLayer]="inferenceMarkers"></div>
     <div [leafletLayer]="lastLocation"></div>
   </div>
+
+  <ion-card
+    *ngIf="showInferenceControls && currentInferences.length !== 0"
+    id="inferenceControls"
+  >
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-label>Inferences</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-item lines="none">
+            <ion-toggle
+              [(ngModel)]="showHomeInferences"
+              (ionChange)="updateInferenceMarkers()"
+            ></ion-toggle>
+            <ion-icon name="home"></ion-icon>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-toggle
+              [(ngModel)]="showWorkInferences"
+              (ionChange)="updateInferenceMarkers()"
+            ></ion-toggle>
+            <ion-icon name="business"></ion-icon>
+          </ion-item>
+        </ion-row>
+        <ion-row>
+          <ion-label>Confidence {{ currentConfidenceThreshold }}%</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-range
+            min="0"
+            max="100"
+            value="0"
+            step="5"
+            debounce="10"
+            snaps
+            [(ngModel)]="currentConfidenceThreshold"
+            (ionChange)="updateInferenceMarkers()"
+          >
+          </ion-range>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+    <ion-button
+      id="closeButton"
+      fill="clear"
+      (click)="onToggleInferenceControls()"
+    >
+      <ion-icon slot="icon-only" name="close"> </ion-icon>
+    </ion-button>
+  </ion-card>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button
+      *ngIf="!showInferenceControls && currentInferences.length !== 0"
+      (click)="onToggleInferenceControls()"
+      size="small"
+    >
+      <ion-icon name="filter"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button (click)="showInferences($event)">
+      <ion-icon name="analytics-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

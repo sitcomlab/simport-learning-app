@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { LoadingController, ToastController } from '@ionic/angular'
 import {
   Circle,
   CircleMarker,
@@ -14,6 +15,10 @@ import {
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
+import {
+  InferenceResultStatus,
+  InferenceType,
+} from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { InferenceService } from '../inferences/inference.service'
 
@@ -42,22 +47,33 @@ export class MapPage implements OnInit, OnDestroy {
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
   private trajSub: Subscription
+  private trajectoryId: string
+  private trajectoryType: TrajectoryType
+  private currentInferences: Inference[]
+
+  // inference controls
+  private showInferenceControls = false
+  private showHomeInferences = true
+  private showWorkInferences = true
+  private currentConfidenceThreshold = 50
 
   constructor(
-    private inferences: InferenceService,
-    private trajectories: TrajectoryService,
+    private inferenceService: InferenceService,
+    private trajectoryService: TrajectoryService,
     private route: ActivatedRoute,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private loadingController: LoadingController,
+    private toastController: ToastController
   ) {}
 
-  ngOnInit() {
-    const trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    const trajectoryType = this.route.snapshot.paramMap.get(
+  async ngOnInit() {
+    this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
+    this.trajectoryType = this.route.snapshot.paramMap.get(
       'trajectoryType'
     ) as TrajectoryType
 
-    this.trajSub = this.trajectories
-      .getOne(trajectoryType, trajectoryId)
+    this.trajSub = this.trajectoryService
+      .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates)
 
@@ -80,7 +96,10 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    this.addInferenceMarkers(this.inferences.getInferences(trajectoryId))
+    this.currentInferences = this.inferenceService.getInferences(
+      this.trajectoryId
+    )
+    this.updateInferenceMarkers()
   }
 
   ngOnDestroy() {
@@ -101,14 +120,70 @@ export class MapPage implements OnInit, OnDestroy {
     this.map = map
   }
 
-  private addInferenceMarkers(inferences: Inference[]) {
+  onToggleInferenceControls() {
+    this.showInferenceControls = !this.showInferenceControls
+  }
+
+  async showInferences() {
+    await this.showLoadingDialog('Loading inferences...')
+    const inferenceResult = await this.inferenceService
+      .generateInferences(this.trajectoryType, this.trajectoryId)
+      .finally(async () => {
+        await this.hideLoadingDialog()
+      })
+
+    switch (inferenceResult.status) {
+      case InferenceResultStatus.successful:
+        this.currentInferences = inferenceResult.inferences
+        return this.updateInferenceMarkers()
+      case InferenceResultStatus.tooManyCoordinates:
+        return await this.showErrorToast(
+          `Trajectory couldn't be analyzed, because it has too many coordinates`
+        )
+      default:
+        return await this.showErrorToast(`Trajectory couldn't be analyzed`)
+    }
+  }
+
+  private updateInferenceMarkers() {
+    const inferences = this.currentInferences.filter(
+      (i) =>
+        i.lonLat &&
+        i.accuracy &&
+        (i.confidence || 0) > this.currentConfidenceThreshold / 100.0 &&
+        (this.showHomeInferences || i.type !== InferenceType.home) &&
+        (this.showWorkInferences || i.type !== InferenceType.work)
+    )
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      if (!inference.lonLat || !inference.accuracy) continue
-      const m = new Circle(inference.lonLat, {
+      const m = new Circle([inference.lonLat[1], inference.lonLat[0]], {
         radius: inference.accuracy,
+        color: 'red',
       })
-      m.addTo(this.inferenceMarkers).bindPopup(inference.name)
+      m.addTo(this.inferenceMarkers).bindPopup(
+        `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
+      )
     }
+  }
+
+  private async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      color: 'danger',
+      duration: 2000,
+    })
+    await toast.present()
+  }
+
+  private async showLoadingDialog(message: string) {
+    const loading = await this.loadingController.create({
+      message,
+      translucent: true,
+    })
+    await loading.present()
+  }
+
+  private async hideLoadingDialog() {
+    await this.loadingController.dismiss()
   }
 }
