@@ -93,10 +93,11 @@ export class SimpleEngine implements IInferenceEngine {
       }
     })
     let confidence = 0
-    const weights = confidences.reduce((p, c) => p + c.weight, 0)
-    if (confidences.length > 0 && weights > 0) {
+    const sumWeights = confidences.reduce((p, c) => p + c.weight, 0)
+    if (confidences.length > 0 && sumWeights > 0) {
       confidence =
-        confidences.reduce((p, c) => p + c.confidence * c.weight, 0) / weights
+        confidences.reduce((p, c) => p + c.confidence * c.weight, 0) /
+        sumWeights
     }
 
     const centroid = this.calculateCentroid(cluster)

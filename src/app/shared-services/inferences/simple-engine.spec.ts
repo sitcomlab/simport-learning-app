@@ -2,7 +2,7 @@ import { async } from '@angular/core/testing'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryData } from 'src/app/model/trajectory'
-import { AllInferences, HomeInference, WorkInference } from './definitions'
+import { HomeInference, WorkInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from './types'
@@ -159,8 +159,7 @@ class InferenceTestCase {
 
       // inference location
       const expectedLonLat = [expectation.location[1], expectation.location[0]]
-      const inferredLonLat = [r.lonLat[0], r.lonLat[1]]
-      const dist = computeHaversineDistance(expectedLonLat, inferredLonLat)
+      const dist = computeHaversineDistance(expectedLonLat, r.lonLat)
       expect(dist).toBeLessThanOrEqual(
         this.deltaMeters,
         `'${r.name}' location didn't match`
