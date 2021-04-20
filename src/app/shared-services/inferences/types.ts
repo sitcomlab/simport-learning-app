@@ -1,22 +1,44 @@
 import { Inference } from 'src/app/model/inference'
-import { Point, TrajectoryData } from 'src/app/model/trajectory'
+import { TrajectoryData } from 'src/app/model/trajectory'
+import {
+  IInferenceScoring,
+  InferenceScoringConfig,
+  InferenceScoringType,
+} from './scoring/types'
 
 export interface IInferenceEngine {
+  scorings: IInferenceScoring[]
   infer(
     trajectory: TrajectoryData,
     inferences: InferenceDefinition[]
-  ): InferenceResult[]
+  ): InferenceResult
 }
 
 export class InferenceDefinition {
   constructor(
     public id: string,
+    public type: InferenceType,
     public name: (lang?: string) => string,
-    public info: (res: InferenceResult, lang?: string) => string,
-    public scoringFuncs: ScoringFunc[]
+    public info: (res: Inference, lang?: string) => string,
+    public scoringConfigurations: InferenceScoringConfig[]
   ) {}
+
+  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
+    return this.scoringConfigurations.find((config) => config.type === type)
+  }
 }
 
-export type ScoringFunc = (p: Point) => number
+export enum InferenceType {
+  home = 'home',
+  work = 'work',
+}
 
-export type InferenceResult = Inference
+export enum InferenceResultStatus {
+  tooManyCoordinates,
+  successful,
+}
+
+export type InferenceResult = {
+  status: InferenceResultStatus
+  inferences: Inference[]
+}
