@@ -179,6 +179,24 @@ function getTimeDiffInHours(firstDate: Date, secondDate: Date): number {
   return getTimeDiffInMinutes(firstDate, secondDate) / 60
 }
 
+function computeNumberOfPointsPerHour(
+  firstDate: Date,
+  secondDate: Date,
+  pointsPerHour: number = 1
+): number {
+  return Math.round(getTimeDiffInHours(firstDate, secondDate) * pointsPerHour)
+}
+
+function computeNumberOfPointsPerMinute(
+  firstDate: Date,
+  secondDate: Date,
+  pointsPerMinute: number
+): number {
+  return Math.round(
+    getTimeDiffInMinutes(firstDate, secondDate) * pointsPerMinute
+  )
+}
+
 /**
  * Exports trajectory with movement data between work and home,
  * but no clusters at either of these locations.
@@ -217,11 +235,10 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
     trajectoryTimes.homeEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.homeStartDate,
-          trajectoryTimes.homeEndDate
-        ) * clusterPointsPerHour
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.homeStartDate,
+        trajectoryTimes.homeEndDate,
+        clusterPointsPerHour
       )
     )
   )
@@ -235,11 +252,10 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
     trajectoryTimes.workEndDate,
     createCluster(
       testBase.workTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.workStartDate,
-          trajectoryTimes.workEndDate
-        ) * clusterPointsPerHour
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.workStartDate,
+        trajectoryTimes.workEndDate,
+        clusterPointsPerHour
       )
     )
   )
@@ -253,11 +269,10 @@ function createHomeWorkTrajectory(testBase: TrajectoryTestBase): Trajectory {
     trajectoryTimes.homeAfterWorkEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.homeAfterWorkStartDate,
-          trajectoryTimes.homeAfterWorkEndDate
-        ) * clusterPointsPerHour
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.homeAfterWorkStartDate,
+        trajectoryTimes.homeAfterWorkEndDate,
+        clusterPointsPerHour
       )
     )
   )
@@ -291,11 +306,9 @@ function createTemporallySparseTrajectory(
     trajectoryTimes.homeEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.homeStartDate,
-          trajectoryTimes.homeEndDate
-        )
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.homeStartDate,
+        trajectoryTimes.homeEndDate
       )
     )
   )
@@ -309,11 +322,9 @@ function createTemporallySparseTrajectory(
     trajectoryTimes.workEndDate,
     createCluster(
       testBase.workTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.workStartDate,
-          trajectoryTimes.workEndDate
-        )
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.workStartDate,
+        trajectoryTimes.workEndDate
       )
     )
   )
@@ -327,11 +338,9 @@ function createTemporallySparseTrajectory(
     trajectoryTimes.homeAfterWorkEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInHours(
-          trajectoryTimes.homeAfterWorkStartDate,
-          trajectoryTimes.homeAfterWorkEndDate
-        )
+      computeNumberOfPointsPerHour(
+        trajectoryTimes.homeAfterWorkStartDate,
+        trajectoryTimes.homeAfterWorkEndDate
       )
     )
   )
@@ -367,11 +376,10 @@ function createSpatiallyDenseTrajectory(
     trajectoryTimes.homeEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInMinutes(
-          trajectoryTimes.homeStartDate,
-          trajectoryTimes.homeEndDate
-        ) * clusterPointsPerMinute
+      computeNumberOfPointsPerMinute(
+        trajectoryTimes.homeStartDate,
+        trajectoryTimes.homeEndDate,
+        clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
@@ -387,11 +395,10 @@ function createSpatiallyDenseTrajectory(
     trajectoryTimes.workEndDate,
     createCluster(
       testBase.workTrajectory,
-      Math.round(
-        getTimeDiffInMinutes(
-          trajectoryTimes.workStartDate,
-          trajectoryTimes.workEndDate
-        ) * clusterPointsPerMinute
+      computeNumberOfPointsPerMinute(
+        trajectoryTimes.workStartDate,
+        trajectoryTimes.workEndDate,
+        clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
@@ -407,11 +414,10 @@ function createSpatiallyDenseTrajectory(
     trajectoryTimes.homeAfterWorkEndDate,
     createCluster(
       testBase.homeTrajectory,
-      Math.round(
-        getTimeDiffInMinutes(
-          trajectoryTimes.homeAfterWorkStartDate,
-          trajectoryTimes.homeAfterWorkEndDate
-        ) * clusterPointsPerMinute
+      computeNumberOfPointsPerMinute(
+        trajectoryTimes.homeAfterWorkStartDate,
+        trajectoryTimes.homeAfterWorkEndDate,
+        clusterPointsPerMinute
       ),
       spatiallyDenseMinRadius,
       spatiallyDenseMaxRadius
