@@ -28,6 +28,7 @@ import { InferenceService } from '../inferences/inference.service'
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit, OnDestroy {
+  TrajectoryTypes: typeof TrajectoryType = TrajectoryType // for use in template
   mapOptions: MapOptions = {
     center: [51.9694, 7.5954],
     zoom: 14,
@@ -43,12 +44,13 @@ export class MapPage implements OnInit, OnDestroy {
   polyline: Polyline
   inferenceMarkers = new LayerGroup()
   lastLocation: CircleMarker
+  followPosition: boolean
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
   private trajSub: Subscription
   private trajectoryId: string
-  private trajectoryType: TrajectoryType
+  trajectoryType: TrajectoryType
   private currentInferences: Inference[]
 
   // inference controls
@@ -88,7 +90,9 @@ export class MapPage implements OnInit, OnDestroy {
           fillOpacity: 1,
         }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
 
-        if (this.mapBounds === undefined) {
+        if (this.followPosition) {
+          this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
+        } else if (this.mapBounds === undefined) {
           this.mapBounds = this.polyline.getBounds()
           this.map?.invalidateSize()
         }
@@ -118,6 +122,12 @@ export class MapPage implements OnInit, OnDestroy {
 
   onMapReady(map: Map) {
     this.map = map
+  }
+
+  onToggleFollowMode() {
+    this.followPosition = !this.followPosition
+    if (this.followPosition)
+      this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
   }
 
   onToggleInferenceControls() {
