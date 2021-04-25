@@ -44,18 +44,18 @@ export class MapPage implements OnInit, OnDestroy {
   inferenceMarkers = new LayerGroup()
   lastLocation: CircleMarker
 
+  // inference controls
+  showInferenceControls = false
+  showHomeInferences = true
+  showWorkInferences = true
+  currentConfidenceThreshold = 50
+  currentInferences: Inference[]
+
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
   private trajSub: Subscription
   private trajectoryId: string
   private trajectoryType: TrajectoryType
-  private currentInferences: Inference[]
-
-  // inference controls
-  private showInferenceControls = false
-  private showHomeInferences = true
-  private showWorkInferences = true
-  private currentConfidenceThreshold = 50
 
   constructor(
     private inferenceService: InferenceService,
@@ -145,7 +145,7 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
-  private updateInferenceMarkers() {
+  updateInferenceMarkers() {
     const inferences = this.currentInferences.filter(
       (i) =>
         i.lonLat &&

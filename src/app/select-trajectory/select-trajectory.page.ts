@@ -38,6 +38,7 @@ export class SelectTrajectoryPage {
   private CLICK_INTERVAL = 500
   private DEBUG_WINDOW_CLICKS = 8
   private lastOnClicks = [] // contains timestamps of title clicks, newest comes first
+  TrajectoryMode: typeof TrajectoryMode = TrajectoryMode // for usage in template
 
   // fired on title click
   // used for multiple click detection

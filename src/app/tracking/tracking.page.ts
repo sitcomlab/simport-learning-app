@@ -15,17 +15,16 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() state: string
   @Input() stateIcon: string
   @Input() notificationsEnabled: boolean
+  trajectoryExists: boolean
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
   private trajectoryServiceSubscription: Subscription
 
-  private trajectoryExists: boolean
-
   constructor(
     private zone: NgZone,
     public platform: Platform,
-    private locationService: LocationService,
+    public locationService: LocationService,
     private trajectoryService: TrajectoryService,
     private router: Router
   ) {}

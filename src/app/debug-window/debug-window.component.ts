@@ -12,7 +12,7 @@ import { TrajectoryService } from '../shared-services/trajectory.service'
   styleUrls: ['./debug-window.component.scss'],
 })
 export class DebugWindowComponent implements OnInit, OnDestroy {
-  myDevice: DeviceInfo
+  myDevice: Record<keyof DeviceInfo, any>
   trajectories: TrajectoryMeta[]
   userTrajectory: Trajectory
   importedTrajectories: TrajectoryMeta[]
@@ -31,7 +31,10 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    this.myDevice = await Plugins.Device.getInfo()
+    this.myDevice = (await Plugins.Device.getInfo()) as Record<
+      keyof DeviceInfo,
+      any
+    >
 
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {
