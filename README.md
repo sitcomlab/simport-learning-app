@@ -40,6 +40,7 @@ npm install               # install the frontend dependencies
 - install [Android Studio][android]
   - on linux, install to `/opt/android-studio/`, as this path is configured in `capacitor.config.json`
 - download Android SDK 29 (android studio settings > appearance > system settings > Android SDK)
+- make sure to run "Sync Project with Gradle Files" before building when dependencies have changed
 - build artifact will be `./android/app/build/outputs/apk/app-debug.apk`
 
 #### build for iOS
@@ -56,6 +57,7 @@ ionic serve
 ionic build
 
 # prepare android build & open AndroidStudio to start the build there
+ionic cap update
 ionic cap build android
 
 # ...same for iOS / XCode
