@@ -83,5 +83,13 @@
     <ion-fab-button (click)="showInferences($event)">
       <ion-icon name="analytics-outline"></ion-icon>
     </ion-fab-button>
+
+    <ion-fab-button
+      *ngIf="trajectoryType === TrajectoryTypes.USERTRACK"
+      (click)="onToggleFollowMode()"
+    >
+      <ion-icon *ngIf="followPosition" name="locate-outline"></ion-icon>
+      <ion-icon *ngIf="!followPosition" name="map-outline"></ion-icon>
+    </ion-fab-button>
   </ion-fab>
 </ion-content>

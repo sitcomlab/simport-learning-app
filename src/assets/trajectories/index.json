@@ -4,11 +4,5 @@
     "type": "example",
     "placename": "Nepal",
     "durationDays": 188.17083
-  },
-  {
-    "id": "test",
-    "type": "example",
-    "placename": "Example Test",
-    "durationDays": 1
   }
 ]
