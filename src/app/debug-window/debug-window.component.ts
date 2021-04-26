@@ -39,15 +39,22 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {
         this.trajectories = ts
-        const userTrajectory = ts.find((t) => t.type === 'track') // currently only zero or one user trajectory in db
-        this.importedTrajectories = ts.filter((t) => t.type === 'import')
+        // currently only zero or one user trajectory in db
+        const userTrajectory = ts.find(
+          (t) => t.type === TrajectoryType.USERTRACK
+        )
+        this.importedTrajectories = ts.filter(
+          (t) => t.type === TrajectoryType.IMPORT
+        )
 
         if (userTrajectory) {
-          this.trajectoryService
-            .getOne(TrajectoryType.USERTRACK, userTrajectory.id)
-            .subscribe((ut) => {
-              this.userTrajectory = ut
-            })
+          this.subscriptions.push(
+            this.trajectoryService
+              .getOne(TrajectoryType.USERTRACK, userTrajectory.id)
+              .subscribe((ut) => {
+                this.userTrajectory = ut
+              })
+          )
         }
         this.loading = false
       })
