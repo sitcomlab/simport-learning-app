@@ -10,7 +10,7 @@
       <ion-col sizeXs="12" sizeLg="4">
         <app-item-card
           [disabled]="!locationService.isSupportedPlatform"
-          (click)="locationService.isSupportedPlatform && enableTrajectory('tracking')"
+          (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
           icon="locate-outline"
           title="Record your own trajectory"
           subtitle="get notified when information about you could be derived"
@@ -22,7 +22,7 @@
           icon="compass-outline"
           title="Explore trajectories"
           subtitle="interactively explore your own and somones whereabouts"
-          (click)="enableTrajectory('choose')"
+          (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
         ></app-item-card>
       </ion-col>
 
@@ -32,7 +32,7 @@
           icon="add-outline"
           title="Add your own trajectory"
           subtitle="import a JSON file"
-          (click)="enableTrajectory('import')"
+          (click)="enableTrajectory(TrajectoryMode.IMPORT)"
         ></app-item-card>
       </ion-col>
     </ion-row>

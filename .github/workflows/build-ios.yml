@@ -32,7 +32,7 @@ jobs:
         run: |
           npm install --silent
           ionic cap update --no-interactive --no-open --confirm
-          ionic cap build ios --no-interactive --no-open --confirm
+          ionic cap build ios --no-interactive --no-open --confirm --prod
 
       - name: Bump version
         run: |
