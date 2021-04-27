@@ -45,7 +45,7 @@ export class MapPage implements OnInit, OnDestroy {
   inferenceMarkers = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
-  isTogglingFollowPosition: boolean
+  suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
 
   // inference controls
@@ -128,20 +128,18 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   onMapMoved(map: Map) {
-    if (!this.isTogglingFollowPosition) {
+    if (!this.suppressNextMapMoveEvent) {
       this.followPosition = false
     } else {
-      this.isTogglingFollowPosition = false
+      this.suppressNextMapMoveEvent = false
     }
   }
 
   onToggleFollowMode() {
-    this.isTogglingFollowPosition = true
+    this.suppressNextMapMoveEvent = true
     this.followPosition = !this.followPosition
     if (this.followPosition) {
       this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
-    } else {
-      this.mapBounds = this.polyline.getBounds()
     }
   }
 
