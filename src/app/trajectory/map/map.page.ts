@@ -93,6 +93,7 @@ export class MapPage implements OnInit, OnDestroy {
         }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
 
         if (this.followPosition) {
+          this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
           this.mapBounds = this.polyline.getBounds()
