@@ -45,6 +45,7 @@ export class MapPage implements OnInit, OnDestroy {
   inferenceMarkers = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
+  suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
 
   // inference controls
@@ -53,6 +54,7 @@ export class MapPage implements OnInit, OnDestroy {
   showWorkInferences = true
   currentConfidenceThreshold = 50
   currentInferences: Inference[]
+  generatedInferences = false
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -91,6 +93,7 @@ export class MapPage implements OnInit, OnDestroy {
         }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
 
         if (this.followPosition) {
+          this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
           this.mapBounds = this.polyline.getBounds()
@@ -116,18 +119,29 @@ export class MapPage implements OnInit, OnDestroy {
 
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
-    if (history.state.center)
+    if (history.state.center) {
       this.mapBounds = latLng(history.state.center).toBounds(100)
+    }
   }
 
   onMapReady(map: Map) {
     this.map = map
   }
 
+  onMapMoved(map: Map) {
+    if (!this.suppressNextMapMoveEvent) {
+      this.followPosition = false
+    } else {
+      this.suppressNextMapMoveEvent = false
+    }
+  }
+
   onToggleFollowMode() {
+    this.suppressNextMapMoveEvent = true
     this.followPosition = !this.followPosition
-    if (this.followPosition)
+    if (this.followPosition) {
       this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
+    }
   }
 
   onToggleInferenceControls() {
@@ -141,7 +155,7 @@ export class MapPage implements OnInit, OnDestroy {
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-
+    this.generatedInferences = true
     switch (inferenceResult.status) {
       case InferenceResultStatus.successful:
         this.currentInferences = inferenceResult.inferences
