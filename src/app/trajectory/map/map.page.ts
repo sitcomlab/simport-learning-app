@@ -20,7 +20,7 @@ import {
   InferenceType,
 } from 'src/app/shared-services/inferences/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
-import { InferenceService } from '../inferences/inference.service'
+import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-map',

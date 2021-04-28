@@ -5,11 +5,11 @@ import {
   InferenceDefinition,
   InferenceResult,
   InferenceResultStatus,
-} from './types'
-import { NightnessScoring } from './scoring/nightness-scoring'
-import { IInferenceScoring, InferenceScoringResult } from './scoring/types'
-import { WorkHoursScoring } from './scoring/work-hours-scoring'
-import { PointCountScoring } from './scoring/pointcount-scoring'
+} from '../types'
+import { NightnessScoring } from '../scoring/nightness-scoring'
+import { IInferenceScoring, InferenceScoringResult } from '../scoring/types'
+import { WorkHoursScoring } from '../scoring/work-hours-scoring'
+import { PointCountScoring } from '../scoring/pointcount-scoring'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
@@ -86,16 +86,16 @@ export class SimpleEngine implements IInferenceEngine {
           confidence = 0
         }
         const scoringConfidence = {
-          confidence: confidence,
+          confidence,
           weight: config.weight,
         }
         confidences.push(scoringConfidence)
       }
     })
-    let confidence = 0
+    let avgConfidence = 0
     const sumWeights = confidences.reduce((p, c) => p + c.weight, 0)
     if (confidences.length > 0 && sumWeights > 0) {
-      confidence =
+      avgConfidence =
         confidences.reduce((p, c) => p + c.confidence * c.weight, 0) /
         sumWeights
     }
@@ -108,7 +108,7 @@ export class SimpleEngine implements IInferenceEngine {
       description: 'TODO',
       trajectoryId: 'TODO',
       lonLat: [centroid.centerPoint.latLng[1], centroid.centerPoint.latLng[0]],
-      confidence,
+      confidence: avgConfidence,
       accuracy: centroid.maxDistance,
     }
   }

@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import {
-  HomeInference,
-  WorkInference,
-} from 'src/app/shared-services/inferences/definitions'
-import { SimpleEngine } from 'src/app/shared-services/inferences/simple-engine'
+import { HomeInference, WorkInference } from './engine/definitions'
+import { SimpleEngine } from './engine/simple-engine'
 import {
   InferenceResult,
   InferenceType,

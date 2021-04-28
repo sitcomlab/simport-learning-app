@@ -1,6 +1,6 @@
 import { Inference } from 'src/app/model/inference'
-import { InferenceScoringType } from './scoring/types'
-import { InferenceDefinition, InferenceType } from './types'
+import { InferenceScoringType } from '../scoring/types'
+import { InferenceDefinition, InferenceType } from '../types'
 
 export const WorkInference = new InferenceDefinition(
   'workplace',
