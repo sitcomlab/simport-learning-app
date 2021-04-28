@@ -10,6 +10,7 @@ import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
+import { InferenceService } from './inferences/inference.service'
 
 const TRACKING_TRAJ_ID = 'user'
 
@@ -36,7 +37,8 @@ export class LocationService implements OnDestroy {
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
     private localNotifications: LocalNotifications,
-    private db: SqliteService
+    private db: SqliteService,
+    private inf: InferenceService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -82,7 +84,7 @@ export class LocationService implements OnDestroy {
         this.backgroundGeolocation.start()
       } else {
         const showSettings = confirm(
-          'App requieres always on location permission. Please grant permission in settings.'
+          'App requires always on location permission. Please grant permission in settings.'
         )
         if (showSettings) {
           return this.backgroundGeolocation.showAppSettings()
@@ -115,6 +117,8 @@ export class LocationService implements OnDestroy {
           accuracy,
           speed,
         })
+
+        this.inf.generateUserInference()
 
         this.scheduleNotification(
           `Received location update ${latitude} ${longitude} ${accuracy}`

@@ -1,49 +1,25 @@
 import { Injectable } from '@angular/core'
-import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import { HomeInference, WorkInference } from './engine/definitions'
-import { SimpleEngine } from './engine/simple-engine'
 import {
-  InferenceResult,
-  InferenceType,
-} from 'src/app/shared-services/inferences/types'
+  HomeInference,
+  WorkInference,
+} from 'src/app/shared-services/inferences/engine/definitions'
+import { SimpleEngine } from './engine/simple-engine'
+import { InferenceResult, InferenceResultStatus } from './types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { take } from 'rxjs/operators'
+import { BehaviorSubject } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
 })
 export class InferenceService {
-  private inferences: Inference[] = [
-    {
-      name: 'Home',
-      type: InferenceType.home,
-      description: 'We do now know where your home is.',
-      trajectoryId: 'muenster',
-      lonLat: [51.968446, 7.60549],
-      accuracy: 50,
-    },
-    {
-      name: 'Workplace',
-      type: InferenceType.work,
-      description: 'We know where you work.',
-      lonLat: [51.968446, 7.61249],
-      trajectoryId: 'muenster',
-      accuracy: 50,
-    },
-  ]
+  private static inferenceIntervalMinutes = 240 // 4 hours
   private inferenceEngine = new SimpleEngine()
+  lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
   constructor(private trajectoryService: TrajectoryService) {}
 
-  getInferences(trajectoryId: string): Inference[] {
-    return this.inferences.filter((i) => i.trajectoryId === trajectoryId)
-  }
-
-  /**
-   * TODO: this is used for testing purposes only
-   * and should not be merged onto primary branches
-   */
   async generateInferences(
     trajectoryType: TrajectoryType,
     trajectoryId: string
@@ -53,5 +29,37 @@ export class InferenceService {
       .pipe(take(1))
       .toPromise()
     return this.inferenceEngine.infer(traj, [HomeInference, WorkInference])
+  }
+
+  async generateUserInference(): Promise<InferenceResult> {
+    const time = new Date().getTime()
+    if (this.isWithinInterval(time)) return
+
+    this.lastInferenceTime.next(time)
+    const trajectory = await this.trajectoryService
+      .getFullUserTrack()
+      .pipe(take(1))
+      .toPromise()
+    const inferenceResult = await this.generateInferences(
+      trajectory.type,
+      trajectory.id
+    )
+
+    // TODO: persist generated inferences
+    return inferenceResult
+  }
+
+  private isWithinInterval(timestamp: number): boolean {
+    const diffInMinutes = (timestamp - this.lastInferenceTime.value) / 1000 / 60
+    return diffInMinutes < InferenceService.inferenceIntervalMinutes
+  }
+
+  loadPersistedInferences(trajectoryId: string): InferenceResult {
+    // TODO: actually load persisted inferences
+    const emptyResult: InferenceResult = {
+      status: InferenceResultStatus.successful,
+      inferences: [],
+    }
+    return emptyResult
   }
 }

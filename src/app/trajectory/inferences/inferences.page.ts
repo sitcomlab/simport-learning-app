@@ -18,9 +18,10 @@ export class InferencesPage implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const trajId = this.route.snapshot.paramMap.get('trajectoryId')
-    this.inferences = this.service.getInferences(trajId)
+    const inferencesResult = this.service.loadPersistedInferences(trajId)
+    this.inferences = inferencesResult.inferences
   }
 
   formatInferenceName(inference: Inference): string {

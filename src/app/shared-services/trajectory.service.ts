@@ -9,7 +9,6 @@ import {
   TrajectoryType,
 } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
-import { LocationService } from './location.service'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.
@@ -24,11 +23,7 @@ import { LocationService } from './location.service'
  */
 @Injectable()
 export class TrajectoryService {
-  constructor(
-    private http: HttpClient,
-    private db: SqliteService,
-    private locationService: LocationService
-  ) {}
+  constructor(private http: HttpClient, private db: SqliteService) {}
 
   // Returns an observable yielding metadata of all available trajectories
   getAllMeta(): Observable<TrajectoryMeta[]> {
@@ -48,6 +43,11 @@ export class TrajectoryService {
   // returns metadata of all included example (readonly) trajectories
   getReadonlyMeta(): Observable<TrajectoryMeta[]> {
     return this.http.get<TrajectoryMeta[]>('assets/trajectories/index.json')
+  }
+
+  getFullUserTrack(): Observable<Trajectory> {
+    if (!this.db.isSupported()) return from(Promise.resolve(undefined))
+    return from(this.db.getFullTrajectoryByType(TrajectoryType.USERTRACK))
   }
 
   // Returns any trajectory data by slug. slug consists of `type/id`.
@@ -71,7 +71,7 @@ export class TrajectoryService {
 
       default:
         return new Observable<Trajectory>((subscriber) => {
-          this.db.getFullTrajectory(id).then((trajectory) => {
+          this.db.getFullTrajectoryById(id).then((trajectory) => {
             // publish trajectory
             subscriber.next(trajectory)
 
@@ -94,7 +94,6 @@ export class TrajectoryService {
   }
 
   deleteTrajectory(t: TrajectoryMeta) {
-    this.locationService.stop()
     return this.db.deleteTrajectory(t)
   }
 
