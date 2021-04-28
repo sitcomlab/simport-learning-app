@@ -12,8 +12,6 @@ import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
 import { InferenceService } from './inferences/inference.service'
 
-const TRACKING_TRAJ_ID = 'user'
-
 @Injectable()
 export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
@@ -111,7 +109,7 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
-        await this.db.upsertPoint(TRACKING_TRAJ_ID, {
+        await this.db.upsertPoint(Trajectory.trackingTrajectoryID, {
           latLng: [latitude, longitude],
           time: new Date(time),
           accuracy,
@@ -134,7 +132,7 @@ export class LocationService implements OnDestroy {
         try {
           await this.db.upsertTrajectory(
             new Trajectory({
-              id: TRACKING_TRAJ_ID,
+              id: Trajectory.trackingTrajectoryID,
               type: TrajectoryType.USERTRACK,
               placename: 'Your Trajectory',
             })

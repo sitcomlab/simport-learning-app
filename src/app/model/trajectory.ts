@@ -29,6 +29,8 @@ export interface Point {
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
+  static trackingTrajectoryID = 'user'
+
   // Decodes a trajectory that was encoded for assets/trajectories/ via
   // dev/import_example_trajectory.ts
   static fromJSON({

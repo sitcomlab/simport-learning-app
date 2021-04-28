@@ -47,7 +47,7 @@ export class TrajectoryService {
 
   getFullUserTrack(): Observable<Trajectory> {
     if (!this.db.isSupported()) return from(Promise.resolve(undefined))
-    return from(this.db.getFullTrajectoryByType(TrajectoryType.USERTRACK))
+    return from(this.db.getFullTrajectory(Trajectory.trackingTrajectoryID))
   }
 
   // Returns any trajectory data by slug. slug consists of `type/id`.
@@ -71,7 +71,7 @@ export class TrajectoryService {
 
       default:
         return new Observable<Trajectory>((subscriber) => {
-          this.db.getFullTrajectoryById(id).then((trajectory) => {
+          this.db.getFullTrajectory(id).then((trajectory) => {
             // publish trajectory
             subscriber.next(trajectory)
 

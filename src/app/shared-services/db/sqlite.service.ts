@@ -9,7 +9,6 @@ import {
   Trajectory,
   TrajectoryData,
   TrajectoryMeta,
-  TrajectoryType,
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 
@@ -64,24 +63,10 @@ export class SqliteService {
     return values
   }
 
-  async getFullTrajectoryByType(type: TrajectoryType): Promise<Trajectory> {
+  async getFullTrajectory(id: string): Promise<Trajectory> {
     await this.ensureDbReady()
     const { values } = await this.db.query({
-      statement: `SELECT t.id, t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed FROM trajectories AS t
-        LEFT JOIN points p ON t.id = p.trajectory
-        WHERE t.type = ?
-        ORDER BY time`,
-      values: [type],
-    })
-
-    if (!values.length) throw new Error('not found')
-    return this.mergeDatabaseValuesToTrajectory(values)
-  }
-
-  async getFullTrajectoryById(id: string): Promise<Trajectory> {
-    await this.ensureDbReady()
-    const { values } = await this.db.query({
-      statement: `SELECT t.id, t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed FROM trajectories AS t
+      statement: `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -89,11 +74,10 @@ export class SqliteService {
     })
 
     if (!values.length) throw new Error('not found')
-    return this.mergeDatabaseValuesToTrajectory(values)
-  }
 
-  private mergeDatabaseValuesToTrajectory(values: any[]): Trajectory {
-    const meta: TrajectoryMeta = values[0]
+    const { type, placename, durationDays } = values[0]
+    const meta: TrajectoryMeta = { id, type, placename, durationDays }
+
     const data = values
       // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
