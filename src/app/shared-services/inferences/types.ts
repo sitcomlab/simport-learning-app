@@ -35,6 +35,7 @@ export enum InferenceType {
 
 export enum InferenceResultStatus {
   tooManyCoordinates,
+  noInferencesFound,
   successful,
 }
 
