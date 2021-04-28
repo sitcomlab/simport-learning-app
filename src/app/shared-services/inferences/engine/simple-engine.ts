@@ -67,7 +67,10 @@ export class SimpleEngine implements IInferenceEngine {
     })
 
     return {
-      status: InferenceResultStatus.successful,
+      status:
+        inferenceResults.length === 0
+          ? InferenceResultStatus.noInferencesFound
+          : InferenceResultStatus.successful,
       inferences: inferenceResults,
     }
   }
@@ -81,12 +84,12 @@ export class SimpleEngine implements IInferenceEngine {
     scoringResults.forEach((scoringResult) => {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
       if (config !== null) {
-        let confidence = config.confidence(scoringResult.value)
-        if (isNaN(confidence) || confidence === undefined) {
-          confidence = 0
+        let inferenceConfidence = config.confidence(scoringResult.value)
+        if (isNaN(inferenceConfidence) || inferenceConfidence === undefined) {
+          inferenceConfidence = 0
         }
         const scoringConfidence = {
-          confidence,
+          confidence: inferenceConfidence,
           weight: config.weight,
         }
         confidences.push(scoringConfidence)
