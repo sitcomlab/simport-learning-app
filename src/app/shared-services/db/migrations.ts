@@ -83,4 +83,25 @@ export const MIGRATIONS = [
 
   // add field 'speed' to table points
   `ALTER TABLE points ADD COLUMN speed float DEFAULT -1;`,
+
+  // add inferences persistence
+  // `CREATE TABLE IF NOT EXISTS inferences (
+  //   id INTEGER PRIMARY KEY,
+  //   trajectory TEXT NOT NULL,
+  //   json TEXT NOT NULL,
+  //   FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // add inferences persistence
+  `CREATE TABLE IF NOT EXISTS inferences (
+    trajectory TEXT NOT NULL,
+    type TEXT CHECK(type IN ("home", "work")) NOT NULL),
+    updated DATETIME NOT NULL,
+    lon FLOAT NOT NULL,
+    lat FLOAT NOT NULL,
+    confidence FLOAT,
+    accuracy FLOAT,
+    name TEXT,
+    description TEXT,
+    PRIMARY KEY (trajectory, type),
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 ]
