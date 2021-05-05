@@ -19,9 +19,9 @@ export class LocationService implements OnDestroy {
     // desiredAccuracy: 10,
     // stationaryRadius: 20,
     // distanceFilter: 30,
-    debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
-    stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-    startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
+    // debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
+    // stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+    // startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
   }
   private locationUpdateSubscription: Subscription
   private startEventSubscription: Subscription
