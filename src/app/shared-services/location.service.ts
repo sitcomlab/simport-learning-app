@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import {
   BackgroundGeolocation,
+  BackgroundGeolocationAccuracy,
   BackgroundGeolocationAuthorizationStatus,
   BackgroundGeolocationConfig,
   BackgroundGeolocationEvents,
@@ -18,11 +19,11 @@ const TRACKING_TRAJ_ID = 'user'
 export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
     locationProvider: BackgroundGeolocationLocationProvider.RAW_PROVIDER,
-    // desiredAccuracy: BackgroundGeolocationAccuracy.LOW,
-    // interval: 30000,
-    // stationaryRadius: 30,
-    // distanceFilter: 30,
-    // stopOnStillActivity: false,
+    desiredAccuracy: BackgroundGeolocationAccuracy.LOW,
+    interval: 30000,
+    stationaryRadius: 30,
+    distanceFilter: 30,
+    stopOnStillActivity: false,
     debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
     startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
