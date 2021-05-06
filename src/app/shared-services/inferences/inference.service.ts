@@ -9,6 +9,7 @@ import { InferenceResult, InferenceResultStatus } from './types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject } from 'rxjs'
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,10 @@ export class InferenceService {
   private inferenceEngine = new SimpleEngine()
   lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
-  constructor(private trajectoryService: TrajectoryService) {}
+  constructor(
+    private trajectoryService: TrajectoryService,
+    private localNotifications: LocalNotifications
+  ) {}
 
   async generateInferences(
     trajectoryType: TrajectoryType,
@@ -28,6 +32,19 @@ export class InferenceService {
       .getOne(trajectoryType, trajectoryId)
       .pipe(take(1))
       .toPromise()
+
+    const inference = this.inferenceEngine.infer(traj, [
+      HomeInference,
+      WorkInference,
+    ])
+
+    if (inference.status === InferenceResultStatus.successful) {
+      this.localNotifications.schedule({
+        id: Math.random() * 1000000,
+        text: 'New inferences found',
+      })
+    }
+
     return this.inferenceEngine.infer(traj, [HomeInference, WorkInference])
   }
 

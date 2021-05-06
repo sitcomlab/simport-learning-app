@@ -155,14 +155,18 @@ export class MapPage implements OnInit, OnDestroy {
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-    this.generatedInferences = true
     switch (inferenceResult.status) {
       case InferenceResultStatus.successful:
+        this.generatedInferences = true
         this.currentInferences = inferenceResult.inferences
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
           `Trajectory couldn't be analyzed, because it has too many coordinates`
+        )
+      case InferenceResultStatus.noInferencesFound:
+        return await this.showErrorToast(
+          `No inferences were found within your trajectory`
         )
       default:
         return await this.showErrorToast(`Trajectory couldn't be analyzed`)

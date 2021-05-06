@@ -10,4 +10,26 @@ export class Inference {
     public confidence?: number,
     public accuracy?: number
   ) {}
+
+  static fromObject(val: any) {
+    const {
+      name,
+      type,
+      description,
+      trajectoryId,
+      lonLat,
+      confidence,
+      accuracy,
+    } = val
+
+    return new Inference(
+      name,
+      type,
+      description,
+      trajectoryId,
+      lonLat,
+      confidence,
+      accuracy
+    )
+  }
 }
