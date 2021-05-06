@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { TrajectoryType } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
   HomeInference,
   WorkInference,
@@ -33,6 +33,12 @@ export class InferenceService {
       .pipe(take(1))
       .toPromise()
 
+    return this.generateInferencesForTrajectory(traj)
+  }
+
+  async generateInferencesForTrajectory(
+    traj: Trajectory
+  ): Promise<InferenceResult> {
     const inference = this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
@@ -45,7 +51,7 @@ export class InferenceService {
       })
     }
 
-    return this.inferenceEngine.infer(traj, [HomeInference, WorkInference])
+    return inference
   }
 
   async generateUserInference(): Promise<InferenceResult> {
@@ -57,9 +63,9 @@ export class InferenceService {
       .getFullUserTrack()
       .pipe(take(1))
       .toPromise()
-    const inferenceResult = await this.generateInferences(
-      trajectory.type,
-      trajectory.id
+
+    const inferenceResult = await this.generateInferencesForTrajectory(
+      trajectory
     )
 
     // TODO: persist generated inferences
