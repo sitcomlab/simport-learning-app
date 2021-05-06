@@ -94,7 +94,7 @@ export const MIGRATIONS = [
   // add inferences persistence
   `CREATE TABLE IF NOT EXISTS inferences (
     trajectory TEXT NOT NULL,
-    type TEXT CHECK(type IN ("home", "work")) NOT NULL),
+    type TEXT CHECK(type IN ("home", "work") NOT NULL),
     updated DATETIME NOT NULL,
     lon FLOAT NOT NULL,
     lat FLOAT NOT NULL,
