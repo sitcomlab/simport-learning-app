@@ -18,6 +18,7 @@ Learning tool on location data privacy, that reflects to users, what conclusions
     - [iOS](#ios)
   - [Build & Run](#build-and-run)
   - [Test](#test)
+- ### [License](#license)
 
 ## Development
 
@@ -97,6 +98,14 @@ ionic cap build ios
 ### Test
 
 TBD
+
+## License 
+
+```
+SIMPORT Learning App
+Copyright (c) 2020 Sitcom Lab
+```
+[Further information](https://github.com/sitcomlab/simport-learning-app/blob/develop/LICENSE)
 
 [simport]: https://simport.net/
 [ionic]: https://ionicframework.com/
