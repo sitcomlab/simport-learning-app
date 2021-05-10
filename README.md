@@ -27,9 +27,9 @@ Learning tool on location data privacy, that reflects to users, what conclusions
 It is intended that one records her/his location data of the course of multiple days/weeks/months using this app. By collecting and analyzing the recorded location history (locally), it is tried to infer information about the user - such as her/his home and work location. Users should be notified, if such inferences can be made in order to reflect to them, what conclusions can be drawn using their location histories.
 Furthermore recorded trajectories can be exported, external trajectories can be imported and examined using the app as well.
 
-![Home](https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_start_view.PNG)
-![Tracking](https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_tracking_view.PNG)
-![Trajectory-Map](https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_trajectory_map_view.PNG)
+<p align="center">
+  <img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_start_view.PNG" width="25%"><img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_tracking_view.PNG" width="25%"><img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_trajectory_map_view.PNG" width="25%">
+</p>
 
 ## Development
 
