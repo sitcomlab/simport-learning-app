@@ -59,7 +59,7 @@ npm install               # install the frontend dependencies
   - on Linux, install to `/opt/android-studio/`, as this path is configured in `capacitor.config.json`
 - Download an up-to-date Android SDK (e.g. SDK 29)
   - Within Android Studio: `Tools` → `SDK Manager`)
-- Optional: Setup emulators, for testing the app on a computer
+- Optional: Setup emulators as needed for testing the app on a computer
   - Within Android Studio: `Tools` → `AVD Manager`)
 - Make sure to run `Sync Project with Gradle Files` before building when dependencies have changed
 - Built artifact will be `./android/app/build/outputs/apk/app-debug.apk`
@@ -69,7 +69,9 @@ npm install               # install the frontend dependencies
 > 📝 This only works on macOS.
 
 - Install the latest version of [XCode](https://developer.apple.com/xcode/)
-- TBD
+- Optional: Setup emulators as needed for testing the app on a computer
+  - Within XCode: `Window` → `Devices and Simulators` → `Simulators`)
+- For running on physical devices, XCode requires that you’ve connected a Team to the project → [more information here](https://developer.apple.com/documentation/xcode/running-your-app-in-the-simulator-or-on-a-device)
 
 > 📝 With [Capacitor][capacitor], the native build projects are supposed to be checked into version control.
 > This avoids duplicate config and simplifies writing native code without creating plugins.
@@ -97,7 +99,28 @@ ionic cap build ios
 
 ### Test
 
-TBD
+Apart from basic component testing (default Angular), the testing framework is used to validate the inference algorithms.
+By running the tests via `npm run test` a few simple trajectories are generated, that are designed to cover some border cases - e.g. variation in location frequency and accuracy. The creation of this test data is based on a few location files [located here](https://github.com/sitcomlab/simport-learning-app/tree/develop/dev/test-data-gpx). The generated test data is based upon the following location pattern, which result from the assumptions of a typical work day (9 to 5).
+
+| Activity        | Start datetime       | End datetime         |
+|-----------------|:--------------------:|:--------------------:|
+| Dwell at home   | 2021-02-23T18:00:00Z | 2021-02-24T08:45:00Z |
+| Ride to work    | 2021-02-24T08:45:00Z | 2021-02-24T09:00:00Z |
+| Dwell at work   | 2021-02-24T09:00:00Z | 2021-02-24T17:00:00Z |
+| Ride home       | 2021-02-24T17:00:00Z | 2021-02-24T17:15:00Z |
+| Dwell at home   | 2021-02-24T17:15:00Z | 2021-02-25T08:45:00Z |
+
+Currently the following test cases are created, analyzed and checked against the given expected inferences:
+
+| Trajectory                  | Description      | Expected inferences |
+|:---------------------------:|------------------|:-------------------:|
+| Empty                       | Empty trajectory, contains no locations. | None |
+| Mobile only                 | Trajectory, that only contains mobile data. Therefore it contains only the ride to and from work, but no stationary location for dwelling at home or work. |   None |
+| Simple home and work        | Simple trajectory that simulates a usual day of work. The location data contains the assumed movement data stated above with typical point clouds at the dwelling locations. Without any special constraints. | Home/Work |
+| Spatially dense home and work   | Similar to simple home/work, but stationary data (point clouds for dwelling time) is way more spatially dense, which simulates a lot of movement/higher update frequency during recording.| Home/Work |
+| Temporally sparse home and work | Similar to simple home/work, but stationary data (point clouds for dwelling time) is way more temporally sparse, which simulates a less movement/lower update frequency during recording.| Home/Work |
+
+These tests are automatically executed when pushing to the development branch. The last test-result can be seen at the top of this page.
 
 ## License 
 
