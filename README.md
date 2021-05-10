@@ -14,11 +14,12 @@ Learning tool on location data privacy, that reflects to users, what conclusions
 
 - ### [App Usage](#app-usage)
 - ### [Development](#development)
-  - [Version Control](#version-control)
   - [Setup](#setup)
+    - [Quickstart](#quickstart-tools)
     - [Android](#android)
     - [iOS](#ios)
-  - [Build & Run](#build-and-run)
+  - [Build and Run](#build-and-run)
+  - [Version Control](#version-control)
   - [Test](#test)
 - ### [License](#license)
 
@@ -36,22 +37,19 @@ Furthermore recorded trajectories can be exported, external trajectories can be 
 This is an hybrid [Ionic][ionic] app, using [Capacitator][capacitor] (a drop-in replacement
 for Cordova) to access native APIs and [Angular][angular] for UI.
 
-### Version Control
-
-The branch `develop` is used as the main branch, while actual developing of new features is done on individual feature branches
-
-`feature/<feature name>`
-
-These feature branches are merged `develop` when finished. For your commits, please use the following commit message if applicable:
-
-`#<issue number>: <commit message>`
-
-Releases are automatically triggered on push to `release-beta` using [GitHub Actions](https://github.com/sitcomlab/simport-learning-app/tree/develop/.github/workflows) and distributed to a closed group of beta-testers using [Firebase][firebase].
-
 ### Setup
 
-For basic UI development you need [node.js][node] installed - [see here](https://nodejs.org/de/download/package-manager/) for further information.
-As an IDE you can basically choose by your own taste. Recommendation: [Visual Studio Code](https://code.visualstudio.com) using the code formatter [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) with [these settings](https://github.com/sitcomlab/simport-learning-app/blob/develop/.prettierrc.json).
+#### Quickstart (Tools)
+
+- [git][git]
+- [node.js][node]
+- [Ionic CLI][ionic-cli]
+- [Visual Studio Code][vscode] with [prettier][vscode-prettier]
+- [Android Studio][androidstudio] / [XCode][xcode]
+
+---
+For basic UI development you need [node.js][node] installed - further information can be found [here](https://nodejs.org/de/download/package-manager/).
+As an IDE you can basically choose by your own taste. Our recommendation is to use [Visual Studio Code][vscode] with the code formatter [Prettier][vscode-prettier] using [these settings](https://github.com/sitcomlab/simport-learning-app/blob/develop/.prettierrc.json). This guarantees consistent and uniform code.
 
 ##### Clone the repository
 
@@ -59,7 +57,7 @@ As an IDE you can basically choose by your own taste. Recommendation: [Visual St
 git clone git@github.com:sitcomlab/simport-learning-app
 ```
 
-##### Within the repository, install the ionic CLI, which is used for most management tasks, as well as the frontend dependencies
+##### Within the repository, install the [ionic CLI](ionic-cli), which is used for most management tasks, as well as the frontend dependencies
 
 ```sh
 cd simport-learning-app
@@ -69,7 +67,7 @@ npm install               # install the frontend dependencies
 
 #### Android
 
-- Install the latest version of [Android Studio](https://developer.android.com/studio/install)
+- Install the latest version of [Android Studio][androidstudio]
   - on Linux, install to `/opt/android-studio/`, as this path is configured in `capacitor.config.json`
 - Download an up-to-date Android SDK (e.g. SDK 29)
   - Within Android Studio: `Tools` → `SDK Manager`)
@@ -82,7 +80,7 @@ npm install               # install the frontend dependencies
 
 > 📝 This only works on macOS.
 
-- Install the latest version of [XCode](https://developer.apple.com/xcode/)
+- Install the latest version of [XCode][xcode]
 - Optional: Setup emulators as needed for testing the app on a computer
   - Within XCode: `Window` → `Devices and Simulators` → `Simulators`)
 - For running on physical devices, XCode requires that you’ve connected a Team to the project → [more information here](https://developer.apple.com/documentation/xcode/running-your-app-in-the-simulator-or-on-a-device)
@@ -93,31 +91,59 @@ npm install               # install the frontend dependencies
 
 ### Build and Run
 
-##### Hot Reloading Server
+##### Hot Reloading Server (→ [see here](https://ionicframework.com/docs/cli/commands/serve))
 
 ```sh
 ionic serve
 ```
 
-##### Build frontend to ./www/
+##### Build frontend to ./www/ (→ [see here](https://ionicframework.com/docs/cli/commands/build))
 
 ```sh
 ionic build
 ```
 
-##### Prepare Android build & open Android Studio
+##### Prepare app builds & open IDE (→ [see here](https://ionicframework.com/docs/cli/commands/capacitor-build))
 
+###### Android
 ```sh
 ionic cap update
 ionic cap build android
 ```
-
-##### Prepare iOS build & open XCode
+###### iOS
 
 ```sh
 ionic cap update
 ionic cap build ios
 ```
+
+##### Sync app builds (→ [see here](https://ionicframework.com/docs/cli/commands/capacitor-sync))
+
+###### Android
+```sh
+ionic cap sync android
+```
+
+###### iOS
+```sh
+ionic cap sync ios
+```
+
+### Version Control
+
+Using Github this project is obviously versioned using [git][git]. The branch `develop` is used as the main branch, while actual developing of new features is done on individual feature branches. These features branches are using the following naming scheme:
+
+```
+feature/<feature name>
+```
+
+When finished (including review) developing a feature, the feature branches are merged `develop`. For your commits, please use the following commit message if applicable:
+
+```
+#<issue number>: <commit message>
+```
+
+Releases are automatically triggered on push to `release-beta` using [GitHub Actions](https://github.com/sitcomlab/simport-learning-app/tree/develop/.github/workflows) and distributed to a closed group of beta-testers using [Firebase][firebase].
 
 ### Test
 
@@ -155,7 +181,13 @@ Copyright (c) 2020 Sitcom Lab
 
 [simport]: https://simport.net/
 [ionic]: https://ionicframework.com/
+[ionic-cli]:https://ionicframework.com/docs/cli
 [capacitor]: https://capacitorjs.com/
 [angular]: https://angular.io/
 [firebase]: https://firebase.google.com
 [node]: https://nodejs.org/
+[vscode]:https://code.visualstudio.com
+[vscode-prettier]:https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+[xcode]:https://developer.apple.com/xcode/
+[androidstudio]:https://developer.android.com/studio/install
+[git]:https://git-scm.com
