@@ -8,6 +8,7 @@ import { IonicModule, IonRouterOutlet } from '@ionic/angular'
 import { SqliteService } from '../shared-services/db/sqlite.service'
 import { LocationService } from '../shared-services/location.service'
 import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
+import { TrajectoryService } from '../shared-services/trajectory.service'
 import { SelectTrajectoryPage } from './select-trajectory.page'
 
 describe('SelectTrajectoryPage', () => {
@@ -23,6 +24,7 @@ describe('SelectTrajectoryPage', () => {
         BackgroundGeolocation,
         LocalNotifications,
         SqliteService,
+        TrajectoryService,
         TrajectoryImportExportService,
         SocialSharing,
         {

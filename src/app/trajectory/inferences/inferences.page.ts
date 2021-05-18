@@ -10,7 +10,7 @@ import { InferenceService } from 'src/app/shared-services/inferences/inference.s
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit {
-  inferences: Inference[]
+  inferences: Inference[] = []
 
   constructor(
     private service: InferenceService,

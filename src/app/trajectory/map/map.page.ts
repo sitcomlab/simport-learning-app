@@ -53,7 +53,7 @@ export class MapPage implements OnInit, OnDestroy {
   showHomeInferences = true
   showWorkInferences = true
   currentConfidenceThreshold = 50
-  currentInferences: Inference[]
+  currentInferences: Inference[] = []
   generatedInferences = false
 
   // should only be used for invalidateSize(), content changes via directive bindings!
