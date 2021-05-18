@@ -103,9 +103,10 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    this.currentInferences = this.inferenceService.loadPersistedInferences(
+    const inferenceResult = await this.inferenceService.loadPersistedInferences(
       this.trajectoryId
-    ).inferences
+    )
+    this.currentInferences = inferenceResult.inferences
     this.updateInferenceMarkers()
   }
 

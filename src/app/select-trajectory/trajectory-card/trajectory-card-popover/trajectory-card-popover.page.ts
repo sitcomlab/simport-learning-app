@@ -9,7 +9,8 @@ import {
   Platform,
   ActionSheetController,
 } from '@ionic/angular'
-import { TrajectoryMeta } from 'src/app/model/trajectory'
+import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
+import { LocationService } from 'src/app/shared-services/location.service'
 import {
   TrajectoryExportResult,
   TrajectoryImportExportService,
@@ -32,6 +33,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
     private loadingController: LoadingController,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
+    private locationService: LocationService,
     private trajectoryImportExportService: TrajectoryImportExportService
   ) {}
 
@@ -144,6 +146,9 @@ export class TrajectoryCardPopoverPage implements OnInit {
           cssClass: 'danger',
           handler: async () => {
             await this.showLoadingDialog('Deleting trajectory...')
+            if (this.trajectory.type === TrajectoryType.USERTRACK) {
+              this.locationService.stop()
+            }
             await this.trajectoryImportExportService
               .deleteTrajectory(this.trajectory)
               .then(async () => {

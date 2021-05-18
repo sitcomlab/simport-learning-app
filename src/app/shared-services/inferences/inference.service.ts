@@ -45,10 +45,7 @@ export class InferenceService {
     ])
 
     if (inference.status === InferenceResultStatus.successful) {
-      this.localNotifications.schedule({
-        id: Math.random() * 1000000,
-        text: 'New inferences found',
-      })
+      this.localNotifications.schedule({ text: 'New inferences found' })
     }
 
     return inference
@@ -77,7 +74,9 @@ export class InferenceService {
     return diffInMinutes < InferenceService.inferenceIntervalMinutes
   }
 
-  loadPersistedInferences(trajectoryId: string): InferenceResult {
+  async loadPersistedInferences(
+    trajectoryId: string
+  ): Promise<InferenceResult> {
     // TODO: actually load persisted inferences
     const emptyResult: InferenceResult = {
       status: InferenceResultStatus.successful,

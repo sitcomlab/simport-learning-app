@@ -155,10 +155,6 @@ export class LocationService implements OnDestroy {
 
   private scheduleNotification(message: string) {
     if (this.notificationsEnabled.value === false) return
-    this.localNotifications.schedule({
-      id: Math.random() * 1000000,
-      text: message,
-      data: {},
-    })
+    this.localNotifications.schedule({ text: message })
   }
 }
