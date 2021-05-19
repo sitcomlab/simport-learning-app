@@ -4,7 +4,7 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location.service'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 
 import { InferenceService } from './inference.service'
 

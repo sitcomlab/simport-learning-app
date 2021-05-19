@@ -14,7 +14,7 @@ import { LocationService } from 'src/app/shared-services/location.service'
 import {
   TrajectoryExportResult,
   TrajectoryImportExportService,
-} from 'src/app/shared-services/trajectory-import-export.service'
+} from 'src/app/shared-services/trajectory/trajectory-import-export.service'
 
 @Component({
   selector: 'app-trajectory-card-popover',

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { Subscription } from 'rxjs'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 
 @Component({
   selector: 'app-trajectory-selector',

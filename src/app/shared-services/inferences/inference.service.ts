@@ -6,7 +6,7 @@ import {
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine'
 import { InferenceResult, InferenceResultStatus } from './types'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject } from 'rxjs'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'

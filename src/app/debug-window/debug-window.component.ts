@@ -4,7 +4,7 @@ import { ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
-import { TrajectoryService } from '../shared-services/trajectory.service'
+import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 
 @Component({
   selector: 'app-debug-window',

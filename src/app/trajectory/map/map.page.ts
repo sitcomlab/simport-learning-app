@@ -19,7 +19,7 @@ import {
   InferenceResultStatus,
   InferenceType,
 } from 'src/app/shared-services/inferences/types'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({

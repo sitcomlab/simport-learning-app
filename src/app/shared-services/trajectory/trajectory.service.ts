@@ -7,8 +7,8 @@ import {
   Trajectory,
   TrajectoryMeta,
   TrajectoryType,
-} from '../model/trajectory'
-import { SqliteService } from './db/sqlite.service'
+} from '../../model/trajectory'
+import { SqliteService } from '../../shared-services/db/sqlite.service'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.

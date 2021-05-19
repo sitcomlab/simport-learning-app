@@ -10,7 +10,7 @@ import { ToastButton } from '@ionic/core'
 import { DebugWindowComponent } from '../debug-window/debug-window.component'
 import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
-import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
+import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 
 enum TrajectoryMode {
