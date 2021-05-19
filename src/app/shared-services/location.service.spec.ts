@@ -5,6 +5,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
 import { TrajectoryService } from './trajectory/trajectory.service'
+import { NotificationService } from './notification/notification.service'
 
 describe('LocationService', () => {
   let service: LocationService
@@ -18,6 +19,7 @@ describe('LocationService', () => {
         LocalNotifications,
         SqliteService,
         TrajectoryService,
+        NotificationService,
       ],
     })
     service = TestBed.inject(LocationService)

@@ -5,12 +5,13 @@ import {
   BackgroundGeolocationConfig,
   BackgroundGeolocationEvents,
 } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
 import { InferenceService } from './inferences/inference.service'
+import { NotificationService } from './notification/notification.service'
+import { NotificationType } from './notification/types'
 
 @Injectable()
 export class LocationService implements OnDestroy {
@@ -34,9 +35,9 @@ export class LocationService implements OnDestroy {
   constructor(
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
-    private localNotifications: LocalNotifications,
-    private db: SqliteService,
-    private inf: InferenceService
+    private dbService: SqliteService,
+    private inferenceService: InferenceService,
+    private notificationService: NotificationService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -109,17 +110,26 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
-        await this.db.upsertPoint(Trajectory.trackingTrajectoryID, {
+        await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
           latLng: [latitude, longitude],
           time: new Date(time),
           accuracy,
           speed,
         })
 
-        this.inf.generateUserInference()
+        if (this.inferenceService.isWithinInferenceSchedule()) {
+          this.backgroundGeolocation.startTask().then(async (taskId) => {
+            await this.inferenceService.generateUserInference().finally(() => {
+              this.backgroundGeolocation.endTask(taskId)
+            })
+          })
+        }
 
         this.scheduleNotification(
-          `Received location update ${latitude} ${longitude} ${accuracy}`
+          'Location Update',
+          `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
+            1
+          )}m)`
         )
         this.backgroundGeolocation.finish()
       })
@@ -130,7 +140,7 @@ export class LocationService implements OnDestroy {
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
         try {
-          await this.db.upsertTrajectory(
+          await this.dbService.upsertTrajectory(
             new Trajectory({
               id: Trajectory.trackingTrajectoryID,
               type: TrajectoryType.USERTRACK,
@@ -142,19 +152,23 @@ export class LocationService implements OnDestroy {
         }
 
         this.isRunning.next(true)
-        this.scheduleNotification('Background location started.')
+        this.scheduleNotification('Location Update', 'Tracking started')
       })
 
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
         this.isRunning.next(false)
-        this.scheduleNotification('Background location stopped.')
+        this.scheduleNotification('Location Update', 'Tracking stopped')
       })
   }
 
-  private scheduleNotification(message: string) {
+  private scheduleNotification(title: string, text: string) {
     if (this.notificationsEnabled.value === false) return
-    this.localNotifications.schedule({ text: message })
+    this.notificationService.notify(
+      NotificationType.locationUpdate,
+      title,
+      text
+    )
   }
 }
