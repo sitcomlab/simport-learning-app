@@ -2,7 +2,7 @@
 
 </br>
 
-[![](https://github.com/sitcomlab/simport-learning-app/blob/develop/images/simport_bmbf_logo.png)](https://simport.net/)
+[![](documents/simport_bmbf_logo.png)](https://simport.net/)
 
 ---
 
@@ -20,6 +20,7 @@ Learning tool on location data privacy, that reflects to users, what conclusions
     - [iOS](#ios)
   - [Build and Run](#build-and-run)
   - [Version Control](#version-control)
+  - [Inferences](#inferences)
   - [Test](#test)
 - ### [License](#license)
 
@@ -29,7 +30,7 @@ It is intended that one records her/his location data of the course of multiple 
 Furthermore recorded trajectories can be exported, external trajectories can be imported and examined using the app as well.
 
 <p align="center">
-  <img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_start_view.PNG" width="25%"><img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_tracking_view.PNG" width="25%"><img src="https://github.com/sitcomlab/simport-learning-app/blob/develop/images/screen_trajectory_map_view.PNG" width="25%">
+  <img src="documents/screen_start_view.PNG" width="25%"><img src="documents/screen_tracking_view.PNG" width="25%"><img src="documents/screen_trajectory_map_view.PNG" width="25%">
 </p>
 
 ## Development
@@ -48,8 +49,9 @@ for Cordova) to access native APIs and [Angular][angular] for UI.
 - [Android Studio][androidstudio] / [XCode][xcode]
 
 ---
+
 For basic UI development you need [node.js][node] installed - further information can be found [here](https://nodejs.org/de/download/package-manager/).
-As an IDE you can basically choose by your own taste. Our recommendation is to use [Visual Studio Code][vscode] with the code formatter [Prettier][vscode-prettier] using [these settings](https://github.com/sitcomlab/simport-learning-app/blob/develop/.prettierrc.json). This guarantees consistent and uniform code.
+As an IDE you can basically choose by your own taste. Our recommendation is to use [Visual Studio Code][vscode] with the code formatter [Prettier][vscode-prettier] using [these settings](.prettierrc.json). This guarantees consistent and uniform code.
 
 ##### Clone the repository
 
@@ -106,10 +108,12 @@ ionic build
 ##### Prepare app builds & open IDE (→ [see here](https://ionicframework.com/docs/cli/commands/capacitor-build))
 
 ###### Android
+
 ```sh
 ionic cap update
 ionic cap build android
 ```
+
 ###### iOS
 
 ```sh
@@ -120,11 +124,13 @@ ionic cap build ios
 ##### Sync app builds (→ [see here](https://ionicframework.com/docs/cli/commands/capacitor-sync))
 
 ###### Android
+
 ```sh
 ionic cap sync android
 ```
 
 ###### iOS
+
 ```sh
 ionic cap sync ios
 ```
@@ -143,12 +149,19 @@ When finished (including review) developing a feature, the feature branches are 
 #<issue number>: <commit message>
 ```
 
-Releases are automatically triggered on push to `release-beta` using [GitHub Actions](https://github.com/sitcomlab/simport-learning-app/tree/develop/.github/workflows) and distributed to a closed group of beta-testers using [Firebase][firebase].
+Releases are automatically triggered on push to `release-beta` using [GitHub Actions](.github/workflows) and distributed to a closed group of beta-testers using [Firebase][firebase].
+
+### Inferences
+
+A core-component of this learning app is the inference-algorithm. By analyzing the recorded location history, it is tried to infer information about the user with this algorightm - information such as her/his home and work location. The corresponding procedure on how to process user-trajectories in order to generate those inferences is explained with a brief flow-diagram. Furthermore a light class-diagramm that focuses on the inference-components gives an overview how the parts are connected and come together.
+
+- <a href="documents/inferences_procedure.pdf" class="image fit">📄 Chart: procedure of generating inferences</a>
+- <a href="documents/inferences_class_diagram.pdf" class="image fit">📄 Diagram: inferences-compononents</a>
 
 ### Test
 
 Apart from basic component testing (default Angular), the testing framework is used to validate the inference algorithms.
-By running the tests via `npm run test` a few simple trajectories are generated, that are designed to cover some border cases - e.g. variation in location frequency and accuracy. The creation of this test data is based on a few location files [located here](https://github.com/sitcomlab/simport-learning-app/tree/develop/dev/test-data-gpx). The generated test data is based upon the following location pattern, which result from the assumptions of a typical work day (9 to 5).
+By running the tests via `npm run test` a few simple trajectories are generated, that are designed to cover some border cases - e.g. variation in location frequency and accuracy. The creation of this test data is based on a few location files [located here](dev/test-data-gpx). The generated test data is based upon the following location pattern, which result from the assumptions of a typical work day (9 to 5).
 
 | Activity      |    Start datetime    |     End datetime     |
 | ------------- | :------------------: | :------------------: |
@@ -177,17 +190,17 @@ SIMPORT Learning App
 Copyright (c) 2020 Sitcom Lab
 ```
 
-[Further information](https://github.com/sitcomlab/simport-learning-app/blob/develop/LICENSE)
+[Further information](LICENSE)
 
 [simport]: https://simport.net/
 [ionic]: https://ionicframework.com/
-[ionic-cli]:https://ionicframework.com/docs/cli
+[ionic-cli]: https://ionicframework.com/docs/cli
 [capacitor]: https://capacitorjs.com/
 [angular]: https://angular.io/
 [firebase]: https://firebase.google.com
 [node]: https://nodejs.org/
-[vscode]:https://code.visualstudio.com
-[vscode-prettier]:https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
-[xcode]:https://developer.apple.com/xcode/
-[androidstudio]:https://developer.android.com/studio/install
-[git]:https://git-scm.com
+[vscode]: https://code.visualstudio.com
+[vscode-prettier]: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+[xcode]: https://developer.apple.com/xcode/
+[androidstudio]: https://developer.android.com/studio/install
+[git]: https://git-scm.com
