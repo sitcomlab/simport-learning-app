@@ -18,7 +18,7 @@ import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
-} from 'src/app/shared-services/inferences/types'
+} from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 

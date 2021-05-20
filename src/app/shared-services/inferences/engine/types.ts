@@ -4,7 +4,7 @@ import {
   IInferenceScoring,
   InferenceScoringConfig,
   InferenceScoringType,
-} from './scoring/types'
+} from '../scoring/types'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]

@@ -5,7 +5,7 @@ import {
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine'
-import { InferenceResult, InferenceResultStatus } from './types'
+import { InferenceResult, InferenceResultStatus } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject } from 'rxjs'

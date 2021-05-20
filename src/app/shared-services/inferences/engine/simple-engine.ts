@@ -5,7 +5,7 @@ import {
   InferenceDefinition,
   InferenceResult,
   InferenceResultStatus,
-} from '../types'
+} from './types'
 import { NightnessScoring } from '../scoring/nightness-scoring'
 import { IInferenceScoring, InferenceScoringResult } from '../scoring/types'
 import { WorkHoursScoring } from '../scoring/work-hours-scoring'
