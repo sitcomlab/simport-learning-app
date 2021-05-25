@@ -18,9 +18,9 @@ import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
-} from 'src/app/shared-services/inferences/types'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
-import { InferenceService } from '../inferences/inference.service'
+} from 'src/app/shared-services/inferences/engine/types'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
+import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-map',
@@ -53,7 +53,7 @@ export class MapPage implements OnInit, OnDestroy {
   showHomeInferences = true
   showWorkInferences = true
   currentConfidenceThreshold = 50
-  currentInferences: Inference[]
+  currentInferences: Inference[] = []
   generatedInferences = false
 
   // should only be used for invalidateSize(), content changes via directive bindings!
@@ -103,9 +103,10 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    this.currentInferences = this.inferenceService.getInferences(
+    const inferenceResult = await this.inferenceService.loadPersistedInferences(
       this.trajectoryId
     )
+    this.currentInferences = inferenceResult.inferences
     this.updateInferenceMarkers()
   }
 
@@ -155,14 +156,18 @@ export class MapPage implements OnInit, OnDestroy {
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-    this.generatedInferences = true
     switch (inferenceResult.status) {
       case InferenceResultStatus.successful:
+        this.generatedInferences = true
         this.currentInferences = inferenceResult.inferences
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
           `Trajectory couldn't be analyzed, because it has too many coordinates`
+        )
+      case InferenceResultStatus.noInferencesFound:
+        return await this.showErrorToast(
+          `No inferences were found within your trajectory`
         )
       default:
         return await this.showErrorToast(`Trajectory couldn't be analyzed`)

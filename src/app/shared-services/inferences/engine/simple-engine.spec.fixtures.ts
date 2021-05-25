@@ -1,10 +1,10 @@
 import { Trajectory } from 'src/app/model/trajectory'
 
 // trajectory test files
-import trajectoryFileMobileOnly from './test-data/test-mobile-only.json'
-import trajectoryFileHomeWork from './test-data/test-home-work.json'
-import trajectoryFileSpatiallyDense from './test-data/test-home-work-spatially-dense.json'
-import trajectoryFileTemporallySparse from './test-data/test-home-work-temporally-sparse.json'
+import trajectoryFileMobileOnly from '../test-data/test-mobile-only.json'
+import trajectoryFileHomeWork from '../test-data/test-home-work.json'
+import trajectoryFileSpatiallyDense from '../test-data/test-home-work-spatially-dense.json'
+import trajectoryFileTemporallySparse from '../test-data/test-home-work-temporally-sparse.json'
 import trajectoryNepalFile from 'src/assets/trajectories/3384596.json'
 import { InferenceType } from './types'
 import { LatLngTuple } from 'leaflet'

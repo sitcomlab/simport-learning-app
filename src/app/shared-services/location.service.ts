@@ -5,13 +5,13 @@ import {
   BackgroundGeolocationConfig,
   BackgroundGeolocationEvents,
 } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
-
-const TRACKING_TRAJ_ID = 'user'
+import { InferenceService } from './inferences/inference.service'
+import { NotificationService } from './notification/notification.service'
+import { NotificationType } from './notification/types'
 
 @Injectable()
 export class LocationService implements OnDestroy {
@@ -36,8 +36,9 @@ export class LocationService implements OnDestroy {
   constructor(
     private platform: Platform,
     private backgroundGeolocation: BackgroundGeolocation,
-    private localNotifications: LocalNotifications,
-    private db: SqliteService
+    private dbService: SqliteService,
+    private inferenceService: InferenceService,
+    private notificationService: NotificationService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -83,7 +84,7 @@ export class LocationService implements OnDestroy {
         this.backgroundGeolocation.start()
       } else {
         const showSettings = confirm(
-          'App requieres always on location permission. Please grant permission in settings.'
+          'App requires always on location permission. Please grant permission in settings.'
         )
         if (showSettings) {
           return this.backgroundGeolocation.showAppSettings()
@@ -110,15 +111,26 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
-        await this.db.upsertPoint(TRACKING_TRAJ_ID, {
+        await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
           latLng: [latitude, longitude],
           time: new Date(time),
           accuracy,
           speed,
         })
 
+        if (this.inferenceService.isWithinInferenceSchedule()) {
+          this.backgroundGeolocation.startTask().then(async (taskId) => {
+            await this.inferenceService.generateUserInference().finally(() => {
+              this.backgroundGeolocation.endTask(taskId)
+            })
+          })
+        }
+
         this.scheduleNotification(
-          `Received location update ${latitude} ${longitude} ${accuracy}`
+          'Location Update',
+          `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
+            1
+          )}m)`
         )
         this.backgroundGeolocation.finish()
       })
@@ -129,9 +141,9 @@ export class LocationService implements OnDestroy {
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
         try {
-          await this.db.upsertTrajectory(
+          await this.dbService.upsertTrajectory(
             new Trajectory({
-              id: TRACKING_TRAJ_ID,
+              id: Trajectory.trackingTrajectoryID,
               type: TrajectoryType.USERTRACK,
               placename: 'Your Trajectory',
             })
@@ -141,23 +153,23 @@ export class LocationService implements OnDestroy {
         }
 
         this.isRunning.next(true)
-        this.scheduleNotification('Background location started.')
+        this.scheduleNotification('Location Update', 'Tracking started')
       })
 
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
         this.isRunning.next(false)
-        this.scheduleNotification('Background location stopped.')
+        this.scheduleNotification('Location Update', 'Tracking stopped')
       })
   }
 
-  private scheduleNotification(message: string) {
+  private scheduleNotification(title: string, text: string) {
     if (this.notificationsEnabled.value === false) return
-    this.localNotifications.schedule({
-      id: Math.random() * 1000000,
-      text: message,
-      data: {},
-    })
+    this.notificationService.notify(
+      NotificationType.locationUpdate,
+      title,
+      text
+    )
   }
 }

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Inference } from 'src/app/model/inference'
-import { AllInferences } from 'src/app/shared-services/inferences/definitions'
-import { InferenceService } from './inference.service'
+import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-inferences',
@@ -10,7 +10,7 @@ import { InferenceService } from './inference.service'
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit {
-  inferences: Inference[]
+  inferences: Inference[] = []
 
   constructor(
     private service: InferenceService,
@@ -18,9 +18,10 @@ export class InferencesPage implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const trajId = this.route.snapshot.paramMap.get('trajectoryId')
-    this.inferences = this.service.getInferences(trajId)
+    const inferencesResult = await this.service.loadPersistedInferences(trajId)
+    this.inferences = inferencesResult.inferences
   }
 
   formatInferenceName(inference: Inference): string {

@@ -2,12 +2,14 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
-import { SqliteService } from './db/sqlite.service'
-import { LocationService } from './location.service'
-import { TrajectoryService } from './trajectory.service'
+import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
+import { LocationService } from 'src/app/shared-services/location.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 
-describe('TrajectoryService', () => {
-  let service: TrajectoryService
+import { InferenceService } from './inference.service'
+
+describe('InferenceService', () => {
+  let service: InferenceService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +22,7 @@ describe('TrajectoryService', () => {
         LocalNotifications,
       ],
     })
-    service = TestBed.inject(TrajectoryService)
+    service = TestBed.inject(InferenceService)
   })
 
   it('should be created', () => {

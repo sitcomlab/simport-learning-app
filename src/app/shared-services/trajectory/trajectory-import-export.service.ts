@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core'
-import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
-import { TrajectoryService } from '../shared-services/trajectory.service'
+import {
+  Trajectory,
+  TrajectoryMeta,
+  TrajectoryType,
+} from '../../model/trajectory'
+import { TrajectoryService } from '../../shared-services/trajectory/trajectory.service'
 import { v4 as uuid } from 'uuid'
 import { Platform } from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
-import { SqliteService } from './db/sqlite.service'
-import { LocationService } from './location.service'
+import { SqliteService } from '../db/sqlite.service'
 import {
   Plugins,
   FilesystemDirectory,
@@ -36,11 +39,10 @@ export class TrajectoryImportExportService extends TrajectoryService {
   constructor(
     http: HttpClient,
     db: SqliteService,
-    locationService: LocationService,
     private socialSharing: SocialSharing,
     private platform: Platform
   ) {
-    super(http, db, locationService)
+    super(http, db)
   }
 
   /**

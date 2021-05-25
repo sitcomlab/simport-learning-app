@@ -7,7 +7,8 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { IonicModule } from '@ionic/angular'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location.service'
-import { TrajectoryImportExportService } from 'src/app/shared-services/trajectory-import-export.service'
+import { TrajectoryImportExportService } from 'src/app/shared-services/trajectory/trajectory-import-export.service'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { TrajectoryCardPopoverPage } from './trajectory-card-popover.page'
 
 describe('TrajectoryCardPopoverPage', () => {
@@ -25,6 +26,7 @@ describe('TrajectoryCardPopoverPage', () => {
         LocalNotifications,
         SqliteService,
         TrajectoryImportExportService,
+        TrajectoryService,
         SocialSharing,
       ],
     }).compileComponents()
