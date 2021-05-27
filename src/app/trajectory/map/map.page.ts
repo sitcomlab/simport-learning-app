@@ -33,11 +33,15 @@ export class MapPage implements OnInit, OnDestroy {
     center: [51.9694, 7.5954],
     zoom: 14,
     layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution:
-          '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }),
+      tileLayer(
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19,
+        }
+      ),
     ],
   }
   mapBounds: LatLngBounds
@@ -79,7 +83,9 @@ export class MapPage implements OnInit, OnDestroy {
     this.trajSub = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
-        this.polyline = new Polyline(t.coordinates)
+        this.polyline = new Polyline(t.coordinates, {
+          weight: 1,
+        })
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
