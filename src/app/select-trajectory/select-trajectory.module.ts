@@ -13,7 +13,7 @@ import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.compo
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
-import { TrajectoryImportExportService } from '../shared-services/trajectory-import-export.service'
+import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 
 @NgModule({

@@ -5,23 +5,25 @@ import {
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine'
-import { InferenceResult, InferenceResultStatus } from './types'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
+import { InferenceResult, InferenceResultStatus } from './engine/types'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject } from 'rxjs'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
+import { NotificationService } from '../notification/notification.service'
+import { NotificationType } from '../notification/types'
 
 @Injectable({
   providedIn: 'root',
 })
 export class InferenceService {
   private static inferenceIntervalMinutes = 240 // 4 hours
+  private static inferenceConfidenceThreshold = 0.75
   private inferenceEngine = new SimpleEngine()
   lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
   constructor(
     private trajectoryService: TrajectoryService,
-    private localNotifications: LocalNotifications
+    private notificationService: NotificationService
   ) {}
 
   async generateInferences(
@@ -45,10 +47,17 @@ export class InferenceService {
     ])
 
     if (inference.status === InferenceResultStatus.successful) {
-      this.localNotifications.schedule({
-        id: Math.random() * 1000000,
-        text: 'New inferences found',
-      })
+      // TODO: this is some artifical notification-content, which is subject to change
+      const significantInferencesLength = inference.inferences.filter(
+        (inf) => inf.confidence > InferenceService.inferenceConfidenceThreshold
+      ).length
+      if (significantInferencesLength > 0) {
+        this.notificationService.notify(
+          NotificationType.inferenceUpdate,
+          'Inferences found',
+          `We're now able to draw ${significantInferencesLength} conclusions from your location history`
+        )
+      }
     }
 
     return inference
@@ -56,8 +65,6 @@ export class InferenceService {
 
   async generateUserInference(): Promise<InferenceResult> {
     const time = new Date().getTime()
-    if (this.isWithinInterval(time)) return
-
     this.lastInferenceTime.next(time)
     const trajectory = await this.trajectoryService
       .getFullUserTrack()
@@ -72,12 +79,15 @@ export class InferenceService {
     return inferenceResult
   }
 
-  private isWithinInterval(timestamp: number): boolean {
+  isWithinInferenceSchedule(): boolean {
+    const timestamp = new Date().getTime()
     const diffInMinutes = (timestamp - this.lastInferenceTime.value) / 1000 / 60
-    return diffInMinutes < InferenceService.inferenceIntervalMinutes
+    return diffInMinutes > InferenceService.inferenceIntervalMinutes
   }
 
-  loadPersistedInferences(trajectoryId: string): InferenceResult {
+  async loadPersistedInferences(
+    trajectoryId: string
+  ): Promise<InferenceResult> {
     // TODO: actually load persisted inferences
     const emptyResult: InferenceResult = {
       status: InferenceResultStatus.successful,

@@ -10,7 +10,7 @@ import { InferenceService } from 'src/app/shared-services/inferences/inference.s
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit {
-  inferences: Inference[]
+  inferences: Inference[] = []
 
   constructor(
     private service: InferenceService,
@@ -20,7 +20,7 @@ export class InferencesPage implements OnInit {
 
   async ngOnInit() {
     const trajId = this.route.snapshot.paramMap.get('trajectoryId')
-    const inferencesResult = this.service.loadPersistedInferences(trajId)
+    const inferencesResult = await this.service.loadPersistedInferences(trajId)
     this.inferences = inferencesResult.inferences
   }
 

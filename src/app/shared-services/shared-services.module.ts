@@ -6,8 +6,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { InferenceService } from './inferences/inference.service'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
-import { TrajectoryImportExportService } from './trajectory-import-export.service'
-import { TrajectoryService } from './trajectory.service'
+import { TrajectoryImportExportService } from './trajectory/trajectory-import-export.service'
+import { TrajectoryService } from './trajectory/trajectory.service'
 
 @NgModule({
   providers: [

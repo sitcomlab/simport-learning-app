@@ -7,8 +7,8 @@ import {
   Trajectory,
   TrajectoryMeta,
   TrajectoryType,
-} from '../model/trajectory'
-import { SqliteService } from './db/sqlite.service'
+} from '../../model/trajectory'
+import { SqliteService } from '../../shared-services/db/sqlite.service'
 
 /**
  * TrajectoryService provides access to persisted Trajectories.
@@ -35,7 +35,6 @@ export class TrajectoryService {
 
   // Returns metadata of all trajectories stored in the (writable) database
   getWritableMeta(): Observable<TrajectoryMeta[]> {
-    if (!this.db.isSupported()) return from(Promise.resolve([]))
     // TODO: make this reactive on DB updates/inserts..?
     return from(this.db.getAllTrajectoryMeta())
   }
@@ -46,7 +45,6 @@ export class TrajectoryService {
   }
 
   getFullUserTrack(): Observable<Trajectory> {
-    if (!this.db.isSupported()) return from(Promise.resolve(undefined))
     return from(this.db.getFullTrajectory(Trajectory.trackingTrajectoryID))
   }
 

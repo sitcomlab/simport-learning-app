@@ -3,7 +3,7 @@ import {
   TrajectoryData,
   TrajectoryMeta,
   TrajectoryType,
-} from '../model/trajectory'
+} from '../../model/trajectory'
 
 export const testTrajectoryName = 'test-name'
 

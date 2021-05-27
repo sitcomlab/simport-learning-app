@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core'
-import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
-import { TrajectoryService } from '../shared-services/trajectory.service'
+import {
+  Trajectory,
+  TrajectoryMeta,
+  TrajectoryType,
+} from '../../model/trajectory'
+import { TrajectoryService } from '../../shared-services/trajectory/trajectory.service'
 import { v4 as uuid } from 'uuid'
 import { Platform } from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
-import { SqliteService } from './db/sqlite.service'
+import { SqliteService } from '../db/sqlite.service'
 import {
   Plugins,
   FilesystemDirectory,

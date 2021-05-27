@@ -1,4 +1,4 @@
-import { InferenceType } from '../shared-services/inferences/types'
+import { InferenceType } from '../shared-services/inferences/engine/types'
 
 export class Inference {
   constructor(

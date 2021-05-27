@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing'
 
 import { TrajectoryImportExportService } from './trajectory-import-export.service'
 
-import { LocationService } from './location.service'
-import { SqliteService } from './db/sqlite.service'
+import { LocationService } from '../location.service'
+import { SqliteService } from '../db/sqlite.service'
 import { HttpClient, HttpHandler } from '@angular/common/http'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
@@ -14,7 +14,7 @@ import {
   testTrajectoryName,
   testTrajectoryString,
 } from './trajectory-import-export.service.spec.fixtures'
-import { TrajectoryType } from '../model/trajectory'
+import { TrajectoryType } from '../../model/trajectory'
 
 describe('TrajectoryImportExportService', () => {
   let service: TrajectoryImportExportService
