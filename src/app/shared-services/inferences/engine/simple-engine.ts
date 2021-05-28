@@ -107,15 +107,15 @@ export class SimpleEngine implements IInferenceEngine {
 
     const centroid = this.calculateCentroid(cluster)
 
-    return {
-      name: inferenceDef.type,
-      type: inferenceDef.type,
-      description: 'TODO',
+    return new Inference(
+      inferenceDef.type,
+      inferenceDef.type,
+      'TODO: description',
       trajectoryId,
-      latLng: centroid.centerPoint.latLng,
-      confidence: avgConfidence,
-      accuracy: centroid.maxDistance,
-    }
+      centroid.centerPoint.latLng,
+      avgConfidence,
+      centroid.maxDistance
+    )
   }
 
   private calculateCentroid(

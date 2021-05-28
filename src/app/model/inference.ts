@@ -1,3 +1,4 @@
+import { AllInferences } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 
 export class Inference {
@@ -32,5 +33,15 @@ export class Inference {
       confidence,
       accuracy
     )
+  }
+
+  get icon(): string {
+    const def = AllInferences[this.type]
+    if (!def) return 'help'
+    return def.iconName
+  }
+
+  get outlinedIcon(): string {
+    return `${this.icon}-outline`
   }
 }

@@ -1,32 +1,63 @@
 import { Injectable } from '@angular/core'
 import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
+  AllInferences,
   HomeInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine'
-import { InferenceResult, InferenceResultStatus } from './engine/types'
+import {
+  InferenceDefinition,
+  InferenceResult,
+  InferenceResultStatus,
+  InferenceType,
+} from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
+
+export enum InferenceServiceEvent {
+  configureFilter = 'configureFilter',
+  filterConfigurationChanged = 'filterConfigurationChanged',
+}
+
+export class InferenceFilterConfiguration {
+  confidenceThreshold: number
+  inferenceVisiblities: Map<InferenceDefinition, boolean>
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class InferenceService {
-  public static inferenceConfidenceThreshold = 0.5
   private static inferenceIntervalMinutes = 240 // 4 hours
   private inferenceEngine = new SimpleEngine()
-  lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
+
+  lastInferenceTime = new BehaviorSubject<number>(0)
+  filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
+    confidenceThreshold: 0.5,
+    inferenceVisiblities: new Map([
+      // show all inference-types by default
+      ...Object.entries(AllInferences).map<[InferenceDefinition, boolean]>(
+        ([_, value]) => [value, true]
+      ),
+    ]),
+  })
+
+  inferenceServiceEvent = new Subject<InferenceServiceEvent>()
 
   constructor(
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
     private dbService: SqliteService
   ) {}
+
+  triggerEvent(event: InferenceServiceEvent) {
+    this.inferenceServiceEvent.next(event)
+  }
 
   async generateInferences(
     trajectoryType: TrajectoryType,
@@ -54,7 +85,8 @@ export class InferenceService {
     if (inference.status === InferenceResultStatus.successful) {
       // TODO: this is some artifical notification-content, which is subject to change
       const significantInferencesLength = inference.inferences.filter(
-        (inf) => inf.confidence > InferenceService.inferenceConfidenceThreshold
+        (inf) =>
+          inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
       if (significantInferencesLength > 0) {
         this.notificationService.notify(
@@ -93,7 +125,12 @@ export class InferenceService {
   async loadPersistedInferences(
     trajectoryId: string
   ): Promise<InferenceResult> {
-    const inferences = await this.dbService.getInferences(trajectoryId)
+    const inferences = (
+      await this.dbService.getInferences(trajectoryId)
+    ).filter(
+      (inf) =>
+        inf.confidence > this.filterConfiguration.value.confidenceThreshold
+    )
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,

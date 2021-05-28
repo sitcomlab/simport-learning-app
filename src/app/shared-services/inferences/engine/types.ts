@@ -18,6 +18,7 @@ export class InferenceDefinition {
   constructor(
     public id: string,
     public type: InferenceType,
+    public iconName: string,
     public name: (lang?: string) => string,
     public info: (res: Inference, lang?: string) => string,
     public scoringConfigurations: InferenceScoringConfig[]

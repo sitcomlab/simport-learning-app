@@ -3,7 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { Inference } from 'src/app/model/inference'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
-import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
+import {
+  InferenceService,
+  InferenceServiceEvent,
+} from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-inferences',
@@ -14,15 +17,19 @@ export class InferencesPage implements OnInit {
   inferences: Inference[] = []
 
   constructor(
-    private service: InferenceService,
+    private inferenceService: InferenceService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
     const trajId = this.route.snapshot.paramMap.get('trajectoryId')
-    const inferencesResult = await this.service.loadPersistedInferences(trajId)
-    this.inferences = inferencesResult.inferences
+    const inferencesResult = await this.inferenceService.loadPersistedInferences(
+      trajId
+    )
+    this.inferences = inferencesResult.inferences.sort(
+      (a, b) => a.confidence - b.confidence
+    )
   }
 
   formatInferenceName(inference: Inference): string {
@@ -37,17 +44,6 @@ export class InferencesPage implements OnInit {
     return def.info(inference)
   }
 
-  getInferenceIcon(inference: Inference): string {
-    switch (inference.type) {
-      case InferenceType.home:
-        return 'home-outline'
-      case InferenceType.work:
-        return 'business-outline'
-      default:
-        return 'help-outline'
-    }
-  }
-
   showInferenceOnMap(inference: Inference) {
     if (!inference.latLng || !inference.accuracy) return
     this.openMap(inference.latLng)
@@ -58,5 +54,9 @@ export class InferencesPage implements OnInit {
       relativeTo: this.route,
       state: { center: centerLatLon },
     })
+  }
+
+  openInferenceFilter() {
+    this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 }

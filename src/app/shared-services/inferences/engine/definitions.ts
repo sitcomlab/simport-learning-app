@@ -5,6 +5,7 @@ import { InferenceDefinition, InferenceType } from './types'
 export const WorkInference = new InferenceDefinition(
   'workplace',
   InferenceType.work,
+  'business',
   (lang?: string) => 'Workplace',
   (r: Inference, lang?: string) => {
     const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
@@ -33,6 +34,7 @@ export const WorkInference = new InferenceDefinition(
 export const HomeInference = new InferenceDefinition(
   'home',
   InferenceType.home,
+  'home',
   (lang?: string) => 'Home',
   (r: Inference, lang?: string) => {
     const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`

@@ -32,7 +32,7 @@ export class SelectTrajectoryPage {
     private routerOutlet: IonRouterOutlet,
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    private locationService: LocationService
+    public locationService: LocationService
   ) {}
 
   private CLICK_INTERVAL = 500
