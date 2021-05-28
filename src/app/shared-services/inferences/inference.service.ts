@@ -11,19 +11,21 @@ import { take } from 'rxjs/operators'
 import { BehaviorSubject } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
+import { SqliteService } from '../db/sqlite.service'
 
 @Injectable({
   providedIn: 'root',
 })
 export class InferenceService {
+  public static inferenceConfidenceThreshold = 0.5
   private static inferenceIntervalMinutes = 240 // 4 hours
-  private static inferenceConfidenceThreshold = 0.75
   private inferenceEngine = new SimpleEngine()
   lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
 
   constructor(
     private trajectoryService: TrajectoryService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dbService: SqliteService
   ) {}
 
   async generateInferences(
@@ -45,6 +47,9 @@ export class InferenceService {
       HomeInference,
       WorkInference,
     ])
+
+    await this.dbService.deleteInferences(traj.id)
+    await this.dbService.upsertInference(inference.inferences)
 
     if (inference.status === InferenceResultStatus.successful) {
       // TODO: this is some artifical notification-content, which is subject to change
@@ -88,11 +93,11 @@ export class InferenceService {
   async loadPersistedInferences(
     trajectoryId: string
   ): Promise<InferenceResult> {
-    // TODO: actually load persisted inferences
-    const emptyResult: InferenceResult = {
+    const inferences = await this.dbService.getInferences(trajectoryId)
+    const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
-      inferences: [],
+      inferences,
     }
-    return emptyResult
+    return persisted
   }
 }

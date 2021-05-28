@@ -6,7 +6,7 @@ export class Inference {
     public type: InferenceType,
     public description: string,
     public trajectoryId: string,
-    public lonLat: [number, number],
+    public latLng: [number, number],
     public confidence?: number,
     public accuracy?: number
   ) {}
@@ -16,8 +16,9 @@ export class Inference {
       name,
       type,
       description,
-      trajectoryId,
-      lonLat,
+      trajectory,
+      lat,
+      lon,
       confidence,
       accuracy,
     } = val
@@ -26,8 +27,8 @@ export class Inference {
       name,
       type,
       description,
-      trajectoryId,
-      lonLat,
+      trajectory,
+      [lat, lon],
       confidence,
       accuracy
     )

@@ -6,8 +6,11 @@ export const WorkInference = new InferenceDefinition(
   'workplace',
   InferenceType.work,
   (lang?: string) => 'Workplace',
-  (r: Inference, lang?: string) =>
-    `We assume your workplace is at ${r.lonLat} with a confidence of ${r.confidence}.`,
+  (r: Inference, lang?: string) => {
+    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
+    const confidence = (r.confidence * 100).toFixed(0)
+    return `We assume you are working at ${latLng} with a confidence of ${confidence}.`
+  },
   [
     {
       type: InferenceScoringType.nightness,
@@ -31,8 +34,11 @@ export const HomeInference = new InferenceDefinition(
   'home',
   InferenceType.home,
   (lang?: string) => 'Home',
-  (r: Inference, lang?: string) =>
-    `We assume your home is at ${r.lonLat} with a confidence of ${r.confidence}.`,
+  (r: Inference, lang?: string) => {
+    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
+    const confidence = (r.confidence * 100).toFixed(0)
+    return `We assume you are living at ${latLng} with a confidence of ${confidence}.`
+  },
   [
     {
       type: InferenceScoringType.nightness,
@@ -53,6 +59,6 @@ export const HomeInference = new InferenceDefinition(
 )
 
 export const AllInferences = {
-  [HomeInference.id]: HomeInference,
-  [WorkInference.id]: WorkInference,
+  [HomeInference.type]: HomeInference,
+  [WorkInference.type]: WorkInference,
 }

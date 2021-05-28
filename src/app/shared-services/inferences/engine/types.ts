@@ -1,5 +1,5 @@
 import { Inference } from 'src/app/model/inference'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { Trajectory } from 'src/app/model/trajectory'
 import {
   IInferenceScoring,
   InferenceScoringConfig,
@@ -9,7 +9,7 @@ import {
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
   infer(
-    trajectory: TrajectoryData,
+    trajectory: Trajectory,
     inferences: InferenceDefinition[]
   ): InferenceResult
 }

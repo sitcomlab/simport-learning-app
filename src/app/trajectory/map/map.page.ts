@@ -56,7 +56,8 @@ export class MapPage implements OnInit, OnDestroy {
   showInferenceControls = false
   showHomeInferences = true
   showWorkInferences = true
-  currentConfidenceThreshold = 50
+  currentConfidenceThreshold =
+    InferenceService.inferenceConfidenceThreshold * 100
   currentInferences: Inference[] = []
   generatedInferences = false
 
@@ -127,7 +128,7 @@ export class MapPage implements OnInit, OnDestroy {
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      this.mapBounds = latLng(history.state.center).toBounds(100)
+      this.mapBounds = latLng(history.state.center).toBounds(200)
     }
   }
 
@@ -183,7 +184,7 @@ export class MapPage implements OnInit, OnDestroy {
   updateInferenceMarkers() {
     const inferences = this.currentInferences.filter(
       (i) =>
-        i.lonLat &&
+        i.latLng &&
         i.accuracy &&
         (i.confidence || 0) > this.currentConfidenceThreshold / 100.0 &&
         (this.showHomeInferences || i.type !== InferenceType.home) &&
@@ -191,7 +192,7 @@ export class MapPage implements OnInit, OnDestroy {
     )
     this.inferenceMarkers.clearLayers()
     for (const inference of inferences) {
-      const m = new Circle([inference.lonLat[1], inference.lonLat[0]], {
+      const m = new Circle(inference.latLng, {
         radius: inference.accuracy,
         color: 'red',
       })

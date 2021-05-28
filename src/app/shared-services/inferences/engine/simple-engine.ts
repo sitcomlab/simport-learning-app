@@ -1,4 +1,4 @@
-import { Point, TrajectoryData } from 'src/app/model/trajectory'
+import { Point, Trajectory } from 'src/app/model/trajectory'
 import { Inference } from 'src/app/model/inference'
 import {
   IInferenceEngine,
@@ -24,7 +24,7 @@ export class SimpleEngine implements IInferenceEngine {
   private inputCoordinatesLimit = 100000
 
   infer(
-    trajectory: TrajectoryData,
+    trajectory: Trajectory,
     inferences: InferenceDefinition[]
   ): InferenceResult {
     if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
@@ -58,7 +58,8 @@ export class SimpleEngine implements IInferenceEngine {
         const inferenceResult = this.interpretInferenceScores(
           inference,
           inferenceScores,
-          cluster
+          cluster,
+          trajectory.id
         )
         if (inferenceResult !== null) {
           inferenceResults.push(inferenceResult)
@@ -78,7 +79,8 @@ export class SimpleEngine implements IInferenceEngine {
   private interpretInferenceScores(
     inferenceDef: InferenceDefinition,
     scoringResults: InferenceScoringResult[],
-    cluster: Point[]
+    cluster: Point[],
+    trajectoryId: string
   ): Inference {
     const confidences: { confidence: number; weight: number }[] = []
     scoringResults.forEach((scoringResult) => {
@@ -109,8 +111,8 @@ export class SimpleEngine implements IInferenceEngine {
       name: inferenceDef.type,
       type: inferenceDef.type,
       description: 'TODO',
-      trajectoryId: 'TODO',
-      lonLat: [centroid.centerPoint.latLng[1], centroid.centerPoint.latLng[0]],
+      trajectoryId,
+      latLng: centroid.centerPoint.latLng,
       confidence: avgConfidence,
       accuracy: centroid.maxDistance,
     }
@@ -138,7 +140,7 @@ export class SimpleEngine implements IInferenceEngine {
     return { centerPoint, maxDistance }
   }
 
-  private cluster(trajectory: TrajectoryData) {
+  private cluster(trajectory: Trajectory) {
     const dbscan = new clustering.DBSCAN()
     // parameters: neighborhood radius, number of points in neighborhood to form a cluster
     const clusters = dbscan.run(
@@ -159,7 +161,7 @@ export class SimpleEngine implements IInferenceEngine {
 
   private indexClustersToPointClusters(
     clusters: [[number]],
-    trajectory: TrajectoryData
+    trajectory: Trajectory
   ): Point[][] {
     return clusters.map((cluster) => {
       return cluster.map((coordinateIndex) => {

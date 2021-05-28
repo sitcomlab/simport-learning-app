@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Inference } from 'src/app/model/inference'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
@@ -31,20 +32,31 @@ export class InferencesPage implements OnInit {
   }
 
   formatInferenceInfo(inference: Inference): string {
-    const def = AllInferences[inference.name]
-    if (!def) return `unknown inference ${inference.name}`
+    const def = AllInferences[inference.type]
+    if (!def) return `Unknown inference ${inference.name}`
     return def.info(inference)
   }
 
-  showInferenceOnMap(inference: Inference) {
-    if (!inference.lonLat || !inference.accuracy) return
-    this.openMap(inference.lonLat)
+  getInferenceIcon(inference: Inference): string {
+    switch (inference.type) {
+      case InferenceType.home:
+        return 'home-outline'
+      case InferenceType.work:
+        return 'business-outline'
+      default:
+        return 'help-outline'
+    }
   }
 
-  openMap(centerLatLng?: [number, number]) {
+  showInferenceOnMap(inference: Inference) {
+    if (!inference.latLng || !inference.accuracy) return
+    this.openMap(inference.latLng)
+  }
+
+  openMap(centerLatLon?: [number, number]) {
     this.router.navigate(['../map'], {
       relativeTo: this.route,
-      state: { center: centerLatLng },
+      state: { center: centerLatLon },
     })
   }
 }
