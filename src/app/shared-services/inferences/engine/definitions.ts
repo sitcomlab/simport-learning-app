@@ -10,7 +10,7 @@ export const WorkInference = new InferenceDefinition(
   (r: Inference, lang?: string) => {
     const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are working at ${latLng} with a confidence of ${confidence}.`
+    return `We assume you are working at ${latLng} with a confidence of ${confidence} %.`
   },
   [
     {
@@ -39,7 +39,7 @@ export const HomeInference = new InferenceDefinition(
   (r: Inference, lang?: string) => {
     const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are living at ${latLng} with a confidence of ${confidence}.`
+    return `We assume you are living at ${latLng} with a confidence of ${confidence} %.`
   },
   [
     {

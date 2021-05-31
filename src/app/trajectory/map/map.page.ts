@@ -15,10 +15,7 @@ import {
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import {
-  InferenceResultStatus,
-  InferenceType,
-} from 'src/app/shared-services/inferences/engine/types'
+import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import {
   InferenceService,
@@ -60,8 +57,9 @@ export class MapPage implements OnInit, OnDestroy {
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
-  private trajSub: Subscription
+  private trajSubscription: Subscription
   private trajectoryId: string
+  private inferenceFilterSubscription: Subscription
 
   constructor(
     private inferenceService: InferenceService,
@@ -78,7 +76,7 @@ export class MapPage implements OnInit, OnDestroy {
       'trajectoryType'
     ) as TrajectoryType
 
-    this.trajSub = this.trajectoryService
+    this.trajSubscription = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates, {
@@ -107,15 +105,20 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    const inferenceResult = await this.inferenceService.loadPersistedInferences(
-      this.trajectoryId
+    await this.reloadInferences()
+
+    this.inferenceFilterSubscription = this.inferenceService.inferenceServiceEvent.subscribe(
+      async (event) => {
+        if (event === InferenceServiceEvent.filterConfigurationChanged) {
+          await this.reloadInferences()
+        }
+      }
     )
-    this.inferences = inferenceResult.inferences
-    this.updateInferenceMarkers()
   }
 
   ngOnDestroy() {
-    this.trajSub.unsubscribe()
+    this.trajSubscription.unsubscribe()
+    this.inferenceFilterSubscription.unsubscribe()
   }
 
   ionViewDidEnter() {
@@ -147,6 +150,14 @@ export class MapPage implements OnInit, OnDestroy {
     if (this.followPosition) {
       this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
     }
+  }
+
+  async reloadInferences(): Promise<void> {
+    const inferenceResult = await this.inferenceService.loadPersistedInferences(
+      this.trajectoryId
+    )
+    this.inferences = inferenceResult.inferences
+    this.updateInferenceMarkers()
   }
 
   async showInferences() {

@@ -5,6 +5,7 @@ import {
   InferenceScoringConfig,
   InferenceScoringType,
 } from '../scoring/types'
+import { AllInferences } from './definitions'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
@@ -26,6 +27,16 @@ export class InferenceDefinition {
 
   public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
     return this.scoringConfigurations.find((config) => config.type === type)
+  }
+
+  get icon(): string {
+    const def = AllInferences[this.type]
+    if (!def) return 'help'
+    return def.iconName
+  }
+
+  get outlinedIcon(): string {
+    return `${this.icon}-outline`
   }
 }
 

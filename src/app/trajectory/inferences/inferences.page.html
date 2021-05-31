@@ -20,8 +20,7 @@
 
   <app-item-card
     *ngFor="let i of inferences"
-    icon="{{ i.icon }}"
-    title="{{ formatInferenceName(i) }}"
+    icon="{{ i.outlinedIcon }}"
     subtitle="{{ formatInferenceInfo(i) }}"
     (click)="showInferenceOnMap(i)"
   ></app-item-card>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, OnDestroy } from '@angular/core'
 import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
   AllInferences,
@@ -6,15 +6,10 @@ import {
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine'
-import {
-  InferenceDefinition,
-  InferenceResult,
-  InferenceResultStatus,
-  InferenceType,
-} from './engine/types'
+import { InferenceResult, InferenceResultStatus } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
-import { BehaviorSubject, Subject } from 'rxjs'
+import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
@@ -26,24 +21,26 @@ export enum InferenceServiceEvent {
 
 export class InferenceFilterConfiguration {
   confidenceThreshold: number
-  inferenceVisiblities: Map<InferenceDefinition, boolean>
+  inferenceVisiblities: Map<string, boolean>
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class InferenceService {
+export class InferenceService implements OnDestroy {
   private static inferenceIntervalMinutes = 240 // 4 hours
   private inferenceEngine = new SimpleEngine()
+  private filterConfigSubscription: Subscription
 
   lastInferenceTime = new BehaviorSubject<number>(0)
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
     confidenceThreshold: 0.5,
     inferenceVisiblities: new Map([
       // show all inference-types by default
-      ...Object.entries(AllInferences).map<[InferenceDefinition, boolean]>(
-        ([_, value]) => [value, true]
-      ),
+      ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
+        value.type,
+        true,
+      ]),
     ]),
   })
 
@@ -53,7 +50,17 @@ export class InferenceService {
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
     private dbService: SqliteService
-  ) {}
+  ) {
+    this.filterConfigSubscription = this.filterConfiguration.subscribe(
+      async (_) => {
+        this.triggerEvent(InferenceServiceEvent.filterConfigurationChanged)
+      }
+    )
+  }
+
+  ngOnDestroy() {
+    this.filterConfigSubscription.unsubscribe()
+  }
 
   triggerEvent(event: InferenceServiceEvent) {
     this.inferenceServiceEvent.next(event)
@@ -125,12 +132,16 @@ export class InferenceService {
   async loadPersistedInferences(
     trajectoryId: string
   ): Promise<InferenceResult> {
+    const filterConfig = this.filterConfiguration.value
     const inferences = (
       await this.dbService.getInferences(trajectoryId)
-    ).filter(
-      (inf) =>
-        inf.confidence > this.filterConfiguration.value.confidenceThreshold
-    )
+    ).filter((inf) => {
+      return (
+        inf.confidence >= filterConfig.confidenceThreshold &&
+        filterConfig.inferenceVisiblities.has(inf.type) &&
+        filterConfig.inferenceVisiblities.get(inf.type)
+      )
+    })
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,

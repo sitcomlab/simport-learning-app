@@ -36,12 +36,10 @@ export class Inference {
   }
 
   get icon(): string {
-    const def = AllInferences[this.type]
-    if (!def) return 'help'
-    return def.iconName
+    return AllInferences[this.type].icon
   }
 
   get outlinedIcon(): string {
-    return `${this.icon}-outline`
+    return AllInferences[this.type].outlinedIcon
   }
 }

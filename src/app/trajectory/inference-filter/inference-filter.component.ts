@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
-import { KeyValuePipe } from '@angular/common'
+import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
 
 @Component({
   selector: 'app-inference-filter',
@@ -21,8 +21,17 @@ export class InferenceFilterComponent implements OnDestroy {
     this.filterConfiguration.confidenceThreshold = value / 100.0
   }
 
-  get inferenceVisiblities() {
+  get inferenceVisiblities(): Map<string, boolean> {
     return this.filterConfiguration.inferenceVisiblities
+  }
+
+  onInferenceVisibilityChanged(type: string) {
+    const oldValue = this.filterConfiguration.inferenceVisiblities.get(type)
+    this.filterConfiguration.inferenceVisiblities.set(type, !oldValue)
+  }
+
+  getIconFromInferenceType(type: string) {
+    return AllInferences[type].outlinedIcon
   }
 
   ngOnDestroy() {

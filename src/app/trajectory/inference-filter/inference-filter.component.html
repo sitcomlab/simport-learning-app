@@ -13,17 +13,18 @@
       <ion-row>
         <ion-label>Inferences</ion-label>
       </ion-row>
-      <ion-row>
-        <ion-item
-          *ngFor="let item of inferenceVisiblities | keyvalue"
-          lines="none"
-        >
-          <ion-toggle [(ngModel)]="{{ item.value }}"></ion-toggle>
-          <ion-icon name="{{ item.key.outlinedIcon }}"></ion-icon>
+      <ion-row *ngFor="let item of inferenceVisiblities | keyvalue">
+        <ion-item lines="none">
+          <ion-toggle
+            [ngModel]="item.value"
+            (ngModelChange)="onInferenceVisibilityChanged(item.key)"
+          ></ion-toggle>
+          <ion-icon name="{{ getIconFromInferenceType(item.key) }}"></ion-icon>
         </ion-item>
       </ion-row>
+      <ion-row></ion-row>
       <ion-row>
-        <ion-label>Confidence {{ confidenceThreshold }} %</ion-label>
+        <ion-label>Confidence {{ confidenceThreshold.toFixed(0) }} %</ion-label>
       </ion-row>
       <ion-row>
         <ion-range

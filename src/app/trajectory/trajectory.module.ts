@@ -7,12 +7,14 @@ import { IonicModule } from '@ionic/angular'
 import { TrajectoryPageRoutingModule } from './trajectory-routing.module'
 
 import { TrajectoryPage } from './trajectory.page'
+import { InferenceFilterModule } from './inference-filter/inference-filter.module'
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    InferenceFilterModule,
     TrajectoryPageRoutingModule,
   ],
   declarations: [TrajectoryPage],
