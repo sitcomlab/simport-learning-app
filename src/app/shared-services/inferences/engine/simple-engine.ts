@@ -6,10 +6,10 @@ import {
   InferenceResult,
   InferenceResultStatus,
 } from './types'
-import { NightnessScoring } from './scoring/nightness-scoring'
-import { IInferenceScoring, InferenceScoringResult } from './scoring/types'
-import { WorkHoursScoring } from './scoring/work-hours-scoring'
-import { PointCountScoring } from './scoring/pointcount-scoring'
+import { NightnessScoring } from '../scoring/nightness-scoring'
+import { IInferenceScoring, InferenceScoringResult } from '../scoring/types'
+import { WorkHoursScoring } from '../scoring/work-hours-scoring'
+import { PointCountScoring } from '../scoring/pointcount-scoring'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
@@ -67,7 +67,10 @@ export class SimpleEngine implements IInferenceEngine {
     })
 
     return {
-      status: InferenceResultStatus.successful,
+      status:
+        inferenceResults.length === 0
+          ? InferenceResultStatus.noInferencesFound
+          : InferenceResultStatus.successful,
       inferences: inferenceResults,
     }
   }
@@ -81,21 +84,21 @@ export class SimpleEngine implements IInferenceEngine {
     scoringResults.forEach((scoringResult) => {
       const config = inferenceDef.getScoringConfig(scoringResult.type)
       if (config !== null) {
-        let confidence = config.confidence(scoringResult.value)
-        if (isNaN(confidence) || confidence === undefined) {
-          confidence = 0
+        let inferenceConfidence = config.confidence(scoringResult.value)
+        if (isNaN(inferenceConfidence) || inferenceConfidence === undefined) {
+          inferenceConfidence = 0
         }
         const scoringConfidence = {
-          confidence: confidence,
+          confidence: inferenceConfidence,
           weight: config.weight,
         }
         confidences.push(scoringConfidence)
       }
     })
-    let confidence = 0
+    let avgConfidence = 0
     const sumWeights = confidences.reduce((p, c) => p + c.weight, 0)
     if (confidences.length > 0 && sumWeights > 0) {
-      confidence =
+      avgConfidence =
         confidences.reduce((p, c) => p + c.confidence * c.weight, 0) /
         sumWeights
     }
@@ -108,7 +111,7 @@ export class SimpleEngine implements IInferenceEngine {
       description: 'TODO',
       trajectoryId: 'TODO',
       lonLat: [centroid.centerPoint.latLng[1], centroid.centerPoint.latLng[0]],
-      confidence,
+      confidence: avgConfidence,
       accuracy: centroid.maxDistance,
     }
   }

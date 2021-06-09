@@ -14,6 +14,7 @@
     [leafletOptions]="mapOptions"
     [leafletFitBounds]="mapBounds"
     (leafletMapReady)="onMapReady($event)"
+    (leafletMapMoveEnd)="onMapMoved($event)"
   >
     <div [leafletLayer]="polyline"></div>
     <div [leafletLayer]="inferenceMarkers"></div>
@@ -73,15 +74,34 @@
   </ion-card>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button
-      *ngIf="!showInferenceControls && currentInferences.length !== 0"
-      (click)="onToggleInferenceControls()"
-      size="small"
-    >
-      <ion-icon name="filter"></ion-icon>
+    <ion-fab-button>
+      <ion-icon name="layers-outline"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button (click)="showInferences($event)">
-      <ion-icon name="analytics-outline"></ion-icon>
-    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button
+        *ngIf="currentInferences.length !== 0"
+        (click)="onToggleInferenceControls()"
+        text="Show inference-controls"
+      >
+        <ion-icon name="filter"></ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-button
+        *ngIf="!generatedInferences"
+        (click)="showInferences()"
+        text="Create inferences"
+      >
+        <ion-icon name="analytics-outline"></ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-button
+        *ngIf="trajectoryType === TrajectoryTypes.USERTRACK"
+        (click)="onToggleFollowMode()"
+        text="Toggle location"
+      >
+        <ion-icon *ngIf="followPosition" name="location"></ion-icon>
+        <ion-icon *ngIf="!followPosition" name="location-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
   </ion-fab>
 </ion-content>

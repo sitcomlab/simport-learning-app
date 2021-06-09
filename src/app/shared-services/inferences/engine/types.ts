@@ -4,7 +4,7 @@ import {
   IInferenceScoring,
   InferenceScoringConfig,
   InferenceScoringType,
-} from './scoring/types'
+} from '../scoring/types'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
@@ -35,6 +35,7 @@ export enum InferenceType {
 
 export enum InferenceResultStatus {
   tooManyCoordinates,
+  noInferencesFound,
   successful,
 }
 

@@ -28,12 +28,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # TODO: add flag --prod (currently not building)
       - name: Run ionic build
         run: |
           npm install --silent
           ionic cap update --no-interactive --no-open --confirm
-          ionic cap build android --no-interactive --no-open --confirm
+          ionic cap build android --no-interactive --no-open --confirm --prod
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1.0.3

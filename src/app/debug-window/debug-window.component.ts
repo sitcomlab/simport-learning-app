@@ -4,7 +4,7 @@ import { ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location.service'
-import { TrajectoryService } from '../shared-services/trajectory.service'
+import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 
 @Component({
   selector: 'app-debug-window',
@@ -12,7 +12,7 @@ import { TrajectoryService } from '../shared-services/trajectory.service'
   styleUrls: ['./debug-window.component.scss'],
 })
 export class DebugWindowComponent implements OnInit, OnDestroy {
-  myDevice: DeviceInfo
+  myDevice: Record<keyof DeviceInfo, any>
   trajectories: TrajectoryMeta[]
   userTrajectory: Trajectory
   importedTrajectories: TrajectoryMeta[]
@@ -31,20 +31,30 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    this.myDevice = await Plugins.Device.getInfo()
+    this.myDevice = (await Plugins.Device.getInfo()) as Record<
+      keyof DeviceInfo,
+      any
+    >
 
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {
         this.trajectories = ts
-        const userTrajectory = ts.find((t) => t.type === 'track') // currently only zero or one user trajectory in db
-        this.importedTrajectories = ts.filter((t) => t.type === 'import')
+        // currently only zero or one user trajectory in db
+        const userTrajectory = ts.find(
+          (t) => t.type === TrajectoryType.USERTRACK
+        )
+        this.importedTrajectories = ts.filter(
+          (t) => t.type === TrajectoryType.IMPORT
+        )
 
         if (userTrajectory) {
-          this.trajectoryService
-            .getOne(TrajectoryType.USERTRACK, userTrajectory.id)
-            .subscribe((ut) => {
-              this.userTrajectory = ut
-            })
+          this.subscriptions.push(
+            this.trajectoryService
+              .getOne(TrajectoryType.USERTRACK, userTrajectory.id)
+              .subscribe((ut) => {
+                this.userTrajectory = ut
+              })
+          )
         }
         this.loading = false
       })

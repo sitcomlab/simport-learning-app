@@ -155,12 +155,12 @@ export class SqliteService {
       const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
       const {
-        changes: { pointsChanges },
-        message: pointsMessage,
+        changes: { changes },
+        message,
       } = await this.db.executeSet({ set })
-      if (pointsChanges === -1) {
+      if (changes === -1) {
         throw new Error(
-          `couldnt insert points for trajectory ${t.id}: ${pointsMessage}`
+          `couldnt insert points for trajectory ${t.id}: ${message}`
         )
       }
     }

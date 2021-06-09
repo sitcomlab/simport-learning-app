@@ -18,9 +18,9 @@ import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
-} from 'src/app/shared-services/inferences/types'
-import { TrajectoryService } from 'src/app/shared-services/trajectory.service'
-import { InferenceService } from '../inferences/inference.service'
+} from 'src/app/shared-services/inferences/engine/types'
+import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
+import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-map',
@@ -28,34 +28,42 @@ import { InferenceService } from '../inferences/inference.service'
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit, OnDestroy {
+  TrajectoryTypes: typeof TrajectoryType = TrajectoryType // for use in template
   mapOptions: MapOptions = {
     center: [51.9694, 7.5954],
     zoom: 14,
     layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution:
-          '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }),
+      tileLayer(
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19,
+        }
+      ),
     ],
   }
   mapBounds: LatLngBounds
   polyline: Polyline
   inferenceMarkers = new LayerGroup()
   lastLocation: CircleMarker
+  followPosition: boolean
+  suppressNextMapMoveEvent: boolean
+  trajectoryType: TrajectoryType
+
+  // inference controls
+  showInferenceControls = false
+  showHomeInferences = true
+  showWorkInferences = true
+  currentConfidenceThreshold = 50
+  currentInferences: Inference[] = []
+  generatedInferences = false
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
   private trajSub: Subscription
   private trajectoryId: string
-  private trajectoryType: TrajectoryType
-  private currentInferences: Inference[]
-
-  // inference controls
-  private showInferenceControls = false
-  private showHomeInferences = true
-  private showWorkInferences = true
-  private currentConfidenceThreshold = 50
 
   constructor(
     private inferenceService: InferenceService,
@@ -75,7 +83,9 @@ export class MapPage implements OnInit, OnDestroy {
     this.trajSub = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
-        this.polyline = new Polyline(t.coordinates)
+        this.polyline = new Polyline(t.coordinates, {
+          weight: 1,
+        })
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
@@ -88,7 +98,10 @@ export class MapPage implements OnInit, OnDestroy {
           fillOpacity: 1,
         }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
 
-        if (this.mapBounds === undefined) {
+        if (this.followPosition) {
+          this.suppressNextMapMoveEvent = true
+          this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
+        } else if (this.mapBounds === undefined) {
           this.mapBounds = this.polyline.getBounds()
           this.map?.invalidateSize()
         }
@@ -96,9 +109,10 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    this.currentInferences = this.inferenceService.getInferences(
+    const inferenceResult = await this.inferenceService.loadPersistedInferences(
       this.trajectoryId
     )
+    this.currentInferences = inferenceResult.inferences
     this.updateInferenceMarkers()
   }
 
@@ -112,12 +126,29 @@ export class MapPage implements OnInit, OnDestroy {
 
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
-    if (history.state.center)
+    if (history.state.center) {
       this.mapBounds = latLng(history.state.center).toBounds(100)
+    }
   }
 
   onMapReady(map: Map) {
     this.map = map
+  }
+
+  onMapMoved(map: Map) {
+    if (!this.suppressNextMapMoveEvent) {
+      this.followPosition = false
+    } else {
+      this.suppressNextMapMoveEvent = false
+    }
+  }
+
+  onToggleFollowMode() {
+    this.suppressNextMapMoveEvent = true
+    this.followPosition = !this.followPosition
+    if (this.followPosition) {
+      this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
+    }
   }
 
   onToggleInferenceControls() {
@@ -131,21 +162,25 @@ export class MapPage implements OnInit, OnDestroy {
       .finally(async () => {
         await this.hideLoadingDialog()
       })
-
     switch (inferenceResult.status) {
       case InferenceResultStatus.successful:
+        this.generatedInferences = true
         this.currentInferences = inferenceResult.inferences
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
           `Trajectory couldn't be analyzed, because it has too many coordinates`
         )
+      case InferenceResultStatus.noInferencesFound:
+        return await this.showErrorToast(
+          `No inferences were found within your trajectory`
+        )
       default:
         return await this.showErrorToast(`Trajectory couldn't be analyzed`)
     }
   }
 
-  private updateInferenceMarkers() {
+  updateInferenceMarkers() {
     const inferences = this.currentInferences.filter(
       (i) =>
         i.lonLat &&
