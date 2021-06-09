@@ -155,7 +155,10 @@ export class SimpleEngine implements IInferenceEngine {
     return { clusters, noise: dbscan.noise }
   }
 
-  private computeHaversineDistance(firstCoordinate, secondCoordinate): number {
+  private computeHaversineDistance(
+    firstCoordinate: [number, number],
+    secondCoordinate: [number, number]
+  ): number {
     const a = { latitude: firstCoordinate[0], longitude: firstCoordinate[1] }
     const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
     return haversine(a, b)
