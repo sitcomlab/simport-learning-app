@@ -113,6 +113,8 @@ export class SimpleEngine implements IInferenceEngine {
       'TODO: description',
       trajectoryId,
       centroid.centerPoint.latLng,
+      // TODO: storing only convex-hull-points instead of complete cluster should be sufficient
+      cluster.map((v) => v.latLng),
       avgConfidence,
       centroid.maxDistance
     )

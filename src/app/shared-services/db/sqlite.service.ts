@@ -244,16 +244,18 @@ export class SqliteService {
           latLng,
           confidence,
           accuracy,
+          coordinatesAsPolyline,
         } = inferences[infIndex]
 
         if (latLng.length === 2) {
-          placeholders.push(`(?,?,?,?,?,?,?,?,?)`)
+          placeholders.push(`(?,?,?,?,?,?,?,?,?,?)`)
           values.push(
             trajectoryId,
             type,
             timestamp,
             latLng[1],
             latLng[0],
+            coordinatesAsPolyline,
             confidence,
             accuracy,
             name,

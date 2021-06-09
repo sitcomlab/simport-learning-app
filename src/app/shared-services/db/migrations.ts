@@ -91,6 +91,7 @@ export const MIGRATIONS = [
     updated DATETIME NOT NULL,
     lon FLOAT NOT NULL,
     lat FLOAT NOT NULL,
+    coordinates TEXT,
     confidence FLOAT,
     accuracy FLOAT,
     name TEXT,

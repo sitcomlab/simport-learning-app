@@ -1,5 +1,6 @@
 import { AllInferences } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
+import * as polyline from '@mapbox/polyline'
 
 export class Inference {
   constructor(
@@ -8,11 +9,12 @@ export class Inference {
     public description: string,
     public trajectoryId: string,
     public latLng: [number, number],
+    public coordinates?: [number, number][],
     public confidence?: number,
     public accuracy?: number
   ) {}
 
-  static fromObject(val: any) {
+  static fromObject(val: any): Inference {
     const {
       name,
       type,
@@ -20,6 +22,7 @@ export class Inference {
       trajectory,
       lat,
       lon,
+      coordinates,
       confidence,
       accuracy,
     } = val
@@ -30,9 +33,14 @@ export class Inference {
       description,
       trajectory,
       [lat, lon],
+      polyline.decode(coordinates) as [number, number][],
       confidence,
       accuracy
     )
+  }
+
+  get coordinatesAsPolyline(): string {
+    return polyline.encode(this.coordinates)
   }
 
   get icon(): string {
