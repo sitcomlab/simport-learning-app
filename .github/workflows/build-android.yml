@@ -31,6 +31,7 @@ jobs:
       - name: Run ionic build
         run: |
           npm install npm -g
+          npm cache verify
           npm install --silent --verbose
           ionic cap update --no-interactive --no-open --confirm
           ionic cap build android --no-interactive --no-open --confirm --prod
