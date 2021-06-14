@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.3.0]
+        node-version: [16.x]
 
     steps:
       - name: Checkout project
@@ -24,7 +24,7 @@ jobs:
         uses: coturiv/setup-ionic@master
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
