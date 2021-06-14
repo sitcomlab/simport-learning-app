@@ -30,8 +30,9 @@ jobs:
 
       - name: Run ionic build
         run: |
+          npm install npm -g
+          npm config set package-lock false
           npm install --silent
-          ionic cap update --no-interactive --no-open --confirm
           ionic cap build android --no-interactive --no-open --confirm --prod
 
       - name: Setup Android NDK
