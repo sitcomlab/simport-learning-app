@@ -20,19 +20,19 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@master
 
+      - name: Prepare ionic build
+        uses: coturiv/setup-ionic@master
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Prepare ionic build
-        uses: coturiv/setup-ionic@master
-
       - name: Run ionic build
         run: |
-          npm install --silent
-          ionic cap update --no-interactive --no-open --confirm
-          ionic cap build android --no-interactive --no-open --confirm --prod
+          npm install --silent --verbose
+          ionic cap update --no-interactive --no-open --confirm --verbose
+          ionic cap build android --no-interactive --no-open --confirm --prod --verbose
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1.0.3
