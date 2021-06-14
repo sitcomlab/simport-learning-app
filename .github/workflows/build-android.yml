@@ -30,9 +30,10 @@ jobs:
 
       - name: Run ionic build
         run: |
+          npm install npm -g
           npm install --silent --verbose
-          ionic cap update --no-interactive --no-open --confirm --verbose
-          ionic cap build android --no-interactive --no-open --confirm --prod --verbose
+          ionic cap update --no-interactive --no-open --confirm
+          ionic cap build android --no-interactive --no-open --confirm --prod
 
       - name: Setup Android NDK
         uses: nttld/setup-ndk@v1.0.3
