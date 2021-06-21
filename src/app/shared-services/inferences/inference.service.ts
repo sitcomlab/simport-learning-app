@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core'
+import { Injectable, OnDestroy } from '@angular/core'
 import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
+  AllInferences,
   HomeInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
@@ -8,23 +9,62 @@ import { SimpleEngine } from './engine/simple-engine'
 import { InferenceResult, InferenceResultStatus } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
+import { SqliteService } from '../db/sqlite.service'
+
+export enum InferenceServiceEvent {
+  configureFilter = 'configureFilter',
+  filterConfigurationChanged = 'filterConfigurationChanged',
+}
+
+export class InferenceFilterConfiguration {
+  confidenceThreshold: number
+  inferenceVisiblities: Map<string, boolean>
+}
 
 @Injectable({
   providedIn: 'root',
 })
-export class InferenceService {
+export class InferenceService implements OnDestroy {
   private static inferenceIntervalMinutes = 240 // 4 hours
-  private static inferenceConfidenceThreshold = 0.75
   private inferenceEngine = new SimpleEngine()
-  lastInferenceTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
+  private filterConfigSubscription: Subscription
+
+  lastInferenceTime = new BehaviorSubject<number>(0)
+  filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
+    confidenceThreshold: 0.5,
+    inferenceVisiblities: new Map([
+      // show all inference-types by default
+      ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
+        value.type,
+        true,
+      ]),
+    ]),
+  })
+
+  inferenceServiceEvent = new Subject<InferenceServiceEvent>()
 
   constructor(
     private trajectoryService: TrajectoryService,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private dbService: SqliteService
+  ) {
+    this.filterConfigSubscription = this.filterConfiguration.subscribe(
+      async (_) => {
+        this.triggerEvent(InferenceServiceEvent.filterConfigurationChanged)
+      }
+    )
+  }
+
+  ngOnDestroy() {
+    this.filterConfigSubscription.unsubscribe()
+  }
+
+  triggerEvent(event: InferenceServiceEvent) {
+    this.inferenceServiceEvent.next(event)
+  }
 
   async generateInferences(
     trajectoryType: TrajectoryType,
@@ -46,10 +86,14 @@ export class InferenceService {
       WorkInference,
     ])
 
+    await this.dbService.deleteInferences(traj.id)
+    await this.dbService.upsertInference(inference.inferences)
+
     if (inference.status === InferenceResultStatus.successful) {
       // TODO: this is some artifical notification-content, which is subject to change
       const significantInferencesLength = inference.inferences.filter(
-        (inf) => inf.confidence > InferenceService.inferenceConfidenceThreshold
+        (inf) =>
+          inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
       if (significantInferencesLength > 0) {
         this.notificationService.notify(
@@ -88,11 +132,20 @@ export class InferenceService {
   async loadPersistedInferences(
     trajectoryId: string
   ): Promise<InferenceResult> {
-    // TODO: actually load persisted inferences
-    const emptyResult: InferenceResult = {
+    const filterConfig = this.filterConfiguration.value
+    const inferences = (
+      await this.dbService.getInferences(trajectoryId)
+    ).filter((inf) => {
+      return (
+        inf.confidence >= filterConfig.confidenceThreshold &&
+        filterConfig.inferenceVisiblities.has(inf.type) &&
+        filterConfig.inferenceVisiblities.get(inf.type)
+      )
+    })
+    const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
-      inferences: [],
+      inferences,
     }
-    return emptyResult
+    return persisted
   }
 }

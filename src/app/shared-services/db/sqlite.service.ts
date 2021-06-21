@@ -4,6 +4,7 @@ import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import * as moment from 'moment'
 import { Subject } from 'rxjs'
+import { Inference } from 'src/app/model/inference'
 import {
   Point,
   Trajectory,
@@ -14,6 +15,10 @@ import { MIGRATIONS, runMigrations } from './migrations'
 
 @Injectable()
 export class SqliteService {
+  // construct query & values array in chunks to prevent to many sql-statements at once
+  // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
+  private static chunkSize = 1000
+
   private db = Plugins.CapacitorSQLite
   private dbReady: Promise<void>
 
@@ -102,7 +107,7 @@ export class SqliteService {
     const set = [
       {
         // insert or update trajectory
-        statement: `INSERT INTO trajectories (id,type,placename,durationDays) VALUES (?,?,?,?)
+        statement: `INSERT INTO trajectories (id, type, placename, durationDays) VALUES (?,?,?,?)
           ON CONFLICT(id) DO UPDATE SET type=?, placename=?, durationDays=?;`,
         values: [
           id,
@@ -128,19 +133,19 @@ export class SqliteService {
   async upsertPointsForTrajectory(t: Trajectory) {
     // insert or update new points query
     const numPoints = t.coordinates.length
-    if (!numPoints) {
-      return
-    }
-    // construct query & values array in chunks to prevent to many sql-statements at once
-    // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
-    const chunkSize = 1000
-    let pointsIndex = 0
-    for (let chunkIndex = 0; chunkIndex < numPoints; chunkIndex += chunkSize) {
+    if (!numPoints) return
+
+    for (
+      let chunkIndex = 0, pointsIndex = 0;
+      chunkIndex < numPoints;
+      chunkIndex += SqliteService.chunkSize
+    ) {
       const placeholders = []
       const values = []
       for (
         ;
-        pointsIndex < chunkIndex + chunkSize && pointsIndex < numPoints;
+        pointsIndex < chunkIndex + SqliteService.chunkSize &&
+        pointsIndex < numPoints;
         pointsIndex++
       ) {
         const time = t.timestamps[pointsIndex]
@@ -210,6 +215,88 @@ export class SqliteService {
     } = await this.db.run({ statement, values: [] })
     if (changes === -1)
       throw new Error(`couldnt delete points of trajectory: ${message}`)
+  }
+
+  async upsertInference(inferences: Inference[]): Promise<void> {
+    await this.ensureDbReady()
+
+    const inferencesLength = inferences.length
+    const timestamp = new Date()
+
+    for (
+      let chunkIndex = 0, infIndex = 0;
+      chunkIndex < inferencesLength;
+      chunkIndex += SqliteService.chunkSize
+    ) {
+      const placeholders = []
+      const values = []
+      for (
+        ;
+        infIndex < chunkIndex + SqliteService.chunkSize &&
+        infIndex < inferencesLength;
+        infIndex++
+      ) {
+        const {
+          name,
+          type,
+          description,
+          trajectoryId,
+          latLng,
+          confidence,
+          accuracy,
+          coordinatesAsPolyline,
+        } = inferences[infIndex]
+
+        if (latLng.length === 2) {
+          placeholders.push(`(?,?,?,?,?,?,?,?,?,?)`)
+          values.push(
+            trajectoryId,
+            type,
+            timestamp,
+            latLng[1],
+            latLng[0],
+            coordinatesAsPolyline,
+            confidence,
+            accuracy,
+            name,
+            description
+          )
+        }
+      }
+
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO inferences VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.executeSet({ set })
+      if (changes === -1) {
+        throw new Error(`couldnt insert infernence: ${message}`)
+      }
+    }
+  }
+
+  async deleteInferences(trajectoryId: string): Promise<void> {
+    await this.ensureDbReady()
+    const statement = `DELETE FROM inferences WHERE trajectory='${trajectoryId}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run({ statement, values: [] })
+    if (changes === -1) throw new Error(`couldnt delete inferences: ${message}`)
+  }
+
+  async getInferences(trajectoryId: string): Promise<Inference[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query({
+      statement: `SELECT * FROM inferences WHERE trajectory=?;`,
+      values: [trajectoryId],
+    })
+    const inferences: Inference[] = values.map((inf) => {
+      return Inference.fromObject(inf)
+    }, [])
+    return inferences
   }
 
   private async updateDurationDaysInTrajectory(

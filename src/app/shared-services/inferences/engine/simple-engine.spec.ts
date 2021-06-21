@@ -1,7 +1,12 @@
 import { async } from '@angular/core/testing'
 import { LatLngTuple } from 'leaflet'
 import { Inference } from 'src/app/model/inference'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import {
+  Trajectory,
+  TrajectoryData,
+  TrajectoryMeta,
+  TrajectoryType,
+} from 'src/app/model/trajectory'
 import { HomeInference, WorkInference } from './definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
@@ -128,14 +133,21 @@ describe('inferences/SimpleEngine', () => {
 
 class InferenceTestCase {
   constructor(
-    public trajectory: TrajectoryData,
+    public trajectoryData: TrajectoryData,
     public inferences: InferenceDefinition[],
     public expected: InferenceResultTest[],
     public deltaMeters: number = 50
   ) {}
 
   test(e: IInferenceEngine): Inference[] {
-    const result = e.infer(this.trajectory, this.inferences)
+    const meta: TrajectoryMeta = {
+      id: 'test',
+      placename: 'test-place',
+      type: TrajectoryType.USERTRACK,
+      durationDays: null,
+    }
+    const trajectory = new Trajectory(meta, this.trajectoryData)
+    const result = e.infer(trajectory, this.inferences)
     result.inferences = result.inferences.filter((res) => {
       return res.confidence >= 0.5
     })
@@ -158,8 +170,7 @@ class InferenceTestCase {
       expect(expectation).toBeDefined(`'${r.name}' inferred, but not expected`)
 
       // inference location
-      const expectedLonLat = [expectation.location[1], expectation.location[0]]
-      const dist = computeHaversineDistance(expectedLonLat, r.lonLat)
+      const dist = computeHaversineDistance(expectation.location, r.latLng)
       expect(dist).toBeLessThanOrEqual(
         this.deltaMeters,
         `'${r.name}' location didn't match`
@@ -170,9 +181,12 @@ class InferenceTestCase {
   }
 }
 
-function computeHaversineDistance(firstCoordinate, secondCoordinate): number {
-  const a = { latitude: firstCoordinate[1], longitude: firstCoordinate[0] }
-  const b = { latitude: secondCoordinate[1], longitude: secondCoordinate[0] }
+function computeHaversineDistance(
+  firstCoordinate: [number, number],
+  secondCoordinate: [number, number]
+) {
+  const a = { latitude: firstCoordinate[0], longitude: firstCoordinate[1] }
+  const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
   return haversine(a, b)
 }
 

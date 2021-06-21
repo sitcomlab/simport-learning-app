@@ -135,7 +135,7 @@ export class SelectTrajectoryPage {
         return
 
       default:
-        assertUnreachable(mode)
+        return
     }
   }
 
@@ -168,8 +168,4 @@ export class SelectTrajectoryPage {
   private async hideLoadingDialog() {
     await this.loadingController.dismiss()
   }
-}
-
-function assertUnreachable(x: never): never {
-  throw new Error('code should be unreachable')
 }

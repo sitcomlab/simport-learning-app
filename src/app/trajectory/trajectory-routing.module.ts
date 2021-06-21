@@ -6,6 +6,7 @@ export enum TrajectoryPagePath {
   INFERENCES = 'inferences',
   MAP = 'map',
   EXPLORE = 'explore',
+  INFERENCE_FILTER = 'inference-filter',
 }
 
 const routes: Routes = [
@@ -29,6 +30,13 @@ const routes: Routes = [
         path: TrajectoryPagePath.EXPLORE,
         loadChildren: () =>
           import('./explore/explore.module').then((m) => m.ExplorePageModule),
+      },
+      {
+        path: TrajectoryPagePath.INFERENCE_FILTER,
+        loadChildren: () =>
+          import('./inference-filter/inference-filter.module').then(
+            (m) => m.InferenceFilterModule
+          ),
       },
       {
         path: '',

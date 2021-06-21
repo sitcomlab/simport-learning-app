@@ -53,7 +53,7 @@ export async function runMigration(
 export const MIGRATIONS = [
   // drop database schema from before migrations introduction
   `DROP TABLE IF EXISTS trajectories;
-  DROP TABLE IF EXISTS points; `,
+  DROP TABLE IF EXISTS points;`,
 
   // initial schema: trajectories & points table
   `CREATE TABLE IF NOT EXISTS trajectories (
@@ -83,4 +83,19 @@ export const MIGRATIONS = [
 
   // add field 'speed' to table points
   `ALTER TABLE points ADD COLUMN speed float DEFAULT -1;`,
+
+  // add inferences persistence
+  `CREATE TABLE IF NOT EXISTS inferences (
+    trajectory TEXT NOT NULL,
+    type TEXT NOT NULL,
+    updated DATETIME NOT NULL,
+    lon FLOAT NOT NULL,
+    lat FLOAT NOT NULL,
+    coordinates TEXT,
+    confidence FLOAT,
+    accuracy FLOAT,
+    name TEXT,
+    description TEXT,
+    PRIMARY KEY (trajectory, type, lon, lat),
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 ]
