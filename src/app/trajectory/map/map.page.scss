@@ -4,34 +4,6 @@
   z-index: 1;
 }
 
-#inferenceControls {
-  position: absolute;
-  top: 0.05em;
-  right: 0.05em;
-  width: 30%;
-  min-width: 250px;
-  opacity: 0.9;
-  z-index: 2;
-
-  ion-card-content {
-    width: 100%;
-  }
-  ion-toggle {
-    padding-right: 1em;
-  }
-}
-
-#closeButton {
-  position: absolute;
-  top: 0.05em;
-  right: 0.05em;
-  width: 48px;
-  height: 48px;
-  padding: 0px !important;
-  margin: 0px !important;
-  --border-radius: 100% !important;
-}
-
 ion-fab-button[text] {
   position: relative;
 }

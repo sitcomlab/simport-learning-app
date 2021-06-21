@@ -1,0 +1,43 @@
+<div class="inner-content">
+  <ion-card-header>
+    <ion-card-title>Filter insights</ion-card-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeComponent()">
+        <ion-icon slot="icon-only" name="close"> </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-card-header>
+
+  <div style="display: flex; justify-content: center">
+    <ion-grid>
+      <ion-row>
+        <ion-label>Inferences</ion-label>
+      </ion-row>
+      <ion-row *ngFor="let item of inferenceVisiblities | keyvalue">
+        <ion-item lines="none">
+          <ion-toggle
+            [ngModel]="item.value"
+            (ngModelChange)="onInferenceVisibilityChanged(item.key)"
+          ></ion-toggle>
+          <ion-icon name="{{ getIconFromInferenceType(item.key) }}"></ion-icon>
+        </ion-item>
+      </ion-row>
+      <ion-row></ion-row>
+      <ion-row>
+        <ion-label>Confidence {{ confidenceThreshold.toFixed(0) }} %</ion-label>
+      </ion-row>
+      <ion-row>
+        <ion-range
+          min="0"
+          max="100"
+          value="0"
+          step="5"
+          debounce="10"
+          snaps
+          [(ngModel)]="confidenceThreshold"
+        >
+        </ion-range>
+      </ion-row>
+    </ion-grid>
+  </div>
+</div>

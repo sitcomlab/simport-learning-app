@@ -15,12 +15,12 @@ import {
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import {
-  InferenceResultStatus,
-  InferenceType,
-} from 'src/app/shared-services/inferences/engine/types'
+import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
-import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
+import {
+  InferenceService,
+  InferenceServiceEvent,
+} from 'src/app/shared-services/inferences/inference.service'
 
 @Component({
   selector: 'app-map',
@@ -52,18 +52,14 @@ export class MapPage implements OnInit, OnDestroy {
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
 
-  // inference controls
-  showInferenceControls = false
-  showHomeInferences = true
-  showWorkInferences = true
-  currentConfidenceThreshold = 50
-  currentInferences: Inference[] = []
+  inferences: Inference[] = []
   generatedInferences = false
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
-  private trajSub: Subscription
+  private trajSubscription: Subscription
   private trajectoryId: string
+  private inferenceFilterSubscription: Subscription
 
   constructor(
     private inferenceService: InferenceService,
@@ -80,7 +76,7 @@ export class MapPage implements OnInit, OnDestroy {
       'trajectoryType'
     ) as TrajectoryType
 
-    this.trajSub = this.trajectoryService
+    this.trajSubscription = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         this.polyline = new Polyline(t.coordinates, {
@@ -109,15 +105,19 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    const inferenceResult = await this.inferenceService.loadPersistedInferences(
-      this.trajectoryId
-    )
-    this.currentInferences = inferenceResult.inferences
-    this.updateInferenceMarkers()
+    await this.reloadInferences()
+
+    this.inferenceFilterSubscription =
+      this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
+        if (event === InferenceServiceEvent.filterConfigurationChanged) {
+          await this.reloadInferences()
+        }
+      })
   }
 
   ngOnDestroy() {
-    this.trajSub.unsubscribe()
+    this.trajSubscription.unsubscribe()
+    this.inferenceFilterSubscription.unsubscribe()
   }
 
   ionViewDidEnter() {
@@ -127,7 +127,7 @@ export class MapPage implements OnInit, OnDestroy {
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      this.mapBounds = latLng(history.state.center).toBounds(100)
+      this.mapBounds = latLng(history.state.center).toBounds(200)
     }
   }
 
@@ -151,8 +151,12 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
-  onToggleInferenceControls() {
-    this.showInferenceControls = !this.showInferenceControls
+  async reloadInferences(): Promise<void> {
+    const inferenceResult = await this.inferenceService.loadPersistedInferences(
+      this.trajectoryId
+    )
+    this.inferences = inferenceResult.inferences
+    this.updateInferenceMarkers()
   }
 
   async showInferences() {
@@ -165,7 +169,7 @@ export class MapPage implements OnInit, OnDestroy {
     switch (inferenceResult.status) {
       case InferenceResultStatus.successful:
         this.generatedInferences = true
-        this.currentInferences = inferenceResult.inferences
+        this.inferences = inferenceResult.inferences
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
@@ -181,17 +185,9 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   updateInferenceMarkers() {
-    const inferences = this.currentInferences.filter(
-      (i) =>
-        i.lonLat &&
-        i.accuracy &&
-        (i.confidence || 0) > this.currentConfidenceThreshold / 100.0 &&
-        (this.showHomeInferences || i.type !== InferenceType.home) &&
-        (this.showWorkInferences || i.type !== InferenceType.work)
-    )
     this.inferenceMarkers.clearLayers()
-    for (const inference of inferences) {
-      const m = new Circle([inference.lonLat[1], inference.lonLat[0]], {
+    for (const inference of this.inferences) {
+      const m = new Circle(inference.latLng, {
         radius: inference.accuracy,
         color: 'red',
       })
@@ -199,6 +195,10 @@ export class MapPage implements OnInit, OnDestroy {
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
     }
+  }
+
+  openInferenceFilter() {
+    this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 
   private async showErrorToast(message: string) {
