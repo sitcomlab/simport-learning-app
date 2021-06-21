@@ -14,6 +14,8 @@ import { PointCountScoring } from '../scoring/pointcount-scoring'
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
 
+import concaveman from 'concaveman'
+
 export class SimpleEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
     new NightnessScoring(),
@@ -107,14 +109,18 @@ export class SimpleEngine implements IInferenceEngine {
 
     const centroid = this.calculateCentroid(cluster)
 
+    const convexHull = concaveman(
+      cluster.map((v) => v.latLng),
+      Infinity // Infinity: convex hull
+    )
+
     return new Inference(
       inferenceDef.type,
       inferenceDef.type,
       'TODO: description',
       trajectoryId,
       centroid.centerPoint.latLng,
-      // TODO: storing only convex-hull-points instead of complete cluster should be sufficient
-      cluster.map((v) => v.latLng),
+      convexHull.map((c) => [c[0], c[1]]),
       avgConfidence,
       centroid.maxDistance
     )

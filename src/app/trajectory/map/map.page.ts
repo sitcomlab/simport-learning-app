@@ -2,20 +2,23 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { LoadingController, ToastController } from '@ionic/angular'
 import {
-  Circle,
   CircleMarker,
   latLng,
   LatLngBounds,
   LayerGroup,
   Map,
   MapOptions,
+  Polygon,
   Polyline,
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
+import {
+  InferenceResultStatus,
+  InferenceType,
+} from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import {
   InferenceService,
@@ -46,7 +49,7 @@ export class MapPage implements OnInit, OnDestroy {
   }
   mapBounds: LatLngBounds
   polyline: Polyline
-  inferenceMarkers = new LayerGroup()
+  inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
@@ -186,13 +189,15 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   updateInferenceMarkers() {
-    this.inferenceMarkers.clearLayers()
+    this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
-      const m = new Circle(inference.latLng, {
-        radius: inference.accuracy,
-        color: 'red',
+      const h = new Polygon(inference.coordinates, {
+        color: inference.type === InferenceType.home ? '#00FF00' : 'orange',
+        weight: 2,
+        opacity: inference.confidence || 0,
       })
-      m.addTo(this.inferenceMarkers).bindPopup(
+
+      h.addTo(this.inferenceHulls).bindPopup(
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
     }
