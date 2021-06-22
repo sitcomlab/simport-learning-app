@@ -3,11 +3,13 @@ import { ActivatedRoute } from '@angular/router'
 import { LoadingController, ToastController } from '@ionic/angular'
 import {
   CircleMarker,
+  DivIcon,
   latLng,
   LatLngBounds,
   LayerGroup,
   Map,
   MapOptions,
+  Marker,
   Polygon,
   Polyline,
   tileLayer,
@@ -196,10 +198,20 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
-
-      h.addTo(this.inferenceHulls).bindPopup(
+      const i = new Marker(inference.latLng, {
+        icon: new DivIcon({
+          className: `inference-icon ${inference.type}`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+        }),
+      }).bindPopup(
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
+
+      const l = new LayerGroup([h, i])
+
+      l.addTo(this.inferenceHulls)
     }
   }
 
