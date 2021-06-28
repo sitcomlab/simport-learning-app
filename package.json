@@ -99,7 +99,8 @@
   "resolutions": {
     "postcss": "^8.2.10",
     "css-what": "^5.0.1",
-    "glob-parent": "^5.1.2"
+    "glob-parent": "^5.1.2",
+    "ajv-keywords": "^4.0.1"
   },
   "description": "An Ionic project"
 }
