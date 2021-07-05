@@ -22,13 +22,12 @@ export class TrajectoryPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.inferenceFilterSubscription = this.inferenceService.inferenceServiceEvent.subscribe(
-      async (event) => {
+    this.inferenceFilterSubscription =
+      this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (event === InferenceServiceEvent.configureFilter) {
           await this.openInferenceFilter()
         }
-      }
-    )
+      })
   }
 
   ngOnDestroy() {

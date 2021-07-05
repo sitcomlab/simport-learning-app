@@ -29,13 +29,12 @@ export class InferencesPage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
     await this.reloadInferences()
-    this.inferenceFilterSubscription = this.inferenceService.inferenceServiceEvent.subscribe(
-      async (event) => {
+    this.inferenceFilterSubscription =
+      this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (event === InferenceServiceEvent.filterConfigurationChanged) {
           await this.reloadInferences()
         }
-      }
-    )
+      })
   }
 
   ngOnDestroy() {
@@ -43,9 +42,8 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   async reloadInferences(): Promise<void> {
-    const inferencesResult = await this.inferenceService.loadPersistedInferences(
-      this.trajectoryId
-    )
+    const inferencesResult =
+      await this.inferenceService.loadPersistedInferences(this.trajectoryId)
     this.inferences = inferencesResult.inferences.sort(
       (a, b) => b.confidence - a.confidence
     )

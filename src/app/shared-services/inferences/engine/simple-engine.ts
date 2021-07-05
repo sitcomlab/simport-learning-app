@@ -120,9 +120,10 @@ export class SimpleEngine implements IInferenceEngine {
     )
   }
 
-  private calculateCentroid(
-    cluster: Point[]
-  ): { centerPoint: Point; maxDistance: number } {
+  private calculateCentroid(cluster: Point[]): {
+    centerPoint: Point
+    maxDistance: number
+  } {
     // simple sample centroid calulation
     if (cluster.length === 0) {
       return null

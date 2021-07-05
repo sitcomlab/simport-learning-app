@@ -36,6 +36,12 @@ export interface TrajectoryImportResult {
 
 @Injectable()
 export class TrajectoryImportExportService extends TrajectoryService {
+  /**
+   * This flags enables importing trajectories as user-trajectories,
+   * it is for debug-purposes only and must be 'false' when pushed remotely.
+   */
+  private static importAsUserTrajectory = false
+
   constructor(
     http: HttpClient,
     db: SqliteService,
@@ -105,12 +111,20 @@ export class TrajectoryImportExportService extends TrajectoryService {
       timeN?: string
     } = JSON.parse(json)
     const data = Trajectory.fromJSON(trajectoryJson)
-    const meta: TrajectoryMeta = {
-      id: uuid(),
-      placename: name?.replace(/\.[^/.]+$/, '') ?? 'trajectory', // remove extension from name (e.g. '.json')
-      type: TrajectoryType.IMPORT,
-      durationDays: null,
-    }
+    const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
+    const meta: TrajectoryMeta = TrajectoryImportExportService.importAsUserTrajectory
+      ? {
+          id: Trajectory.trackingTrajectoryID,
+          placename,
+          type: TrajectoryType.USERTRACK,
+          durationDays: null,
+        }
+      : {
+          id: uuid(),
+          placename,
+          type: TrajectoryType.IMPORT,
+          durationDays: null,
+        }
     return new Trajectory(meta, data)
   }
 

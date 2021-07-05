@@ -107,13 +107,12 @@ export class MapPage implements OnInit, OnDestroy {
 
     await this.reloadInferences()
 
-    this.inferenceFilterSubscription = this.inferenceService.inferenceServiceEvent.subscribe(
-      async (event) => {
+    this.inferenceFilterSubscription =
+      this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (event === InferenceServiceEvent.filterConfigurationChanged) {
           await this.reloadInferences()
         }
-      }
-    )
+      })
   }
 
   ngOnDestroy() {
