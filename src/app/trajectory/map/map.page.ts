@@ -112,13 +112,12 @@ export class MapPage implements OnInit, OnDestroy {
 
     await this.reloadInferences()
 
-    this.inferenceFilterSubscription = this.inferenceService.inferenceServiceEvent.subscribe(
-      async (event) => {
+    this.inferenceFilterSubscription =
+      this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (event === InferenceServiceEvent.filterConfigurationChanged) {
           await this.reloadInferences()
         }
-      }
-    )
+      })
   }
 
   ngOnDestroy() {
@@ -194,7 +193,7 @@ export class MapPage implements OnInit, OnDestroy {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
       const h = new Polygon(inference.coordinates, {
-        color: inference.type === InferenceType.home ? '#00FF00' : 'orange',
+        color: inference.type === InferenceType.home ? '#347d39' : 'orange',
         weight: 2,
         opacity: inference.confidence || 0,
       })
