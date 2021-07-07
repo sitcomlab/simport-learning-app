@@ -112,19 +112,20 @@ export class TrajectoryImportExportService extends TrajectoryService {
     } = JSON.parse(json)
     const data = Trajectory.fromJSON(trajectoryJson)
     const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
-    const meta: TrajectoryMeta = TrajectoryImportExportService.importAsUserTrajectory
-      ? {
-          id: Trajectory.trackingTrajectoryID,
-          placename,
-          type: TrajectoryType.USERTRACK,
-          durationDays: null,
-        }
-      : {
-          id: uuid(),
-          placename,
-          type: TrajectoryType.IMPORT,
-          durationDays: null,
-        }
+    const meta: TrajectoryMeta =
+      TrajectoryImportExportService.importAsUserTrajectory
+        ? {
+            id: Trajectory.trackingTrajectoryID,
+            placename,
+            type: TrajectoryType.USERTRACK,
+            durationDays: null,
+          }
+        : {
+            id: uuid(),
+            placename,
+            type: TrajectoryType.IMPORT,
+            durationDays: null,
+          }
     return new Trajectory(meta, data)
   }
 

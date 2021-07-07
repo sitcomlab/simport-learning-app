@@ -52,3 +52,30 @@ ion-modal.auto-height {
 }
 
 @import '~leaflet/dist/leaflet.css';
+
+div.inference-icon {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(1px);
+
+  &.work {
+    border: 2px solid orange;
+  }
+  &.home {
+    border: 2px solid #347d39;
+  }
+
+  ion-icon {
+    font-size: 20px;
+
+    &.inference-work {
+      color: orange;
+    }
+    &.inference-home {
+      color: #347d39;
+    }
+  }
+}

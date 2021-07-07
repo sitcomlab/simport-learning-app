@@ -2,20 +2,25 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { LoadingController, ToastController } from '@ionic/angular'
 import {
-  Circle,
   CircleMarker,
+  DivIcon,
   latLng,
   LatLngBounds,
   LayerGroup,
   Map,
   MapOptions,
+  Marker,
+  Polygon,
   Polyline,
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
-import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
+import {
+  InferenceResultStatus,
+  InferenceType,
+} from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import {
   InferenceService,
@@ -46,7 +51,7 @@ export class MapPage implements OnInit, OnDestroy {
   }
   mapBounds: LatLngBounds
   polyline: Polyline
-  inferenceMarkers = new LayerGroup()
+  inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
@@ -185,15 +190,27 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   updateInferenceMarkers() {
-    this.inferenceMarkers.clearLayers()
+    this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
-      const m = new Circle(inference.latLng, {
-        radius: inference.accuracy,
-        color: 'red',
+      const h = new Polygon(inference.coordinates, {
+        color: inference.type === InferenceType.home ? '#347d39' : 'orange',
+        weight: 2,
+        opacity: inference.confidence || 0,
       })
-      m.addTo(this.inferenceMarkers).bindPopup(
+      const i = new Marker(inference.latLng, {
+        icon: new DivIcon({
+          className: `inference-icon ${inference.type}`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+        }),
+      }).bindPopup(
         `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
       )
+
+      const l = new LayerGroup([h, i])
+
+      l.addTo(this.inferenceHulls)
     }
   }
 
