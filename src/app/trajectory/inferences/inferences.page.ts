@@ -38,7 +38,9 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.inferenceFilterSubscription.unsubscribe()
+    if (this.inferenceFilterSubscription) {
+      this.inferenceFilterSubscription.unsubscribe()
+    }
   }
 
   async reloadInferences(): Promise<void> {
