@@ -295,7 +295,7 @@ export class SqliteService {
     const {
       changes: { changes },
       message,
-    } = await this.db.run(statement, [])
+    } = await this.db.run(statement)
     if (changes === -1) throw new Error(`couldnt delete inferences: ${message}`)
   }
 

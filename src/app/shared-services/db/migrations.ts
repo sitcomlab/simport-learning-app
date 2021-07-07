@@ -27,28 +27,31 @@ export async function runMigration(
   migration: string,
   targetVersion: number
 ) {
-  // run migration as transaction
+  // run migrations
+  const {
+    changes: { changes: changesMigration },
+    message: messageMigration,
+  } = await db.execute(migration)
+  if (changesMigration === -1)
+    throw new Error(
+      `DB migration to v${targetVersion} failed: ${messageMigration}`
+    )
+
+  // persist migration-info
   const set = [
     {
       statement: 'INSERT INTO migrations (version, up) VALUES (?, ?);',
       values: [targetVersion, migration],
     },
-    // separate sql statements from migration
-    ...migration
-      .split(';')
-      .map((statement) => statement.trim())
-      .filter((statement) => !!statement)
-      .map((statement) => ({ statement, values: [null] })),
   ]
-
-  console.log(`--- TEST: ${JSON.stringify(set)}`)
-
   const {
-    changes: { changes },
-    message,
+    changes: { changes: changesMigrationInfo },
+    message: messageMigrationInfo,
   } = await db.executeSet(set)
-  if (changes === -1)
-    throw new Error(`DB migration to v${targetVersion} failed: ${message}`)
+  if (changesMigrationInfo === -1)
+    throw new Error(
+      `Persisting DB migration information to v${targetVersion} failed: ${messageMigrationInfo}`
+    )
 }
 
 export const MIGRATIONS = [
