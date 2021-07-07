@@ -4,6 +4,11 @@
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-title> Insights </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openInferenceFilter()">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -15,9 +20,8 @@
 
   <app-item-card
     *ngFor="let i of inferences"
-    icon="home-outline"
-    title="{{formatInferenceName(i)}}"
-    subtitle="{{formatInferenceInfo(i)}}"
+    icon="{{ i.outlinedIcon }}"
+    subtitle="{{ formatInferenceInfo(i) }}"
     (click)="showInferenceOnMap(i)"
   ></app-item-card>
 </ion-content>

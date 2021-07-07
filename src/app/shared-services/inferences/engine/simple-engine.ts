@@ -1,4 +1,4 @@
-import { Point, TrajectoryData } from 'src/app/model/trajectory'
+import { Point, Trajectory } from 'src/app/model/trajectory'
 import { Inference } from 'src/app/model/inference'
 import {
   IInferenceEngine,
@@ -14,6 +14,8 @@ import { PointCountScoring } from '../scoring/pointcount-scoring'
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
 
+import concaveman from 'concaveman'
+
 export class SimpleEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
     new NightnessScoring(),
@@ -24,7 +26,7 @@ export class SimpleEngine implements IInferenceEngine {
   private inputCoordinatesLimit = 100000
 
   infer(
-    trajectory: TrajectoryData,
+    trajectory: Trajectory,
     inferences: InferenceDefinition[]
   ): InferenceResult {
     if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
@@ -58,7 +60,8 @@ export class SimpleEngine implements IInferenceEngine {
         const inferenceResult = this.interpretInferenceScores(
           inference,
           inferenceScores,
-          cluster
+          cluster,
+          trajectory.id
         )
         if (inferenceResult !== null) {
           inferenceResults.push(inferenceResult)
@@ -78,7 +81,8 @@ export class SimpleEngine implements IInferenceEngine {
   private interpretInferenceScores(
     inferenceDef: InferenceDefinition,
     scoringResults: InferenceScoringResult[],
-    cluster: Point[]
+    cluster: Point[],
+    trajectoryId: string
   ): Inference {
     const confidences: { confidence: number; weight: number }[] = []
     scoringResults.forEach((scoringResult) => {
@@ -105,20 +109,27 @@ export class SimpleEngine implements IInferenceEngine {
 
     const centroid = this.calculateCentroid(cluster)
 
-    return {
-      name: inferenceDef.type,
-      type: inferenceDef.type,
-      description: 'TODO',
-      trajectoryId: 'TODO',
-      lonLat: [centroid.centerPoint.latLng[1], centroid.centerPoint.latLng[0]],
-      confidence: avgConfidence,
-      accuracy: centroid.maxDistance,
-    }
+    const convexHull = concaveman(
+      cluster.map((v) => v.latLng),
+      Infinity // Infinity: convex hull
+    )
+
+    return new Inference(
+      inferenceDef.type,
+      inferenceDef.type,
+      'TODO: description',
+      trajectoryId,
+      centroid.centerPoint.latLng,
+      convexHull.map((c) => [c[0], c[1]]),
+      avgConfidence,
+      centroid.maxDistance
+    )
   }
 
-  private calculateCentroid(
-    cluster: Point[]
-  ): { centerPoint: Point; maxDistance: number } {
+  private calculateCentroid(cluster: Point[]): {
+    centerPoint: Point
+    maxDistance: number
+  } {
     // simple sample centroid calulation
     if (cluster.length === 0) {
       return null
@@ -138,7 +149,7 @@ export class SimpleEngine implements IInferenceEngine {
     return { centerPoint, maxDistance }
   }
 
-  private cluster(trajectory: TrajectoryData) {
+  private cluster(trajectory: Trajectory) {
     const dbscan = new clustering.DBSCAN()
     // parameters: neighborhood radius, number of points in neighborhood to form a cluster
     const clusters = dbscan.run(
@@ -151,7 +162,10 @@ export class SimpleEngine implements IInferenceEngine {
     return { clusters, noise: dbscan.noise }
   }
 
-  private computeHaversineDistance(firstCoordinate, secondCoordinate): number {
+  private computeHaversineDistance(
+    firstCoordinate: [number, number],
+    secondCoordinate: [number, number]
+  ): number {
     const a = { latitude: firstCoordinate[0], longitude: firstCoordinate[1] }
     const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
     return haversine(a, b)
@@ -159,7 +173,7 @@ export class SimpleEngine implements IInferenceEngine {
 
   private indexClustersToPointClusters(
     clusters: [[number]],
-    trajectory: TrajectoryData
+    trajectory: Trajectory
   ): Point[][] {
     return clusters.map((cluster) => {
       return cluster.map((coordinateIndex) => {

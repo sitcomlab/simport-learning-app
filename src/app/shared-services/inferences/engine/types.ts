@@ -1,15 +1,16 @@
 import { Inference } from 'src/app/model/inference'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { Trajectory } from 'src/app/model/trajectory'
 import {
   IInferenceScoring,
   InferenceScoringConfig,
   InferenceScoringType,
 } from '../scoring/types'
+import { AllInferences } from './definitions'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
   infer(
-    trajectory: TrajectoryData,
+    trajectory: Trajectory,
     inferences: InferenceDefinition[]
   ): InferenceResult
 }
@@ -18,6 +19,7 @@ export class InferenceDefinition {
   constructor(
     public id: string,
     public type: InferenceType,
+    public iconName: string,
     public name: (lang?: string) => string,
     public info: (res: Inference, lang?: string) => string,
     public scoringConfigurations: InferenceScoringConfig[]
@@ -25,6 +27,16 @@ export class InferenceDefinition {
 
   public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
     return this.scoringConfigurations.find((config) => config.type === type)
+  }
+
+  get icon(): string {
+    const def = AllInferences[this.type]
+    if (!def) return 'help'
+    return def.iconName
+  }
+
+  get outlinedIcon(): string {
+    return `${this.icon}-outline`
   }
 }
 
