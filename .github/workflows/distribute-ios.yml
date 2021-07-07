@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [15.14.0]
+        node-version: [16.x]
 
     steps:
       - name: Checkout project
@@ -24,14 +24,15 @@ jobs:
         uses: coturiv/setup-ionic@master
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Run ionic build
         run: |
+          npm install npm -g
+          npm config set package-lock false
           npm install --silent
-          ionic cap update --no-interactive --no-open --confirm
           ionic cap build ios --no-interactive --no-open --confirm --prod
 
       - name: Bump version
