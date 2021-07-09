@@ -6,7 +6,6 @@ import { LocationService } from '../location.service'
 import { SqliteService } from '../db/sqlite.service'
 import { HttpClient, HttpHandler } from '@angular/common/http'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import {
   testTrajectory,
@@ -28,7 +27,6 @@ describe('TrajectoryImportExportService', () => {
         HttpClient,
         HttpHandler,
         BackgroundGeolocation,
-        LocalNotifications,
         SocialSharing,
       ],
     })

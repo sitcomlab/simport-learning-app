@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { IonicModule } from '@ionic/angular'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
@@ -23,7 +22,6 @@ describe('TrajectoryCardPopoverPage', () => {
         AndroidPermissions,
         LocationService,
         BackgroundGeolocation,
-        LocalNotifications,
         SqliteService,
         TrajectoryImportExportService,
         TrajectoryService,

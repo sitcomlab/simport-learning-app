@@ -4,7 +4,6 @@ import { RouterTestingModule } from '@angular/router/testing'
 import { IonicModule } from '@ionic/angular'
 import { InferencesPage } from './inferences.page'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location.service'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
@@ -26,7 +25,6 @@ describe('InferencesPage', () => {
         SqliteService,
         LocationService,
         BackgroundGeolocation,
-        LocalNotifications,
       ],
     }).compileComponents()
 
