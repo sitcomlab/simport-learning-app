@@ -3,7 +3,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { RouterTestingModule } from '@angular/router/testing'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx'
 import { IonicModule } from '@ionic/angular'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
 import { LocationService } from '../../shared-services/location.service'
@@ -27,7 +26,6 @@ describe('MapPage', () => {
         LocationService,
         TrajectoryService,
         BackgroundGeolocation,
-        LocalNotifications,
         SqliteService,
       ],
     }).compileComponents()
