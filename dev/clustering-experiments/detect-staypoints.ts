@@ -1,5 +1,5 @@
-const USAGE = 'ngx ts-node -r tsconfig-paths/register --dir dev/clustering-experiments detect-staypoints.ts'
-
+const USAGE =
+  'ngx ts-node -r tsconfig-paths/register --dir dev/clustering-experiments detect-staypoints.ts'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
@@ -14,10 +14,41 @@ TODO to what degree can we assume correctness of input trajectory? currently ass
     - there are no missing values
 */
 
-type StayPoints = {
+export type StayPoints = {
   coordinates: [number, number][]
   starttimes: Date[]
   endtimes: Date[]
+  distTreshMeters: number
+  timeThreshMinutes: number
+}
+
+function writeStaypointsToGeoJSON(sp: StayPoints, path: string) {
+  var geojson = {
+    name: 'StayPoints',
+    type: 'FeatureCollection',
+    features: [],
+  }
+
+  for (let i = 0; i < sp.coordinates.length; i++) {
+    geojson.features.push({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [sp.coordinates[i][1], sp.coordinates[i][0]],
+      },
+      properties: {
+        starttime: sp.starttimes[i],
+        endtime: sp.endtimes[i],
+      },
+    })
+  }
+  var data = JSON.stringify(geojson)
+  const fs = require('fs')
+  fs.writeFile(path, data, function (err) {
+    if (err) {
+      console.log(err)
+    }
+  })
 }
 
 /**
@@ -27,7 +58,7 @@ type StayPoints = {
  * @param  {number} timeThreshMinutes we need to spend more than this amount of minutes within distThreshMeters so that it is considered a staypoint
  * @return {staypoints} the identified staypoints
  */
-function getStayPoints(
+export function detectStayPoints(
   traj: TrajectoryData,
   distThreshMeters: number,
   timeThreshMinutes: number
@@ -46,6 +77,8 @@ function getStayPoints(
     coordinates: [],
     starttimes: [],
     endtimes: [],
+    distTreshMeters: distThreshMeters,
+    timeThreshMinutes: timeThreshMinutes,
   }
   while (i < length && j < length) {
     j = i + 1
@@ -60,7 +93,7 @@ function getStayPoints(
           staypoints.coordinates.push(computeMeanCoords(coords.slice(i, j)))
           staypoints.starttimes.push(times[i])
           staypoints.endtimes.push(times[j])
-          console.log('added staypoint from index', i, 'to', j - 1)
+          //console.log('added staypoint from index', i, 'to', j - 1)
         }
         i = j
         break
@@ -78,7 +111,7 @@ function getStayPoints(
       staypoints.coordinates.push(computeMeanCoords(coords.slice(i, j + 1)))
       staypoints.starttimes.push(times[i])
       staypoints.endtimes.push(times[j])
-      console.log('added staypoint from index', i, 'to', j)
+      //console.log('added staypoint from index', i, 'to', j)
     }
   }
   return staypoints
@@ -117,4 +150,6 @@ trj.coordinates.forEach(function(point, index){
     console.log(index, point);
 })
 */
-console.log(getStayPoints(trj, 100, 15))
+let sp = detectStayPoints(trj, 100, 15)
+console.log(sp)
+writeStaypointsToGeoJSON(sp, 'staypoints.geojson')
