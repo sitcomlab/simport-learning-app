@@ -27,6 +27,10 @@ function writeStaypointsToGeoJSON(sp: StayPoints, path: string) {
     name: 'StayPoints',
     type: 'FeatureCollection',
     features: [],
+    properties: {
+      distTreshMeters: sp.distTreshMeters,
+      timeThreshMinutes: sp.timeThreshMinutes,
+    },
   }
 
   for (let i = 0; i < sp.coordinates.length; i++) {
