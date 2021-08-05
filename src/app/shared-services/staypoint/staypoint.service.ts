@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
 import haversine from 'haversine-distance'
-import {
-  Trajectory,
-  TrajectoryType,
-  TrajectoryData,
-} from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
 import { StayPointData, StayPoints } from 'src/app/model/staypoints'
 
 @Injectable({
   providedIn: 'root',
 })
 export class StaypointService {
+  // for meaning of these two parameters, please see detectStayPoints() documentation
+  // if you change one or both, please also update the associated detected staypoints in staypoint.service.spec.ts
   readonly DIST_THRESH_METERS = 100
   readonly TIME_THRESH_MINUTES = 15
 
@@ -23,8 +21,6 @@ export class StaypointService {
    * @return The staypoints
    */
   async getStayPoints(trajectoryID: string): Promise<StayPoints> {
-    // TODO is the updating here necessary or slows down stuff too much?
-    await this.updateStayPoints(trajectoryID)
     const stayPoints: StayPoints = await this.db.getStaypoints(trajectoryID)
     return stayPoints
   }
@@ -53,10 +49,8 @@ export class StaypointService {
 
     if (
       // no staypoints or of wrong parameters in database -> we process whole trajectory
-      typeof oldStayPoints === undefined ||
-      oldStayPoints.coordinates.length === 0 ||
-      oldStayPoints.distTreshMeters !== this.DIST_THRESH_METERS ||
-      oldStayPoints.timeThreshMinutes !== this.TIME_THRESH_MINUTES
+      oldStayPoints === undefined ||
+      oldStayPoints.coordinates.length === 0
     ) {
       const spData = this.detectStayPoints(
         trajData,
@@ -65,8 +59,6 @@ export class StaypointService {
       )
       const spReturn: StayPoints = {
         trajID: trajectoryID,
-        distTreshMeters: this.DIST_THRESH_METERS,
-        timeThreshMinutes: this.TIME_THRESH_MINUTES,
         coordinates: spData.coordinates,
         starttimes: spData.starttimes,
         endtimes: spData.endtimes,
@@ -87,8 +79,6 @@ export class StaypointService {
     )
     const updatedStaypoints: StayPoints = {
       trajID: trajectoryID,
-      distTreshMeters: this.DIST_THRESH_METERS,
-      timeThreshMinutes: this.TIME_THRESH_MINUTES,
       // note that we have recomputed the last staypoint
       coordinates: oldStayPoints.coordinates
         .slice(0, -1)
@@ -214,38 +204,5 @@ export class StaypointService {
   private getTimeDeltaMinutes(firstDate: Date, secondDate: Date): number {
     const diff = (secondDate.getTime() - firstDate.getTime()) / 60000
     return diff
-  }
-
-  writeStaypointsToGeoJSON(sp: StayPoints, path: string) {
-    const geojson = {
-      name: 'StayPoints',
-      type: 'FeatureCollection',
-      features: [],
-      properties: {
-        trajID: sp.trajID,
-        distTreshMeters: sp.distTreshMeters,
-        timeThreshMinutes: sp.timeThreshMinutes,
-      },
-    }
-    for (let i = 0; i < sp.coordinates.length; i++) {
-      geojson.features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [sp.coordinates[i][1], sp.coordinates[i][0]],
-        },
-        properties: {
-          starttime: sp.starttimes[i],
-          endtime: sp.endtimes[i],
-        },
-      })
-    }
-    const data = JSON.stringify(geojson)
-    const fs = require('fs')
-    fs.writeFile(path, data, (err) => {
-      if (err) {
-        console.log(err)
-      }
-    })
   }
 }
