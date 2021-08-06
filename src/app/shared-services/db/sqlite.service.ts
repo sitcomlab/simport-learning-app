@@ -17,6 +17,7 @@ import {
   TrajectoryMeta,
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
+import { StayPoints } from 'src/app/model/staypoints'
 
 @Injectable()
 export class SqliteService {
@@ -332,6 +333,74 @@ export class SqliteService {
       [durationDays, trajectoryId].map(normalize)
     )
     return durationDays
+  }
+
+  async getStaypoints(id: string): Promise<StayPoints> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT * FROM staypoints WHERE trajectory=? ORDER BY starttime;`,
+      [id]
+    )
+    // empty staypoints are to be expected and are handled in sp service
+    if (!values.length) return undefined
+    const data = values.reduce<StayPoints>(
+      (d, { trajectory, lat, lon, starttime, endtime }) => {
+        d.coordinates.push([lat, lon])
+        d.starttimes.push(convertTimestampToDate(starttime))
+        d.endtimes.push(convertTimestampToDate(endtime))
+        return d
+      },
+      { trajID: id, coordinates: [], starttimes: [], endtimes: [] }
+    )
+    return data
+  }
+
+  async upsertStaypoints(id: string, sp: StayPoints) {
+    const numPoints = sp.coordinates.length
+    if (!numPoints) return
+
+    for (
+      let chunkIndex = 0, pointsIndex = 0;
+      chunkIndex < numPoints;
+      chunkIndex += SqliteService.chunkSize
+    ) {
+      const placeholders = []
+      const values = []
+      for (
+        ;
+        pointsIndex < chunkIndex + SqliteService.chunkSize &&
+        pointsIndex < numPoints;
+        pointsIndex++
+      ) {
+        const [lat, lon] = sp.coordinates[pointsIndex]
+        const starttime = sp.starttimes[pointsIndex]
+        const endtime = sp.endtimes[pointsIndex]
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(id, lat, lon, starttime, endtime)
+      }
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO staypoints VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.executeSet(set)
+      if (changes === -1) {
+        throw new Error(
+          `couldnt insert staypoints for trajectory ${id}: ${message}`
+        )
+      }
+    }
+  }
+
+  async deleteStaypoints(id: string) {
+    await this.ensureDbReady()
+    const statement = `DELETE FROM staypoints WHERE id = '${id}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(statement)
+    if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
   }
 }
 
