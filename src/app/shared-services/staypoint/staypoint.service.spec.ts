@@ -9,10 +9,15 @@ import {
   TrajectoryMeta,
 } from 'src/app/model/trajectory'
 import { StayPoints } from 'src/app/model/staypoints'
+import { TrajectoryService } from '../trajectory/trajectory.service'
+import { Observable, of } from 'rxjs'
+
+// run with "ng test --include src\app\shared-services\staypoint\staypoint.service.spec.ts"
 
 describe('StaypointService', () => {
   let service: StaypointService
   let sqliteServiceSpy: jasmine.SpyObj<SqliteService>
+  let trajServiceSpy: jasmine.SpyObj<TrajectoryService>
 
   const homeWorkTrajData: TrajectoryData = Trajectory.fromJSON(
     trajectoryFileHomeWork
@@ -62,20 +67,27 @@ describe('StaypointService', () => {
   }
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('SqliteService', [
+    const spyDB = jasmine.createSpyObj('SqliteService', [
       'getStaypoints',
-      'getFullTrajectory',
       'upsertStaypoints',
       'deleteStaypoints',
     ])
+    const spyTS = jasmine.createSpyObj('TrajectoryService', ['getOne'])
 
     TestBed.configureTestingModule({
-      providers: [StaypointService, { provide: SqliteService, useValue: spy }],
+      providers: [
+        StaypointService,
+        { provide: SqliteService, useValue: spyDB },
+        { provide: TrajectoryService, useValue: spyTS },
+      ],
     })
     service = TestBed.inject(StaypointService)
     sqliteServiceSpy = TestBed.inject(
       SqliteService
     ) as jasmine.SpyObj<SqliteService>
+    trajServiceSpy = TestBed.inject(
+      TrajectoryService
+    ) as jasmine.SpyObj<TrajectoryService>
   })
 
   it('should be created', () => {
@@ -111,23 +123,20 @@ describe('StaypointService', () => {
   })
 
   it('#updateStayPoints should calculate the correct staypoints for trajectory w/o previously calculated staypoints', (done: DoneFn) => {
-    sqliteServiceSpy.getFullTrajectory.and.returnValue(
-      Promise.resolve(homeWorkTraj)
-    )
+    trajServiceSpy.getOne.and.returnValue(of(homeWorkTraj))
     sqliteServiceSpy.getStaypoints.and.returnValue(Promise.resolve(undefined))
     sqliteServiceSpy.upsertStaypoints.and.returnValue(
       Promise.resolve(undefined)
     )
-    service.updateStayPoints('randomId').then(() => {
-      // get correct traj from DB
-      expect(sqliteServiceSpy.getFullTrajectory).toHaveBeenCalledOnceWith(
+    service.updateStayPoints(TrajectoryType.USERTRACK, 'randomId').then(() => {
+      expect(trajServiceSpy.getOne).toHaveBeenCalledOnceWith(
+        TrajectoryType.USERTRACK,
         'randomId'
       )
       expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      // what is passed to upsert is correct staypoints
       expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
         'randomId',
         homeWorkStayPoints,
@@ -137,21 +146,20 @@ describe('StaypointService', () => {
   })
 
   it('#updateStayPoints for trajectory with only one point should return empty staypoints', (done: DoneFn) => {
-    sqliteServiceSpy.getFullTrajectory.and.returnValue(Promise.resolve(cutTraj))
+    trajServiceSpy.getOne.and.returnValue(of(cutTraj))
     sqliteServiceSpy.getStaypoints.and.returnValue(Promise.resolve(undefined))
     sqliteServiceSpy.upsertStaypoints.and.returnValue(
       Promise.resolve(undefined)
     )
-    service.updateStayPoints('randomId').then(() => {
-      // get correct traj from DB
-      expect(sqliteServiceSpy.getFullTrajectory).toHaveBeenCalledOnceWith(
+    service.updateStayPoints(TrajectoryType.USERTRACK, 'randomId').then(() => {
+      expect(trajServiceSpy.getOne).toHaveBeenCalledOnceWith(
+        TrajectoryType.USERTRACK,
         'randomId'
       )
       expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      // what is passed to upsert is correct staypoints
       expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
         'randomId',
         emptyStayPoints,
@@ -161,25 +169,22 @@ describe('StaypointService', () => {
   })
 
   it('#updateStayPoints should calculate correct staypoints for traj w previously calculated incomplete staypoints', (done: DoneFn) => {
-    sqliteServiceSpy.getFullTrajectory.and.returnValue(
-      Promise.resolve(homeWorkTraj)
-    )
+    trajServiceSpy.getOne.and.returnValue(of(homeWorkTraj))
     sqliteServiceSpy.getStaypoints.and.returnValue(
       Promise.resolve(cutHomeWorkStayPoints)
     )
     sqliteServiceSpy.upsertStaypoints.and.returnValue(
       Promise.resolve(undefined)
     )
-    service.updateStayPoints('randomId').then(() => {
-      // get correct traj from DB
-      expect(sqliteServiceSpy.getFullTrajectory).toHaveBeenCalledOnceWith(
+    service.updateStayPoints(TrajectoryType.USERTRACK, 'randomId').then(() => {
+      expect(trajServiceSpy.getOne).toHaveBeenCalledOnceWith(
+        TrajectoryType.USERTRACK,
         'randomId'
       )
       expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      // what is passed to upsert is correct staypoints
       expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
         'randomId',
         homeWorkStayPoints,
@@ -189,25 +194,22 @@ describe('StaypointService', () => {
   })
 
   it('#updateStayPoints should calculate correct staypoints for traj w previously calculated complete staypoints', (done: DoneFn) => {
-    sqliteServiceSpy.getFullTrajectory.and.returnValue(
-      Promise.resolve(homeWorkTraj)
-    )
+    trajServiceSpy.getOne.and.returnValue(of(homeWorkTraj))
     sqliteServiceSpy.getStaypoints.and.returnValue(
       Promise.resolve(homeWorkStayPoints)
     )
     sqliteServiceSpy.upsertStaypoints.and.returnValue(
       Promise.resolve(undefined)
     )
-    service.updateStayPoints('randomId').then(() => {
-      // get correct traj from DB
-      expect(sqliteServiceSpy.getFullTrajectory).toHaveBeenCalledOnceWith(
+    service.updateStayPoints(TrajectoryType.USERTRACK, 'randomId').then(() => {
+      expect(trajServiceSpy.getOne).toHaveBeenCalledOnceWith(
+        TrajectoryType.USERTRACK,
         'randomId'
       )
       expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      // what is passed to upsert is correct staypoints
       expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
         'randomId',
         homeWorkStayPoints,

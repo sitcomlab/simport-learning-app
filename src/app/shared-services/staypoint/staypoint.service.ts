@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
 import haversine from 'haversine-distance'
-import { Trajectory, TrajectoryData } from 'src/app/model/trajectory'
+import {
+  Trajectory,
+  TrajectoryData,
+  TrajectoryType,
+} from 'src/app/model/trajectory'
 import { StayPointData, StayPoints } from 'src/app/model/staypoints'
+import { TrajectoryService } from '../trajectory/trajectory.service'
+import { take } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root',
@@ -13,10 +19,13 @@ export class StaypointService {
   readonly DIST_THRESH_METERS = 100
   readonly TIME_THRESH_MINUTES = 15
 
-  constructor(private db: SqliteService) {}
+  constructor(
+    private db: SqliteService,
+    private trajService: TrajectoryService
+  ) {}
 
   /**
-   * Return staypoints for trajectoryID saved in database (updates staypoints first)
+   * Return staypoints for trajectoryID saved in database
    * @param trajectoryID The identifier of the trajectory to which staypoints belong
    * @return The staypoints
    */
@@ -36,19 +45,25 @@ export class StaypointService {
 
   /**
    * Update (or create if nonexistent) staypoints for trajectoryID saved in database by incorporating new trajectory points
+   * @param trajectoryType The type of the trajectory to which staypoints belong
    * @param trajectoryID The identifier of the trajectory to which staypoints belong
    * @return Nothing
    */
-  async updateStayPoints(trajectoryID: string) {
-    const traj: Trajectory = await this.db.getFullTrajectory(trajectoryID)
+  async updateStayPoints(trajectoryType: TrajectoryType, trajectoryID: string) {
+    // atm we cannot save trajectories of type example due to the foreign key constraint, so we ignore them
+    if (trajectoryType === TrajectoryType.EXAMPLE) return
+
+    const traj: Trajectory = await this.trajService
+      .getOne(trajectoryType, trajectoryID)
+      .pipe(take(1))
+      .toPromise()
     const trajData: TrajectoryData = {
       coordinates: traj.coordinates,
       timestamps: traj.timestamps,
     }
     const oldStayPoints: StayPoints = await this.db.getStaypoints(trajectoryID)
-
     if (
-      // no staypoints or of wrong parameters in database -> we process whole trajectory
+      // no staypoints for this id in database -> we process whole trajectory
       oldStayPoints === undefined ||
       oldStayPoints.coordinates.length === 0
     ) {
