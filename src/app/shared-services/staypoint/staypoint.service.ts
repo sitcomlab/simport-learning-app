@@ -44,13 +44,13 @@ export class StaypointService {
   }
 
   /**
-   * Update (or create if nonexistent) staypoints for trajectoryID saved in database by incorporating new trajectory points
+   * Update (or create if nonexistent) staypoints for non-example trajectory saved in database by incorporating new trajectory points
    * @param trajectoryType The type of the trajectory to which staypoints belong
    * @param trajectoryID The identifier of the trajectory to which staypoints belong
    * @return Nothing
    */
   async updateStayPoints(trajectoryType: TrajectoryType, trajectoryID: string) {
-    // atm we cannot save trajectories of type example due to the foreign key constraint, so we ignore them
+    // atm we cannot save staypoints for traj of type example due to the foreign key constraint, so we ignore them
     if (trajectoryType === TrajectoryType.EXAMPLE) return
 
     const traj: Trajectory = await this.trajService

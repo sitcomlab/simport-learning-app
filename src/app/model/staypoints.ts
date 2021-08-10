@@ -8,6 +8,7 @@ export interface StayPoints extends StayPointData {
   trajID: string
 }
 
+declare var require: any
 export function writeStaypointsToGeoJSON(sp: StayPoints, path: string) {
   const geojson = {
     name: 'StayPoints',
