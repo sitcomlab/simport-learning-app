@@ -10,7 +10,7 @@ import {
 } from 'src/app/model/trajectory'
 import { StayPoints } from 'src/app/model/staypoints'
 import { TrajectoryService } from '../trajectory/trajectory.service'
-import { Observable, of } from 'rxjs'
+import { empty, Observable, of } from 'rxjs'
 
 // run with "ng test --include src\app\shared-services\staypoint\staypoint.service.spec.ts"
 
@@ -137,10 +137,11 @@ describe('StaypointService', () => {
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
-        'randomId',
-        homeWorkStayPoints,
-      ])
+      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[0]).toEqual(
+        'randomId'
+      )
+      const spReturned = sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[1]
+      expect(areStayPointsSimilar(spReturned, homeWorkStayPoints)).toBe(true)
       done()
     })
   })
@@ -160,10 +161,11 @@ describe('StaypointService', () => {
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
-        'randomId',
-        emptyStayPoints,
-      ])
+      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[0]).toEqual(
+        'randomId'
+      )
+      const spReturned = sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[1]
+      expect(areStayPointsSimilar(spReturned, emptyStayPoints)).toBe(true)
       done()
     })
   })
@@ -185,10 +187,11 @@ describe('StaypointService', () => {
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
-        'randomId',
-        homeWorkStayPoints,
-      ])
+      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[0]).toEqual(
+        'randomId'
+      )
+      const spReturned = sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[1]
+      expect(areStayPointsSimilar(spReturned, homeWorkStayPoints)).toBe(true)
       done()
     })
   })
@@ -210,11 +213,41 @@ describe('StaypointService', () => {
         'randomId'
       )
       expect(sqliteServiceSpy.upsertStaypoints).toHaveBeenCalledTimes(1)
-      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)).toEqual([
-        'randomId',
-        homeWorkStayPoints,
-      ])
+      expect(sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[0]).toEqual(
+        'randomId'
+      )
+      const spReturned = sqliteServiceSpy.upsertStaypoints.calls.argsFor(0)[1]
+      expect(areStayPointsSimilar(spReturned, homeWorkStayPoints)).toBe(true)
       done()
     })
   })
 })
+
+function areStayPointsSimilar(sp1: StayPoints, sp2: StayPoints): boolean {
+  if (
+    sp1.trajID !== sp2.trajID ||
+    sp1.coordinates.length !== sp2.coordinates.length ||
+    sp1.starttimes.length !== sp2.endtimes.length ||
+    sp1.starttimes.length !== sp2.endtimes.length
+  ) {
+    return false
+  }
+  const precisionCoordinates = 0.0001
+  const precisionMs = 100
+  for (let i = 0; i < sp2.coordinates.length; i++) {
+    if (
+      Math.abs(sp1.coordinates[i][0] - sp2.coordinates[i][0]) >
+        precisionCoordinates ||
+      Math.abs(sp1.coordinates[i][1] - sp2.coordinates[i][1]) >
+        precisionCoordinates ||
+      Math.abs(sp1.starttimes[i].getTime() - sp2.starttimes[i].getTime()) >
+        precisionMs ||
+      Math.abs(sp1.endtimes[i].getTime() - sp2.endtimes[i].getTime()) >
+        precisionMs
+    ) {
+      return false
+    }
+  }
+
+  return true
+}
