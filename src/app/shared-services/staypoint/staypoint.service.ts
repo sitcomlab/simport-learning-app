@@ -16,8 +16,8 @@ import { take } from 'rxjs/operators'
 export class StaypointService {
   // for meaning of these two parameters, please see detectStayPoints() documentation
   // if you change one or both, please also update the associated detected staypoints in staypoint.service.spec.fixtures.ts
-  static DIST_THRESH_METERS = 100
-  static TIME_THRESH_MINUTES = 15
+  static readonly DIST_THRESH_METERS = 100
+  static readonly TIME_THRESH_MINUTES = 15
 
   constructor(
     private db: SqliteService,
