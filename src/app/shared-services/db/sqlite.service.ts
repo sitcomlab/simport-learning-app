@@ -335,11 +335,11 @@ export class SqliteService {
     return durationDays
   }
 
-  async getStaypoints(id: string): Promise<StayPoints> {
+  async getStaypoints(trajectoryId: string): Promise<StayPoints> {
     await this.ensureDbReady()
     const { values } = await this.db.query(
       `SELECT * FROM staypoints WHERE trajectory=? ORDER BY starttime;`,
-      [id]
+      [trajectoryId]
     )
     // empty staypoints are to be expected and are handled in sp service
     if (!values.length) return undefined
@@ -350,13 +350,13 @@ export class SqliteService {
         d.endtimes.push(convertTimestampToDate(endtime))
         return d
       },
-      { trajID: id, coordinates: [], starttimes: [], endtimes: [] }
+      { trajID: trajectoryId, coordinates: [], starttimes: [], endtimes: [] }
     )
     return data
   }
 
-  async upsertStaypoints(id: string, sp: StayPoints) {
-    const numPoints = sp.coordinates.length
+  async upsertStaypoints(trajectoryId: string, stayPoints: StayPoints) {
+    const numPoints = stayPoints.coordinates.length
     if (!numPoints) return
 
     for (
@@ -372,11 +372,11 @@ export class SqliteService {
         pointsIndex < numPoints;
         pointsIndex++
       ) {
-        const [lat, lon] = sp.coordinates[pointsIndex]
-        const starttime = sp.starttimes[pointsIndex]
-        const endtime = sp.endtimes[pointsIndex]
+        const [lat, lon] = stayPoints.coordinates[pointsIndex]
+        const starttime = stayPoints.starttimes[pointsIndex]
+        const endtime = stayPoints.endtimes[pointsIndex]
         placeholders.push(`(?,?,?,?,?)`)
-        values.push(id, lat, lon, starttime, endtime)
+        values.push(trajectoryId, lat, lon, starttime, endtime)
       }
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO staypoints VALUES ${placeholderString}`
@@ -387,15 +387,15 @@ export class SqliteService {
       } = await this.db.executeSet(set)
       if (changes === -1) {
         throw new Error(
-          `couldnt insert staypoints for trajectory ${id}: ${message}`
+          `couldnt insert staypoints for trajectory ${trajectoryId}: ${message}`
         )
       }
     }
   }
 
-  async deleteStaypoints(id: string) {
+  async deleteStaypoints(trajectoryId: string) {
     await this.ensureDbReady()
-    const statement = `DELETE FROM staypoints WHERE id = '${id}';`
+    const statement = `DELETE FROM staypoints WHERE trajectory = '${trajectoryId}';`
     const {
       changes: { changes },
       message,

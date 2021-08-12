@@ -15,9 +15,9 @@ import { take } from 'rxjs/operators'
 })
 export class StaypointService {
   // for meaning of these two parameters, please see detectStayPoints() documentation
-  // if you change one or both, please also update the associated detected staypoints in staypoint.service.spec.ts
-  readonly DIST_THRESH_METERS = 100
-  readonly TIME_THRESH_MINUTES = 15
+  // if you change one or both, please also update the associated detected staypoints in staypoint.service.spec.fixtures.ts
+  static DIST_THRESH_METERS = 100
+  static TIME_THRESH_MINUTES = 15
 
   constructor(
     private db: SqliteService,
@@ -46,39 +46,36 @@ export class StaypointService {
   /**
    * Update (or create if nonexistent) staypoints for non-example trajectory saved in database by incorporating new trajectory points
    * @param trajectoryType The type of the trajectory to which staypoints belong
-   * @param trajectoryID The identifier of the trajectory to which staypoints belong
+   * @param trajectoryId The identifier of the trajectory to which staypoints belong
    * @return Nothing
    */
-  async updateStayPoints(trajectoryType: TrajectoryType, trajectoryID: string) {
+  async updateStayPoints(trajectoryType: TrajectoryType, trajectoryId: string) {
     // atm we cannot save staypoints for traj of type example due to the foreign key constraint, so we ignore them
     if (trajectoryType === TrajectoryType.EXAMPLE) return
 
     const traj: Trajectory = await this.trajService
-      .getOne(trajectoryType, trajectoryID)
+      .getOne(trajectoryType, trajectoryId)
       .pipe(take(1))
       .toPromise()
     const trajData: TrajectoryData = {
       coordinates: traj.coordinates,
       timestamps: traj.timestamps,
     }
-    const oldStayPoints: StayPoints = await this.db.getStaypoints(trajectoryID)
-    if (
-      // no staypoints for this id in database -> we process whole trajectory
-      oldStayPoints === undefined ||
-      oldStayPoints.coordinates.length === 0
-    ) {
+    const oldStayPoints: StayPoints = await this.db.getStaypoints(trajectoryId)
+    // no staypoints for this id in database -> we process whole trajectory
+    if (oldStayPoints === undefined || oldStayPoints.coordinates.length === 0) {
       const spData = this.detectStayPoints(
         trajData,
-        this.DIST_THRESH_METERS,
-        this.TIME_THRESH_MINUTES
+        StaypointService.DIST_THRESH_METERS,
+        StaypointService.TIME_THRESH_MINUTES
       )
       const spReturn: StayPoints = {
-        trajID: trajectoryID,
+        trajID: trajectoryId,
         coordinates: spData.coordinates,
         starttimes: spData.starttimes,
         endtimes: spData.endtimes,
       }
-      await this.db.upsertStaypoints(trajectoryID, spReturn)
+      await this.db.upsertStaypoints(trajectoryId, spReturn)
       return
     }
 
@@ -89,11 +86,11 @@ export class StaypointService {
     )
     const newSpData = this.detectStayPoints(
       recentTrajData,
-      this.DIST_THRESH_METERS,
-      this.TIME_THRESH_MINUTES
+      StaypointService.DIST_THRESH_METERS,
+      StaypointService.TIME_THRESH_MINUTES
     )
     const updatedStaypoints: StayPoints = {
-      trajID: trajectoryID,
+      trajID: trajectoryId,
       // note that we have recomputed the last staypoint
       coordinates: oldStayPoints.coordinates
         .slice(0, -1)
@@ -103,7 +100,7 @@ export class StaypointService {
         .concat(newSpData.starttimes),
       endtimes: oldStayPoints.endtimes.slice(0, -1).concat(newSpData.endtimes),
     }
-    await this.db.upsertStaypoints(trajectoryID, updatedStaypoints)
+    await this.db.upsertStaypoints(trajectoryId, updatedStaypoints)
   }
 
   // return final part of provided trajectory, starting at or after starttime of last of provided staypoints
@@ -146,8 +143,8 @@ export class StaypointService {
     const length = coords.length
     let i = 0 // i (index into coords) is the current candidate for staypoint
     let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
-    let dist
-    let timeDelta
+    let dist: number
+    let timeDelta: number
     const staypoints: StayPointData = {
       coordinates: [],
       starttimes: [],
@@ -169,7 +166,6 @@ export class StaypointService {
             staypoints.starttimes.push(times[i])
             // end of staypoint is start of first moving point
             staypoints.endtimes.push(times[j])
-            // console.log('added staypoint from index', i, 'to', j - 1)
           }
           i = j
           break
@@ -189,7 +185,6 @@ export class StaypointService {
         )
         staypoints.starttimes.push(times[i])
         staypoints.endtimes.push(times[j])
-        // console.log('added staypoint from index', i, 'to', j)
       }
     }
     return staypoints
@@ -215,6 +210,7 @@ export class StaypointService {
     const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
     return haversine(a, b)
   }
+
   // compute distance in minutes between two dates; returns negative number if second date lies before first
   private getTimeDeltaMinutes(firstDate: Date, secondDate: Date): number {
     const diff = (secondDate.getTime() - firstDate.getTime()) / 60000
