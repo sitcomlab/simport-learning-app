@@ -7,6 +7,7 @@ import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location.service'
 import { TrajectoryImportExportService } from './trajectory/trajectory-import-export.service'
 import { TrajectoryService } from './trajectory/trajectory.service'
+import { StaypointDetector } from './staypoint/staypoint-detector'
 
 @NgModule({
   providers: [
@@ -19,6 +20,7 @@ import { TrajectoryService } from './trajectory/trajectory.service'
     TrajectoryService,
     TrajectoryImportExportService,
     SqliteService,
+    StaypointDetector,
   ],
   imports: [CommonModule, HttpClientModule],
 })

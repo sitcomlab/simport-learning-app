@@ -3,6 +3,10 @@ import { Inference } from 'src/app/model/inference'
 import { StayPoints } from 'src/app/model/staypoints'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import clustering from 'density-clustering'
+import ownTrajectory from './input/own_trajectory.json'
+import { StaypointDetector } from 'src/app/shared-services/staypoint/staypoint-detector'
+import { Trajectory } from 'src/app/model/trajectory'
+import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 
 // run
 // cd .\dev\clustering-experiments
@@ -212,3 +216,26 @@ export class EngineUsingStayPoints {
     return [meanLat, meanLong]
   }
 }
+
+async function main() {
+  let detector = new StaypointDetector()
+  let engine = new EngineUsingStayPoints()
+
+  let staypointdata = detector.detectStayPoints(
+    Trajectory.fromJSON(ownTrajectory),
+    StaypointService.DIST_THRESH_METERS,
+    StaypointService.TIME_THRESH_MINUTES
+  )
+  let staypoints = {
+    trajID: 'own_trajectory',
+    coordinates: staypointdata.coordinates,
+    starttimes: staypointdata.starttimes,
+    endtimes: staypointdata.endtimes,
+  }
+  let homeInference = engine.inferHomeFromStayPoints(staypoints)
+  let workInference = engine.inferWorkFromStayPoints(staypoints)
+  console.log(homeInference)
+  console.log(workInference)
+}
+
+main().catch((err) => console.error(err))
