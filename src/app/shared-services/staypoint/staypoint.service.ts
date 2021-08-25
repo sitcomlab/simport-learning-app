@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
-import haversine from 'haversine-distance'
 import {
   Trajectory,
   TrajectoryData,
   TrajectoryType,
 } from 'src/app/model/trajectory'
-import { StayPointData, StayPoints } from 'src/app/model/staypoints'
+import { StayPoints } from 'src/app/model/staypoints'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
+import { StaypointDetector } from './staypoint-detector'
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,8 @@ export class StaypointService {
 
   constructor(
     private db: SqliteService,
-    private trajService: TrajectoryService
+    private trajService: TrajectoryService,
+    private staypointDetector: StaypointDetector
   ) {}
 
   /**
@@ -64,7 +65,7 @@ export class StaypointService {
     const oldStayPoints: StayPoints = await this.db.getStaypoints(trajectoryId)
     // no staypoints for this id in database -> we process whole trajectory
     if (oldStayPoints === undefined || oldStayPoints.coordinates.length === 0) {
-      const spData = this.detectStayPoints(
+      const spData = this.staypointDetector.detectStayPoints(
         trajData,
         StaypointService.DIST_THRESH_METERS,
         StaypointService.TIME_THRESH_MINUTES
@@ -84,7 +85,7 @@ export class StaypointService {
       trajData,
       oldStayPoints
     )
-    const newSpData = this.detectStayPoints(
+    const newSpData = this.staypointDetector.detectStayPoints(
       recentTrajData,
       StaypointService.DIST_THRESH_METERS,
       StaypointService.TIME_THRESH_MINUTES
@@ -120,100 +121,5 @@ export class StaypointService {
       timestamps: traj.timestamps.slice(firstIndex),
     }
     return cutTraj
-  }
-
-  /**
-   * compute staypoints from trajectory, based on Li et al 2008, "Mining User Similarity Based on Location History"
-   * @param  traj The input trajectory
-   * @param  distThreshMeters the max spatial radius in meters within which points can be clustered into a staypoint
-   * @param  timeThreshMinutes we need to spend more than this amount of minutes within
-   *  distThreshMeters so that it is considered a staypoint
-   * @return the identified staypoints
-   */
-  private detectStayPoints(
-    traj: TrajectoryData,
-    distThreshMeters: number,
-    timeThreshMinutes: number
-  ): StayPointData {
-    if (traj.coordinates.length !== traj.timestamps.length) {
-      throw new Error('Coordinate and timestamp array must be of same length')
-    }
-    const coords = traj.coordinates
-    const times = traj.timestamps
-    const length = coords.length
-    let i = 0 // i (index into coords) is the current candidate for staypoint
-    let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
-    let dist: number
-    let timeDelta: number
-    const staypoints: StayPointData = {
-      coordinates: [],
-      starttimes: [],
-      endtimes: [],
-    }
-    while (i < length && j < length) {
-      j = i + 1
-      while (j < length) {
-        dist = this.computeHaversineDistance(coords[i], coords[j])
-        // if j is within distance of i, it is part of this potential staypoint...
-        if (dist > distThreshMeters) {
-          // .. if it is further away, we have left i
-          timeDelta = this.getTimeDeltaMinutes(times[i], times[j])
-          if (timeDelta > timeThreshMinutes) {
-            // we only log i to (j-1) as a staypoint if we spent more than threshold there
-            staypoints.coordinates.push(
-              this.computeMeanCoords(coords.slice(i, j))
-            )
-            staypoints.starttimes.push(times[i])
-            // end of staypoint is start of first moving point
-            staypoints.endtimes.push(times[j])
-          }
-          i = j
-          break
-        }
-        j += 1
-      }
-    }
-    // If we spent a lot of time near the last i, we add it as staypoint even though we never left it
-    // but only if i isnt the last point anyways
-    if (i !== length - 1) {
-      j = j - 1
-      timeDelta = this.getTimeDeltaMinutes(times[i], times[j])
-      if (timeDelta > timeThreshMinutes) {
-        // as opposed to the same part in the loop, here we consider j to be part of the staypoint
-        staypoints.coordinates.push(
-          this.computeMeanCoords(coords.slice(i, j + 1))
-        )
-        staypoints.starttimes.push(times[i])
-        staypoints.endtimes.push(times[j])
-      }
-    }
-    return staypoints
-  }
-
-  // compute arithmetic mean of coords
-  // TODO implement more general solution (turf.JS?) as this will not work at high latitudes/near dateline
-  private computeMeanCoords(coords: [number, number][]): [number, number] {
-    let meanLat = 0
-    let meanLong = 0
-    coords.forEach((point) => {
-      meanLat += point[0]
-      meanLong += point[1]
-    })
-    meanLat = meanLat / coords.length
-    meanLong = meanLong / coords.length
-    return [meanLat, meanLong]
-  }
-
-  // compute approx distance between two coordinates in meters
-  private computeHaversineDistance(firstCoordinate, secondCoordinate): number {
-    const a = { latitude: firstCoordinate[0], longitude: firstCoordinate[1] }
-    const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
-    return haversine(a, b)
-  }
-
-  // compute distance in minutes between two dates; returns negative number if second date lies before first
-  private getTimeDeltaMinutes(firstDate: Date, secondDate: Date): number {
-    const diff = (secondDate.getTime() - firstDate.getTime()) / 60000
-    return diff
   }
 }
