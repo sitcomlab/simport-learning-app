@@ -1,12 +1,12 @@
 import { Trajectory } from 'src/app/model/trajectory'
 
 // trajectory test files
-import trajectoryFileMobileOnly from '../test-data/test-mobile-only.json'
-import trajectoryFileHomeWork from '../test-data/test-home-work.json'
-import trajectoryFileSpatiallyDense from '../test-data/test-home-work-spatially-dense.json'
-import trajectoryFileTemporallySparse from '../test-data/test-home-work-temporally-sparse.json'
+import trajectoryFileMobileOnly from '../../test-data/test-mobile-only.json'
+import trajectoryFileHomeWork from '../../test-data/test-home-work.json'
+import trajectoryFileSpatiallyDense from '../../test-data/test-home-work-spatially-dense.json'
+import trajectoryFileTemporallySparse from '../../test-data/test-home-work-temporally-sparse.json'
 import trajectoryNepalFile from 'src/assets/trajectories/3384596.json'
-import { InferenceType } from './types'
+import { InferenceType } from './../types'
 import { LatLngTuple } from 'leaflet'
 
 export const trajectoryEmpty = {
@@ -33,10 +33,10 @@ export const trajectoryHomeWorkTemporallySparse = Trajectory.fromJSON(
 
 export const trajectoryHomeResult = {
   name: InferenceType.home,
-  location: [51.972509, 7.577781] as LatLngTuple,
+  location: [51.972540416666675, 7.577736249999999] as LatLngTuple,
 }
 
 export const trajectoryWorkResult = {
   name: InferenceType.work,
-  location: [51.969284, 7.595887] as LatLngTuple,
+  location: [51.96934469387755, 7.5961142857142825] as LatLngTuple,
 }
