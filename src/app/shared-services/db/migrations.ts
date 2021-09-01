@@ -110,6 +110,7 @@ export const MIGRATIONS = [
     lon FLOAT NOT NULL,
     starttime DATETIME NOT NULL,
     endtime DATETIME NOT NULL,
+    observationcount FLOAT NOT NULL,
     PRIMARY KEY (trajectory, starttime),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 ]

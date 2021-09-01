@@ -182,6 +182,34 @@ describe('StaypointService', () => {
       done()
     })
   })
+
+  it('#computeStayPointClusters should compute nothing for empty staypoints', (done: DoneFn) => {
+    sqliteServiceSpy.getStaypoints.and.returnValue(Promise.resolve(undefined))
+    service
+      .computeStayPointClusters(TrajectoryType.USERTRACK, 'randomId')
+      .then((value) => {
+        expect(value).toEqual(undefined)
+        expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
+          'randomId'
+        )
+        done()
+      })
+  })
+
+  it('#computeStayPointClusters should compute two clusters for staypoints from home-work trajectory', (done: DoneFn) => {
+    sqliteServiceSpy.getStaypoints.and.returnValue(
+      Promise.resolve(fixtures.homeWorkStayPoints)
+    )
+    service
+      .computeStayPointClusters(TrajectoryType.USERTRACK, 'randomId')
+      .then((value) => {
+        expect(value.length).toEqual(2)
+        expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
+          'randomId'
+        )
+        done()
+      })
+  })
 })
 
 function areStayPointsSimilar(sp1: StayPoints, sp2: StayPoints): boolean {
@@ -189,7 +217,8 @@ function areStayPointsSimilar(sp1: StayPoints, sp2: StayPoints): boolean {
     sp1.trajID !== sp2.trajID ||
     sp1.coordinates.length !== sp2.coordinates.length ||
     sp1.starttimes.length !== sp2.endtimes.length ||
-    sp1.starttimes.length !== sp2.endtimes.length
+    sp1.starttimes.length !== sp2.endtimes.length ||
+    sp1.observationcount.length !== sp2.observationcount.length
   ) {
     return false
   }
@@ -204,7 +233,8 @@ function areStayPointsSimilar(sp1: StayPoints, sp2: StayPoints): boolean {
       Math.abs(sp1.starttimes[i].getTime() - sp2.starttimes[i].getTime()) >
         precisionMs ||
       Math.abs(sp1.endtimes[i].getTime() - sp2.endtimes[i].getTime()) >
-        precisionMs
+        precisionMs ||
+      sp1.observationcount[i] !== sp2.observationcount[i]
     ) {
       return false
     }

@@ -35,12 +35,14 @@ export const homeWorkStayPoints: StayPoints = {
     new Date('2021-02-25T08:39:04.541Z'),
   ],
   trajID: 'randomId',
+  observationcount: [157, 121, 163],
 }
 export const cutHomeWorkStayPoints: StayPoints = {
-  coordinates: homeWorkStayPoints.coordinates.slice(0, 1),
-  starttimes: homeWorkStayPoints.starttimes.slice(0, 1),
-  endtimes: homeWorkStayPoints.endtimes.slice(0, 1),
+  coordinates: homeWorkStayPoints.coordinates.slice(0, 2),
+  starttimes: homeWorkStayPoints.starttimes.slice(0, 2),
+  endtimes: homeWorkStayPoints.endtimes.slice(0, 2),
   trajID: 'randomId',
+  observationcount: homeWorkStayPoints.observationcount.slice(0, 2),
 }
 export const cutTrajData: TrajectoryData = {
   coordinates: [homeWorkTrajData.coordinates[0]],
@@ -52,4 +54,5 @@ export const emptyStayPoints: StayPoints = {
   coordinates: [],
   starttimes: [],
   endtimes: [],
+  observationcount: [],
 }

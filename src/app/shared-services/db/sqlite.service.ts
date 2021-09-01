@@ -344,13 +344,20 @@ export class SqliteService {
     // empty staypoints are to be expected and are handled in sp service
     if (!values.length) return undefined
     const data = values.reduce<StayPoints>(
-      (d, { trajectory, lat, lon, starttime, endtime }) => {
+      (d, { trajectory, lat, lon, starttime, endtime, observationcount }) => {
         d.coordinates.push([lat, lon])
         d.starttimes.push(convertTimestampToDate(starttime))
         d.endtimes.push(convertTimestampToDate(endtime))
+        d.observationcount.push(observationcount)
         return d
       },
-      { trajID: trajectoryId, coordinates: [], starttimes: [], endtimes: [] }
+      {
+        trajID: trajectoryId,
+        coordinates: [],
+        starttimes: [],
+        endtimes: [],
+        observationcount: [],
+      }
     )
     return data
   }
@@ -375,8 +382,16 @@ export class SqliteService {
         const [lat, lon] = stayPoints.coordinates[pointsIndex]
         const starttime = stayPoints.starttimes[pointsIndex]
         const endtime = stayPoints.endtimes[pointsIndex]
-        placeholders.push(`(?,?,?,?,?)`)
-        values.push(trajectoryId, lat, lon, starttime, endtime)
+        const observationcount = stayPoints.observationcount[pointsIndex]
+        placeholders.push(`(?,?,?,?,?,?)`)
+        values.push(
+          trajectoryId,
+          lat,
+          lon,
+          starttime,
+          endtime,
+          observationcount
+        )
       }
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO staypoints VALUES ${placeholderString}`
