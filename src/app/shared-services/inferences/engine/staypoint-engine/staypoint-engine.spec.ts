@@ -31,14 +31,14 @@ describe('inferences/StaypointEngine', () => {
       t.test(new StaypointEngine())
     })
 
-    // it('should not infer for mobile only trajectory', () => {
-    //   const t = new InferenceTestCase(
-    //     fixtures.trajectoryMobileOnly,
-    //     [HomeInference],
-    //     []
-    //   )
-    //   t.test(new StaypointEngine())
-    // })
+    it('should not infer for mobile only trajectory', () => {
+      const t = new InferenceTestCase(
+        fixtures.trajectoryMobileOnly,
+        [HomeInference],
+        []
+      )
+      t.test(new StaypointEngine())
+    })
 
     it('should infer for home-work data', () => {
       const t = new InferenceTestCase(
