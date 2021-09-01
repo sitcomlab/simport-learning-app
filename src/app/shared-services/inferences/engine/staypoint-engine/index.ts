@@ -24,8 +24,8 @@ export class StaypointEngine implements IInferenceEngine {
   ]
 
   private staypointDetector: StaypointDetector = new StaypointDetector()
-  private DIST_TRESHOLD_METERS = 50
-  private TIME_TRESHOLD_MINUTES = 5
+  private DIST_TRESHOLD_METERS = 150
+  private TIME_TRESHOLD_MINUTES = 15
 
   private inputCoordinatesLimit = 100000
 
@@ -60,16 +60,18 @@ export class StaypointEngine implements IInferenceEngine {
       endtimes: stayPointData.endtimes,
     }
 
-    const inferenceResults = inferences.map((i) => {
-      if (i.type === InferenceType.home) {
-        const inference = inferHomeFromStayPoints(stayPoints)
-        if (inference) return inference
-      }
-      if (i.type === InferenceType.work) {
-        const inference = inferWorkFromStayPoints(stayPoints)
-        if (inference) return inference
-      }
-    })
+    const inferenceResults = inferences
+      .map((i) => {
+        if (i.type === InferenceType.home) {
+          const inference = inferHomeFromStayPoints(stayPoints)
+          if (inference) return inference
+        }
+        if (i.type === InferenceType.work) {
+          const inference = inferWorkFromStayPoints(stayPoints)
+          if (inference) return inference
+        }
+      })
+      .filter((i) => i) // filter undefined values
 
     return {
       status:
