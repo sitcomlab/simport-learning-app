@@ -190,7 +190,7 @@ export class InferenceService implements OnDestroy {
   private async showLoadingDialog() {
     if (!this.loadingOverlay) {
       this.loadingOverlay = await this.loadingController.create({
-        message: 'Inferences are generated …',
+        message: 'Generating inferences from your location history …',
         translucent: true,
       })
       await this.loadingOverlay.present()
