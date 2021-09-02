@@ -13,6 +13,10 @@ import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
+import { Plugins } from '@capacitor/core'
+import { LoadingController } from '@ionic/angular'
+
+const { App, BackgroundTask } = Plugins
 
 export enum InferenceServiceEvent {
   configureFilter = 'configureFilter',
@@ -32,6 +36,9 @@ export class InferenceService implements OnDestroy {
   private inferenceEngine = new SimpleEngine()
   private filterConfigSubscription: Subscription
 
+  private loadingOverlay: HTMLIonLoadingElement = undefined
+  private isGeneratingInferences = false
+
   lastInferenceTime = new BehaviorSubject<number>(0)
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
     confidenceThreshold: 0.5,
@@ -49,13 +56,21 @@ export class InferenceService implements OnDestroy {
   constructor(
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
-    private dbService: SqliteService
+    private dbService: SqliteService,
+    private loadingController: LoadingController
   ) {
     this.filterConfigSubscription = this.filterConfiguration.subscribe(
       async (_) => {
         this.triggerEvent(InferenceServiceEvent.filterConfigurationChanged)
       }
     )
+
+    App.addListener('appStateChange', async (state) => {
+      if (state.isActive) {
+        // the app became active, update dialog-visibility
+        await this.updateLoadingDialog()
+      }
+    })
   }
 
   ngOnDestroy() {
@@ -107,6 +122,22 @@ export class InferenceService implements OnDestroy {
     return inference
   }
 
+  triggerUserInferenceGenerationIfViable() {
+    if (this.isWithinInferenceSchedule() && !this.isGeneratingInferences) {
+      this.isGeneratingInferences = true
+      const taskId = BackgroundTask.beforeExit(async () => {
+        await this.updateLoadingDialog()
+        await this.generateUserInference().finally(async () => {
+          this.isGeneratingInferences = false
+          await this.updateLoadingDialog()
+          BackgroundTask.finish({
+            taskId,
+          })
+        })
+      })
+    }
+  }
+
   async generateUserInference(): Promise<InferenceResult> {
     const time = new Date().getTime()
     this.lastInferenceTime.next(time)
@@ -123,7 +154,7 @@ export class InferenceService implements OnDestroy {
     return inferenceResult
   }
 
-  isWithinInferenceSchedule(): boolean {
+  private isWithinInferenceSchedule(): boolean {
     const timestamp = new Date().getTime()
     const diffInMinutes = (timestamp - this.lastInferenceTime.value) / 1000 / 60
     return diffInMinutes > InferenceService.inferenceIntervalMinutes
@@ -147,5 +178,29 @@ export class InferenceService implements OnDestroy {
       inferences,
     }
     return persisted
+  }
+
+  private async updateLoadingDialog() {
+    if (this.isGeneratingInferences) {
+      await this.showLoadingDialog()
+    } else {
+      await this.hideLoadingDialog()
+    }
+  }
+  private async showLoadingDialog() {
+    if (!this.loadingOverlay) {
+      this.loadingOverlay = await this.loadingController.create({
+        message: 'Inferences are generated …',
+        translucent: true,
+      })
+      await this.loadingOverlay.present()
+    }
+  }
+
+  private async hideLoadingDialog() {
+    if (this.loadingOverlay) {
+      await this.loadingOverlay.dismiss()
+      this.loadingOverlay = undefined
+    }
   }
 }

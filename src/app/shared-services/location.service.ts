@@ -118,14 +118,7 @@ export class LocationService implements OnDestroy {
           speed,
         })
 
-        if (this.inferenceService.isWithinInferenceSchedule()) {
-          this.backgroundGeolocation.startTask().then(async (taskId) => {
-            await this.inferenceService.generateUserInference().finally(() => {
-              this.backgroundGeolocation.endTask(taskId)
-            })
-          })
-        }
-
+        this.inferenceService.triggerUserInferenceGenerationIfViable()
         this.scheduleNotification(
           'Location Update',
           `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
