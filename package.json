@@ -41,6 +41,7 @@
     "capacitor-file-selector": "0.0.5",
     "concaveman": "github:grassick/concaveman#patch-1",
     "cordova-plugin-android-permissions": "^1.1.2",
+    "cordova-plugin-background-fetch": "^7.0.3",
     "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-x-socialsharing": "^6.0.3",

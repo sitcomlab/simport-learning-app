@@ -13,8 +13,9 @@ import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
-import { Plugins } from '@capacitor/core'
 import { LoadingController } from '@ionic/angular'
+import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { Plugins } from '@capacitor/core'
 
 const { App, BackgroundTask } = Plugins
 
@@ -32,10 +33,13 @@ export class InferenceFilterConfiguration {
   providedIn: 'root',
 })
 export class InferenceService implements OnDestroy {
-  private static inferenceIntervalMinutes = 240 // 4 hours
+  // 8 hours-interval for inference-generation via location-updates
+  private static inferenceIntervalMinutes = 480
+  // 24 hours-interval for inference-generation via independent and limited background-fetch
+  private static inferenceBackgroundFetchIntervalMinutes = 1440
+
   private inferenceEngine = new SimpleEngine()
   private filterConfigSubscription: Subscription
-
   private loadingOverlay: HTMLIonLoadingElement = undefined
   private isGeneratingInferences = false
 
@@ -71,6 +75,7 @@ export class InferenceService implements OnDestroy {
         await this.updateLoadingDialog()
       }
     })
+    this.initBackgroundInferenceGeneration()
   }
 
   ngOnDestroy() {
@@ -122,42 +127,18 @@ export class InferenceService implements OnDestroy {
     return inference
   }
 
-  triggerUserInferenceGenerationIfViable() {
-    if (this.isWithinInferenceSchedule() && !this.isGeneratingInferences) {
-      this.isGeneratingInferences = true
-      const taskId = BackgroundTask.beforeExit(async () => {
-        await this.updateLoadingDialog()
-        await this.generateUserInference().finally(async () => {
-          this.isGeneratingInferences = false
-          await this.updateLoadingDialog()
-          BackgroundTask.finish({
-            taskId,
-          })
-        })
-      })
-    }
-  }
-
-  async generateUserInference(): Promise<InferenceResult> {
-    const time = new Date().getTime()
-    this.lastInferenceTime.next(time)
+  private async generateUserInference(): Promise<InferenceResult> {
     const trajectory = await this.trajectoryService
       .getFullUserTrack()
       .pipe(take(1))
       .toPromise()
-
     const inferenceResult = await this.generateInferencesForTrajectory(
       trajectory
     )
+    this.lastInferenceTime.next(new Date().getTime())
 
     // TODO: persist generated inferences
     return inferenceResult
-  }
-
-  private isWithinInferenceSchedule(): boolean {
-    const timestamp = new Date().getTime()
-    const diffInMinutes = (timestamp - this.lastInferenceTime.value) / 1000 / 60
-    return diffInMinutes > InferenceService.inferenceIntervalMinutes
   }
 
   async loadPersistedInferences(
@@ -178,6 +159,68 @@ export class InferenceService implements OnDestroy {
       inferences,
     }
     return persisted
+  }
+
+  // background inference updates
+
+  triggerUserInferenceGenerationIfViable() {
+    if (this.isWithinInferenceSchedule() && !this.isGeneratingInferences) {
+      this.isGeneratingInferences = true
+      const taskId = BackgroundTask.beforeExit(async () => {
+        await this.updateLoadingDialog()
+        await this.generateUserInference().finally(async () => {
+          this.isGeneratingInferences = false
+          await this.updateLoadingDialog()
+          BackgroundTask.finish({
+            taskId,
+          })
+        })
+      })
+    }
+  }
+
+  private async initBackgroundInferenceGeneration() {
+    const status = await BackgroundFetch.configure(
+      {
+        minimumFetchInterval:
+          InferenceService.inferenceBackgroundFetchIntervalMinutes,
+      },
+      async (taskId) => {
+        // OS has granted background-time, perform inference-generation if viable
+        if (this.isWithinInferenceSchedule() && !this.isGeneratingInferences) {
+          this.isGeneratingInferences = true
+          await this.generateUserInference()
+          this.isGeneratingInferences = false
+        }
+        BackgroundFetch.finish(taskId)
+      },
+      async (taskId) => {
+        // OS signalled that the remaining background-time has expired
+        this.isGeneratingInferences = false
+        BackgroundFetch.finish(taskId)
+      }
+    )
+
+    // Checking BackgroundFetch status:
+    if (status !== BackgroundFetch.STATUS_AVAILABLE) {
+      if (status === BackgroundFetch.STATUS_DENIED) {
+        console.log(
+          'The user explicitly disabled background behavior for this app or for the whole system.'
+        )
+      } else if (status === BackgroundFetch.STATUS_RESTRICTED) {
+        console.log(
+          'Background updates are unavailable and the user cannot enable them again.'
+        )
+      }
+    }
+  }
+
+  // helper methods
+
+  private isWithinInferenceSchedule(): boolean {
+    const timestamp = new Date().getTime()
+    const diffInMinutes = (timestamp - this.lastInferenceTime.value) / 1000 / 60
+    return diffInMinutes > InferenceService.inferenceIntervalMinutes
   }
 
   private async updateLoadingDialog() {
