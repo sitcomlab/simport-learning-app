@@ -5,24 +5,30 @@ import {
   TrajectoryData,
   TrajectoryType,
 } from 'src/app/model/trajectory'
-import { StayPoints } from 'src/app/model/staypoints'
+import { StayPointCluster, StayPoints } from 'src/app/model/staypoints'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { StaypointDetector } from './staypoint-detector'
+import { StaypointClusterer } from './staypoint-clusterer'
 
 @Injectable({
   providedIn: 'root',
 })
 export class StaypointService {
-  // for meaning of these two parameters, please see detectStayPoints() documentation
+  // for meaning of these two parameters, please see StaypointDetector.detectStayPoints() documentation
   // if you change one or both, please also update the associated detected staypoints in staypoint.service.spec.fixtures.ts
   static readonly DIST_THRESH_METERS = 100
   static readonly TIME_THRESH_MINUTES = 15
 
+  // for meaning of these two parameters, please see StaypointClusterer.clusterStayPoints() documentation
+  static readonly CLUSTERING_NEIGHBORHOOD_RADIUS = 11
+  static readonly CLUSTERING_POINTS_IN_NEIGHBORHOOD = 1
+
   constructor(
     private db: SqliteService,
     private trajService: TrajectoryService,
-    private staypointDetector: StaypointDetector
+    private staypointDetector: StaypointDetector,
+    private staypointClusterer: StaypointClusterer
   ) {}
 
   /**
@@ -102,6 +108,29 @@ export class StaypointService {
       endtimes: oldStayPoints.endtimes.slice(0, -1).concat(newSpData.endtimes),
     }
     await this.db.upsertStaypoints(trajectoryId, updatedStaypoints)
+  }
+
+  /**
+   * Return array of staypoint clusters from saved staypoints for given trajectoryID
+   * (for newest staypoints, call updateStaypoines() first),
+   * @param trajectoryId The identifier of the trajectory to which staypoints belong.
+   * @return An array of staypoint clusters.
+   */
+  async computeStayPointClusters(
+    trajectoryType: TrajectoryType,
+    trajectoryId: string
+  ): Promise<StayPointCluster[]> {
+    // atm we do not save staypoints for traj of type example in database, so we do not compute clusters for it
+    if (trajectoryType === TrajectoryType.EXAMPLE) return undefined
+    const stayPoints: StayPoints = await this.db.getStaypoints(trajectoryId)
+    if (stayPoints === undefined || stayPoints.coordinates.length === 0)
+      return undefined
+    const stayPointClusters = await this.staypointClusterer.clusterStayPoints(
+      stayPoints,
+      StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
+      StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
+    )
+    return stayPointClusters
   }
 
   // return final part of provided trajectory, starting at or after starttime of last of provided staypoints
