@@ -13,6 +13,7 @@ import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
+import { StaypointEngine } from './engine/staypoint-engine'
 
 export enum InferenceServiceEvent {
   configureFilter = 'configureFilter',
@@ -29,7 +30,8 @@ export class InferenceFilterConfiguration {
 })
 export class InferenceService implements OnDestroy {
   private static inferenceIntervalMinutes = 240 // 4 hours
-  private inferenceEngine = new SimpleEngine()
+  // private inferenceEngine = new SimpleEngine()
+  private inferenceEngine = new StaypointEngine()
   private filterConfigSubscription: Subscription
 
   lastInferenceTime = new BehaviorSubject<number>(0)

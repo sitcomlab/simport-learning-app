@@ -4,23 +4,25 @@ import { StaypointDetector } from 'src/app/shared-services/staypoint/staypoint-d
 import { Trajectory } from 'src/app/model/trajectory'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import {
-  inferHomeFromStayPoints,
-  inferWorkFromStayPoints,
+  inferHomeFromStayPointClusters,
+  inferWorkFromStayPointClusters,
 } from 'src/app/shared-services/staypoint/utils'
+import { StaypointClusterer } from 'src/app/shared-services/staypoint/staypoint-clusterer'
+import trajectoryFileHomeWork from 'src/app/shared-services/inferences/test-data/test-home-work.json'
 
 // run on unix
 // cd ./dev/clustering-experiments
 // ts-node -r tsconfig-paths/register ./engine-using-staypoints.ts
 
 // run on non unix
-// cd .\dev\clustering-experiments
-// ts-node -r tsconfig-paths\register .\engine-using-staypoints.ts
+// ts-node -r tsconfig-paths\register .\dev\clustering-experiments\engine-using-staypoints.ts
 
 async function main() {
   const detector = new StaypointDetector()
 
   const staypointdata = detector.detectStayPoints(
     Trajectory.fromJSON(ownTrajectory),
+    //Trajectory.fromJSON(trajectoryFileHomeWork),
     StaypointService.DIST_THRESH_METERS,
     StaypointService.TIME_THRESH_MINUTES
   )
@@ -30,9 +32,14 @@ async function main() {
     starttimes: staypointdata.starttimes,
     endtimes: staypointdata.endtimes,
   }
-
-  const homeInference = inferHomeFromStayPoints(staypoints)
-  const workInference = inferWorkFromStayPoints(staypoints)
+  const clusterer = new StaypointClusterer()
+  const stayPointClusters = clusterer.clusterStayPoints(
+    staypoints,
+    StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
+    StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
+  )
+  const homeInference = inferHomeFromStayPointClusters(stayPointClusters)
+  const workInference = inferWorkFromStayPointClusters(stayPointClusters)
   console.log(homeInference)
   console.log(workInference)
 }

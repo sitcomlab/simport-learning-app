@@ -184,29 +184,17 @@ describe('StaypointService', () => {
   })
 
   it('#computeStayPointClusters should compute nothing for empty staypoints', (done: DoneFn) => {
-    sqliteServiceSpy.getStaypoints.and.returnValue(Promise.resolve(undefined))
-    service
-      .computeStayPointClusters(TrajectoryType.USERTRACK, 'randomId')
-      .then((value) => {
-        expect(value).toEqual(undefined)
-        expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
-          'randomId'
-        )
-        done()
-      })
+    service.computeStayPointClusters(undefined).then((value) => {
+      expect(value).toEqual(undefined)
+      done()
+    })
   })
 
   it('#computeStayPointClusters should compute two clusters for staypoints from home-work trajectory', (done: DoneFn) => {
-    sqliteServiceSpy.getStaypoints.and.returnValue(
-      Promise.resolve(fixtures.homeWorkStayPoints)
-    )
     service
-      .computeStayPointClusters(TrajectoryType.USERTRACK, 'randomId')
+      .computeStayPointClusters(fixtures.homeWorkStayPoints)
       .then((value) => {
         expect(value.length).toEqual(2)
-        expect(sqliteServiceSpy.getStaypoints).toHaveBeenCalledOnceWith(
-          'randomId'
-        )
         done()
       })
   })

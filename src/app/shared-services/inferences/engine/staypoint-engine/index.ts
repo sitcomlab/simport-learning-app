@@ -13,9 +13,11 @@ import { IInferenceScoring } from '../../scoring/types'
 import { WorkHoursScoring } from '../../scoring/work-hours-scoring'
 import { StaypointDetector } from 'src/app/shared-services/staypoint/staypoint-detector'
 import {
-  inferHomeFromStayPoints,
-  inferWorkFromStayPoints,
+  inferHomeFromStayPointClusters,
+  inferWorkFromStayPointClusters,
 } from 'src/app/shared-services/staypoint/utils'
+import { StaypointClusterer } from 'src/app/shared-services/staypoint/staypoint-clusterer'
+import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 
 export class StaypointEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
@@ -24,9 +26,7 @@ export class StaypointEngine implements IInferenceEngine {
   ]
 
   private staypointDetector: StaypointDetector = new StaypointDetector()
-  private DIST_TRESHOLD_METERS = 150
-  private TIME_TRESHOLD_MINUTES = 15
-
+  private staypointClusterer: StaypointClusterer = new StaypointClusterer()
   private inputCoordinatesLimit = 100000
 
   infer(
@@ -49,8 +49,8 @@ export class StaypointEngine implements IInferenceEngine {
 
     const stayPointData = this.staypointDetector.detectStayPoints(
       trajectory,
-      this.DIST_TRESHOLD_METERS,
-      this.TIME_TRESHOLD_MINUTES
+      StaypointService.DIST_THRESH_METERS,
+      StaypointService.TIME_THRESH_MINUTES
     )
 
     const stayPoints: StayPoints = {
@@ -60,15 +60,18 @@ export class StaypointEngine implements IInferenceEngine {
       endtimes: stayPointData.endtimes,
     }
 
+    const stayPointClusters = this.staypointClusterer.clusterStayPoints(
+      stayPoints,
+      StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
+      StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
+    )
     const inferenceResults = inferences
       .map((i) => {
         if (i.type === InferenceType.home) {
-          const inference = inferHomeFromStayPoints(stayPoints)
-          if (inference) return inference
+          return inferHomeFromStayPointClusters(stayPointClusters)
         }
         if (i.type === InferenceType.work) {
-          const inference = inferWorkFromStayPoints(stayPoints)
-          if (inference) return inference
+          return inferWorkFromStayPointClusters(stayPointClusters)
         }
       })
       .filter((i) => i) // filter undefined values
