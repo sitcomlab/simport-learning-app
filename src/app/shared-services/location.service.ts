@@ -118,7 +118,10 @@ export class LocationService implements OnDestroy {
           speed,
         })
 
-        this.inferenceService.triggerUserInferenceGenerationIfViable()
+        await this.inferenceService.triggerUserInferenceGenerationIfViable(
+          undefined
+        )
+
         this.scheduleNotification(
           'Location Update',
           `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
@@ -144,7 +147,6 @@ export class LocationService implements OnDestroy {
         } catch (err) {
           console.error(err)
         }
-
         this.isRunning.next(true)
         this.scheduleNotification('Location Update', 'Tracking started')
       })
