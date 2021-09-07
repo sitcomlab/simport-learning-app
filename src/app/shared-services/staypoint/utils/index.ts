@@ -5,10 +5,13 @@ import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 /**
  * Get the location of the cluster of staypoints where the most nights (12pm to 4am) were spent.
  * @param stayPointClusters The clusters of staypoints from which home location is to be extracted
+ * @param daysInTrajectory The number of days for which the trajectory has been recorded,
+ * used to calculate the "confidence" value (number of nights spent at staypoint/number of days in trajectory)
  * @return A home Inference containing the center of the most likely home staypoint cluster
  */
 export function inferHomeFromStayPointClusters(
-  stayPointClusters: StayPointCluster[]
+  stayPointClusters: StayPointCluster[],
+  daysInTrajectory: number
 ): Inference {
   if (stayPointClusters === undefined || stayPointClusters.length === 0) {
     return undefined
@@ -26,7 +29,7 @@ export function inferHomeFromStayPointClusters(
     stayPointClusters[topIndex].trajID,
     stayPointClusters[topIndex].coordinates,
     [stayPointClusters[topIndex].coordinates],
-    80
+    clusterScores[topIndex] / daysInTrajectory
   )
 }
 
@@ -34,10 +37,13 @@ export function inferHomeFromStayPointClusters(
  * Get the location of the cluster of staypoints where the most workdays were spent.
  * Each interval from 10am to 12am and from 2pm to 4pm on Mon-Fri contained within staypoint is counted.
  * @param stayPointClusters The staypoint clusters from which work location is to be extracted
+ * @param weekDaysInTrajectory The number of working days (Mon-Fri) for which the trajectory has been recorded,
+ * used to calculate the "confidence" value (number of full days worked/number of week days in trajectory)
  * @return A work Inference containing the center (mean) of the most likely work staypoint cluster
  */
 export function inferWorkFromStayPointClusters(
-  stayPointClusters: StayPointCluster[]
+  stayPointClusters: StayPointCluster[],
+  weekDaysInTrajectory: number
 ): Inference {
   if (stayPointClusters === undefined || stayPointClusters.length === 0)
     return undefined
@@ -54,7 +60,7 @@ export function inferWorkFromStayPointClusters(
     stayPointClusters[topIndex].trajID,
     stayPointClusters[topIndex].coordinates,
     [stayPointClusters[topIndex].coordinates],
-    80
+    clusterScores[topIndex] / weekDaysInTrajectory
   )
 }
 

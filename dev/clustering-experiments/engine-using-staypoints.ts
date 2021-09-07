@@ -38,8 +38,9 @@ async function main() {
     StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
     StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
   )
-  const homeInference = inferHomeFromStayPointClusters(stayPointClusters)
-  const workInference = inferWorkFromStayPointClusters(stayPointClusters)
+  // Note that the second parameter here should be the number of days in trajectory, as implemented in staypoint engine
+  const homeInference = inferHomeFromStayPointClusters(stayPointClusters, 100)
+  const workInference = inferWorkFromStayPointClusters(stayPointClusters, 100)
   console.log(homeInference)
   console.log(workInference)
 }

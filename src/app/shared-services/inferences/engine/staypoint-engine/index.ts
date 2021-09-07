@@ -47,6 +47,9 @@ export class StaypointEngine implements IInferenceEngine {
       }
     }
 
+    const daysInTrajectory = this.countDays(trajectory)
+    const weekDaysInTrajectory = this.countWeekDays(trajectory)
+
     const stayPointData = this.staypointDetector.detectStayPoints(
       trajectory,
       StaypointService.DIST_THRESH_METERS,
@@ -68,10 +71,16 @@ export class StaypointEngine implements IInferenceEngine {
     const inferenceResults = inferences
       .map((i) => {
         if (i.type === InferenceType.home) {
-          return inferHomeFromStayPointClusters(stayPointClusters)
+          return inferHomeFromStayPointClusters(
+            stayPointClusters,
+            daysInTrajectory
+          )
         }
         if (i.type === InferenceType.work) {
-          return inferWorkFromStayPointClusters(stayPointClusters)
+          return inferWorkFromStayPointClusters(
+            stayPointClusters,
+            weekDaysInTrajectory
+          )
         }
       })
       .filter((i) => i) // filter undefined values
@@ -83,5 +92,29 @@ export class StaypointEngine implements IInferenceEngine {
           : InferenceResultStatus.successful,
       inferences: inferenceResults,
     }
+  }
+
+  private countDays(trajectory: Trajectory): number {
+    // TODO update this method when start/stop are encoded in trajectory
+    const diffMs =
+      trajectory.timestamps[trajectory.timestamps.length - 1].getTime() -
+      trajectory.timestamps[0].getTime()
+    const diffDays = diffMs / (1000 * 60 * 60 * 24)
+    // we round up as half a day can also get counted as a work/home day in scoring
+    return Math.floor(diffDays) + 1
+  }
+
+  private countWeekDays(trajectory: Trajectory): number {
+    // TODO update this method when start/stop are encoded in trajectory
+    let count = 0
+    const endDate = new Date(
+      trajectory.timestamps[trajectory.timestamps.length - 1].getTime()
+    )
+    const currentDate = new Date(trajectory.timestamps[0].getTime())
+    while (currentDate <= endDate) {
+      if (!(currentDate.getDay() in [0, 6])) count += 1
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+    return count
   }
 }
