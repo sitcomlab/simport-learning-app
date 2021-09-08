@@ -68,22 +68,24 @@ export class StaypointEngine implements IInferenceEngine {
       StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
       StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
     )
-    const inferenceResults = inferences
-      .map((i) => {
-        if (i.type === InferenceType.home) {
-          return inferHomeFromStayPointClusters(
-            stayPointClusters,
-            daysInTrajectory
-          )
-        }
-        if (i.type === InferenceType.work) {
-          return inferWorkFromStayPointClusters(
-            stayPointClusters,
-            weekDaysInTrajectory
-          )
-        }
-      })
-      .filter((i) => i) // filter undefined values
+    const inferenceResultsNested = inferences.map((i) => {
+      if (i.type === InferenceType.home) {
+        return inferHomeFromStayPointClusters(
+          stayPointClusters,
+          daysInTrajectory
+        )
+      }
+      if (i.type === InferenceType.work) {
+        return inferWorkFromStayPointClusters(
+          stayPointClusters,
+          weekDaysInTrajectory
+        )
+      }
+    })
+    // flatten and filter
+    const inferenceResults: Inference[] = [].concat
+      .apply([], inferenceResultsNested)
+      .filter((i) => i)
 
     return {
       status:

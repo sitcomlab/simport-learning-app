@@ -22,7 +22,7 @@ export class StaypointService {
 
   // for meaning of these two parameters, please see StaypointClusterer.clusterStayPoints() documentation
   static readonly CLUSTERING_NEIGHBORHOOD_RADIUS = 11
-  static readonly CLUSTERING_POINTS_IN_NEIGHBORHOOD = 1
+  static readonly CLUSTERING_POINTS_IN_NEIGHBORHOOD = 3
 
   constructor(
     private db: SqliteService,
