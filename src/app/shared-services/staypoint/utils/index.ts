@@ -1,6 +1,7 @@
 import { Inference } from 'src/app/model/inference'
 import { StayPointCluster, StayPoints } from 'src/app/model/staypoints'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
+import concaveman from 'concaveman'
 
 /**
  * Get the location of the three clusters of staypoints where the most nights (12pm to 4am) were spent.
@@ -163,13 +164,14 @@ function createInferenceForCluster(
         clusterScore.toString() +
         ' workdays (weekdays from 10am to 12am and 2pm to 4pm) were spent'
   }
+  const convexHull = concaveman(stayPointCluster.componentCoordinates)
   return new Inference(
     inferenceType,
     inferenceType,
     description,
     stayPointCluster.trajID,
     stayPointCluster.coordinates,
-    [stayPointCluster.coordinates],
+    convexHull.map((c) => [c[0], c[1]]),
     clusterScore / numberOfDays
   )
 }

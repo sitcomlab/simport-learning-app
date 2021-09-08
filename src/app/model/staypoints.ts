@@ -12,6 +12,7 @@ export interface StayPointCluster {
   trajID: string
   coordinates: [number, number]
   onSiteTimes: [Date, Date][]
+  componentCoordinates: [number, number][]
 }
 
 declare var require: any

@@ -67,6 +67,7 @@ export class StaypointClusterer {
         trajID: stayPointsFiltered.trajID,
         coordinates: this.computeMeanCoords(clusterCoordinates),
         onSiteTimes: clusterTimes,
+        componentCoordinates: clusterCoordinates,
       }
       stayPointClusters.push(currentCluster)
     }
