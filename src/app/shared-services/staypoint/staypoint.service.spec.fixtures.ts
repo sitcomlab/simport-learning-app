@@ -20,18 +20,18 @@ export const homeWorkTraj = new Trajectory(homeWorkTrajMeta, homeWorkTrajData)
 // if these change in the staypoint module, this needs to be adjusted as well
 export const homeWorkStayPoints: StayPoints = {
   coordinates: [
-    [51.97247949044584, 7.5777314649681475],
-    [51.96946537190084, 7.595825289256202],
-    [51.97247736196318, 7.57774036809816],
+    [51.97248011363634, 7.577652159090904],
+    [51.96948411290324, 7.595815887096774],
+    [51.972528644067815, 7.577654519774008],
   ],
   starttimes: [
     new Date('2021-02-23T18:00:00.000Z'),
-    new Date('2021-02-24T08:57:45.000Z'),
-    new Date('2021-02-24T17:14:09.978Z'),
+    new Date('2021-02-24T08:57:36.000Z'),
+    new Date('2021-02-24T17:12:13.311Z'),
   ],
   endtimes: [
-    new Date('2021-02-24T08:46:03.000Z'),
-    new Date('2021-02-24T17:03:19.978Z'),
+    new Date('2021-02-24T08:48:54.000Z'),
+    new Date('2021-02-24T17:03:36.644Z'),
     new Date('2021-02-25T08:39:04.541Z'),
   ],
   trajID: 'randomId',
