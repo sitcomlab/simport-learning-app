@@ -81,9 +81,9 @@ export class InferenceService implements OnDestroy {
     )
 
     App.addListener('appStateChange', async (state) => {
+      // the app changed state, update dialog-visibility
+      await this.updateLoadingDialog()
       if (state.isActive) {
-        // the app became active, update dialog-visibility
-        await this.updateLoadingDialog()
         // trigger inference-generation to ensure an up-to-date state of the app
         await this.triggerUserInferenceGenerationIfViable(false, true)
       }
