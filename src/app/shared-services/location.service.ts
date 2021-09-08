@@ -118,9 +118,7 @@ export class LocationService implements OnDestroy {
           speed,
         })
 
-        await this.inferenceService.triggerUserInferenceGenerationIfViable(
-          undefined
-        )
+        await this.inferenceService.triggerUserInferenceGenerationIfViable()
 
         this.scheduleNotification(
           'Location Update',

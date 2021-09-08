@@ -19,17 +19,17 @@ import { Plugins } from '@capacitor/core'
 
 const { App, BackgroundTask } = Plugins
 
-export enum InferenceServiceEvent {
-  configureFilter = 'configureFilter',
-  filterConfigurationChanged = 'filterConfigurationChanged',
-}
-
 export class InferenceFilterConfiguration {
   confidenceThreshold: number
   inferenceVisiblities: Map<string, boolean>
 }
 
-export enum InferenceRunningState {
+export enum InferenceServiceEvent {
+  configureFilter = 'configureFilter',
+  filterConfigurationChanged = 'filterConfigurationChanged',
+}
+
+export enum InferenceGenerationState {
   idle,
   foreground,
   background,
@@ -40,19 +40,21 @@ export enum InferenceRunningState {
 })
 export class InferenceService implements OnDestroy {
   // 24 hours-interval for inference-generation via location-updates
-  private static inferenceIntervalMinutes = 1440
+  private static foregroundInterval = 1440
   // 2 hours-interval for inference-generation via independent and limited background-fetch
-  private static inferenceBackgroundFetchIntervalMinutes = 120
+  private static backgroundInterval = 120
   private static backgroundFetchId = 'com.transistorsoft.fetch'
 
   private inferenceEngine = new SimpleEngine()
   private filterConfigSubscription: Subscription
   private loadingOverlay: HTMLIonLoadingElement = undefined
 
-  isGeneratingInferences = new BehaviorSubject<InferenceRunningState>(
-    InferenceRunningState.idle
-  )
   lastInferenceTryTime = new BehaviorSubject<number>(0)
+  lastInferenceRunTime = new BehaviorSubject<number>(0)
+
+  currentGenerationState = new BehaviorSubject<InferenceGenerationState>(
+    InferenceGenerationState.idle
+  )
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
     confidenceThreshold: 0.5,
     inferenceVisiblities: new Map([
@@ -83,7 +85,7 @@ export class InferenceService implements OnDestroy {
         // the app became active, update dialog-visibility
         await this.updateLoadingDialog()
         // trigger inference-generation to ensure an up-to-date state of the app
-        await this.triggerUserInferenceGenerationIfViable(false)
+        await this.triggerUserInferenceGenerationIfViable(false, true)
       }
     })
     this.initBackgroundInferenceGeneration()
@@ -106,7 +108,28 @@ export class InferenceService implements OnDestroy {
       .pipe(take(1))
       .toPromise()
 
-    return this.generateInferencesForTrajectory(traj)
+    return await this.generateInferencesForTrajectory(traj)
+  }
+
+  async generateUserInferences(): Promise<InferenceResult> {
+    const trajectory = await this.trajectoryService
+      .getFullUserTrack()
+      .pipe(take(1))
+      .toPromise()
+
+    return await this.generateInferencesForTrajectory(trajectory)
+  }
+
+  async generateUserInferencesWithDialog(callback: () => Promise<void>) {
+    try {
+      await this.updateLoadingDialog()
+      await this.generateUserInferences()
+      this.lastInferenceRunTime.next(this.lastInferenceTryTime.value)
+      this.currentGenerationState.next(InferenceGenerationState.idle)
+      await this.updateLoadingDialog()
+    } finally {
+      if (callback !== undefined) await callback()
+    }
   }
 
   async generateInferencesForTrajectory(
@@ -138,19 +161,6 @@ export class InferenceService implements OnDestroy {
     return inference
   }
 
-  private async generateUserInference(): Promise<InferenceResult> {
-    const trajectory = await this.trajectoryService
-      .getFullUserTrack()
-      .pipe(take(1))
-      .toPromise()
-    const inferenceResult = await this.generateInferencesForTrajectory(
-      trajectory
-    )
-
-    // TODO: persist generated inferences
-    return inferenceResult
-  }
-
   async loadPersistedInferences(
     trajectoryId: string
   ): Promise<InferenceResult> {
@@ -173,109 +183,120 @@ export class InferenceService implements OnDestroy {
 
   // background inference updates
 
-  async triggerUserInferenceGenerationIfViable(runAsBackgroundFetch: boolean) {
-    if (runAsBackgroundFetch === undefined) {
-      const appState = await App.getState()
-      runAsBackgroundFetch = !appState.isActive
-    }
-    if (this.isGeneratingInferences.value !== InferenceRunningState.idle) {
+  /**
+   * Triggers the generation of user inference, if viable.
+   * Viability is decided by:
+   * - schedule
+   * - concurrency
+   *
+   * @param runAsFetch run inference generation as fetch, which runs in background, but is less reliable
+   *                   if undefined, this is decided by the app-state (active/inactive)
+   * @param referToLastRun flag whether schedule references to timestamp of last run or last attempt
+   */
+  async triggerUserInferenceGenerationIfViable(
+    runAsFetch?: boolean,
+    referToLastRun: boolean = false
+  ) {
+    if (this.currentGenerationState.value !== InferenceGenerationState.idle) {
       return
     }
-    if (runAsBackgroundFetch) {
-      if (
-        this.isWithinInferenceSchedule(
-          InferenceService.inferenceBackgroundFetchIntervalMinutes
-        )
-      ) {
-        this.lastInferenceTryTime.next(new Date().getTime())
-        BackgroundFetch.scheduleTask({
-          taskId: InferenceService.backgroundFetchId,
-          delay: 1000, // schedule to run in one second
-        })
-      }
+    runAsFetch ??= !(await App.getState()).isActive
+    const lastRun = referToLastRun
+      ? this.lastInferenceRunTime.value
+      : this.lastInferenceTryTime.value
+    if (runAsFetch) {
+      this.triggerUserInferenceGenerationAsFetch(lastRun)
     } else {
-      if (
-        this.isWithinInferenceSchedule(
-          InferenceService.inferenceIntervalMinutes
-        )
-      ) {
-        this.lastInferenceTryTime.next(new Date().getTime())
-        const taskId = BackgroundTask.beforeExit(async () => {
-          const callback: () => Promise<void> = async () => {
-            BackgroundTask.finish({
-              taskId,
-            })
-          }
-          this.isGeneratingInferences.next(InferenceRunningState.foreground)
-          await this.generateUserInferences(callback)
-        })
-      }
+      await this.triggerUserInferenceGenerationAsTask(lastRun)
     }
   }
 
-  private async generateUserInferences(callback: () => Promise<void>) {
-    try {
-      await this.updateLoadingDialog()
-      await this.generateUserInference()
-      this.isGeneratingInferences.next(InferenceRunningState.idle)
-      await this.updateLoadingDialog()
-    } finally {
-      if (callback !== undefined) await callback()
+  /**
+   * Triggers inference-generation as a background fetch (if viable).
+   * Fetches are executed as background processes, thus enabling the inferences to update seamlessly.
+   * But: they are not reliable, since completely and very strictly managed by the OS.
+   *
+   * @param lastRunTime last run time that is taken as reference for verifying the schedule.
+   */
+  private triggerUserInferenceGenerationAsFetch(lastRunTime: number) {
+    if (
+      this.isWithinSchedule(InferenceService.backgroundInterval, lastRunTime)
+    ) {
+      this.lastInferenceTryTime.next(new Date().getTime())
+      BackgroundFetch.scheduleTask({
+        taskId: InferenceService.backgroundFetchId,
+        delay: 1000, // schedule to run in one second
+      })
     }
   }
 
+  /**
+   * Triggers inference-generation as a background task (if viable).
+   * This task is usually started in foreground, but lives on for a small period of time
+   * (~30 seconds) after the app becomes inactive.
+   *
+   * @param lastRunTime last run time that is taken as reference for verifying the schedule.
+   */
+  private async triggerUserInferenceGenerationAsTask(lastRunTime: number) {
+    if (
+      this.isWithinSchedule(InferenceService.foregroundInterval, lastRunTime)
+    ) {
+      this.lastInferenceTryTime.next(new Date().getTime())
+      const taskId = BackgroundTask.beforeExit(async () => {
+        const callback: () => Promise<void> = async () => {
+          BackgroundTask.finish({
+            taskId,
+          })
+        }
+        this.currentGenerationState.next(InferenceGenerationState.foreground)
+        await this.generateUserInferencesWithDialog(callback)
+      })
+    }
+  }
+
+  /**
+   * Initialises the background-fetch events.
+   * This is periodically run by the OS and additionally serves as a callback for custom scheduled fetches.
+   */
   private async initBackgroundInferenceGeneration() {
-    const status = await BackgroundFetch.configure(
+    await BackgroundFetch.configure(
       {
         /**
          * The minimum interval in minutes to execute background fetch events.
          * Note: Background-fetch events will never occur at a frequency higher than every 15 minutes.
-         * Apple uses a closed algorithm to adjust the frequency of fetch events, presumably based upon usage patterns of the app.
-         * Fetch events can occur significantly less often than the configured minimumFetchInterval.
+         * OS use a closed algorithm to adjust the frequency of fetch events, presumably based upon usage patterns of the app.
+         * Therefore the actual fetch-interval is fully up to the OS,
+         * fetch events can occur significantly less often than the configured minimumFetchInterval.
          */
-        minimumFetchInterval:
-          InferenceService.inferenceBackgroundFetchIntervalMinutes,
-        forceAlarmManager: true,
+        minimumFetchInterval: InferenceService.backgroundInterval,
+        forceAlarmManager: true, // increases reliabilty for Android
         requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE,
       },
       async (taskId) => {
-        this.isGeneratingInferences.next(InferenceRunningState.background)
-        await this.generateUserInferences(undefined)
+        // OS signalled that background-processing-time is available
+        this.currentGenerationState.next(InferenceGenerationState.background)
+        await this.generateUserInferencesWithDialog(undefined)
         BackgroundFetch.finish(taskId)
       },
       async (taskId) => {
-        // OS signalled that the remaining background-time has expired
-        this.isGeneratingInferences.next(InferenceRunningState.idle)
+        // OS signalled that the time for background-processing has expired
+        this.currentGenerationState.next(InferenceGenerationState.idle)
         BackgroundFetch.finish(taskId)
       }
     )
-
-    // Checking BackgroundFetch status:
-    if (status !== BackgroundFetch.STATUS_AVAILABLE) {
-      if (status === BackgroundFetch.STATUS_DENIED) {
-        console.log(
-          'The user explicitly disabled background behavior for this app or for the whole system.'
-        )
-      } else if (status === BackgroundFetch.STATUS_RESTRICTED) {
-        console.log(
-          'Background updates are unavailable and the user cannot enable them again.'
-        )
-      }
-    }
   }
 
   // helper methods
 
-  private isWithinInferenceSchedule(interval: number): boolean {
+  private isWithinSchedule(interval: number, reference: number): boolean {
     const timestamp = new Date().getTime()
-    const diffInMinutes =
-      (timestamp - this.lastInferenceTryTime.value) / 1000 / 60
+    const diffInMinutes = (timestamp - reference) / 1000 / 60
     return diffInMinutes > interval
   }
 
   private async updateLoadingDialog() {
     if (
-      this.isGeneratingInferences.value === InferenceRunningState.foreground
+      this.currentGenerationState.value === InferenceGenerationState.foreground
     ) {
       await this.showLoadingDialog()
     } else {
