@@ -39,8 +39,8 @@ export enum InferenceGenerationState {
   providedIn: 'root',
 })
 export class InferenceService implements OnDestroy {
-  // 24 hours-interval for inference-generation via location-updates
-  private static foregroundInterval = 1440
+  // 12 hours-interval for inference-generation via location-updates
+  private static foregroundInterval = 720
   // 2 hours-interval for inference-generation via independent and limited background-fetch
   private static backgroundInterval = 120
   private static backgroundFetchId = 'com.transistorsoft.fetch'
