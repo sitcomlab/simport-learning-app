@@ -15,11 +15,6 @@
     <param name="ios-package" value="CDVDevice"/>
   </feature>
 
-  <feature name="LocalNotification">
-    <param name="ios-package" value="APPLocalNotification" onload="true"/>
-    <param name="onload" value="true"/>
-  </feature>
-
   <feature name="SocialSharing">
     <param name="ios-package" value="SocialSharing"/>
     <param name="onload" value="true"/>
