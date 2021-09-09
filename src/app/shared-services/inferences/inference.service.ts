@@ -15,7 +15,7 @@ import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import BackgroundFetch from 'cordova-plugin-background-fetch'
-import { Plugins } from '@capacitor/core'
+import { Plugins, Capacitor } from '@capacitor/core'
 
 const { App, BackgroundTask } = Plugins
 
@@ -204,7 +204,7 @@ export class InferenceService implements OnDestroy {
     const lastRun = referToLastRun
       ? this.lastInferenceRunTime.value
       : this.lastInferenceTryTime.value
-    if (runAsFetch) {
+    if (runAsFetch && Capacitor.isNative) {
       this.triggerUserInferenceGenerationAsFetch(lastRun)
     } else {
       await this.triggerUserInferenceGenerationAsTask(lastRun)
@@ -259,6 +259,7 @@ export class InferenceService implements OnDestroy {
    * This is periodically run by the OS and additionally serves as a callback for custom scheduled fetches.
    */
   private async initBackgroundInferenceGeneration() {
+    if (!Capacitor.isNative) return
     await BackgroundFetch.configure(
       {
         /**
