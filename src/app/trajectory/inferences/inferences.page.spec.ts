@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular'
 import { InferencesPage } from './inferences.page'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
-import { LocationService } from 'src/app/shared-services/location.service'
+import { LocationService } from 'src/app/shared-services/location/location.service'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 
 describe('InferencesPage', () => {

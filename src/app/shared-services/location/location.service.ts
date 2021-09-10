@@ -7,11 +7,11 @@ import {
 } from '@ionic-native/background-geolocation/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
-import { Trajectory, TrajectoryType } from '../model/trajectory'
-import { SqliteService } from './db/sqlite.service'
-import { InferenceService } from './inferences/inference.service'
-import { NotificationService } from './notification/notification.service'
-import { NotificationType } from './notification/types'
+import { Trajectory, TrajectoryType } from '../../model/trajectory'
+import { SqliteService } from './../db/sqlite.service'
+import { InferenceService } from './../inferences/inference.service'
+import { NotificationService } from './../notification/notification.service'
+import { NotificationType } from './../notification/types'
 
 @Injectable()
 export class LocationService implements OnDestroy {
@@ -101,6 +101,10 @@ export class LocationService implements OnDestroy {
         this.backgroundGeolocation.stop()
       }
     })
+  }
+
+  openLocationSettings() {
+    this.backgroundGeolocation.showLocationSettings()
   }
 
   get isSupportedPlatform(): boolean {

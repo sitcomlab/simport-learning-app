@@ -1,9 +1,10 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { Platform } from '@ionic/angular'
+import { Device } from '@ionic-native/device/ngx'
 import { Subscription } from 'rxjs'
-import { TrajectoryType } from '../model/trajectory'
-import { LocationService } from '../shared-services/location.service'
+import { Trajectory, TrajectoryType } from '../model/trajectory'
+import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 
 @Component({
@@ -26,27 +27,27 @@ export class TrackingPage implements OnInit, OnDestroy {
     public platform: Platform,
     public locationService: LocationService,
     private trajectoryService: TrajectoryService,
-    private router: Router
+    private router: Router,
+    private device: Device
   ) {}
 
   ngOnInit() {
     this.setState('Waiting...')
-    this.locationServiceStateSubscription = this.locationService.isRunning.subscribe(
-      (state) => {
+    this.locationServiceStateSubscription =
+      this.locationService.isRunning.subscribe((state) => {
         this.setState(state ? 'Running' : 'Stopped')
         this.setStateIcon(state)
-      }
-    )
-    this.locationServiceNotificationToggleSubscription = this.locationService.notificationsEnabled.subscribe(
-      (enabled) => {
+      })
+    this.locationServiceNotificationToggleSubscription =
+      this.locationService.notificationsEnabled.subscribe((enabled) => {
         this.setNotificationToggle(enabled)
-      }
-    )
+      })
     // check if user trajectory is existent
     this.trajectoryServiceSubscription = this.trajectoryService
       .getWritableMeta()
       .subscribe((tm) => {
-        this.trajectoryExists = tm.find((t) => t.id === 'user') !== undefined
+        this.trajectoryExists =
+          tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
   }
 
@@ -84,7 +85,21 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   navigateUserTrajectory() {
     const type = TrajectoryType.USERTRACK
-    const id = 'user'
+    const id = Trajectory.trackingTrajectoryID
     this.router.navigate([`/trajectory/${type}/${id}`])
+  }
+
+  openLocationSettings() {
+    this.locationService.openLocationSettings()
+  }
+
+  hasAlwaysAllowLocationOption(): boolean {
+    if (this.platform.is('ios')) {
+      return true
+    } else if (this.platform.is('android')) {
+      const osVersion: number = Number(this.device.version) || 0
+      return osVersion > 28
+    }
+    return false
   }
 }

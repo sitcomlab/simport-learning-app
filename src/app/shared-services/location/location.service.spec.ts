@@ -1,10 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { SqliteService } from './db/sqlite.service'
+import { SqliteService } from '../db/sqlite.service'
 import { LocationService } from './location.service'
-import { TrajectoryService } from './trajectory/trajectory.service'
-import { NotificationService } from './notification/notification.service'
+import { TrajectoryService } from '../trajectory/trajectory.service'
+import { NotificationService } from '../notification/notification.service'
 
 describe('LocationService', () => {
   let service: LocationService
