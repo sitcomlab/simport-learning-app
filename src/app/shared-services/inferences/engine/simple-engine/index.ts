@@ -25,10 +25,10 @@ export class SimpleEngine implements IInferenceEngine {
 
   private inputCoordinatesLimit = 100000
 
-  infer(
+  async infer(
     trajectory: Trajectory,
     inferences: InferenceDefinition[]
-  ): InferenceResult {
+  ): Promise<InferenceResult> {
     if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
       return {
         status: InferenceResultStatus.tooManyCoordinates,

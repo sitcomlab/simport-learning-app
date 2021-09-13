@@ -25,14 +25,16 @@ export class StaypointEngine implements IInferenceEngine {
     new WorkHoursScoring(),
   ]
 
+  constructor(private staypointService: StaypointService) {}
+
   private staypointDetector: StaypointDetector = new StaypointDetector()
   private staypointClusterer: StaypointClusterer = new StaypointClusterer()
   private inputCoordinatesLimit = 100000
 
-  infer(
+  async infer(
     trajectory: Trajectory,
     inferences: InferenceDefinition[]
-  ): InferenceResult {
+  ): Promise<InferenceResult> {
     if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
       return {
         status: InferenceResultStatus.tooManyCoordinates,
@@ -50,24 +52,11 @@ export class StaypointEngine implements IInferenceEngine {
     const daysInTrajectory = this.countDays(trajectory)
     const weekDaysInTrajectory = this.countWeekDays(trajectory)
 
-    const stayPointData = this.staypointDetector.detectStayPoints(
-      trajectory,
-      StaypointService.DIST_THRESH_METERS,
-      StaypointService.TIME_THRESH_MINUTES
-    )
+    await this.staypointService.updateStayPoints(trajectory.type, trajectory.id)
+    const stayPoints = await this.staypointService.getStayPoints(trajectory.id)
+    const stayPointClusters =
+      await this.staypointService.computeStayPointClusters(stayPoints)
 
-    const stayPoints: StayPoints = {
-      trajID: trajectory.id,
-      coordinates: stayPointData.coordinates,
-      starttimes: stayPointData.starttimes,
-      endtimes: stayPointData.endtimes,
-    }
-
-    const stayPointClusters = this.staypointClusterer.clusterStayPoints(
-      stayPoints,
-      StaypointService.CLUSTERING_NEIGHBORHOOD_RADIUS,
-      StaypointService.CLUSTERING_POINTS_IN_NEIGHBORHOOD
-    )
     const inferenceResultsNested = inferences.map((i) => {
       if (i.type === InferenceType.home) {
         return inferHomeFromStayPointClusters(

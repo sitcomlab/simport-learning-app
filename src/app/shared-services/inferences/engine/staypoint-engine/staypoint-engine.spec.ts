@@ -12,7 +12,34 @@ import * as fixtures from './staypoint-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from '../types'
 import haversine from 'haversine-distance'
 import { StaypointEngine } from '.'
+import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
+import { TestBed } from '@angular/core/testing'
+import { of } from 'rxjs'
 
+describe('StaypointEngine', () => {
+  let engine: StaypointEngine
+  let staypointServiceSpy: jasmine.SpyObj<StaypointService>
+
+  beforeEach(() => {
+    const spySPService = jasmine.createSpyObj('StaypointService', [
+      'updateStayPoints',
+      'getStayPoints',
+      'computeStayPointClusters',
+    ])
+    TestBed.configureTestingModule({
+      providers: [{ provide: StaypointService, useValue: spySPService }],
+    })
+    staypointServiceSpy = TestBed.inject(
+      StaypointService
+    ) as jasmine.SpyObj<StaypointService>
+  })
+
+  it('should be created', () => {
+    engine = new StaypointEngine(staypointServiceSpy)
+    expect(engine).toBeTruthy()
+  })
+})
+/*
 describe('inferences/StaypointEngine', () => {
   beforeEach(() => {})
 
@@ -194,3 +221,6 @@ type InferenceResultTest = {
   name: string
   location: LatLngTuple
 }
+
+
+*/

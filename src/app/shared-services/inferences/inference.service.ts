@@ -14,6 +14,7 @@ import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { StaypointEngine } from './engine/staypoint-engine'
+import { StaypointService } from '../staypoint/staypoint.service'
 
 export enum InferenceServiceEvent {
   configureFilter = 'configureFilter',
@@ -31,7 +32,7 @@ export class InferenceFilterConfiguration {
 export class InferenceService implements OnDestroy {
   private static inferenceIntervalMinutes = 240 // 4 hours
   // private inferenceEngine = new SimpleEngine()
-  private inferenceEngine = new StaypointEngine()
+  private inferenceEngine = new StaypointEngine(this.staypointService)
   private filterConfigSubscription: Subscription
 
   lastInferenceTime = new BehaviorSubject<number>(0)
@@ -51,7 +52,8 @@ export class InferenceService implements OnDestroy {
   constructor(
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
-    private dbService: SqliteService
+    private dbService: SqliteService,
+    private staypointService: StaypointService
   ) {
     this.filterConfigSubscription = this.filterConfiguration.subscribe(
       async (_) => {
@@ -83,7 +85,7 @@ export class InferenceService implements OnDestroy {
   async generateInferencesForTrajectory(
     traj: Trajectory
   ): Promise<InferenceResult> {
-    const inference = this.inferenceEngine.infer(traj, [
+    const inference = await this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
     ])
