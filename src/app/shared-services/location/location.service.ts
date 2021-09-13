@@ -20,9 +20,13 @@ export class LocationService implements OnDestroy {
     stationaryRadius: 20,
     distanceFilter: 30,
     interval: 20000,
+    fastestInterval: 5000,
     debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
     startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
+    notificationTitle: 'Tracking active …',
+    notificationText:
+      'Your location is currently tracked in order to show potential inferences.',
   }
   private locationUpdateSubscription: Subscription
   private startEventSubscription: Subscription
@@ -104,7 +108,7 @@ export class LocationService implements OnDestroy {
   }
 
   openLocationSettings() {
-    this.backgroundGeolocation.showLocationSettings()
+    this.backgroundGeolocation.showAppSettings()
   }
 
   get isSupportedPlatform(): boolean {

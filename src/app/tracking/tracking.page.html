@@ -23,7 +23,9 @@
         </ion-note>
         <ion-note *ngIf="hasAlwaysAllowLocationOption()">
           For best tracking results enable <i>always allow</i> for this app in
-          the <a (click)="openLocationSettings()">system settings</a>.
+          your
+          <a [routerLink]="" (click)="openLocationSettings()">system settings</a
+          >.
         </ion-note>
         <ion-note *ngIf="platform.is('android')">
           In order for this app to work correctly, you should disable battery

@@ -1,7 +1,7 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { Platform } from '@ionic/angular'
-import { Device } from '@ionic-native/device/ngx'
+import { Device } from '@ionic-native/device'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
@@ -27,8 +27,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     public platform: Platform,
     public locationService: LocationService,
     private trajectoryService: TrajectoryService,
-    private router: Router,
-    private device: Device
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -97,7 +96,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     if (this.platform.is('ios')) {
       return true
     } else if (this.platform.is('android')) {
-      const osVersion: number = Number(this.device.version) || 0
+      const osVersion = parseInt(Device.version, 10) || 0
       return osVersion > 28
     }
     return false
