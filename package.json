@@ -26,7 +26,7 @@
     "@babel/helper-validator-option": "^7.12.17",
     "@capacitor-community/sqlite": "^2.9.16",
     "@capacitor/android": "^2.5.0",
-    "@capacitor/core": "2.5.0",
+    "@capacitor/core": "^2.5.0",
     "@capacitor/ios": "^2.5.0",
     "@ionic-native/android-permissions": "^5.31.1",
     "@ionic-native/background-geolocation": "^5.28.0",
