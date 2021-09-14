@@ -1,20 +1,9 @@
-import { async } from '@angular/core/testing'
-import { LatLngTuple } from 'leaflet'
-import { Inference } from 'src/app/model/inference'
-import {
-  Trajectory,
-  TrajectoryData,
-  TrajectoryMeta,
-  TrajectoryType,
-} from 'src/app/model/trajectory'
 import { HomeInference, WorkInference } from '../definitions'
 import * as fixtures from './staypoint-engine.spec.fixtures'
-import { IInferenceEngine, InferenceDefinition } from '../types'
-import haversine from 'haversine-distance'
+import { InferenceResultStatus, InferenceType } from '../types'
 import { StaypointEngine } from '.'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import { TestBed } from '@angular/core/testing'
-import { of } from 'rxjs'
 
 describe('StaypointEngine', () => {
   let engine: StaypointEngine
@@ -32,195 +21,163 @@ describe('StaypointEngine', () => {
     staypointServiceSpy = TestBed.inject(
       StaypointService
     ) as jasmine.SpyObj<StaypointService>
+    engine = new StaypointEngine(staypointServiceSpy)
   })
 
   it('should be created', () => {
-    engine = new StaypointEngine(staypointServiceSpy)
     expect(engine).toBeTruthy()
   })
-})
-/*
-describe('inferences/StaypointEngine', () => {
-  beforeEach(() => {})
 
-  it('should create', () => {
-    const e = new StaypointEngine()
-    expect(e).toBeTruthy()
-  })
-
-  describe('HomeInference', () => {
-    it('should not infer for 0 points', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryEmpty,
-        [HomeInference],
-        []
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should not infer for mobile only trajectory', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryMobileOnly,
-        [HomeInference],
-        []
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should infer for home-work data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWork,
-        [HomeInference],
-        [fixtures.trajectoryHomeResult]
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should infer for spatially dense data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWorkSpatiallyDense,
-        [HomeInference],
-        [fixtures.trajectoryHomeResult]
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should infer for temporally sparse data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWorkTemporallySparse,
-        [HomeInference],
-        [fixtures.trajectoryHomeResult]
-      )
-      t.test(new StaypointEngine())
-    })
-
-    // TODOs
-    it('should infer with low confidence for low stationary point count', () => {})
-
-    it('should infer with low confidence for low total point count', () => {})
-
-    it('should infer for single night location', () => {})
-
-    it('should infer with low confidence for 2 different night locations', () => {})
-
-    it('should infer for realworld data (1 day)', () => {})
-
-    it('should infer for realworld data (1 year)', () => {})
-  })
-
-  describe('WorkInference', () => {
-    // TODO: migrate from HomeInference, once done
-
-    it('should not infer for 0 points', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryEmpty,
-        [WorkInference],
-        []
-      )
-      t.test(new StaypointEngine())
-    })
-
-    // it('should not infer for mobile only trajectory', () => {
-    //   const t = new InferenceTestCase(
-    //     fixtures.trajectoryMobileOnly,
-    //     [WorkInference],
-    //     []
-    //   )
-    //   t.test(new StaypointEngine())
-    // })
-
-    it('should infer for home-work data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWork,
-        [WorkInference],
-        [fixtures.trajectoryWorkResult]
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should infer for spatially dense data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWorkSpatiallyDense,
-        [WorkInference],
-        [fixtures.trajectoryWorkResult]
-      )
-      t.test(new StaypointEngine())
-    })
-
-    it('should infer for temporally sparse data', () => {
-      const t = new InferenceTestCase(
-        fixtures.trajectoryHomeWorkTemporallySparse,
-        [WorkInference],
-        [fixtures.trajectoryWorkResult]
-      )
-      t.test(new StaypointEngine())
-    })
-  })
-})
-
-class InferenceTestCase {
-  constructor(
-    public trajectoryData: TrajectoryData,
-    public inferences: InferenceDefinition[],
-    public expected: InferenceResultTest[],
-    public deltaMeters: number = 50
-  ) {}
-
-  test(e: IInferenceEngine): Inference[] {
-    const meta: TrajectoryMeta = {
-      id: 'test',
-      placename: 'test-place',
-      type: TrajectoryType.USERTRACK,
-      durationDays: null,
-    }
-    const trajectory = new Trajectory(meta, this.trajectoryData)
-    const result = e.infer(trajectory, this.inferences)
-    // result.inferences = result.inferences.filter((res) => {
-    //   return res.confidence >= 0.5
-    // })
-
-    // inference count
-    expect(result.inferences.length).toEqual(
-      Object.keys(this.expected).length,
-      'wrong inferences'
+  it('#infer should not infer anything for undefined input', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
     )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(undefined)
+    )
+    engine
+      .infer(fixtures.oneWeekTrajectory, [WorkInference, HomeInference])
+      .then((value) => {
+        expect(value.status).toEqual(InferenceResultStatus.noInferencesFound)
+        expect(value.inferences.length).toEqual(0)
+        expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.oneWeekTrajectory.type,
+          fixtures.oneWeekTrajectory.id
+        )
+        expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.oneWeekTrajectory.id
+        )
+        expect(
+          staypointServiceSpy.computeStayPointClusters
+        ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+        done()
+      })
+  })
 
-    for (const res of this.expected) {
-      const hasID = result.inferences.some((r) => r.name === res.name)
-      expect(hasID).toEqual(true, `'${res.name}' expected, but not inferred`)
-    }
+  it('#infer should not infer anything for an empty array of staypoint clusters', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.emptyClusters)
+    )
+    engine
+      .infer(fixtures.oneWeekTrajectory, [WorkInference, HomeInference])
+      .then((value) => {
+        expect(value.status).toEqual(InferenceResultStatus.noInferencesFound)
+        expect(value.inferences.length).toEqual(0)
+        expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.oneWeekTrajectory.type,
+          fixtures.oneWeekTrajectory.id
+        )
+        expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.oneWeekTrajectory.id
+        )
+        expect(
+          staypointServiceSpy.computeStayPointClusters
+        ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+        done()
+      })
+  })
 
-    for (const r of result.inferences) {
-      const expectation = this.expected.find(({ name }) => r.name === name)
-
-      // inference type matches
-      expect(expectation).toBeDefined(`'${r.name}' inferred, but not expected`)
-
-      // inference location
-      const dist = computeHaversineDistance(expectation.location, r.latLng)
-      expect(dist).toBeLessThanOrEqual(
-        this.deltaMeters,
-        `'${r.name}' location didn't match`
+  it('#infer should correctly infer work from one week of very regular staypoint clusters', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.oneWeekRegularHomeWorkClusters)
+    )
+    engine.infer(fixtures.oneWeekTrajectory, [WorkInference]).then((value) => {
+      expect(value.status).toEqual(InferenceResultStatus.successful)
+      expect(value.inferences.length).toEqual(2)
+      expect(value.inferences[0].type).toEqual(InferenceType.work)
+      expect(value.inferences[0].confidence).toBeGreaterThan(0.75)
+      expect(value.inferences[1].confidence).toBeLessThan(0.2)
+      expect(value.inferences[0].latLng[0]).toBeCloseTo(
+        fixtures.oneWeekRegularWorkCluster.coordinates[0]
       )
-    }
+      expect(value.inferences[0].latLng[1]).toBeCloseTo(
+        fixtures.oneWeekRegularWorkCluster.coordinates[1]
+      )
+      expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.oneWeekTrajectory.type,
+        fixtures.oneWeekTrajectory.id
+      )
+      expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.oneWeekTrajectory.id
+      )
+      expect(
+        staypointServiceSpy.computeStayPointClusters
+      ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+      done()
+    })
+  })
 
-    return result.inferences
-  }
-}
+  it('#infer should correctly infer home from one week of very regular staypoint clusters', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.oneWeekRegularHomeWorkClusters)
+    )
+    engine.infer(fixtures.oneWeekTrajectory, [HomeInference]).then((value) => {
+      expect(value.status).toEqual(InferenceResultStatus.successful)
+      expect(value.inferences.length).toEqual(2)
+      expect(value.inferences[0].type).toEqual(InferenceType.home)
+      expect(value.inferences[0].confidence).toBeGreaterThan(0.75)
+      expect(value.inferences[1].confidence).toBeLessThan(0.2)
+      expect(value.inferences[0].latLng[0]).toBeCloseTo(
+        fixtures.oneWeekRegularHomeCluster.coordinates[0]
+      )
+      expect(value.inferences[0].latLng[1]).toBeCloseTo(
+        fixtures.oneWeekRegularHomeCluster.coordinates[1]
+      )
+      expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.oneWeekTrajectory.type,
+        fixtures.oneWeekTrajectory.id
+      )
+      expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.oneWeekTrajectory.id
+      )
+      expect(
+        staypointServiceSpy.computeStayPointClusters
+      ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+      done()
+    })
+  })
 
-function computeHaversineDistance(
-  firstCoordinate: [number, number],
-  secondCoordinate: [number, number]
-) {
-  const a = { latitude: firstCoordinate[0], longitude: firstCoordinate[1] }
-  const b = { latitude: secondCoordinate[0], longitude: secondCoordinate[1] }
-  return haversine(a, b)
-}
-
-type InferenceResultTest = {
-  name: string
-  location: LatLngTuple
-}
-
-
-*/
+  it('#infer should correctly infer the most likely home from a number of candidate staypoint clusters', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.twoWeekmixedHomeCluster)
+    )
+    engine.infer(fixtures.twoWeekTrajectory, [HomeInference]).then((value) => {
+      expect(value.status).toEqual(InferenceResultStatus.successful)
+      expect(value.inferences.length).toEqual(3)
+      expect(value.inferences[0].type).toEqual(InferenceType.home)
+      expect(value.inferences[0].confidence).toBeGreaterThan(0.25)
+      expect(value.inferences[0].confidence).toBeGreaterThan(
+        value.inferences[1].confidence
+      )
+      expect(value.inferences[0].latLng[0]).toBeCloseTo(
+        fixtures.fourDayHomeCluster.coordinates[0]
+      )
+      expect(value.inferences[0].latLng[1]).toBeCloseTo(
+        fixtures.fourDayHomeCluster.coordinates[1]
+      )
+      expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.twoWeekTrajectory.type,
+        fixtures.twoWeekTrajectory.id
+      )
+      expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+        fixtures.twoWeekTrajectory.id
+      )
+      expect(
+        staypointServiceSpy.computeStayPointClusters
+      ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+      done()
+    })
+  })
+})
