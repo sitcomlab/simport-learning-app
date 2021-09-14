@@ -22,25 +22,29 @@ export function inferHomeFromStayPointClusters(
   })
   // here we return inferences for all clusters
   if (stayPointClusters.length <= 3) {
-    return clusterScores.map((score, index) => {
-      return createInferenceForCluster(
-        InferenceType.home,
-        stayPointClusters[index],
-        score,
-        daysInTrajectory
-      )
-    })
+    return clusterScores
+      .map((score, index) => {
+        return createInferenceForCluster(
+          InferenceType.home,
+          stayPointClusters[index],
+          score,
+          daysInTrajectory
+        )
+      })
+      .sort((a, b) => b.confidence - a.confidence)
   }
   // if more than three clusters, we return only inferences of top three results
   const topThreeInferenceIndices = getIndicesOfThreeMaxValues(clusterScores)
-  return topThreeInferenceIndices.map((topInferenceIndex) => {
-    return createInferenceForCluster(
-      InferenceType.home,
-      stayPointClusters[topInferenceIndex],
-      clusterScores[topInferenceIndex],
-      daysInTrajectory
-    )
-  })
+  return topThreeInferenceIndices
+    .map((topInferenceIndex) => {
+      return createInferenceForCluster(
+        InferenceType.home,
+        stayPointClusters[topInferenceIndex],
+        clusterScores[topInferenceIndex],
+        daysInTrajectory
+      )
+    })
+    .sort((a, b) => b.confidence - a.confidence)
 }
 
 /**
@@ -62,25 +66,29 @@ export function inferWorkFromStayPointClusters(
   })
   // here we return inferences for all clusters
   if (stayPointClusters.length <= 3) {
-    return clusterScores.map((score, index) => {
-      return createInferenceForCluster(
-        InferenceType.work,
-        stayPointClusters[index],
-        score,
-        weekDaysInTrajectory
-      )
-    })
+    return clusterScores
+      .map((score, index) => {
+        return createInferenceForCluster(
+          InferenceType.work,
+          stayPointClusters[index],
+          score,
+          weekDaysInTrajectory
+        )
+      })
+      .sort((a, b) => b.confidence - a.confidence)
   }
   // if more than three clusters, we return only inferences of top three results
   const topThreeInferenceIndices = getIndicesOfThreeMaxValues(clusterScores)
-  return topThreeInferenceIndices.map((topInferenceIndex) => {
-    return createInferenceForCluster(
-      InferenceType.work,
-      stayPointClusters[topInferenceIndex],
-      clusterScores[topInferenceIndex],
-      weekDaysInTrajectory
-    )
-  })
+  return topThreeInferenceIndices
+    .map((topInferenceIndex) => {
+      return createInferenceForCluster(
+        InferenceType.work,
+        stayPointClusters[topInferenceIndex],
+        clusterScores[topInferenceIndex],
+        weekDaysInTrajectory
+      )
+    })
+    .sort((a, b) => b.confidence - a.confidence)
 }
 
 // how many nights were spent at this cluster

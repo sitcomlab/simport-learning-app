@@ -1,5 +1,4 @@
 import { Inference } from 'src/app/model/inference'
-import { StayPoints } from 'src/app/model/staypoints'
 import { Trajectory } from 'src/app/model/trajectory'
 import {
   IInferenceEngine,
@@ -11,12 +10,10 @@ import {
 import { NightnessScoring } from '../../scoring/nightness-scoring'
 import { IInferenceScoring } from '../../scoring/types'
 import { WorkHoursScoring } from '../../scoring/work-hours-scoring'
-import { StaypointDetector } from 'src/app/shared-services/staypoint/staypoint-detector'
 import {
   inferHomeFromStayPointClusters,
   inferWorkFromStayPointClusters,
 } from 'src/app/shared-services/staypoint/utils'
-import { StaypointClusterer } from 'src/app/shared-services/staypoint/staypoint-clusterer'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 
 export class StaypointEngine implements IInferenceEngine {
@@ -27,8 +24,6 @@ export class StaypointEngine implements IInferenceEngine {
 
   constructor(private staypointService: StaypointService) {}
 
-  private staypointDetector: StaypointDetector = new StaypointDetector()
-  private staypointClusterer: StaypointClusterer = new StaypointClusterer()
   private inputCoordinatesLimit = 100000
 
   async infer(
