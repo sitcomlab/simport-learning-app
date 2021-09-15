@@ -31,7 +31,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.setState('Waiting...')
+    this.setState('Waiting…')
+    this.setStateIcon(false)
     this.locationServiceStateSubscription =
       this.locationService.isRunning.subscribe((state) => {
         this.setState(state ? 'Running' : 'Stopped')
@@ -94,10 +95,12 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   hasAlwaysAllowLocationOption(): boolean {
     if (this.platform.is('ios')) {
+      // 'always-allow' exists in all iOS-versions supported by this app
       return true
     } else if (this.platform.is('android')) {
       const osVersion = parseInt(Device.version, 10) || 0
-      return osVersion > 28
+      // 'always-allow' exists since OS-version 10 = API-level 29
+      return osVersion >= 10
     }
     return false
   }

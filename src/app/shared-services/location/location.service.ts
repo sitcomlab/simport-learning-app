@@ -12,6 +12,9 @@ import { SqliteService } from './../db/sqlite.service'
 import { InferenceService } from './../inferences/inference.service'
 import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
+import { Plugins } from '@capacitor/core'
+
+const { App } = Plugins
 
 @Injectable()
 export class LocationService implements OnDestroy {
@@ -49,9 +52,13 @@ export class LocationService implements OnDestroy {
     this.backgroundGeolocation.configure(this.config).then(() => {
       this.subscribeToLocationUpdates()
       this.subscribeToStartStopEvents()
-      this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-        this.isRunning.next(isRunning)
-      })
+      this.updateRunningState()
+    })
+
+    App.addListener('appStateChange', (state) => {
+      if (state.isActive) {
+        this.updateRunningState()
+      }
     })
   }
 
@@ -113,6 +120,12 @@ export class LocationService implements OnDestroy {
 
   get isSupportedPlatform(): boolean {
     return this.platform.is('ios') || this.platform.is('android')
+  }
+
+  private updateRunningState() {
+    this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
+      this.isRunning.next(isRunning)
+    })
   }
 
   private subscribeToLocationUpdates() {
