@@ -7,7 +7,7 @@ import {
 } from '@ionic-native/background-geolocation/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
-import { Trajectory, TrajectoryType } from '../model/trajectory'
+import { PointType, Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
 import { InferenceService } from './inferences/inference.service'
 import { NotificationService } from './notification/notification.service'
@@ -28,6 +28,7 @@ export class LocationService implements OnDestroy {
   private startEventSubscription: Subscription
   private stopEventSubscription: Subscription
   private logCounter = 0
+  private nextLocationIsStart = false
 
   isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -46,13 +47,14 @@ export class LocationService implements OnDestroy {
     this.logMessage('constructor called', '!!!')
 
     this.backgroundGeolocation.configure(this.config).then(() => {
+      this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
+        this.logMessage('check status', String(isRunning))
+        if (isRunning) this.nextLocationIsStart = true
+        this.isRunning.next(isRunning)
+      })
       this.logMessage('configure plugin', 'resolved')
       this.subscribeToLocationUpdates()
       this.subscribeToStartStopEvents()
-      this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-        this.logMessage('check status', String(isRunning))
-        this.isRunning.next(isRunning)
-      })
     })
   }
 
@@ -88,6 +90,7 @@ export class LocationService implements OnDestroy {
         BackgroundGeolocationAuthorizationStatus.AUTHORIZED
       ) {
         this.backgroundGeolocation.start()
+        this.nextLocationIsStart = true
       } else {
         const showSettings = confirm(
           'App requires always on location permission. Please grant permission in settings.'
@@ -105,6 +108,7 @@ export class LocationService implements OnDestroy {
     this.backgroundGeolocation.checkStatus().then((status) => {
       if (status.isRunning) {
         this.backgroundGeolocation.stop()
+        this.nextLocationIsStart = false
       }
     })
   }
@@ -117,12 +121,15 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
+        const type = this.nextLocationIsStart ? PointType.START : null
         await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
           latLng: [latitude, longitude],
           time: new Date(time),
           accuracy,
           speed,
+          type,
         })
+        this.nextLocationIsStart = false
 
         if (this.inferenceService.isWithinInferenceSchedule()) {
           this.backgroundGeolocation.startTask().then(async (taskId) => {
@@ -159,6 +166,7 @@ export class LocationService implements OnDestroy {
         }
 
         this.isRunning.next(true)
+        this.nextLocationIsStart = true
         this.logMessage('Location Update', 'Tracking started')
       })
 
@@ -166,6 +174,7 @@ export class LocationService implements OnDestroy {
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
         this.isRunning.next(false)
+        this.nextLocationIsStart = false
         this.logMessage('Location Update', 'Tracking stopped')
       })
   }

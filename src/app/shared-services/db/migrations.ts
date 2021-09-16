@@ -112,4 +112,7 @@ export const MIGRATIONS = [
     endtime DATETIME NOT NULL,
     PRIMARY KEY (trajectory, starttime),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // add field 'start' to table points
+  `ALTER TABLE points ADD COLUMN type TEXT`,
 ]
