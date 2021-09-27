@@ -7,7 +7,7 @@ import {
 } from '@ionic-native/background-geolocation/ngx'
 import { Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
-import { PointType, Trajectory, TrajectoryType } from '../model/trajectory'
+import { PointState, Trajectory, TrajectoryType } from '../model/trajectory'
 import { SqliteService } from './db/sqlite.service'
 import { InferenceService } from './inferences/inference.service'
 import { NotificationService } from './notification/notification.service'
@@ -121,13 +121,13 @@ export class LocationService implements OnDestroy {
     this.locationUpdateSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.location)
       .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
-        const type = this.nextLocationIsStart ? PointType.START : null
+        const state = this.nextLocationIsStart ? PointState.START : null
         await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
           latLng: [latitude, longitude],
           time: new Date(time),
           accuracy,
           speed,
-          type,
+          state,
         })
         this.nextLocationIsStart = false
 

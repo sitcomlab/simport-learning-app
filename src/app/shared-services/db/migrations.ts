@@ -114,5 +114,5 @@ export const MIGRATIONS = [
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 
   // add field 'start' to table points
-  `ALTER TABLE points ADD COLUMN type TEXT`,
+  `ALTER TABLE points ADD COLUMN state TEXT`,
 ]

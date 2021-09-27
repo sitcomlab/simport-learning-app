@@ -86,7 +86,7 @@ export class SqliteService {
   async getFullTrajectory(id: string): Promise<Trajectory> {
     await this.ensureDbReady()
     const { values } = await this.db.query(
-      `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed, p.type FROM trajectories AS t
+      `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed, p.state FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -102,12 +102,12 @@ export class SqliteService {
       // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
-        (d, { lon, lat, time, accuracy, speed, pointType }) => {
+        (d, { lon, lat, time, accuracy, speed, state }) => {
           d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
           d.accuracy.push(accuracy || 0)
           d.speed.push(speed || -1)
-          d.pointType.push(pointType || null)
+          d.state.push(state || null)
           return d
         },
         {
@@ -115,7 +115,7 @@ export class SqliteService {
           timestamps: [],
           accuracy: [],
           speed: [],
-          pointType: [],
+          state: [],
         }
       )
 
@@ -174,9 +174,9 @@ export class SqliteService {
         const [lat, lon] = t.coordinates[pointsIndex]
         const accuracy = t.accuracy[pointsIndex] ?? 0
         const speed = t.speed[pointsIndex] ?? -1
-        const pointType = t.pointType[pointsIndex] ?? null
+        const state = t.state[pointsIndex] ?? null
         placeholders.push(`(?,?,?,?,?,?,?)`)
-        values.push(t.id, time, lat, lon, accuracy, speed, pointType)
+        values.push(t.id, time, lat, lon, accuracy, speed, state)
       }
 
       const placeholderString = placeholders.join(', ')
@@ -204,7 +204,7 @@ export class SqliteService {
       message,
     } = await this.db.run(
       'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?,?)',
-      [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.type].map(
+      [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.state].map(
         normalize
       )
     )

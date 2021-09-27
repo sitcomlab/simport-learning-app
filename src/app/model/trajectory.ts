@@ -7,7 +7,7 @@ export enum TrajectoryType {
   USERTRACK = 'track',
 }
 
-export enum PointType {
+export enum PointState {
   START = 'start',
 }
 
@@ -23,7 +23,7 @@ export interface TrajectoryData {
   timestamps: Date[]
   accuracy?: number[]
   speed?: number[]
-  pointType?: PointType[]
+  state?: PointState[]
 }
 
 export interface Point {
@@ -31,7 +31,7 @@ export interface Point {
   time?: Date
   accuracy?: number // in meters
   speed?: number // in meters per second
-  type?: PointType
+  state?: PointState
 }
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
@@ -44,7 +44,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     timestamps,
     accuracy,
     speed,
-    type,
+    state,
     time0,
   }: TrajectoryJSON): TrajectoryData {
     return {
@@ -61,7 +61,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       }, []),
       accuracy: accuracy || [],
       speed: speed || [],
-      pointType: type || [],
+      state: state || [],
     }
   }
 
@@ -87,7 +87,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       timestamps,
       accuracy: trajectory.accuracy || [],
       speed: trajectory.speed || [],
-      type: trajectory.pointType || [],
+      state: trajectory.state || [],
       time0,
       timeN,
     }
@@ -136,24 +136,24 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
   get speed() {
     return this.data?.speed || []
   }
-  get pointType() {
-    return this.data?.pointType || []
+  get state() {
+    return this.data?.state || []
   }
 
-  addPoint({ latLng, time, accuracy, speed, type }: Point) {
+  addPoint({ latLng, time, accuracy, speed, state }: Point) {
     if (this.data == null)
       this.data = {
         coordinates: [],
         timestamps: [],
         accuracy: [],
         speed: [],
-        pointType: [],
+        state: [],
       }
     this.data.coordinates.push(latLng)
     this.data.accuracy.push(accuracy)
     this.data.timestamps.push(time || new Date())
     this.data.speed.push(speed)
-    this.data.pointType.push(type)
+    this.data.state.push(state)
   }
 
   getCopy(): Trajectory {
@@ -162,7 +162,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       timestamps: [...this.data?.timestamps],
       accuracy: [...(this.data?.accuracy || [])],
       speed: [...(this.data?.speed || [])],
-      pointType: [...(this.data?.pointType || [])],
+      state: [...(this.data?.state || [])],
     }
     return new Trajectory({ ...this.meta }, data)
   }
@@ -173,7 +173,7 @@ type TrajectoryJSON = {
   timestamps: number[]
   speed?: number[]
   accuracy?: number[]
-  type?: PointType[]
+  state?: PointState[]
   time0: string // isodates
   timeN?: string
 }
