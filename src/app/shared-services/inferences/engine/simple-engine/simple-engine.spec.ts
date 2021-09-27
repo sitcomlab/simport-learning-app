@@ -8,7 +8,7 @@ import {
   TrajectoryType,
 } from 'src/app/model/trajectory'
 import { HomeInference, WorkInference } from '../definitions'
-import { SimpleEngine } from '.'
+import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from '../types'
 import haversine from 'haversine-distance'

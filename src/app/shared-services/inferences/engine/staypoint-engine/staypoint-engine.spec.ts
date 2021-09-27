@@ -1,7 +1,7 @@
 import { HomeInference, WorkInference } from '../definitions'
 import * as fixtures from './staypoint-engine.spec.fixtures'
 import { InferenceResultStatus, InferenceType } from '../types'
-import { StaypointEngine } from '.'
+import { StaypointEngine } from './staypoint-engine'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import { TestBed } from '@angular/core/testing'
 

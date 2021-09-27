@@ -5,15 +5,19 @@ import {
   HomeInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
-import { SimpleEngine } from './engine/simple-engine'
-import { InferenceResult, InferenceResultStatus } from './engine/types'
+import { SimpleEngine } from './engine/simple-engine/simple-engine'
+import {
+  IInferenceEngine,
+  InferenceResult,
+  InferenceResultStatus,
+} from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject, Subject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
-import { StaypointEngine } from './engine/staypoint-engine'
+import { StaypointEngine } from './engine/staypoint-engine/staypoint-engine'
 import { StaypointService } from '../staypoint/staypoint.service'
 
 export enum InferenceServiceEvent {
@@ -31,9 +35,11 @@ export class InferenceFilterConfiguration {
 })
 export class InferenceService implements OnDestroy {
   private static inferenceIntervalMinutes = 240 // 4 hours
-  // private inferenceEngine = new SimpleEngine()
-  private inferenceEngine = new StaypointEngine(this.staypointService)
   private filterConfigSubscription: Subscription
+
+  private inferenceEngine: StaypointEngine | SimpleEngine
+  // flag determines which inference engine to use
+  readonly useStaypointEngine: boolean = true
 
   lastInferenceTime = new BehaviorSubject<number>(0)
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
@@ -60,6 +66,11 @@ export class InferenceService implements OnDestroy {
         this.triggerEvent(InferenceServiceEvent.filterConfigurationChanged)
       }
     )
+    if (this.useStaypointEngine) {
+      this.inferenceEngine = new StaypointEngine(this.staypointService)
+    } else {
+      this.inferenceEngine = new SimpleEngine()
+    }
   }
 
   ngOnDestroy() {

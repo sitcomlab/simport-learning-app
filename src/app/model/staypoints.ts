@@ -48,26 +48,33 @@ export function writeStaypointsToGeoJSON(sp: StayPoints, path: string) {
 }
 
 export function writeStaypointClusterArrayToGeoJSON(
-  spcs: StayPointCluster[],
+  stayPointClusters: StayPointCluster[],
   path: string
 ) {
+  if (stayPointClusters.length === 0) {
+    console.log('Cannot write GeoJSON from empty staypoint clusters')
+    return
+  }
   const geojson = {
     name: 'StayPointClusters',
     type: 'FeatureCollection',
     features: [],
     properties: {
-      trajID: spcs[0].trajID,
+      trajID: stayPointClusters[0].trajID,
     },
   }
-  for (const spc of spcs) {
+  for (const stayPointCluster of stayPointClusters) {
     geojson.features.push({
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [spc.coordinates[1], spc.coordinates[0]],
+        coordinates: [
+          stayPointCluster.coordinates[1],
+          stayPointCluster.coordinates[0],
+        ],
       },
       properties: {
-        onSiteTimes: spc.onSiteTimes,
+        onSiteTimes: stayPointCluster.onSiteTimes,
       },
     })
   }
