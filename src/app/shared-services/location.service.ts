@@ -27,12 +27,11 @@ export class LocationService implements OnDestroy {
   private locationUpdateSubscription: Subscription
   private startEventSubscription: Subscription
   private stopEventSubscription: Subscription
-  private logCounter = 0
   private nextLocationIsStart = false
 
   isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    true
+    false
   )
 
   constructor(
@@ -44,22 +43,17 @@ export class LocationService implements OnDestroy {
   ) {
     if (!this.isSupportedPlatform) return
 
-    this.logMessage('constructor called', '!!!')
-
     this.backgroundGeolocation.configure(this.config).then(() => {
       this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-        this.logMessage('check status', String(isRunning))
         if (isRunning) this.nextLocationIsStart = true
         this.isRunning.next(isRunning)
       })
-      this.logMessage('configure plugin', 'resolved')
       this.subscribeToLocationUpdates()
       this.subscribeToStartStopEvents()
     })
   }
 
   ngOnDestroy() {
-    this.logMessage('stop', ' on destroy')
     this.locationUpdateSubscription.unsubscribe()
     this.startEventSubscription.unsubscribe()
     this.stopEventSubscription.unsubscribe()
@@ -139,7 +133,7 @@ export class LocationService implements OnDestroy {
           })
         }
 
-        this.logMessage(
+        this.scheduleNotification(
           'Location Update',
           `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
             1
@@ -167,7 +161,7 @@ export class LocationService implements OnDestroy {
 
         this.isRunning.next(true)
         this.nextLocationIsStart = true
-        this.logMessage('Location Update', 'Tracking started')
+        this.scheduleNotification('Location Update', 'Tracking started')
       })
 
     this.stopEventSubscription = this.backgroundGeolocation
@@ -175,7 +169,7 @@ export class LocationService implements OnDestroy {
       .subscribe(() => {
         this.isRunning.next(false)
         this.nextLocationIsStart = false
-        this.logMessage('Location Update', 'Tracking stopped')
+        this.scheduleNotification('Location Update', 'Tracking stopped')
       })
   }
 
@@ -186,11 +180,5 @@ export class LocationService implements OnDestroy {
       title,
       text
     )
-  }
-
-  private logMessage(msg1: string, msg2: string) {
-    console.log('### ' + msg1 + ' ' + msg2 + ' ' + this.logCounter)
-    this.scheduleNotification(msg1, msg2 + ' ' + this.logCounter)
-    this.logCounter++
   }
 }
