@@ -7,6 +7,11 @@
     <param name="onload" value="true"/>
   </feature>
 
+  <feature name="BackgroundFetch">
+    <param name="ios-package" value="CDVBackgroundFetch"/>
+    <param name="onload" value="true"/>
+  </feature>
+
   <feature name="Badge">
     <param name="ios-package" value="APPBadge"/>
   </feature>

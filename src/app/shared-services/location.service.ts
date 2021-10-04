@@ -125,13 +125,7 @@ export class LocationService implements OnDestroy {
         })
         this.nextLocationIsStart = false
 
-        if (this.inferenceService.isWithinInferenceSchedule()) {
-          this.backgroundGeolocation.startTask().then(async (taskId) => {
-            await this.inferenceService.generateUserInference().finally(() => {
-              this.backgroundGeolocation.endTask(taskId)
-            })
-          })
-        }
+        await this.inferenceService.triggerUserInferenceGenerationIfViable()
 
         this.scheduleNotification(
           'Location Update',
@@ -158,7 +152,6 @@ export class LocationService implements OnDestroy {
         } catch (err) {
           console.error(err)
         }
-
         this.isRunning.next(true)
         this.nextLocationIsStart = true
         this.scheduleNotification('Location Update', 'Tracking started')
