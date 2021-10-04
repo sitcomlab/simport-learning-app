@@ -86,7 +86,7 @@ export class SqliteService {
   async getFullTrajectory(id: string): Promise<Trajectory> {
     await this.ensureDbReady()
     const { values } = await this.db.query(
-      `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed FROM trajectories AS t
+      `SELECT t.type, t.placename, t.durationDays, p.lon, p.lat, p.time, p.accuracy, p.speed, p.state FROM trajectories AS t
         LEFT JOIN points p ON t.id = p.trajectory
         WHERE t.id = ?
         ORDER BY time`,
@@ -102,14 +102,21 @@ export class SqliteService {
       // filter partial results from LEFT JOIN (when there are no matching points)
       .filter(({ lon }) => !!lon)
       .reduce<TrajectoryData>(
-        (d, { lon, lat, time, accuracy, speed }) => {
+        (d, { lon, lat, time, accuracy, speed, state }) => {
           d.timestamps.push(convertTimestampToDate(time))
           d.coordinates.push([lat, lon])
           d.accuracy.push(accuracy || 0)
           d.speed.push(speed || -1)
+          d.state.push(state || null)
           return d
         },
-        { coordinates: [], timestamps: [], accuracy: [], speed: [] }
+        {
+          coordinates: [],
+          timestamps: [],
+          accuracy: [],
+          speed: [],
+          state: [],
+        }
       )
 
     return new Trajectory(meta, data)
@@ -167,8 +174,9 @@ export class SqliteService {
         const [lat, lon] = t.coordinates[pointsIndex]
         const accuracy = t.accuracy[pointsIndex] ?? 0
         const speed = t.speed[pointsIndex] ?? -1
-        placeholders.push(`(?,?,?,?,?,?)`)
-        values.push(t.id, time, lat, lon, accuracy, speed)
+        const state = t.state[pointsIndex] ?? null
+        placeholders.push(`(?,?,?,?,?,?,?)`)
+        values.push(t.id, time, lat, lon, accuracy, speed, state)
       }
 
       const placeholderString = placeholders.join(', ')
@@ -195,8 +203,10 @@ export class SqliteService {
       changes: { changes },
       message,
     } = await this.db.run(
-      'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?)',
-      [trajectoryId, time, ...p.latLng, p.accuracy, p.speed].map(normalize)
+      'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?,?)',
+      [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.state].map(
+        normalize
+      )
     )
     if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
 

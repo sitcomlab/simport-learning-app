@@ -110,7 +110,7 @@ export class SelectTrajectoryPage {
         await this.trajectoryImportExportService
           .selectAndImportTrajectory(async () => {
             // did select file
-            await this.showLoadingDialog('Importing trajectory...')
+            await this.showLoadingDialog('Importing trajectory …')
           })
           .then(async (result) => {
             await this.hideLoadingDialog()

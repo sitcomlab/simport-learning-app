@@ -5,11 +5,11 @@ import {
   InferenceDefinition,
   InferenceResult,
   InferenceResultStatus,
-} from './types'
-import { NightnessScoring } from '../scoring/nightness-scoring'
-import { IInferenceScoring, InferenceScoringResult } from '../scoring/types'
-import { WorkHoursScoring } from '../scoring/work-hours-scoring'
-import { PointCountScoring } from '../scoring/pointcount-scoring'
+} from '../types'
+import { NightnessScoring } from '../../scoring/nightness-scoring'
+import { IInferenceScoring, InferenceScoringResult } from '../../scoring/types'
+import { WorkHoursScoring } from '../../scoring/work-hours-scoring'
+import { PointCountScoring } from '../../scoring/pointcount-scoring'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
@@ -25,10 +25,10 @@ export class SimpleEngine implements IInferenceEngine {
 
   private inputCoordinatesLimit = 100000
 
-  infer(
+  async infer(
     trajectory: Trajectory,
     inferences: InferenceDefinition[]
-  ): InferenceResult {
+  ): Promise<InferenceResult> {
     if (trajectory.coordinates.length > this.inputCoordinatesLimit) {
       return {
         status: InferenceResultStatus.tooManyCoordinates,

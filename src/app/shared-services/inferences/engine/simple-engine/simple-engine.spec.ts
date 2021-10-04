@@ -7,14 +7,14 @@ import {
   TrajectoryMeta,
   TrajectoryType,
 } from 'src/app/model/trajectory'
-import { HomeInference, WorkInference } from './definitions'
+import { HomeInference, WorkInference } from '../definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
-import { IInferenceEngine, InferenceDefinition } from './types'
+import { IInferenceEngine, InferenceDefinition } from '../types'
 import haversine from 'haversine-distance'
 
 describe('inferences/SimpleEngine', () => {
-  beforeEach(async(() => {}))
+  beforeEach(() => {})
 
   it('should create', () => {
     const e = new SimpleEngine()
@@ -22,49 +22,49 @@ describe('inferences/SimpleEngine', () => {
   })
 
   describe('HomeInference', () => {
-    it('should not infer for 0 points', () => {
+    it('should not infer for 0 points', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryEmpty,
         [HomeInference],
         []
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should not infer for mobile only trajectory', () => {
+    it('should not infer for mobile only trajectory', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
         [HomeInference],
         []
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for home-work data', () => {
+    it('should infer for home-work data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWork,
         [HomeInference],
         [fixtures.trajectoryHomeResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for spatially dense data', () => {
+    it('should infer for spatially dense data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
         [HomeInference],
         [fixtures.trajectoryHomeResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for temporally sparse data', () => {
+    it('should infer for temporally sparse data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
         [HomeInference],
         [fixtures.trajectoryHomeResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
     // TODOs
@@ -84,49 +84,49 @@ describe('inferences/SimpleEngine', () => {
   describe('WorkInference', () => {
     // TODO: migrate from HomeInference, once done
 
-    it('should not infer for 0 points', () => {
+    it('should not infer for 0 points', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryEmpty,
         [WorkInference],
         []
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should not infer for mobile only trajectory', () => {
+    it('should not infer for mobile only trajectory', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
         [WorkInference],
         []
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for home-work data', () => {
+    it('should infer for home-work data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWork,
         [WorkInference],
         [fixtures.trajectoryWorkResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for spatially dense data', () => {
+    it('should infer for spatially dense data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
         [WorkInference],
         [fixtures.trajectoryWorkResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
 
-    it('should infer for temporally sparse data', () => {
+    it('should infer for temporally sparse data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
         [WorkInference],
         [fixtures.trajectoryWorkResult]
       )
-      t.test(new SimpleEngine())
+      await t.test(new SimpleEngine())
     })
   })
 })
@@ -139,7 +139,7 @@ class InferenceTestCase {
     public deltaMeters: number = 50
   ) {}
 
-  test(e: IInferenceEngine): Inference[] {
+  async test(e: IInferenceEngine): Promise<Inference[]> {
     const meta: TrajectoryMeta = {
       id: 'test',
       placename: 'test-place',
@@ -147,7 +147,7 @@ class InferenceTestCase {
       durationDays: null,
     }
     const trajectory = new Trajectory(meta, this.trajectoryData)
-    const result = e.infer(trajectory, this.inferences)
+    const result = await e.infer(trajectory, this.inferences)
     result.inferences = result.inferences.filter((res) => {
       return res.confidence >= 0.5
     })
