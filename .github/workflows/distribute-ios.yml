@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macOS-latest
+    runs-on: macOS-11
 
     strategy:
       matrix:
