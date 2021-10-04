@@ -43,10 +43,11 @@ export const testTrajectoryString = `
         "timestamps": [86400, 86400, 86400, 86400],
         "accuracy":[],
         "speed":[],
+        "state":[],
         "time0": "2020-01-01T12:00:00.000Z",
         "timeN": "2020-01-05T12:00:00.000Z"
     }
   `
 
 export const testTrajectoryBase64String =
-  'eyJjb29yZGluYXRlcyI6Int0bX5GfGd9dU93c0BtRW9oQWJBX0dkaEJlQnBsQyIsInRpbWVzdGFtcHMiOls4NjQwMCw4NjQwMCw4NjQwMCw4NjQwMF0sImFjY3VyYWN5IjpbXSwic3BlZWQiOltdLCJ0aW1lMCI6IjIwMjAtMDEtMDFUMTI6MDA6MDAuMDAwWiIsInRpbWVOIjoiMjAyMC0wMS0wNVQxMjowMDowMC4wMDBaIn0='
+  'eyJjb29yZGluYXRlcyI6Int0bX5GfGd9dU93c0BtRW9oQWJBX0dkaEJlQnBsQyIsInRpbWVzdGFtcHMiOls4NjQwMCw4NjQwMCw4NjQwMCw4NjQwMF0sImFjY3VyYWN5IjpbXSwic3BlZWQiOltdLCJzdGF0ZSI6W10sInRpbWUwIjoiMjAyMC0wMS0wMVQxMjowMDowMC4wMDBaIiwidGltZU4iOiIyMDIwLTAxLTA1VDEyOjAwOjAwLjAwMFoifQ=='

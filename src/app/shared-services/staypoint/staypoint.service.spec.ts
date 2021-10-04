@@ -182,6 +182,22 @@ describe('StaypointService', () => {
       done()
     })
   })
+
+  it('#computeStayPointClusters should compute nothing for empty staypoints', (done: DoneFn) => {
+    service.computeStayPointClusters(undefined).then((value) => {
+      expect(value).toEqual(undefined)
+      done()
+    })
+  })
+
+  it('#computeStayPointClusters should compute no clusters for staypoints from home-work trajectory (neighborhood radius of three in clustering)', (done: DoneFn) => {
+    service
+      .computeStayPointClusters(fixtures.homeWorkStayPoints)
+      .then((value) => {
+        expect(value.length).toEqual(0)
+        done()
+      })
+  })
 })
 
 function areStayPointsSimilar(sp1: StayPoints, sp2: StayPoints): boolean {

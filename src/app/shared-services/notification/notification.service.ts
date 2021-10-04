@@ -6,7 +6,19 @@ import { Plugins } from '@capacitor/core'
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor() {}
+  constructor() {
+    this.checkPermission()
+  }
+
+  private checkPermission() {
+    Plugins.LocalNotifications.requestPermission().then(
+      (permissionResponse) => {
+        console.log(
+          'notification permission granted:' + permissionResponse.granted
+        )
+      }
+    )
+  }
 
   notify(type: NotificationType, title: string, text: string) {
     Plugins.LocalNotifications.schedule({

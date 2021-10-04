@@ -5,7 +5,9 @@ import {
   HomeInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
-import { SimpleEngine } from './engine/simple-engine'
+import { SimpleEngine } from './engine/simple-engine/simple-engine'
+import { StaypointEngine } from './engine/staypoint-engine/staypoint-engine'
+import { StaypointService } from '../staypoint/staypoint.service'
 import { InferenceResult, InferenceResultStatus } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
@@ -14,8 +16,8 @@ import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
-import BackgroundFetch from 'cordova-plugin-background-fetch'
 import { Plugins, Capacitor } from '@capacitor/core'
+import BackgroundFetch from 'cordova-plugin-background-fetch'
 
 const { App, BackgroundTask } = Plugins
 
@@ -45,7 +47,6 @@ export class InferenceService implements OnDestroy {
   private static backgroundInterval = 120
   private static backgroundFetchId = 'com.transistorsoft.fetch'
 
-  private inferenceEngine = new SimpleEngine()
   private filterConfigSubscription: Subscription
   private loadingOverlay: HTMLIonLoadingElement = undefined
 
@@ -55,6 +56,11 @@ export class InferenceService implements OnDestroy {
   currentGenerationState = new BehaviorSubject<InferenceGenerationState>(
     InferenceGenerationState.idle
   )
+  private inferenceEngine: StaypointEngine | SimpleEngine
+  // flag determines which inference engine to use
+  readonly useStaypointEngine: boolean = true
+
+  lastInferenceTime = new BehaviorSubject<number>(0)
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
     confidenceThreshold: 0.5,
     inferenceVisiblities: new Map([
@@ -72,7 +78,8 @@ export class InferenceService implements OnDestroy {
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
     private dbService: SqliteService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private staypointService: StaypointService
   ) {
     this.filterConfigSubscription = this.filterConfiguration.subscribe(
       async (_) => {
@@ -89,6 +96,11 @@ export class InferenceService implements OnDestroy {
       }
     })
     this.initBackgroundInferenceGeneration()
+    if (this.useStaypointEngine) {
+      this.inferenceEngine = new StaypointEngine(this.staypointService)
+    } else {
+      this.inferenceEngine = new SimpleEngine()
+    }
   }
 
   ngOnDestroy() {
@@ -135,7 +147,7 @@ export class InferenceService implements OnDestroy {
   async generateInferencesForTrajectory(
     traj: Trajectory
   ): Promise<InferenceResult> {
-    const inference = this.inferenceEngine.infer(traj, [
+    const inference = await this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
     ])

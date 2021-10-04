@@ -70,6 +70,10 @@
         {{ userTrajectory.speed[userTrajectory.speed.length - 1] | json }}
         m/s
       </p>
+      <p>
+        Point type:
+        {{ userTrajectory.state[userTrajectory.state.length - 1] | json }}
+      </p>
     </div>
     <div class="ion-padding-top history-header">
       <h4>History</h4>
@@ -84,6 +88,7 @@
             <ion-col size="4">coordinates</ion-col>
             <ion-col>accuracy in m</ion-col>
             <ion-col>speed in m/s</ion-col>
+            <ion-col>point type</ion-col>
           </ion-row>
           <ion-row *ngFor="let ts of userTrajectory.timestamps; index as i">
             <ion-col size="1">{{ i + 1 }}</ion-col>
@@ -95,6 +100,7 @@
             }}</ion-col>
             <ion-col>{{ userTrajectory.accuracy[i] }}</ion-col>
             <ion-col>{{ userTrajectory.speed[i] }}</ion-col>
+            <ion-col size="4">>{{ userTrajectory.state[i] }}</ion-col>
           </ion-row>
         </ion-grid>
       </div>

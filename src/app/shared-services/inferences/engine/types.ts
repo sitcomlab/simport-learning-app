@@ -12,7 +12,7 @@ export interface IInferenceEngine {
   infer(
     trajectory: Trajectory,
     inferences: InferenceDefinition[]
-  ): InferenceResult
+  ): Promise<InferenceResult>
 }
 
 export class InferenceDefinition {
