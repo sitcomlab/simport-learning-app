@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import haversine from 'haversine-distance'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { PointState, TrajectoryData } from 'src/app/model/trajectory'
 import { StayPointData } from 'src/app/model/staypoints'
 
 @Injectable({
@@ -25,6 +25,7 @@ export class StaypointDetector {
     }
     const coords = traj.coordinates
     const times = traj.timestamps
+    const states = traj.state
     const length = coords.length
     let i = 0 // i (index into coords) is the current candidate for staypoint
     let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
@@ -38,6 +39,21 @@ export class StaypointDetector {
     while (i < length && j < length) {
       j = i + 1
       while (j < length) {
+        if (states && states[j] === PointState.START) {
+          // j is start of trajectory, we check for a staypoint from i to j-1
+          if (
+            i !== j - 1 &&
+            this.getTimeDeltaMinutes(times[i], times[j - 1]) > timeThreshMinutes
+          ) {
+            staypoints.coordinates.push(
+              this.computeMeanCoords(coords.slice(i, j))
+            )
+            staypoints.starttimes.push(times[i])
+            staypoints.endtimes.push(times[j - 1])
+          }
+          i = j
+          break
+        }
         dist = this.computeHaversineDistance(coords[i], coords[j])
         // if j is within distance of i, it is part of this potential staypoint...
         if (dist > distThreshMeters) {
