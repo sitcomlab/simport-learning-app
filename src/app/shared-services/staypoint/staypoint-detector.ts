@@ -23,9 +23,29 @@ export class StaypointDetector {
     if (traj.coordinates.length !== traj.timestamps.length) {
       throw new Error('Coordinate and timestamp array must be of same length')
     }
-    const coords = traj.coordinates
-    const times = traj.timestamps
+    // if accuracy is saved, filter out points with accuracy of above 200 m
+    const coords = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= 200 ? traj.coordinates[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.coordinates
+    const times = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= 200 ? traj.timestamps[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.timestamps
+    // additional check here so we dont map onto undefined traj.state
     const states = traj.state
+      ? traj.accuracy
+        ? traj.accuracy
+            .map((acc, index) => (acc <= 200 ? traj.state[index] : undefined))
+            .filter((x) => x)
+        : traj.state
+      : undefined
     const length = coords.length
     let i = 0 // i (index into coords) is the current candidate for staypoint
     let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
