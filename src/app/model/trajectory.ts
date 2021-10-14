@@ -61,7 +61,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       }, []),
       accuracy: accuracy || [],
       speed: speed || [],
-      state: state || [],
+      state: (state as PointState[]) || [],
     }
   }
 
@@ -173,7 +173,7 @@ type TrajectoryJSON = {
   timestamps: number[]
   speed?: number[]
   accuracy?: number[]
-  state?: PointState[]
+  state?: string[]
   time0: string // isodates
   timeN?: string
 }
