@@ -7,6 +7,8 @@ import { StayPointData } from 'src/app/model/staypoints'
   providedIn: 'root',
 })
 export class StaypointDetector {
+  static readonly LOCATION_ACCURACY_THRESHOLD_METERS = 200
+
   /**
    * compute staypoints from trajectory, based on Li et al 2008, "Mining User Similarity Based on Location History"
    * @param  traj The input trajectory
@@ -23,29 +25,10 @@ export class StaypointDetector {
     if (traj.coordinates.length !== traj.timestamps.length) {
       throw new Error('Coordinate and timestamp array must be of same length')
     }
-    // if accuracy is saved, filter out points with accuracy of above 200 m
-    const coords = traj.accuracy
-      ? traj.accuracy
-          .map((acc, index) =>
-            acc <= 200 ? traj.coordinates[index] : undefined
-          )
-          .filter((x) => x)
-      : traj.coordinates
-    const times = traj.accuracy
-      ? traj.accuracy
-          .map((acc, index) =>
-            acc <= 200 ? traj.timestamps[index] : undefined
-          )
-          .filter((x) => x)
-      : traj.timestamps
-    // additional check here so we dont map onto undefined traj.state
-    const states = traj.state
-      ? traj.accuracy
-        ? traj.accuracy
-            .map((acc, index) => (acc <= 200 ? traj.state[index] : undefined))
-            .filter((x) => x)
-        : traj.state
-      : undefined
+    const { coords, times, states } = this.filterTrajectoryDataForAccuracy(
+      traj,
+      StaypointDetector.LOCATION_ACCURACY_THRESHOLD_METERS
+    )
     const length = coords.length
     let i = 0 // i (index into coords) is the current candidate for staypoint
     let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
@@ -109,6 +92,39 @@ export class StaypointDetector {
       }
     }
     return staypoints
+  }
+
+  private filterTrajectoryDataForAccuracy(
+    traj: TrajectoryData,
+    threshold: number
+  ): { coords: [number, number][]; times: Date[]; states: PointState[] } {
+    // if accuracy is saved, filter out points with accuracy of above 200 m
+    const coords = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= threshold ? traj.coordinates[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.coordinates
+    const times = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= threshold ? traj.timestamps[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.timestamps
+    // additional check here so we dont map onto undefined traj.state
+    const states = traj.state
+      ? traj.accuracy
+        ? traj.accuracy
+            .map((acc, index) =>
+              acc <= threshold ? traj.state[index] : undefined
+            )
+            .filter((x) => x)
+        : traj.state
+      : undefined
+
+    return { coords, times, states }
   }
 
   // compute arithmetic mean of coords
