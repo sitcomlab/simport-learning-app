@@ -40,7 +40,7 @@ proguard/
 # Android Studio captures folder
 captures/
 
-# IntelliJ, user specifics
+# IntelliJ, user specific files
 *.iml
 *.iws
 .idea/**/workspace.xml
