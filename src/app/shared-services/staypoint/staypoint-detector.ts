@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core'
 import haversine from 'haversine-distance'
-import { TrajectoryData } from 'src/app/model/trajectory'
+import { PointState, TrajectoryData } from 'src/app/model/trajectory'
 import { StayPointData } from 'src/app/model/staypoints'
 
 @Injectable({
   providedIn: 'root',
 })
 export class StaypointDetector {
+  static readonly LOCATION_ACCURACY_THRESHOLD_METERS = 200
+
   /**
    * compute staypoints from trajectory, based on Li et al 2008, "Mining User Similarity Based on Location History"
    * @param  traj The input trajectory
@@ -23,8 +25,10 @@ export class StaypointDetector {
     if (traj.coordinates.length !== traj.timestamps.length) {
       throw new Error('Coordinate and timestamp array must be of same length')
     }
-    const coords = traj.coordinates
-    const times = traj.timestamps
+    const { coords, times, states } = this.filterTrajectoryDataForAccuracy(
+      traj,
+      StaypointDetector.LOCATION_ACCURACY_THRESHOLD_METERS
+    )
     const length = coords.length
     let i = 0 // i (index into coords) is the current candidate for staypoint
     let j = 0 // j (index into coords) is the next point we compare to i to see whether we left the staypoint
@@ -38,6 +42,21 @@ export class StaypointDetector {
     while (i < length && j < length) {
       j = i + 1
       while (j < length) {
+        if (states && states[j] === PointState.START) {
+          // j is start of trajectory, we check for a staypoint from i to j-1
+          if (
+            i !== j - 1 &&
+            this.getTimeDeltaMinutes(times[i], times[j - 1]) > timeThreshMinutes
+          ) {
+            staypoints.coordinates.push(
+              this.computeMeanCoords(coords.slice(i, j))
+            )
+            staypoints.starttimes.push(times[i])
+            staypoints.endtimes.push(times[j - 1])
+          }
+          i = j
+          break
+        }
         dist = this.computeHaversineDistance(coords[i], coords[j])
         // if j is within distance of i, it is part of this potential staypoint...
         if (dist > distThreshMeters) {
@@ -73,6 +92,39 @@ export class StaypointDetector {
       }
     }
     return staypoints
+  }
+
+  private filterTrajectoryDataForAccuracy(
+    traj: TrajectoryData,
+    threshold: number
+  ): { coords: [number, number][]; times: Date[]; states: PointState[] } {
+    // if accuracy is saved, filter out points with accuracy of above 200 m
+    const coords = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= threshold ? traj.coordinates[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.coordinates
+    const times = traj.accuracy
+      ? traj.accuracy
+          .map((acc, index) =>
+            acc <= threshold ? traj.timestamps[index] : undefined
+          )
+          .filter((x) => x)
+      : traj.timestamps
+    // additional check here so we dont map onto undefined traj.state
+    const states = traj.state
+      ? traj.accuracy
+        ? traj.accuracy
+            .map((acc, index) =>
+              acc <= threshold ? traj.state[index] : undefined
+            )
+            .filter((x) => x)
+        : traj.state
+      : undefined
+
+    return { coords, times, states }
   }
 
   // compute arithmetic mean of coords
