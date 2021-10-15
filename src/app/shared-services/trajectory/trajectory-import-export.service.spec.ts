@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 
 import { TrajectoryImportExportService } from './trajectory-import-export.service'
 
-import { LocationService } from '../location.service'
+import { LocationService } from '../location/location.service'
 import { SqliteService } from '../db/sqlite.service'
 import { HttpClient, HttpHandler } from '@angular/common/http'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'

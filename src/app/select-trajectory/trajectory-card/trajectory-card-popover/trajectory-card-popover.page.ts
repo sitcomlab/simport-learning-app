@@ -10,7 +10,7 @@ import {
   ActionSheetController,
 } from '@ionic/angular'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
-import { LocationService } from 'src/app/shared-services/location.service'
+import { LocationService } from 'src/app/shared-services/location/location.service'
 import {
   TrajectoryExportResult,
   TrajectoryImportExportService,
