@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
-import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import {
   InferenceService,
   InferenceServiceEvent,

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 import { TrajectoryPage } from './trajectory.page'
 
-export enum TrajectoryPagePath {
+enum TrajectoryPagePath {
   INFERENCES = 'inferences',
   MAP = 'map',
   EXPLORE = 'explore',

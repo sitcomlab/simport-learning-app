@@ -1,12 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { StaypointService } from './staypoint.service'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
-import {
-  Trajectory,
-  TrajectoryData,
-  TrajectoryType,
-  TrajectoryMeta,
-} from 'src/app/model/trajectory'
+import { TrajectoryType } from 'src/app/model/trajectory'
 import { StayPoints } from 'src/app/model/staypoints'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { of } from 'rxjs'

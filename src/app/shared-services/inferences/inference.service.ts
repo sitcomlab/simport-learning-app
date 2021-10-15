@@ -21,7 +21,7 @@ import BackgroundFetch from 'cordova-plugin-background-fetch'
 
 const { App, BackgroundTask } = Plugins
 
-export class InferenceFilterConfiguration {
+class InferenceFilterConfiguration {
   confidenceThreshold: number
   inferenceVisiblities: Map<string, boolean>
 }
@@ -31,7 +31,7 @@ export enum InferenceServiceEvent {
   filterConfigurationChanged = 'filterConfigurationChanged',
 }
 
-export enum InferenceGenerationState {
+enum InferenceGenerationState {
   idle,
   foreground,
   background,

@@ -18,7 +18,7 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { take } from 'rxjs/operators'
 const { FileSelector, Filesystem } = Plugins
 
-export interface TrajectoryExportFile {
+interface TrajectoryExportFile {
   trajectory: string
   filename: string
 }
