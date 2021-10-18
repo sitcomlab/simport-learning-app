@@ -21,7 +21,7 @@ export class StaypointService {
   static readonly TIME_THRESH_MINUTES = 15
 
   // for meaning of these two parameters, please see StaypointClusterer.clusterStayPoints() documentation
-  static readonly CLUSTERING_NEIGHBORHOOD_RADIUS = 11
+  static readonly CLUSTERING_NEIGHBORHOOD_RADIUS = 15
   static readonly CLUSTERING_POINTS_IN_NEIGHBORHOOD = 3
 
   constructor(
