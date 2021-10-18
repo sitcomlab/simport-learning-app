@@ -115,31 +115,38 @@ export class InferenceService implements OnDestroy {
     trajectoryType: TrajectoryType,
     trajectoryId: string
   ): Promise<InferenceResult> {
-    const traj = await this.trajectoryService
-      .getOne(trajectoryType, trajectoryId)
-      .pipe(take(1))
-      .toPromise()
-
-    return await this.generateInferencesForTrajectory(traj)
+    try {
+      const trajectory = await this.trajectoryService
+        .getOne(trajectoryType, trajectoryId)
+        .pipe(take(1))
+        .toPromise()
+      return await this.generateInferencesForTrajectory(trajectory)
+    } catch {
+      return undefined
+    }
   }
 
   async generateUserInferences(): Promise<InferenceResult> {
-    const trajectory = await this.trajectoryService
-      .getFullUserTrack()
-      .pipe(take(1))
-      .toPromise()
-
-    return await this.generateInferencesForTrajectory(trajectory)
+    try {
+      const trajectory = await this.trajectoryService
+        .getFullUserTrack()
+        .pipe(take(1))
+        .toPromise()
+      return await this.generateInferencesForTrajectory(trajectory)
+    } catch {
+      return undefined
+    }
   }
 
   async generateUserInferencesWithDialog(callback: () => Promise<void>) {
     try {
       await this.updateLoadingDialog()
-      await this.generateUserInferences()
-      this.lastInferenceRunTime.next(this.lastInferenceTryTime.value)
+      if (await this.generateUserInferences()) {
+        this.lastInferenceRunTime.next(this.lastInferenceTryTime.value)
+      }
+    } finally {
       this.currentGenerationState.next(InferenceGenerationState.idle)
       await this.updateLoadingDialog()
-    } finally {
       if (callback !== undefined) await callback()
     }
   }
