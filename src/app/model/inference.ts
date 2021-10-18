@@ -9,7 +9,7 @@ export class Inference {
     public description: string,
     public trajectoryId: string,
     public latLng: [number, number],
-    public coordinates?: [number, number][],
+    public coordinates: [number, number][],
     public confidence?: number,
     public accuracy?: number
   ) {}

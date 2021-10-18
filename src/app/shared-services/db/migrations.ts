@@ -22,7 +22,7 @@ export async function runMigrations(
     await runMigration(db, migrations[v], v + 1)
 }
 
-export async function runMigration(
+async function runMigration(
   db: SQLiteDBConnection,
   migration: string,
   targetVersion: number
@@ -102,4 +102,17 @@ export const MIGRATIONS = [
     description TEXT,
     PRIMARY KEY (trajectory, type, lon, lat),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // add staypoint persistence
+  `CREATE TABLE IF NOT EXISTS staypoints (
+    trajectory TEXT NOT NULL,
+    lat FLOAT NOT NULL,
+    lon FLOAT NOT NULL,
+    starttime DATETIME NOT NULL,
+    endtime DATETIME NOT NULL,
+    PRIMARY KEY (trajectory, starttime),
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  // add field 'start' to table points
+  `ALTER TABLE points ADD COLUMN state TEXT`,
 ]

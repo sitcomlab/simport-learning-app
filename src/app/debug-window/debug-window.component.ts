@@ -3,7 +3,7 @@ import { DeviceInfo, Plugins } from '@capacitor/core'
 import { ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
-import { LocationService } from '../shared-services/location.service'
+import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 
 @Component({

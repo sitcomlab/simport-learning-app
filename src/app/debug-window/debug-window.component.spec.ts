@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonicModule } from '@ionic/angular'
 import { SqliteService } from '../shared-services/db/sqlite.service'
-import { LocationService } from '../shared-services/location.service'
+import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 
 import { DebugWindowComponent } from './debug-window.component'

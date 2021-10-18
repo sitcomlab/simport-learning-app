@@ -7,17 +7,17 @@
     <param name="onload" value="true"/>
   </feature>
 
+  <feature name="BackgroundFetch">
+    <param name="ios-package" value="CDVBackgroundFetch"/>
+    <param name="onload" value="true"/>
+  </feature>
+
   <feature name="Badge">
     <param name="ios-package" value="APPBadge"/>
   </feature>
 
   <feature name="Device">
     <param name="ios-package" value="CDVDevice"/>
-  </feature>
-
-  <feature name="LocalNotification">
-    <param name="ios-package" value="APPLocalNotification" onload="true"/>
-    <param name="onload" value="true"/>
   </feature>
 
   <feature name="SocialSharing">
