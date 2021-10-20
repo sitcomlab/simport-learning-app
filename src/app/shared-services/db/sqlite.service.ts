@@ -18,6 +18,7 @@ import {
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
+import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 
 @Injectable()
 export class SqliteService {
@@ -411,6 +412,41 @@ export class SqliteService {
       message,
     } = await this.db.run(statement)
     if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
+  }
+
+  async getReverseGeocoding(
+    latLng: [number, number]
+  ): Promise<ReverseGeocoding> {
+    await this.ensureDbReady()
+    const delta = 0.00001
+    const { values } = await this.db.query(
+      `SELECT * FROM reverseGeocoding WHERE abs(lat-${latLng[0]}) < ${delta} AND abs(lon-${latLng[1]}) < ${delta};`
+    )
+    if (!values.length) return undefined
+    const { lat, lon, address, type } = values[0]
+    return new ReverseGeocoding(lat, lon, address, type)
+  }
+
+  async upsertReverseGeocoding(reverseGeocoding: ReverseGeocoding) {
+    await this.ensureDbReady()
+    const previousCoding = await this.getReverseGeocoding(
+      reverseGeocoding.latLng
+    )
+    if (!previousCoding) {
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.run(
+        'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?,?)',
+        [
+          ...reverseGeocoding.latLng,
+          reverseGeocoding.address,
+          reverseGeocoding.type,
+        ].map(normalize)
+      )
+      if (changes === -1)
+        throw new Error(`couldnt insert reverse-geocoding: ${message}`)
+    }
   }
 }
 

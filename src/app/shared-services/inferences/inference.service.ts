@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core'
-import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType, Point } from 'src/app/model/trajectory'
 import {
   AllInferences,
   HomeInference,
@@ -18,6 +18,8 @@ import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import { Plugins, Capacitor } from '@capacitor/core'
 import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { Inference } from 'src/app/model/inference'
+import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 
 const { App, BackgroundTask } = Plugins
 
@@ -78,6 +80,7 @@ export class InferenceService implements OnDestroy {
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
     private dbService: SqliteService,
+    private geocodingService: ReverseGeocodingService,
     private loadingController: LoadingController,
     private staypointService: StaypointService
   ) {
@@ -177,6 +180,8 @@ export class InferenceService implements OnDestroy {
       }
     }
 
+    await this.reverseGeocodeInferences(inference.inferences)
+
     return inference
   }
 
@@ -244,7 +249,7 @@ export class InferenceService implements OnDestroy {
       this.lastInferenceTryTime.next(new Date().getTime())
       BackgroundFetch.scheduleTask({
         taskId: InferenceService.backgroundFetchId,
-        delay: 1000, // schedule to run in one second
+        delay: 0,
       })
     }
   }
@@ -304,6 +309,14 @@ export class InferenceService implements OnDestroy {
         BackgroundFetch.finish(taskId)
       }
     )
+  }
+
+  /**
+   * TODO: this is for testing purposes
+   */
+  private async reverseGeocodeInferences(inferences: Inference[]) {
+    const coordinates = inferences.map((i) => i.latLng)
+    await this.geocodingService.reverseGeocodeMultiple(coordinates)
   }
 
   // helper methods

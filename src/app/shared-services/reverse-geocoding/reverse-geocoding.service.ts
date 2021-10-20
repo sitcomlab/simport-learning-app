@@ -1,60 +1,115 @@
 import { Injectable } from '@angular/core'
-import { Point } from 'src/app/model/trajectory'
+import { HttpClient } from '@angular/common/http'
 import { point } from '@turf/helpers'
 import buffer from '@turf/buffer'
 import bbox from '@turf/bbox'
 import { randomPoint } from '@turf/random'
 import transformTranslate from '@turf/transform-translate'
+import { delay } from 'rxjs/operators'
+import { SqliteService } from '../db/sqlite.service'
+import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
+
+type GeocodingJSON = {
+  lat?: number
+  lon?: number
+  display_name?: string
+  type?: string
+  address?: {
+    road?: string
+    village?: string
+    state_district?: string
+    state?: string
+    postcode?: string
+    county?: string
+    country_code?: string
+  }
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReverseGeocodingService {
-  static readonly NUMBER_OF_DUMMY_LOCATIONS = 10
-  static readonly RADIUS_FOR_DUMMY_LOCATIONS = 5000
-  static readonly REVERSE_GEOCODING_URL =
+  private static readonly NUMBER_OF_DUMMY_LOCATIONS = 5
+  private static readonly RADIUS_FOR_DUMMY_LOCATIONS = 5000
+  private static readonly RADIUS_UNIT = 'meters'
+  private static readonly REVERSE_GEOCODING_URL =
     'https://nominatim.openstreetmap.org/reverse'
+  private static readonly REVERSE_GEOCODE_FORMAT = 'jsonv2'
+  // limited to 'an absolute maximum of 1 request per second'
+  // see https://operations.osmfoundation.org/policies/nominatim/
+  private static readonly REVERSE_GEOCODE_DELAY_MS = 1500
 
-  constructor() {}
+  constructor(private dbService: SqliteService, private http: HttpClient) {}
 
-  async reverseGeocode(location: Point): Promise<any> {
-    const actualRequest = new Promise(async (resolve, _) => {
-      const url = this.createReverseGeocodingRequestInfo(
-        location.latLng[1],
-        location.latLng[0]
-      )
-      const req = await fetch(url)
-      resolve(await req.json())
+  async reverseGeocodeMultiple(
+    latLngArray: [number, number][]
+  ): Promise<ReverseGeocoding[]> {
+    const geocodingResults: ReverseGeocoding[] = []
+    latLngArray.forEach(async (latLng) => {
+      const previousCoding = await this.getPersistedReverseGeocoding(latLng)
+      if (previousCoding) {
+        geocodingResults.push(previousCoding)
+      } else {
+        const coding = await this.reverseGeocode(latLng, true)
+        geocodingResults.push(coding)
+        delay(ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS)
+      }
     })
+    return geocodingResults
+  }
+
+  private async reverseGeocode(
+    latLng: [number, number],
+    skipPersistenceCheck: boolean = false
+  ): Promise<any> {
+    if (!skipPersistenceCheck) {
+      const previousCoding = await this.getPersistedReverseGeocoding(latLng)
+      if (previousCoding) {
+        return previousCoding
+      }
+    }
+    const actualRequest = this.createReverseGeocodingRequestUrl(...latLng)
+
     // create geocoding requests for actual point
     // and place it at a random position in the requests array
     const actualRequestIndex = Math.floor(
       Math.random() * ReverseGeocodingService.NUMBER_OF_DUMMY_LOCATIONS
     )
     const requests = this.createDummyRequests(
-      location,
+      latLng,
       ReverseGeocodingService.NUMBER_OF_DUMMY_LOCATIONS,
       ReverseGeocodingService.RADIUS_FOR_DUMMY_LOCATIONS
     )
     requests.splice(actualRequestIndex, 0, actualRequest)
 
-    // fire the requests and retreive data
-    const data = await Promise.all(requests)
+    requests.forEach((r, i) => {
+      const delayTime =
+        (i + 1) * ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS
+      this.http
+        .get<any>(r, {})
+        .pipe(delay(delayTime))
+        .subscribe((o) => {
+          const result = o as GeocodingJSON
+          // TODO
+        })
+    })
 
-    return data[actualRequestIndex]
+    // TODO: persist geocoding
+    // const geocoding = new ReverseGeocoding(...latLng, address, type)
+    // this.dbService.upsertReverseGeocoding(geocoding)
   }
 
   private createDummyRequests(
-    location: Point,
+    latLng: [number, number],
     numberOfRequests: number,
     radiusForDummyRequestsInMeters: number
   ) {
     // calculate buffer around requested location
     const positionBuffer = buffer(
-      point([location.latLng[1], location.latLng[0]]),
+      point([latLng[1], latLng[0]]),
       ReverseGeocodingService.RADIUS_FOR_DUMMY_LOCATIONS,
       {
-        units: 'meters',
+        units: ReverseGeocodingService.RADIUS_UNIT,
       }
     )
 
@@ -69,7 +124,7 @@ export class ReverseGeocodingService {
       randomDistance,
       randomDirection,
       {
-        units: 'meters',
+        units: ReverseGeocodingService.RADIUS_UNIT,
       }
     )
 
@@ -78,22 +133,24 @@ export class ReverseGeocodingService {
 
     // generate random points in bbox
     const randomPoints = randomPoint(numberOfRequests, { bbox: posBbox })
-    const requests = randomPoints.features.map(async (p) => {
-      const url = this.createReverseGeocodingRequestInfo(
+    const requests = randomPoints.features.map((p) => {
+      const request = this.createReverseGeocodingRequestUrl(
         p.geometry.coordinates[1],
         p.geometry.coordinates[0]
       )
-      const req = await fetch(url)
-      return await req.json()
+      return request
     })
 
     return requests
   }
 
-  private createReverseGeocodingRequestInfo(
-    lat: number,
-    lon: number
-  ): RequestInfo {
-    return `${ReverseGeocodingService.REVERSE_GEOCODING_URL}?lat=${lat}&lon=${lon}&format=geojson`
+  private createReverseGeocodingRequestUrl(lat: number, lon: number): string {
+    return `${ReverseGeocodingService.REVERSE_GEOCODING_URL}?lat=${lat}&lon=${lon}&format=${ReverseGeocodingService.REVERSE_GEOCODE_FORMAT}`
+  }
+
+  private async getPersistedReverseGeocoding(
+    latLng: [number, number]
+  ): Promise<ReverseGeocoding> {
+    return await this.dbService.getReverseGeocoding(latLng)
   }
 }
