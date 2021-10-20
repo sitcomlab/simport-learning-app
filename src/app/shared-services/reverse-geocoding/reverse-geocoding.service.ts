@@ -9,27 +9,11 @@ import { delay } from 'rxjs/operators'
 import { SqliteService } from '../db/sqlite.service'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 
-type GeocodingJSON = {
-  lat?: number
-  lon?: number
-  display_name?: string
-  type?: string
-  address?: {
-    road?: string
-    village?: string
-    state_district?: string
-    state?: string
-    postcode?: string
-    county?: string
-    country_code?: string
-  }
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class ReverseGeocodingService {
-  private static readonly NUMBER_OF_DUMMY_LOCATIONS = 5
+  private static readonly NUMBER_OF_DUMMY_LOCATIONS = 3
   private static readonly RADIUS_FOR_DUMMY_LOCATIONS = 5000
   private static readonly RADIUS_UNIT = 'meters'
   private static readonly REVERSE_GEOCODING_URL =
@@ -41,21 +25,15 @@ export class ReverseGeocodingService {
 
   constructor(private dbService: SqliteService, private http: HttpClient) {}
 
-  async reverseGeocodeMultiple(
-    latLngArray: [number, number][]
-  ): Promise<ReverseGeocoding[]> {
-    const geocodingResults: ReverseGeocoding[] = []
+  async reverseGeocodeMultiple(latLngArray: [number, number][]) {
     latLngArray.forEach(async (latLng) => {
       const previousCoding = await this.getPersistedReverseGeocoding(latLng)
       if (previousCoding) {
-        geocodingResults.push(previousCoding)
-      } else {
-        const coding = await this.reverseGeocode(latLng, true)
-        geocodingResults.push(coding)
-        delay(ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS)
+        return
       }
+      await this.reverseGeocode(latLng, true)
+      delay(ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS)
     })
-    return geocodingResults
   }
 
   private async reverseGeocode(
@@ -82,21 +60,24 @@ export class ReverseGeocodingService {
     )
     requests.splice(actualRequestIndex, 0, actualRequest)
 
-    requests.forEach((r, i) => {
+    requests.forEach((request, index) => {
       const delayTime =
-        (i + 1) * ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS
+        (index + 1) * ReverseGeocodingService.REVERSE_GEOCODE_DELAY_MS
       this.http
-        .get<any>(r, {})
+        .get(request)
         .pipe(delay(delayTime))
-        .subscribe((o) => {
-          const result = o as GeocodingJSON
-          // TODO
-        })
+        .subscribe(
+          async (response) => {
+            const geocoding = ReverseGeocoding.fromObject(response)
+            if (geocoding && index === actualRequestIndex) {
+              await this.dbService.upsertReverseGeocoding(geocoding)
+            }
+          },
+          (error) => {
+            console.error(`reverse-geocoding failed: ${JSON.stringify(error)}`)
+          }
+        )
     })
-
-    // TODO: persist geocoding
-    // const geocoding = new ReverseGeocoding(...latLng, address, type)
-    // this.dbService.upsertReverseGeocoding(geocoding)
   }
 
   private createDummyRequests(
@@ -133,13 +114,12 @@ export class ReverseGeocodingService {
 
     // generate random points in bbox
     const randomPoints = randomPoint(numberOfRequests, { bbox: posBbox })
-    const requests = randomPoints.features.map((p) => {
-      const request = this.createReverseGeocodingRequestUrl(
+    const requests = randomPoints.features.map((p) =>
+      this.createReverseGeocodingRequestUrl(
         p.geometry.coordinates[1],
         p.geometry.coordinates[0]
       )
-      return request
-    })
+    )
 
     return requests
   }

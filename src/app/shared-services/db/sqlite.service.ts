@@ -317,9 +317,16 @@ export class SqliteService {
       `SELECT * FROM inferences WHERE trajectory=?;`,
       [trajectoryId]
     )
-    const inferences: Inference[] = values.map((inf) => {
-      return Inference.fromObject(inf)
-    }, [])
+
+    const inferences: Inference[] = await Promise.all(
+      values.map(async (inf) => {
+        const inference = Inference.fromObject(inf)
+        const geocoding = await this.getReverseGeocoding(inference.latLng)
+        if (geocoding) inference.geocoding = geocoding
+        return inference
+      }, [])
+    )
+
     return inferences
   }
 
@@ -418,13 +425,13 @@ export class SqliteService {
     latLng: [number, number]
   ): Promise<ReverseGeocoding> {
     await this.ensureDbReady()
-    const delta = 0.00001
+    const delta = 0.00025
     const { values } = await this.db.query(
       `SELECT * FROM reverseGeocoding WHERE abs(lat-${latLng[0]}) < ${delta} AND abs(lon-${latLng[1]}) < ${delta};`
     )
-    if (!values.length) return undefined
-    const { lat, lon, address, type } = values[0]
-    return new ReverseGeocoding(lat, lon, address, type)
+    if (values === undefined || values.length === 0) return undefined
+    const { lat, lon, geocoding } = values[0]
+    return geocoding as ReverseGeocoding
   }
 
   async upsertReverseGeocoding(reverseGeocoding: ReverseGeocoding) {
@@ -437,12 +444,8 @@ export class SqliteService {
         changes: { changes },
         message,
       } = await this.db.run(
-        'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?,?)',
-        [
-          ...reverseGeocoding.latLng,
-          reverseGeocoding.address,
-          reverseGeocoding.type,
-        ].map(normalize)
+        'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?)',
+        [...reverseGeocoding.latLng, reverseGeocoding].map(normalize)
       )
       if (changes === -1)
         throw new Error(`couldnt insert reverse-geocoding: ${message}`)

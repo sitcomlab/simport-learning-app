@@ -120,7 +120,6 @@ export const MIGRATIONS = [
   `CREATE TABLE IF NOT EXISTS reverseGeocoding (
     lat FLOAT NOT NULL,
     lon FLOAT NOT NULL,
-    address TEXT NOT NULL,
-    addresstype TEXT,
-    PRIMARY KEY (lat, lon);`,
+    geocoding TEXT,
+    PRIMARY KEY (lat, lon));`,
 ]
