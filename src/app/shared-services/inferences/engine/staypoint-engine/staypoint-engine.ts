@@ -64,16 +64,15 @@ export class StaypointEngine implements IInferenceEngine {
         )
       }
       if (i.type === InferenceType.poi) {
-        return this.inferPOIFromStayPointClusters(
-          stayPointClusters,
-          daysInTrajectory
-        )
+        return this.inferPOIFromStayPointClusters(stayPointClusters)
       }
     })
     // flatten and filter
     const inferenceResults: Inference[] = [].concat
       .apply([], inferenceResultsNested)
       .filter((i) => i)
+
+    // TODO filter out POI inferences that are top home or work inference
 
     return {
       status:
@@ -202,41 +201,21 @@ export class StaypointEngine implements IInferenceEngine {
    * TODO
    */
   private inferPOIFromStayPointClusters(
-    stayPointClusters: StayPointCluster[],
-    daysInTrajectory: number
+    stayPointClusters: StayPointCluster[]
   ): Inference[] {
     if (stayPointClusters === undefined || stayPointClusters.length === 0) {
       return undefined
     }
-    const clusterScores = stayPointClusters.map((stayPointCluster) => {
-      return this.calculatePOIScore(stayPointCluster)
+    // filter out clusters which will not be POIs (for now, those with only one visit)
+    const poiClusters = stayPointClusters.filter((stayPointCluster) => {
+      return stayPointCluster.onSiteTimes.length > 1
     })
-    // here we return inferences for all clusters
-    if (stayPointClusters.length <= 3) {
-      return clusterScores
-        .map((score, index) => {
-          return this.createInferenceForCluster(
-            InferenceType.poi,
-            stayPointClusters[index],
-            score,
-            daysInTrajectory
-          )
-        })
-        .sort((a, b) => b.confidence - a.confidence)
-    }
-    // if more than three clusters, we return only inferences of top three results
-    const topThreeInferenceIndices =
-      this.getIndicesOfThreeMaxValues(clusterScores)
-    return topThreeInferenceIndices
-      .map((topInferenceIndex) => {
-        return this.createInferenceForCluster(
-          InferenceType.poi,
-          stayPointClusters[topInferenceIndex],
-          clusterScores[topInferenceIndex],
-          daysInTrajectory
-        )
-      })
-      .sort((a, b) => b.confidence - a.confidence)
+    if (poiClusters.length === 0) return undefined
+
+    // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
+    return poiClusters.map((poiCluster) => {
+      return this.createInferenceForCluster(InferenceType.poi, poiCluster, 1, 1)
+    })
   }
 
   // how many nights were spent at this cluster
