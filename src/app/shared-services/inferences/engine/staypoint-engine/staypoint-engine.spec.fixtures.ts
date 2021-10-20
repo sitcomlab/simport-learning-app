@@ -4,6 +4,7 @@ import {
   TrajectoryType,
 } from 'src/app/model/trajectory'
 import trajectoryFileHomeWork from '../../test-data/test-home-work.json'
+import trajectoryFileHomeSportHome from '../../test-data/test-home-sport-home.json'
 import { StayPointCluster, StayPoints } from 'src/app/model/staypoints'
 
 const trajectoryMeta: TrajectoryMeta = {
@@ -28,6 +29,12 @@ twoWeekTrajectoryData.timestamps[twoWeekTrajectoryData.timestamps.length - 1] =
 export const twoWeekTrajectory = new Trajectory(
   trajectoryMeta,
   twoWeekTrajectoryData
+)
+
+const homeSportHomeData = Trajectory.fromJSON(trajectoryFileHomeSportHome)
+export const homeSportHomeTrajectory = new Trajectory(
+  trajectoryMeta,
+  homeSportHomeData
 )
 
 export const dummyStayPoints: StayPoints = undefined
@@ -115,4 +122,21 @@ export const twoWeekmixedHomeCluster = [
   threeDayHomeClusterOne,
   fourDayHomeCluster,
   threeDayHomeClusterTwo,
+]
+
+export const oneWeekRegularPOICluster: StayPointCluster = {
+  trajID: 'randomId',
+  coordinates: [51.972451, 7.598264],
+  onSiteTimes: [
+    [new Date(2021, 2, 12, 18), new Date(2021, 2, 12, 20)],
+    [new Date(2021, 2, 14, 18, 10), new Date(2021, 2, 14, 20, 15)],
+    [new Date(2021, 2, 16, 18), new Date(2021, 2, 16, 20)],
+  ],
+  componentCoordinates: [[51.972451, 7.598264]],
+}
+
+export const oneWeekRegularHomeWorkPOIClusters = [
+  oneWeekRegularHomeCluster,
+  oneWeekRegularWorkCluster,
+  oneWeekRegularPOICluster,
 ]

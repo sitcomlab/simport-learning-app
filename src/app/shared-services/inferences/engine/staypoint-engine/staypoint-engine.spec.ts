@@ -1,4 +1,4 @@
-import { HomeInference, WorkInference } from '../definitions'
+import { HomeInference, POIInference, WorkInference } from '../definitions'
 import * as fixtures from './staypoint-engine.spec.fixtures'
 import { InferenceResultStatus, InferenceType } from '../types'
 import { StaypointEngine } from './staypoint-engine'
@@ -179,5 +179,42 @@ describe('StaypointEngine', () => {
       ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
       done()
     })
+  })
+
+  it('#infer should correctly infer a poi', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.twoWeekmixedHomeCluster)
+    )
+    engine
+      .infer(fixtures.homeSportHomeTrajectory, [POIInference])
+      .then((value) => {
+        expect(value.status).toEqual(InferenceResultStatus.successful)
+        expect(value.inferences.length).toEqual(3)
+        expect(value.inferences[0].type).toEqual(InferenceType.poi)
+        expect(value.inferences[0].confidence).toBeGreaterThan(0.25)
+        expect(value.inferences[0].confidence).toBeGreaterThan(
+          value.inferences[1].confidence
+        )
+        expect(value.inferences[0].latLng[0]).toBeCloseTo(
+          fixtures.oneWeekRegularPOICluster.coordinates[0]
+        )
+        expect(value.inferences[0].latLng[1]).toBeCloseTo(
+          fixtures.oneWeekRegularPOICluster.coordinates[1]
+        )
+        // expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+        //   fixtures.twoWeekTrajectory.type,
+        //   fixtures.twoWeekTrajectory.id
+        // )
+        // expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+        //   fixtures.twoWeekTrajectory.id
+        // )
+        expect(
+          staypointServiceSpy.computeStayPointClusters
+        ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+        done()
+      })
   })
 })
