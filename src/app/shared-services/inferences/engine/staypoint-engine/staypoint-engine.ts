@@ -63,6 +63,12 @@ export class StaypointEngine implements IInferenceEngine {
           weekDaysInTrajectory
         )
       }
+      if (i.type === InferenceType.poi) {
+        return this.inferPOIFromStayPointClusters(
+          stayPointClusters,
+          daysInTrajectory
+        )
+      }
     })
     // flatten and filter
     const inferenceResults: Inference[] = [].concat
@@ -192,6 +198,47 @@ export class StaypointEngine implements IInferenceEngine {
       .sort((a, b) => b.confidence - a.confidence)
   }
 
+  /**
+   * TODO
+   */
+  private inferPOIFromStayPointClusters(
+    stayPointClusters: StayPointCluster[],
+    daysInTrajectory: number
+  ): Inference[] {
+    if (stayPointClusters === undefined || stayPointClusters.length === 0) {
+      return undefined
+    }
+    const clusterScores = stayPointClusters.map((stayPointCluster) => {
+      return this.calculatePOIScore(stayPointCluster)
+    })
+    // here we return inferences for all clusters
+    if (stayPointClusters.length <= 3) {
+      return clusterScores
+        .map((score, index) => {
+          return this.createInferenceForCluster(
+            InferenceType.poi,
+            stayPointClusters[index],
+            score,
+            daysInTrajectory
+          )
+        })
+        .sort((a, b) => b.confidence - a.confidence)
+    }
+    // if more than three clusters, we return only inferences of top three results
+    const topThreeInferenceIndices =
+      this.getIndicesOfThreeMaxValues(clusterScores)
+    return topThreeInferenceIndices
+      .map((topInferenceIndex) => {
+        return this.createInferenceForCluster(
+          InferenceType.poi,
+          stayPointClusters[topInferenceIndex],
+          clusterScores[topInferenceIndex],
+          daysInTrajectory
+        )
+      })
+      .sort((a, b) => b.confidence - a.confidence)
+  }
+
   // how many nights were spent at this cluster
   private calculateHomeScore(stayPointCluster: StayPointCluster): number {
     let score = 0
@@ -250,6 +297,11 @@ export class StaypointEngine implements IInferenceEngine {
       }
     })
     return score
+  }
+
+  // TODO: implement
+  private calculatePOIScore(stayPointCluster: StayPointCluster): number {
+    return 1
   }
 
   // assemble an inference object

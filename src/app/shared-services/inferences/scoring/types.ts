@@ -22,4 +22,5 @@ export enum InferenceScoringType {
   pointCount = 'pointCount',
   nightness = 'nightness',
   workHours9to5 = 'workHours9to5',
+  poiDuration = 'poiDuration',
 }

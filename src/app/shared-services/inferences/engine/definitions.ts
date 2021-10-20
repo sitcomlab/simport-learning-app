@@ -60,7 +60,42 @@ export const HomeInference = new InferenceDefinition(
   ]
 )
 
+export const POIInference = new InferenceDefinition(
+  'poi',
+  InferenceType.poi,
+  'poi',
+  (lang?: string) => 'Poi',
+  (r: Inference, lang?: string) => {
+    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
+    const confidence = (r.confidence * 100).toFixed(0)
+    return `We assume you visited ${latLng} with a confidence of ${confidence} %.`
+  },
+  [
+    {
+      type: InferenceScoringType.nightness,
+      confidence: (score) => 1 - score,
+      weight: 0.75,
+    },
+    {
+      type: InferenceScoringType.workHours9to5,
+      confidence: (score) => 1 - score,
+      weight: 0.75,
+    },
+    {
+      type: InferenceScoringType.pointCount,
+      confidence: (score) => score,
+      weight: 1,
+    },
+    {
+      type: InferenceScoringType.poiDuration,
+      confidence: (score) => score,
+      weight: 1,
+    },
+  ]
+)
+
 export const AllInferences = {
   [HomeInference.type]: HomeInference,
   [WorkInference.type]: WorkInference,
+  [POIInference.type]: POIInference,
 }
