@@ -1,36 +1,41 @@
 export class ReverseGeocoding {
   constructor(
-    public lat: number,
-    public lon: number,
+    public originLatLng: [number, number],
+    public codedLatLon: [number, number],
     public name?: string,
-    public type?: string,
     public displayName?: string,
-    public address?: {
-      road?: string
-      village?: string
-      town?: string
-      stateDistrict?: string
-      state?: string
-      postcode?: string
-      county?: string
-      country?: string
-      countryCode?: string
-      houseNumber?: string
-      hamlet?: string
-    }
+    public category?: string,
+    public type?: string,
+    public road?: string,
+    public houseNumber?: string,
+    public postcode?: string,
+    public village?: string,
+    public town?: string,
+    public city?: string,
+    public hamlet?: string,
+    public stateDistrict?: string,
+    public state?: string,
+    public county?: string,
+    public country?: string,
+    public countryCode?: string
   ) {}
 
-  static fromObject(val: any): ReverseGeocoding {
+  static fromApiObject(
+    val: any,
+    originLatLng: [number, number]
+  ): ReverseGeocoding {
     const {
       lat,
       lon,
       name,
-      type,
       display_name,
+      category,
+      type,
       address: {
         road,
         village,
         town,
+        city,
         state_district,
         state,
         postcode,
@@ -43,28 +48,24 @@ export class ReverseGeocoding {
     } = val
 
     return new ReverseGeocoding(
-      Number(lat),
-      Number(lon),
+      originLatLng,
+      [Number(lat), Number(lon)],
       name,
-      type,
       display_name,
-      {
-        road,
-        village,
-        town,
-        stateDistrict: state_district,
-        state,
-        postcode,
-        county,
-        country,
-        countryCode: country_code,
-        houseNumber: house_number,
-        hamlet,
-      }
+      category,
+      type,
+      road,
+      house_number,
+      postcode,
+      town,
+      village,
+      city,
+      hamlet,
+      state_district,
+      state,
+      county,
+      country,
+      country_code
     )
-  }
-
-  get latLng(): [number, number] {
-    return [this.lat, this.lon]
   }
 }

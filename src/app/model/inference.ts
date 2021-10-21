@@ -42,23 +42,27 @@ export class Inference {
     )
   }
 
-  get hasAddress(): boolean {
+  get hasGeocoding(): boolean {
     return this.geocoding !== undefined
   }
 
   get addressDisplayName(): string {
-    if (this.geocoding && this.geocoding.address) {
-      const name = this.geocoding.name || ''
-      const road = this.geocoding.address.road || ''
-      const houseNumber = this.geocoding.address.houseNumber || ''
+    if (this.hasGeocoding) {
+      const name = this.geocoding.name ? `${this.geocoding.name}, ` : ''
+      const road = this.geocoding.road ? `${this.geocoding.road} ` : ''
+      const houseNumber = this.geocoding.houseNumber
+        ? this.geocoding.houseNumber
+        : ''
       const location =
-        this.geocoding.address.town ||
-        this.geocoding.address.village ||
-        this.geocoding.address.country ||
+        this.geocoding.city ||
+        this.geocoding.town ||
+        this.geocoding.village ||
+        this.geocoding.country ||
         ''
-      return `${name.length > 0 ? name + ' ' : name} ${road}${
-        houseNumber.length > 0 ? ' ' + houseNumber : houseNumber
-      } (${location})`
+      const locationString = location.length > 0 ? ` (${location})` : location
+
+      const displayName = `${name}${road}${houseNumber}${locationString}`
+      if (displayName.trim().length > 0) return displayName
     }
     return `${this.latLng[0].toFixed(2)}, ${this.latLng[1].toFixed(2)}`
   }

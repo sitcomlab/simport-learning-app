@@ -429,15 +429,15 @@ export class SqliteService {
     const { values } = await this.db.query(
       `SELECT * FROM reverseGeocoding WHERE abs(lat-${latLng[0]}) < ${delta} AND abs(lon-${latLng[1]}) < ${delta};`
     )
-    if (values === undefined || values.length === 0) return undefined
-    const { lat, lon, geocoding } = values[0]
-    return geocoding as ReverseGeocoding
+    if (!values || !values.length) return undefined
+    const { geocoding } = values[0]
+    return JSON.parse(geocoding) as ReverseGeocoding
   }
 
   async upsertReverseGeocoding(reverseGeocoding: ReverseGeocoding) {
     await this.ensureDbReady()
     const previousCoding = await this.getReverseGeocoding(
-      reverseGeocoding.latLng
+      reverseGeocoding.originLatLng
     )
     if (!previousCoding) {
       const {
@@ -445,7 +445,7 @@ export class SqliteService {
         message,
       } = await this.db.run(
         'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?)',
-        [...reverseGeocoding.latLng, reverseGeocoding].map(normalize)
+        [...reverseGeocoding.originLatLng, reverseGeocoding].map(normalize)
       )
       if (changes === -1)
         throw new Error(`couldnt insert reverse-geocoding: ${message}`)
