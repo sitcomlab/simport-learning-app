@@ -212,10 +212,28 @@ export class StaypointEngine implements IInferenceEngine {
     })
     if (poiClusters.length === 0) return undefined
 
-    // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
-    return poiClusters.map((poiCluster) => {
-      return this.createInferenceForCluster(InferenceType.poi, poiCluster, 1, 1)
-    })
+    const clusterHomeScores = poiClusters.map((c) => this.calculateHomeScore(c))
+    const clusterWorkScores = poiClusters.map((c) => this.calculateWorkScore(c))
+
+    const homeWorkTreshold = 0.5
+    return poiClusters
+      .map((poiCluster, i) => {
+        // filter home and work clusters from poi clusters
+        if (
+          clusterHomeScores[i] >= homeWorkTreshold ||
+          clusterWorkScores[i] >= homeWorkTreshold
+        ) {
+          return undefined
+        }
+        // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
+        return this.createInferenceForCluster(
+          InferenceType.poi,
+          poiCluster,
+          1,
+          1
+        )
+      })
+      .filter((e) => e) // filter undefined values
   }
 
   // how many nights were spent at this cluster
