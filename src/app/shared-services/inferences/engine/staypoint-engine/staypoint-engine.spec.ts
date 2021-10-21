@@ -186,31 +186,29 @@ describe('StaypointEngine', () => {
       Promise.resolve(fixtures.dummyStayPoints)
     )
     staypointServiceSpy.computeStayPointClusters.and.returnValue(
-      Promise.resolve(fixtures.twoWeekmixedHomeCluster)
+      Promise.resolve(fixtures.oneWeekRegularHomeWorkPOIClusters)
     )
     engine
       .infer(fixtures.homeSportHomeTrajectory, [POIInference])
       .then((value) => {
+        console.log(value)
         expect(value.status).toEqual(InferenceResultStatus.successful)
         expect(value.inferences.length).toEqual(3)
         expect(value.inferences[0].type).toEqual(InferenceType.poi)
-        expect(value.inferences[0].confidence).toBeGreaterThan(0.25)
-        expect(value.inferences[0].confidence).toBeGreaterThan(
-          value.inferences[1].confidence
-        )
-        expect(value.inferences[0].latLng[0]).toBeCloseTo(
+        expect(value.inferences[0].confidence).toBe(1)
+        expect(value.inferences[2].latLng[0]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[0]
         )
-        expect(value.inferences[0].latLng[1]).toBeCloseTo(
+        expect(value.inferences[2].latLng[1]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[1]
         )
-        // expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
-        //   fixtures.twoWeekTrajectory.type,
-        //   fixtures.twoWeekTrajectory.id
-        // )
-        // expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
-        //   fixtures.twoWeekTrajectory.id
-        // )
+        expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.homeSportHomeTrajectory.type,
+          fixtures.homeSportHomeTrajectory.id
+        )
+        expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.homeSportHomeTrajectory.id
+        )
         expect(
           staypointServiceSpy.computeStayPointClusters
         ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
