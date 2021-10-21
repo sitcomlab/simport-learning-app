@@ -63,7 +63,7 @@ export const HomeInference = new InferenceDefinition(
 export const POIInference = new InferenceDefinition(
   'poi',
   InferenceType.poi,
-  'pin-outline',
+  'flag',
   (lang?: string) => 'Point of interest',
   (r: Inference, lang?: string) => {
     const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
