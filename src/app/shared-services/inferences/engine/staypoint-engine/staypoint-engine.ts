@@ -229,8 +229,8 @@ export class StaypointEngine implements IInferenceEngine {
         return this.createInferenceForCluster(
           InferenceType.poi,
           poiCluster,
-          1,
-          1
+          poiCluster.onSiteTimes.length,
+          poiCluster.onSiteTimes.length
         )
       })
       .filter((e) => e) // filter undefined values
@@ -321,6 +321,10 @@ export class StaypointEngine implements IInferenceEngine {
           'Location where ' +
           clusterScore.toString() +
           ' workdays (weekdays from 10am to 12am and 2pm to 4pm) were spent'
+        break
+      case InferenceType.poi:
+        description = `Location that was visited ${clusterScore.toString()} times`
+        break
     }
     const convexHull = concaveman(stayPointCluster.componentCoordinates)
     return new Inference(
