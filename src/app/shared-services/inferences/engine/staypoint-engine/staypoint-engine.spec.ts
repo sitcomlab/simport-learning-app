@@ -193,13 +193,13 @@ describe('StaypointEngine', () => {
       .then((value) => {
         console.log(value)
         expect(value.status).toEqual(InferenceResultStatus.successful)
-        expect(value.inferences.length).toEqual(3)
+        expect(value.inferences.length).toEqual(1)
         expect(value.inferences[0].type).toEqual(InferenceType.poi)
         expect(value.inferences[0].confidence).toBe(1)
-        expect(value.inferences[2].latLng[0]).toBeCloseTo(
+        expect(value.inferences[0].latLng[0]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[0]
         )
-        expect(value.inferences[2].latLng[1]).toBeCloseTo(
+        expect(value.inferences[0].latLng[1]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[1]
         )
         expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
