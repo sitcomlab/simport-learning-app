@@ -1,0 +1,51 @@
+PODS:
+  - Capacitor (2.5.0):
+    - CapacitorCordova
+  - CapacitorCommunitySqlite (2.9.16):
+    - Capacitor
+    - SQLCipher
+  - CapacitorCordova (2.5.0)
+  - CapacitorFileSelector (0.0.5):
+    - Capacitor
+  - CordovaPlugins (2.5.0):
+    - CapacitorCordova
+  - SQLCipher (4.4.3):
+    - SQLCipher/standard (= 4.4.3)
+  - SQLCipher/common (4.4.3)
+  - SQLCipher/standard (4.4.3):
+    - SQLCipher/common
+
+DEPENDENCIES:
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - CapacitorFileSelector (from `../../node_modules/capacitor-file-selector`)
+  - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+
+SPEC REPOS:
+  trunk:
+    - SQLCipher
+
+EXTERNAL SOURCES:
+  Capacitor:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorCommunitySqlite:
+    :path: "../../node_modules/@capacitor-community/sqlite"
+  CapacitorCordova:
+    :path: "../../node_modules/@capacitor/ios"
+  CapacitorFileSelector:
+    :path: "../../node_modules/capacitor-file-selector"
+  CordovaPlugins:
+    :path: "../capacitor-cordova-ios-plugins"
+
+SPEC CHECKSUMS:
+  Capacitor: cf2174bec9bfe65f1c956616ac1d94afcef7d24d
+  CapacitorCommunitySqlite: da1699f18229cb6deafdc829c7e827add8ae76b5
+  CapacitorCordova: 03d0a19b737e65c94825b20222c804d5467e1c5e
+  CapacitorFileSelector: 5c2d14928680d159c2861147974fdc3f204ebe06
+  CordovaPlugins: 6aab8c1e8d44a2ffe32f4369101ff17bdb8c69dc
+  SQLCipher: 155ffeafc9ac102e5c9b68e3e9a1297a98a27096
+
+PODFILE CHECKSUM: a672178b97c039f637098b9243fa8c6cced428ed
+
+COCOAPODS: 1.11.0
