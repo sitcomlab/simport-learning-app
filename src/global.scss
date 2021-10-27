@@ -67,6 +67,9 @@ div.inference-icon {
   &.home {
     border: 2px solid #347d39;
   }
+  &.poi {
+    border: 2px solid #68347d;
+  }
 
   ion-icon {
     font-size: 20px;
@@ -76,6 +79,9 @@ div.inference-icon {
     }
     &.inference-home {
       color: #347d39;
+    }
+    &.inference-poi {
+      color: #68347d;
     }
   }
 }

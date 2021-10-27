@@ -3,6 +3,7 @@ import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
   AllInferences,
   HomeInference,
+  POIInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine/simple-engine'
@@ -157,6 +158,7 @@ export class InferenceService implements OnDestroy {
     const inference = await this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
+      POIInference,
     ])
 
     await this.dbService.deleteInferences(traj.id)

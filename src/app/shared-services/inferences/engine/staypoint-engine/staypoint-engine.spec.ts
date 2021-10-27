@@ -1,4 +1,4 @@
-import { HomeInference, WorkInference } from '../definitions'
+import { HomeInference, POIInference, WorkInference } from '../definitions'
 import * as fixtures from './staypoint-engine.spec.fixtures'
 import { InferenceResultStatus, InferenceType } from '../types'
 import { StaypointEngine } from './staypoint-engine'
@@ -179,5 +179,46 @@ describe('StaypointEngine', () => {
       ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
       done()
     })
+  })
+
+  it('#infer should correctly infer a poi and filter out top home and work locations', (done: DoneFn) => {
+    staypointServiceSpy.getStayPoints.and.returnValue(
+      Promise.resolve(fixtures.dummyStayPoints)
+    )
+    staypointServiceSpy.computeStayPointClusters.and.returnValue(
+      Promise.resolve(fixtures.oneWeekRegularHomeWorkPOIClusters)
+    )
+    engine
+      .infer(fixtures.homeSportHomeTrajectory, [
+        POIInference,
+        WorkInference,
+        HomeInference,
+      ])
+      .then((value) => {
+        const poiInferences = value.inferences.filter((inf) => {
+          return inf.type === InferenceType.poi
+        })
+        expect(value.status).toEqual(InferenceResultStatus.successful)
+        expect(poiInferences.length).toEqual(1)
+        expect(poiInferences[0].type).toEqual(InferenceType.poi)
+        expect(poiInferences[0].confidence).toBe(1)
+        expect(poiInferences[0].latLng[0]).toBeCloseTo(
+          fixtures.oneWeekRegularPOICluster.coordinates[0]
+        )
+        expect(poiInferences[0].latLng[1]).toBeCloseTo(
+          fixtures.oneWeekRegularPOICluster.coordinates[1]
+        )
+        expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.homeSportHomeTrajectory.type,
+          fixtures.homeSportHomeTrajectory.id
+        )
+        expect(staypointServiceSpy.getStayPoints).toHaveBeenCalledOnceWith(
+          fixtures.homeSportHomeTrajectory.id
+        )
+        expect(
+          staypointServiceSpy.computeStayPointClusters
+        ).toHaveBeenCalledOnceWith(fixtures.dummyStayPoints)
+        done()
+      })
   })
 })
