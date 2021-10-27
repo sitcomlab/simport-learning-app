@@ -181,7 +181,7 @@ describe('StaypointEngine', () => {
     })
   })
 
-  it('#infer should correctly infer a poi', (done: DoneFn) => {
+  it('#infer should correctly infer a poi and filter out top home and work locations', (done: DoneFn) => {
     staypointServiceSpy.getStayPoints.and.returnValue(
       Promise.resolve(fixtures.dummyStayPoints)
     )
@@ -189,17 +189,23 @@ describe('StaypointEngine', () => {
       Promise.resolve(fixtures.oneWeekRegularHomeWorkPOIClusters)
     )
     engine
-      .infer(fixtures.homeSportHomeTrajectory, [POIInference])
+      .infer(fixtures.homeSportHomeTrajectory, [
+        POIInference,
+        WorkInference,
+        HomeInference,
+      ])
       .then((value) => {
-        console.log(value)
+        const poiInferences = value.inferences.filter((inf) => {
+          return inf.type === InferenceType.poi
+        })
         expect(value.status).toEqual(InferenceResultStatus.successful)
-        expect(value.inferences.length).toEqual(1)
-        expect(value.inferences[0].type).toEqual(InferenceType.poi)
-        expect(value.inferences[0].confidence).toBe(1)
-        expect(value.inferences[0].latLng[0]).toBeCloseTo(
+        expect(poiInferences.length).toEqual(1)
+        expect(poiInferences[0].type).toEqual(InferenceType.poi)
+        expect(poiInferences[0].confidence).toBe(1)
+        expect(poiInferences[0].latLng[0]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[0]
         )
-        expect(value.inferences[0].latLng[1]).toBeCloseTo(
+        expect(poiInferences[0].latLng[1]).toBeCloseTo(
           fixtures.oneWeekRegularPOICluster.coordinates[1]
         )
         expect(staypointServiceSpy.updateStayPoints).toHaveBeenCalledOnceWith(
