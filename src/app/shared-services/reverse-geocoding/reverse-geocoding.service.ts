@@ -22,7 +22,7 @@ export class ReverseGeocodingService {
   private static readonly REVERSE_GEOCODE_FORMAT = 'jsonv2'
   // limited to 'an absolute maximum of 1 request per second'
   // see https://operations.osmfoundation.org/policies/nominatim/
-  private static readonly REVERSE_GEOCODE_DELAY_MS = 1000
+  private static readonly REVERSE_GEOCODE_DELAY_MS = 1500
 
   constructor(private dbService: SqliteService, private http: HttpClient) {}
 
