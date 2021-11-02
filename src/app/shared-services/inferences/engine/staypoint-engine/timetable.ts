@@ -10,14 +10,14 @@ export class Timetable {
   }
 
   /** get Id of most frequently visited POI at the day and hour of the provided date */
-  getMostFrequentPoiIdByDate(date: Date): number {
+  getMostFrequentPoiIdByDate(date: Date): string {
     const queryDay = date.getDay()
     const queryHour = date.getHours()
     return this.records[queryDay][queryHour].getMostFrequentPoiId()
   }
 
   /** get Id of most frequently visited POI at the day and hour of the provided date */
-  getMostFrequentPoiIdByDayAndHour(day: number, hour: number): number {
+  getMostFrequentPoiIdByDayAndHour(day: number, hour: number): string {
     return this.records[day][hour].getMostFrequentPoiId()
   }
 
@@ -25,13 +25,13 @@ export class Timetable {
    * @param poiId the Id of the POI to record
    * @param onSiteTimes start and end date of each stay at POI (like in Staypointcluster)
    */
-  addPoi(poiId: number, onSiteTimes: [Date, Date][]) {
+  addPoi(poiId: string, onSiteTimes: [Date, Date][]) {
     onSiteTimes.forEach((onSiteTime) => {
       this.addPoiStay(poiId, onSiteTime[0], onSiteTime[1])
     })
   }
 
-  private addPoiStay(poiId: number, start: Date, end: Date) {
+  private addPoiStay(poiId: string, start: Date, end: Date) {
     const startDate = new Date(start)
     const endDate = new Date(end)
     while (startDate < endDate) {
@@ -46,8 +46,8 @@ export class Timetable {
  * An entry for one hour of one day in the timetable, keeping track of POIs visited then
  */
 class VisitsForDayAndHour {
-  private visits: Map<number, number> // poiId, visitCount
-  private mostFrequentPoiId: number
+  private visits: Map<string, number> // poiId, visitCount
+  private mostFrequentPoiId: string
   private mostFrequentPoiCount: number
   constructor() {
     this.visits = new Map()
@@ -56,7 +56,7 @@ class VisitsForDayAndHour {
   }
 
   /** Record a visit of a POI (by id) at the corresponding hour and day */
-  addVisit(poiId: number) {
+  addVisit(poiId: string) {
     let updatedVisitCount
     if (this.visits.has(poiId)) {
       updatedVisitCount = this.visits.get(poiId) + 1
@@ -73,12 +73,12 @@ class VisitsForDayAndHour {
   /** Get the Id of the POI a visit of a POI (by id) at the corresponding hour and day
    * Returns undefined if no visits recorded at this hour
    */
-  getMostFrequentPoiId(): number {
+  getMostFrequentPoiId(): string {
     return this.mostFrequentPoiId
   }
 
   /** get number of visits of a POI (by id) at the corresponding hour and day */
-  getVisitCountByPoiId(poiId: number): number {
+  getVisitCountByPoiId(poiId: string): number {
     if (this.visits.has(poiId)) {
       return this.visits.get(poiId)
     } else {
@@ -87,7 +87,7 @@ class VisitsForDayAndHour {
   }
 
   /** Get <poiId, visitCount> for each POI visited at the corresponding hour and day */
-  getAllVisits(): Map<number, number> {
+  getAllVisits(): Map<string, number> {
     return this.visits
   }
 }
