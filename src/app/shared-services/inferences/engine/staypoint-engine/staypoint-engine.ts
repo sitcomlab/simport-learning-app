@@ -13,6 +13,7 @@ import { WorkHoursScoring } from '../../scoring/work-hours-scoring'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import { StayPointCluster } from 'src/app/model/staypoints'
 import concaveman from 'concaveman'
+import { v4 as uuid } from 'uuid'
 
 export class StaypointEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
@@ -348,6 +349,7 @@ export class StaypointEngine implements IInferenceEngine {
     }
     const convexHull = concaveman(stayPointCluster.componentCoordinates)
     return new Inference(
+      uuid(),
       inferenceType,
       inferenceType,
       description,

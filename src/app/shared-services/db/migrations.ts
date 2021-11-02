@@ -115,4 +115,23 @@ export const MIGRATIONS = [
 
   // add field 'start' to table points
   `ALTER TABLE points ADD COLUMN state TEXT`,
+
+  // add primary key 'id' to table inferendes
+  // drop table inferences beforehand
+  `DROP TABLE IF EXISTS inferences;`,
+
+  // create new inferences table with ids
+  `CREATE TABLE IF NOT EXISTS inferences (
+    id varchar(255) NOT NULL PRIMARY KEY,
+    trajectory TEXT NOT NULL,
+    type TEXT NOT NULL,
+    updated DATETIME NOT NULL,
+    lon FLOAT NOT NULL,
+    lat FLOAT NOT NULL,
+    coordinates TEXT,
+    confidence FLOAT,
+    accuracy FLOAT,
+    name TEXT,
+    description TEXT,
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
 ]

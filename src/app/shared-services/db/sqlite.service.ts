@@ -260,6 +260,7 @@ export class SqliteService {
         infIndex++
       ) {
         const {
+          id,
           name,
           type,
           description,
@@ -271,8 +272,9 @@ export class SqliteService {
         } = inferences[infIndex]
 
         if (latLng.length === 2) {
-          placeholders.push(`(?,?,?,?,?,?,?,?,?,?)`)
+          placeholders.push(`(?,?,?,?,?,?,?,?,?,?,?)`)
           values.push(
+            id,
             trajectoryId,
             type,
             timestamp,

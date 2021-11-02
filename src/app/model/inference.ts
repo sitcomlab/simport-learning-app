@@ -4,6 +4,7 @@ import * as polyline from '@mapbox/polyline'
 
 export class Inference {
   constructor(
+    public id: string,
     public name: string,
     public type: InferenceType,
     public description: string,
@@ -16,6 +17,7 @@ export class Inference {
 
   static fromObject(val: any): Inference {
     const {
+      id,
       name,
       type,
       description,
@@ -28,6 +30,7 @@ export class Inference {
     } = val
 
     return new Inference(
+      id,
       name,
       type,
       description,
