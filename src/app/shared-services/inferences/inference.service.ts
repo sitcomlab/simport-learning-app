@@ -18,7 +18,6 @@ import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import { Plugins, Capacitor } from '@capacitor/core'
 import BackgroundFetch from 'cordova-plugin-background-fetch'
-import { Inference } from 'src/app/model/inference'
 import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 
 const { App, BackgroundTask } = Plugins
@@ -31,6 +30,7 @@ class InferenceFilterConfiguration {
 export enum InferenceServiceEvent {
   configureFilter = 'configureFilter',
   filterConfigurationChanged = 'filterConfigurationChanged',
+  inferencesUpdated = 'inferencesUpdated',
 }
 
 enum InferenceGenerationState {
@@ -180,13 +180,14 @@ export class InferenceService implements OnDestroy {
       }
     }
 
-    await this.reverseGeocodeInferences(inference.inferences)
+    await this.geocodingService.reverseGeocodeInferences(inference.inferences)
 
     return inference
   }
 
   async loadPersistedInferences(
-    trajectoryId: string
+    trajectoryId: string,
+    runGeocoding: boolean = false
   ): Promise<InferenceResult> {
     const filterConfig = this.filterConfiguration.value
     const inferences = (
@@ -201,6 +202,11 @@ export class InferenceService implements OnDestroy {
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,
+    }
+    if (runGeocoding) {
+      this.geocodingService.reverseGeocodeInferences(inferences).then((_) => {
+        this.triggerEvent(InferenceServiceEvent.inferencesUpdated)
+      })
     }
     return persisted
   }
@@ -309,14 +315,6 @@ export class InferenceService implements OnDestroy {
         BackgroundFetch.finish(taskId)
       }
     )
-  }
-
-  /**
-   * TODO: this is for testing purposes
-   */
-  private async reverseGeocodeInferences(inferences: Inference[]) {
-    const coordinates = inferences.map((i) => i.latLng)
-    await this.geocodingService.reverseGeocodeMultiple(coordinates)
   }
 
   // helper methods

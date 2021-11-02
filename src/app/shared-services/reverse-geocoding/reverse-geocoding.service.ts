@@ -8,6 +8,7 @@ import transformTranslate from '@turf/transform-translate'
 import delay from 'delay'
 import { SqliteService } from '../db/sqlite.service'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
+import { Inference } from 'src/app/model/inference'
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,16 @@ export class ReverseGeocodingService {
   private static readonly REVERSE_GEOCODE_DELAY_MS = 1000
 
   constructor(private dbService: SqliteService, private http: HttpClient) {}
+
+  async reverseGeocodeInferencesForTrajectory(trajectoryId: string) {
+    const inferences = await this.dbService.getInferences(trajectoryId)
+    await this.reverseGeocodeInferences(inferences)
+  }
+
+  async reverseGeocodeInferences(inferences: Inference[]) {
+    const coordinates = inferences.map((i) => i.latLng)
+    await this.reverseGeocodeMultiple(coordinates)
+  }
 
   async reverseGeocodeMultiple(latLngArray: [number, number][]) {
     // filter for latLng, that actually need geocoding
