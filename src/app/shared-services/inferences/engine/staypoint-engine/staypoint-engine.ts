@@ -14,7 +14,7 @@ import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.se
 import { StayPointCluster } from 'src/app/model/staypoints'
 import concaveman from 'concaveman'
 import { v4 as uuid } from 'uuid'
-import { Timetable } from './timetable'
+import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 
 export class StaypointEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
@@ -22,12 +22,12 @@ export class StaypointEngine implements IInferenceEngine {
     new WorkHoursScoring(),
   ]
 
-  constructor(private staypointService: StaypointService) {}
+  constructor(
+    private staypointService: StaypointService,
+    private timetableService: TimetableService
+  ) {}
 
   private inputCoordinatesLimit = 100000
-
-  // just for testing. TODO: move timetable to db
-  private timetable = new Timetable()
 
   async infer(
     trajectory: Trajectory,
@@ -264,7 +264,7 @@ export class StaypointEngine implements IInferenceEngine {
         poiCluster.onSiteTimes.length // pass number of visits for description
       )
 
-      this.timetable.addPoi(inference.id, poiCluster.onSiteTimes)
+      this.timetableService.addPoi(inference, poiCluster.onSiteTimes)
 
       return inference
     })

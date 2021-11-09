@@ -134,4 +134,26 @@ export const MIGRATIONS = [
     name TEXT,
     description TEXT,
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  `CREATE TABLE IF NOT EXISTS visits (
+    inference TEXT NOT NULL,
+    count INTEGER NOT NULL,
+    hour TEXT NOT NULL,
+    UNIQUE (inference, hour),
+    FOREIGN KEY (inference) REFERENCES inferences(id) ON DELETE CASCADE,
+    FOREIGN KEY (hour) REFERENCES hours(id) ON DELETE CASCADE);`,
+
+  `CREATE TABLE IF NOT EXISTS hours (
+    id varchar(255) NOT NULL PRIMARY KEY,
+    hour INTEGER NOT NULL,
+    weekday TEXT NOT NULL,
+    FOREIGN KEY (weekday) REFERENCES weekdays(id) ON DELETE CASCADE
+    UNIQUE(hour,weekday));`,
+
+  `CREATE TABLE IF NOT EXISTS weekdays (
+    id varchar(255) NOT NULL PRIMARY KEY,
+    weekday INTEGER NOT NULL,
+    trajectory TEXT NOT NULL,
+    FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE,
+    UNIQUE(weekday,trajectory));`,
 ]

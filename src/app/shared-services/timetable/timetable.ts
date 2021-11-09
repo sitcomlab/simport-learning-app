@@ -31,11 +31,27 @@ export class Timetable {
     })
   }
 
-  private addPoiStay(poiId: string, start: Date, end: Date) {
+  private async addPoiStay(poiId: string, start: Date, end: Date) {
     const startDate = new Date(start)
     const endDate = new Date(end)
     while (startDate < endDate) {
-      this.records[startDate.getDay()][startDate.getHours()].addVisit(poiId)
+      const visitCount =
+        this.records[startDate.getDay()][startDate.getHours()].addVisit(poiId)
+
+      // console.log(this.inferenceService)
+      // const inference = await this.inferenceService.getInferenceById(poiId)
+      // const hour = await this.sqliteService.getHour(
+      //   inference.trajectoryId,
+      //   startDate.getDay(),
+      //   startDate.getHours()
+      // )
+      // console.log(inference, hour)
+      // this.sqliteService.upsertVisit({
+      //   inference,
+      //   count: visitCount,
+      //   hour,
+      // })
+
       // use UTC hours here to have constant increase even with daylight savings
       startDate.setUTCHours(startDate.getUTCHours() + 1)
     }
@@ -56,8 +72,8 @@ class VisitsForDayAndHour {
   }
 
   /** Record a visit of a POI (by id) at the corresponding hour and day */
-  addVisit(poiId: string) {
-    let updatedVisitCount
+  addVisit(poiId: string): number {
+    let updatedVisitCount: number
     if (this.visits.has(poiId)) {
       updatedVisitCount = this.visits.get(poiId) + 1
     } else {
@@ -68,6 +84,7 @@ class VisitsForDayAndHour {
       this.mostFrequentPoiId = poiId
       this.mostFrequentPoiCount = updatedVisitCount
     }
+    return updatedVisitCount
   }
 
   /** Get the Id of the POI a visit of a POI (by id) at the corresponding hour and day

@@ -18,6 +18,8 @@ import {
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
+import { Hour, Weekday } from 'src/app/model/timetable'
+import { v4 as uuid } from 'uuid'
 
 @Injectable()
 export class SqliteService {
@@ -324,6 +326,16 @@ export class SqliteService {
     return inferences
   }
 
+  async getInferenceById(inferenceId: string): Promise<Inference> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT * FROM inferences WHERE id=?;`,
+      [inferenceId]
+    )
+    const inference: Inference = Inference.fromObject(values)
+    return inference
+  }
+
   private async updateDurationDaysInTrajectory(
     trajectoryId: string
   ): Promise<number> {
@@ -413,6 +425,88 @@ export class SqliteService {
       message,
     } = await this.db.run(statement)
     if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
+  }
+
+  async upsertWeekday(trajectoryId: string, weekday: number) {
+    await this.ensureDbReady()
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      `INSERT OR IGNORE INTO weekdays VALUES (?,?,?)`,
+      [uuid(), weekday, trajectoryId].map(normalize)
+    )
+    if (changes === -1) throw new Error(`couldnt insert weekday: ${message}`)
+
+    return changes
+  }
+
+  async getWeekdayId(trajectoryId: string, weekday: number) {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT id FROM weekdays WHERE trajectory = ? AND weekday = ?`,
+      [trajectoryId, weekday.toString()]
+    )
+    if (!values.length) throw new Error('not found')
+    return values[0].id
+  }
+
+  async getWeekdays(trajectoryId: string): Promise<Weekday[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT * FROM weekdays WHERE trajectory = ?`,
+      [trajectoryId]
+    )
+    return values.map((v) => Weekday.fromJSON(v))
+  }
+
+  async upsertHour(weekdayId: string, hour: number) {
+    await this.ensureDbReady()
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      `INSERT OR IGNORE INTO hours VALUES (?,?,?)`,
+      [uuid(), hour, weekdayId].map(normalize)
+    )
+    if (changes === -1) throw new Error(`couldnt insert hour: ${message}`)
+
+    return changes
+  }
+
+  async getHourId(weekdayId: string, hour: number) {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT id FROM hours WHERE weekday = ? AND hour = ?`,
+      [weekdayId, hour].map(normalize)
+    )
+    if (!values.length) throw new Error('not found')
+    return values[0].id
+  }
+
+  async getHours(weekdayId: string): Promise<Hour[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT * FROM hours WHERE weekday = ?`,
+      [weekdayId]
+    )
+    return values.map((v) => Hour.fromJSON(v))
+  }
+
+  async addVisit(inferenceId: string, hourId: string): Promise<any> {
+    await this.ensureDbReady()
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      `INSERT INTO visits VALUES (?,?,?) ON CONFLICT(inference, hour)
+      DO UPDATE SET count = count + 1 WHERE inference = ? AND hour = ?;`,
+      [inferenceId, 0, hourId, inferenceId, hourId].map(normalize)
+    )
+
+    if (changes === -1) throw new Error(`couldnt update visits: ${message}`)
+
+    return changes
   }
 }
 

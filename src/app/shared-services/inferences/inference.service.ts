@@ -19,6 +19,8 @@ import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import { Plugins, Capacitor } from '@capacitor/core'
 import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { Inference } from 'src/app/model/inference'
+import { TimetableService } from '../timetable/timetable.service'
 
 const { App, BackgroundTask } = Plugins
 
@@ -77,6 +79,7 @@ export class InferenceService implements OnDestroy {
 
   constructor(
     private trajectoryService: TrajectoryService,
+    private timetableService: TimetableService,
     private notificationService: NotificationService,
     private dbService: SqliteService,
     private loadingController: LoadingController,
@@ -98,7 +101,10 @@ export class InferenceService implements OnDestroy {
     })
     this.initBackgroundInferenceGeneration()
     if (this.useStaypointEngine) {
-      this.inferenceEngine = new StaypointEngine(this.staypointService)
+      this.inferenceEngine = new StaypointEngine(
+        this.staypointService,
+        this.timetableService
+      )
     } else {
       this.inferenceEngine = new SimpleEngine()
     }
@@ -200,6 +206,15 @@ export class InferenceService implements OnDestroy {
       inferences,
     }
     return persisted
+  }
+
+  /**
+   * get inference by id
+   * @param inferenceId id of the inference
+   * @returns Inference or undefined if inference could not be found
+   */
+  async getInferenceById(inferenceId: string): Promise<Inference> {
+    return await this.dbService.getInferenceById(inferenceId)
   }
 
   // background inference updates
