@@ -1,14 +1,49 @@
 import { Injectable } from '@angular/core'
+import { Capacitor } from '@capacitor/core'
+import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { BehaviorSubject } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { Hour, Visit, Weekday } from 'src/app/model/timetable'
 import { SqliteService } from '../db/sqlite.service'
+import { InferenceService } from '../inferences/inference.service'
+import { NotificationService } from '../notification/notification.service'
+import { NotificationType } from '../notification/types'
+import { TrajectoryService } from '../trajectory/trajectory.service'
+
+enum PredictionState {
+  idle,
+  foreground,
+  background,
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class TimetableService {
-  constructor(private sqliteService: SqliteService) {}
+  constructor(
+    private sqliteService: SqliteService,
+    private notificationService: NotificationService,
+    private trajectoryService: TrajectoryService,
+    private inferenceService: InferenceService
+  ) {
+    this.initBackgroundPrediction()
+  }
+  // 2 hours-interval for inference-generation via independent and limited background-fetch
+  private static backgroundInterval = 120
+  private static backgroundFetchId = 'com.transistorsoft.fetch'
 
+  lastPredictionTryTime = new BehaviorSubject<number>(0)
+  lastPredictionRunTime = new BehaviorSubject<number>(0)
+
+  currentPredictionState = new BehaviorSubject<PredictionState>(
+    PredictionState.idle
+  )
+
+  /**
+   *
+   * @param trajectoryId id of the trajectory
+   * @returns next predicted visit or undefined
+   */
   async createTimetable(trajectoryId: string, weekday: number): Promise<void> {
     await this.sqliteService.upsertWeekday(trajectoryId, weekday)
   }
@@ -157,5 +192,81 @@ export class TimetableService {
       queryDay,
       queryHour
     )
+  }
+
+  /**
+   * Initialises the background-fetch events.
+   * This is periodically run by the OS and additionally serves as a callback for custom scheduled fetches.
+   */
+  private async initBackgroundPrediction() {
+    if (!Capacitor.isNative) return
+    await BackgroundFetch.configure(
+      {
+        /**
+         * The minimum interval in minutes to execute background fetch events.
+         * Note: Background-fetch events will never occur at a frequency higher than every 15 minutes.
+         * OS use a closed algorithm to adjust the frequency of fetch events, presumably based upon usage patterns of the app.
+         * Therefore the actual fetch-interval is fully up to the OS,
+         * fetch events can occur significantly less often than the configured minimumFetchInterval.
+         */
+        minimumFetchInterval: TimetableService.backgroundInterval,
+        forceAlarmManager: true, // increases reliabilty for Android
+        requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE,
+      },
+      async (taskId) => {
+        // OS signalled that background-processing-time is available
+        this.currentPredictionState.next(PredictionState.background)
+        await this.predictWithNotification(undefined)
+        BackgroundFetch.finish(taskId)
+      },
+      async (taskId) => {
+        // OS signalled that the time for background-processing has expired
+        this.currentPredictionState.next(PredictionState.idle)
+        BackgroundFetch.finish(taskId)
+      }
+    )
+  }
+
+  async predictWithNotification(callback: () => Promise<void>) {
+    try {
+      this.trajectoryService
+        .getFullUserTrack()
+        .subscribe(async (trajectory) => {
+          const nextVisit = await this.predictNextVisit(trajectory.id)
+          if (nextVisit.count > 1) {
+            const inference = await this.inferenceService.getInferenceById(
+              nextVisit.inference
+            )
+            const title = `You will visit ${inference.name}`
+            const text = `We think you will visit ${inference.name} in the next hour.`
+            this.notificationService.notify(
+              NotificationType.visitPrediction,
+              title,
+              text
+            )
+            this.lastPredictionRunTime.next(this.lastPredictionTryTime.value)
+          }
+        })
+    } finally {
+      this.currentPredictionState.next(PredictionState.idle)
+      if (callback !== undefined) await callback()
+    }
+  }
+
+  predictNextVisit(trajectoryId): Promise<Visit | undefined> {
+    const date = new Date()
+    date.setHours(date.getHours() + 1) // predict next hour
+    const queryDay = date.getDay()
+    const queryHour = date.getHours()
+
+    try {
+      return this.sqliteService.getMostFrequentVisitByDayAndHour(
+        trajectoryId,
+        queryDay,
+        queryHour
+      )
+    } catch (e) {
+      return undefined
+    }
   }
 }
