@@ -1,7 +1,7 @@
 export class Visit {
   constructor(
     public weekday: number,
-    public hour: string,
+    public hour: number,
     public inference: string,
     public count: number
   ) {}
