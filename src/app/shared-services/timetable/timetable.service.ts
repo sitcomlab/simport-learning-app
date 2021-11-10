@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Inference } from 'src/app/model/inference'
-import { Hour, Weekday } from 'src/app/model/timetable'
+import { Hour, Visit, Weekday } from 'src/app/model/timetable'
 import { SqliteService } from '../db/sqlite.service'
 
 @Injectable({
@@ -130,5 +130,32 @@ export class TimetableService {
       // use UTC hours here to have constant increase even with daylight savings
       startDate.setUTCHours(startDate.getUTCHours() + 1)
     }
+  }
+
+  /** get all visited POI at the day and hour of the provided date */
+  async getVisitsByDate(trajectoryId: string, date: Date): Promise<Visit[]> {
+    const queryDay = date.getDay()
+    const queryHour = date.getHours()
+
+    return await this.sqliteService.getVisitsByDayAndHour(
+      trajectoryId,
+      queryDay,
+      queryHour
+    )
+  }
+
+  /** get the most frequently visited POI at the day and hour of the provided date */
+  async getMostFrequentVisitByDate(
+    trajectoryId: string,
+    date: Date
+  ): Promise<Visit> {
+    const queryDay = date.getDay()
+    const queryHour = date.getHours()
+
+    return await this.sqliteService.getMostFrequentVisitByDayAndHour(
+      trajectoryId,
+      queryDay,
+      queryHour
+    )
   }
 }

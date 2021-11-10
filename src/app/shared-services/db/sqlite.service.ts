@@ -18,7 +18,7 @@ import {
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
-import { Hour, Weekday } from 'src/app/model/timetable'
+import { Hour, Visit, Weekday } from 'src/app/model/timetable'
 import { v4 as uuid } from 'uuid'
 
 @Injectable()
@@ -501,12 +501,48 @@ export class SqliteService {
     } = await this.db.run(
       `INSERT INTO visits VALUES (?,?,?) ON CONFLICT(inference, hour)
       DO UPDATE SET count = count + 1 WHERE inference = ? AND hour = ?;`,
-      [inferenceId, 0, hourId, inferenceId, hourId].map(normalize)
+      [inferenceId, 1, hourId, inferenceId, hourId].map(normalize)
     )
 
     if (changes === -1) throw new Error(`couldnt update visits: ${message}`)
 
     return changes
+  }
+
+  async getVisitsByDayAndHour(
+    trajectoryId: string,
+    weekday: number,
+    hour: number
+  ): Promise<Visit[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT weekday,t.hour, inference, count FROM
+      (SELECT w.weekday, w.trajectory, h.hour, h.id as hourId from weekdays as w LEFT JOIN hours as h on w.id = h.weekday) as t
+      INNER JOIN visits as v on t.hourId = v.hour
+      WHERE trajectory = ? AND weekday = ? AND t.hour = ? ORDER BY count DESC;`,
+      [trajectoryId, weekday, hour].map(normalize)
+    )
+    if (!values.length) throw new Error('not found')
+
+    return values.map((v) => Visit.fromJSON(v))
+  }
+
+  async getMostFrequentVisitByDayAndHour(
+    trajectoryId: string,
+    weekday: number,
+    hour: number
+  ): Promise<Visit> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT weekday,t.hour, inference, MAX(count) as count FROM
+      (SELECT w.weekday, w.trajectory, h.hour, h.id as hourId from weekdays as w LEFT JOIN hours as h on w.id = h.weekday) as t
+      INNER JOIN visits as v on t.hourId = v.hour
+      WHERE trajectory = ? AND weekday = ? AND t.hour = ?;`,
+      [trajectoryId, weekday, hour].map(normalize)
+    )
+    if (!values.length) throw new Error('not found')
+
+    return Visit.fromJSON(values[0])
   }
 }
 

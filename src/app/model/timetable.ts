@@ -1,10 +1,14 @@
-import { Inference } from './inference'
-import { Trajectory } from './trajectory'
+export class Visit {
+  constructor(
+    public weekday: number,
+    public hour: string,
+    public inference: string,
+    public count: number
+  ) {}
 
-export interface Visit {
-  inference: Inference
-  count: number
-  hour: Hour
+  static fromJSON({ weekday, hour, inference, count }): Visit {
+    return new Visit(weekday, hour, inference, count)
+  }
 }
 
 export class Hour {
