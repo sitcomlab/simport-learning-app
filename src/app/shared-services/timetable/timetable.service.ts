@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import { Hour, Visit, Weekday } from 'src/app/model/timetable'
 import { SqliteService } from '../db/sqlite.service'
-import { InferenceService } from '../inferences/inference.service'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { TrajectoryService } from '../trajectory/trajectory.service'
@@ -23,8 +22,7 @@ export class TimetableService {
   constructor(
     private sqliteService: SqliteService,
     private notificationService: NotificationService,
-    private trajectoryService: TrajectoryService,
-    private inferenceService: InferenceService
+    private trajectoryService: TrajectoryService
   ) {
     this.initBackgroundPrediction()
   }
@@ -234,7 +232,7 @@ export class TimetableService {
         .subscribe(async (trajectory) => {
           const nextVisit = await this.predictNextVisit(trajectory.id)
           if (nextVisit.count > 1) {
-            const inference = await this.inferenceService.getInferenceById(
+            const inference = await this.sqliteService.getInferenceById(
               nextVisit.inference
             )
             const title = `You will visit ${inference.name}`
