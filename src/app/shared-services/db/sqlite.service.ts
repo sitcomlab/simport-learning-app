@@ -18,8 +18,7 @@ import {
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
-import { Hour, Visit, Weekday } from 'src/app/model/timetable'
-import { v4 as uuid } from 'uuid'
+import { TimetableEntry } from 'src/app/model/timetable'
 
 @Injectable()
 export class SqliteService {
@@ -427,122 +426,61 @@ export class SqliteService {
     if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
   }
 
-  async upsertWeekday(trajectoryId: string, weekday: number) {
-    await this.ensureDbReady()
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      `INSERT OR IGNORE INTO weekdays VALUES (?,?,?)`,
-      [uuid(), weekday, trajectoryId].map(normalize)
-    )
-    if (changes === -1) throw new Error(`couldnt insert weekday: ${message}`)
-
-    return changes
-  }
-
-  async getWeekdayId(trajectoryId: string, weekday: number) {
-    await this.ensureDbReady()
-    const { values } = await this.db.query(
-      `SELECT id FROM weekdays WHERE trajectory = ? AND weekday = ?`,
-      [trajectoryId, weekday.toString()]
-    )
-    if (!values.length) throw new Error('not found')
-    return values[0].id
-  }
-
-  async getWeekdays(trajectoryId: string): Promise<Weekday[]> {
-    await this.ensureDbReady()
-    const { values } = await this.db.query(
-      `SELECT * FROM weekdays WHERE trajectory = ?`,
-      [trajectoryId]
-    )
-    return values.map((v) => Weekday.fromJSON(v))
-  }
-
-  async upsertHour(weekdayId: string, hour: number) {
-    await this.ensureDbReady()
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      `INSERT OR IGNORE INTO hours VALUES (?,?,?)`,
-      [uuid(), hour, weekdayId].map(normalize)
-    )
-    if (changes === -1) throw new Error(`couldnt insert hour: ${message}`)
-
-    return changes
-  }
-
-  async getHourId(weekdayId: string, hour: number) {
-    await this.ensureDbReady()
-    const { values } = await this.db.query(
-      `SELECT id FROM hours WHERE weekday = ? AND hour = ?`,
-      [weekdayId, hour].map(normalize)
-    )
-    if (!values.length) throw new Error('not found')
-    return values[0].id
-  }
-
-  async getHours(weekdayId: string): Promise<Hour[]> {
-    await this.ensureDbReady()
-    const { values } = await this.db.query(
-      `SELECT * FROM hours WHERE weekday = ?`,
-      [weekdayId]
-    )
-    return values.map((v) => Hour.fromJSON(v))
-  }
-
-  async addVisit(inferenceId: string, hourId: string): Promise<any> {
-    await this.ensureDbReady()
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      `INSERT INTO visits VALUES (?,?,?) ON CONFLICT(inference, hour)
-      DO UPDATE SET count = count + 1 WHERE inference = ? AND hour = ?;`,
-      [inferenceId, 1, hourId, inferenceId, hourId].map(normalize)
-    )
-
-    if (changes === -1) throw new Error(`couldnt update visits: ${message}`)
-
-    return changes
-  }
-
-  async getVisitsByDayAndHour(
-    trajectoryId: string,
-    weekday: number,
-    hour: number
-  ): Promise<Visit[]> {
-    await this.ensureDbReady()
-    const { values } = await this.db.query(
-      `SELECT weekday,t.hour, inference, count FROM
-      (SELECT w.weekday, w.trajectory, h.hour, h.id as hourId from weekdays as w LEFT JOIN hours as h on w.id = h.weekday) as t
-      INNER JOIN visits as v on t.hourId = v.hour
-      WHERE trajectory = ? AND weekday = ? AND t.hour = ? ORDER BY count DESC;`,
-      [trajectoryId, weekday, hour].map(normalize)
-    )
-    if (!values.length) throw new Error('not found')
-
-    return values.map((v) => Visit.fromJSON(v))
-  }
-
   async getMostFrequentVisitByDayAndHour(
     trajectoryId: string,
     weekday: number,
     hour: number
-  ): Promise<Visit> {
+  ): Promise<TimetableEntry[]> {
     await this.ensureDbReady()
     const { values } = await this.db.query(
-      `SELECT weekday,t.hour, inference, MAX(count) as count FROM
-      (SELECT w.weekday, w.trajectory, h.hour, h.id as hourId from weekdays as w LEFT JOIN hours as h on w.id = h.weekday) as t
-      INNER JOIN visits as v on t.hourId = v.hour
-      WHERE trajectory = ? AND weekday = ? AND t.hour = ?;`,
+      `SELECT weekday, hour, inference, MAX(count) as count FROM timetable
+      WHERE trajectory = ? AND weekday = ? AND hour = ?
+      GROUP BY inference;`,
       [trajectoryId, weekday, hour].map(normalize)
     )
-    if (!values.length) throw new Error('not found')
+    if (!values.length) return []
 
-    return Visit.fromJSON(values[0])
+    return values.map((v) => TimetableEntry.fromJSON(v))
+  }
+
+  async upsertTimetable(
+    visits: TimetableEntry[],
+    trajectoryId: string
+  ): Promise<void> {
+    await this.ensureDbReady()
+
+    const visitsLength = visits.length
+
+    for (
+      let chunkIndex = 0, visitIndex = 0;
+      chunkIndex < visitsLength;
+      chunkIndex += SqliteService.chunkSize
+    ) {
+      const placeholders = []
+      const values = []
+      for (
+        ;
+        visitIndex < chunkIndex + SqliteService.chunkSize &&
+        visitIndex < visitsLength;
+        visitIndex++
+      ) {
+        const { weekday, hour, inference, count } = visits[visitIndex]
+
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(trajectoryId, weekday, hour, inference, count)
+      }
+
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO timetable VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.executeSet(set)
+      if (changes === -1) {
+        throw new Error(`couldnt insert visits: ${message}`)
+      }
+    }
   }
 }
 

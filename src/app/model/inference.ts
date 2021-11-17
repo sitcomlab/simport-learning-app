@@ -12,7 +12,9 @@ export class Inference {
     public latLng: [number, number],
     public coordinates: [number, number][],
     public confidence?: number,
-    public accuracy?: number
+    public accuracy?: number,
+    // onSiteTimes are not saved in the database, therefore not present in fromObject()
+    public onSiteTimes?: [Date, Date][]
   ) {}
 
   static fromObject(val: any): Inference {

@@ -9,7 +9,11 @@ import {
 import { SimpleEngine } from './engine/simple-engine/simple-engine'
 import { StaypointEngine } from './engine/staypoint-engine/staypoint-engine'
 import { StaypointService } from '../staypoint/staypoint.service'
-import { InferenceResult, InferenceResultStatus } from './engine/types'
+import {
+  InferenceResult,
+  InferenceResultStatus,
+  InferenceType,
+} from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
 import { BehaviorSubject, Subject, Subscription } from 'rxjs'
@@ -169,6 +173,12 @@ export class InferenceService implements OnDestroy {
 
     await this.dbService.deleteInferences(traj.id)
     await this.dbService.upsertInference(inference.inferences)
+
+    // filter POIs
+    const poiInferences = inference.inferences.filter(
+      (i) => i.type === InferenceType.poi
+    )
+    await this.timetableService.createAndSaveTimetable(poiInferences, traj.id)
 
     if (inference.status === InferenceResultStatus.successful) {
       // TODO: this is some artifical notification-content, which is subject to change

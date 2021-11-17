@@ -264,8 +264,6 @@ export class StaypointEngine implements IInferenceEngine {
         poiCluster.onSiteTimes.length // pass number of visits for description
       )
 
-      this.timetableService.addPoi(inference, poiCluster.onSiteTimes)
-
       return inference
     })
   }
@@ -369,7 +367,9 @@ export class StaypointEngine implements IInferenceEngine {
       stayPointCluster.trajID,
       stayPointCluster.coordinates,
       convexHull.map((c) => [c[0], c[1]]),
-      clusterScore / numberOfDays
+      clusterScore / numberOfDays,
+      undefined,
+      stayPointCluster.onSiteTimes
     )
   }
 
