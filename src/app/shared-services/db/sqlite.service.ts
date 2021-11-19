@@ -331,8 +331,8 @@ export class SqliteService {
       `SELECT * FROM inferences WHERE id=?;`,
       [inferenceId]
     )
-    const inference: Inference = Inference.fromObject(values)
-    return inference
+    if (!values.length) return undefined
+    return Inference.fromObject(values[0])
   }
 
   private async updateDurationDaysInTrajectory(
@@ -433,10 +433,13 @@ export class SqliteService {
   ): Promise<TimetableEntry[]> {
     await this.ensureDbReady()
     const { values } = await this.db.query(
-      `SELECT weekday, hour, inference, MAX(count) as count FROM timetable
-      WHERE trajectory = ? AND weekday = ? AND hour = ?
-      GROUP BY inference;`,
-      [trajectoryId, weekday, hour].map(normalize)
+      `SELECT weekday, hour, inference, count FROM timetable
+      WHERE trajectory = ? AND weekday = ? AND hour = ? AND count = (
+        SELECT max(count)
+        from timetable
+        WHERE trajectory = ? AND weekday = ? AND hour = ?
+      )`,
+      [trajectoryId, weekday, hour, trajectoryId, weekday, hour].map(normalize)
     )
     if (!values.length) return []
 
