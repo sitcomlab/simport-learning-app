@@ -39,6 +39,10 @@
         <ion-icon name="analytics-outline"></ion-icon>
       </ion-fab-button>
 
+      <ion-fab-button (click)="predictNextVisit()" text="Predict next visit">
+        <ion-icon name="flag-outline"></ion-icon>
+      </ion-fab-button>
+
       <ion-fab-button
         *ngIf="trajectoryType === TrajectoryTypes.USERTRACK"
         (click)="onToggleFollowMode()"
