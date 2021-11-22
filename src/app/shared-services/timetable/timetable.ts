@@ -6,9 +6,13 @@ export class Timetable {
   private records: VisitsForDayAndHour[][]
 
   constructor() {
-    this.records = new Array(7).fill(
-      new Array(24).fill(new VisitsForDayAndHour())
-    )
+    this.records = new Array(7)
+    for (let i = 0; i < 7; i++) {
+      this.records[i] = new Array(24)
+      for (let j = 0; j < 24; j++) {
+        this.records[i][j] = new VisitsForDayAndHour()
+      }
+    }
   }
 
   /** Add a POI by ID and time spent there
