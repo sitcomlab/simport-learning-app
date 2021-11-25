@@ -136,7 +136,7 @@ export class ExplorePage implements OnInit {
       ...this.chartOptions,
       series: series.reverse(), // reverse to have monday to sunday
       title: {
-        text: inference.latLng.toString(),
+        text: inference.addressDisplayName,
       },
     }
   }

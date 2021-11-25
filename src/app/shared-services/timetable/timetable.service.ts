@@ -100,8 +100,8 @@ export class TimetableService {
               const inference = await this.sqliteService.getInferenceById(
                 nextVisit.inference
               )
-              const title = `You will visit ${inference.name}`
-              const text = `We think you will visit ${inference.name} in the next hour.`
+              const title = `You will visit ${inference.addressDisplayName}`
+              const text = `We think you will visit ${inference.addressDisplayName} in the next hour.`
               this.notificationService.notify(
                 NotificationType.visitPrediction,
                 title,

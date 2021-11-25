@@ -22,7 +22,7 @@
         (ionChange)="drawTimetableChart($event)"
       >
         <ion-select-option *ngFor="let i of inferences" [value]="i"
-          >{{i.latLng}}</ion-select-option
+          >{{i.addressDisplayName}}</ion-select-option
         >
       </ion-select>
     </ion-item>
