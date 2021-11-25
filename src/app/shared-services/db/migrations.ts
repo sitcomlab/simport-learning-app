@@ -144,4 +144,11 @@ export const MIGRATIONS = [
     PRIMARY KEY (trajectory, weekday, hour, inference),
     FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE,
     FOREIGN KEY (inference) REFERENCES inferences(id) ON DELETE CASCADE);`,
+
+  // add geocoding persistence
+  `CREATE TABLE IF NOT EXISTS reverseGeocoding (
+    lat FLOAT NOT NULL,
+    lon FLOAT NOT NULL,
+    geocoding TEXT,
+    PRIMARY KEY (lat, lon));`,
 ]

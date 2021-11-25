@@ -1,8 +1,11 @@
 import { AllInferences } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
+import { ReverseGeocoding } from './reverse-geocoding'
 
 export class Inference {
+  public geocoding?: ReverseGeocoding
+
   constructor(
     public id: string,
     public name: string,
@@ -42,6 +45,31 @@ export class Inference {
       confidence,
       accuracy
     )
+  }
+
+  get hasGeocoding(): boolean {
+    return this.geocoding !== undefined
+  }
+
+  get addressDisplayName(): string {
+    if (this.hasGeocoding) {
+      const name = this.geocoding.name ? `${this.geocoding.name}, ` : ''
+      const road = this.geocoding.road ? `${this.geocoding.road} ` : ''
+      const houseNumber = this.geocoding.houseNumber
+        ? this.geocoding.houseNumber
+        : ''
+      const location =
+        this.geocoding.city ||
+        this.geocoding.town ||
+        this.geocoding.village ||
+        this.geocoding.country ||
+        ''
+      const locationString = location.length > 0 ? ` (${location})` : location
+
+      const displayName = `${name}${road}${houseNumber}${locationString}`
+      if (displayName.trim().length > 0) return displayName
+    }
+    return `${this.latLng[0].toFixed(2)}, ${this.latLng[1].toFixed(2)}`
   }
 
   get coordinatesAsPolyline(): string {

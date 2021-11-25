@@ -113,11 +113,14 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    await this.reloadInferences()
+    await this.reloadInferences(true)
 
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
-        if (event === InferenceServiceEvent.filterConfigurationChanged) {
+        if (
+          event === InferenceServiceEvent.filterConfigurationChanged ||
+          event === InferenceServiceEvent.inferencesUpdated
+        ) {
           await this.reloadInferences()
         }
       })
@@ -159,9 +162,10 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
-  async reloadInferences(): Promise<void> {
+  async reloadInferences(runGeocoding: boolean = false): Promise<void> {
     const inferenceResult = await this.inferenceService.loadPersistedInferences(
-      this.trajectoryId
+      this.trajectoryId,
+      runGeocoding
     )
     this.inferences = inferenceResult.inferences
     this.updateInferenceMarkers()

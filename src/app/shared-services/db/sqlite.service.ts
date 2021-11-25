@@ -19,6 +19,7 @@ import {
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
 import { TimetableEntry } from 'src/app/model/timetable'
+import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 
 @Injectable()
 export class SqliteService {
@@ -319,9 +320,16 @@ export class SqliteService {
       `SELECT * FROM inferences WHERE trajectory=?;`,
       [trajectoryId]
     )
-    const inferences: Inference[] = values.map((inf) => {
-      return Inference.fromObject(inf)
-    }, [])
+
+    const inferences: Inference[] = await Promise.all(
+      values.map(async (inf) => {
+        const inference = Inference.fromObject(inf)
+        const geocoding = await this.getReverseGeocoding(inference.latLng)
+        if (geocoding) inference.geocoding = geocoding
+        return inference
+      }, [])
+    )
+
     return inferences
   }
 
@@ -495,6 +503,37 @@ export class SqliteService {
       if (changes === -1) {
         throw new Error(`couldnt insert visits: ${message}`)
       }
+    }
+  }
+
+  async getReverseGeocoding(
+    latLng: [number, number]
+  ): Promise<ReverseGeocoding> {
+    await this.ensureDbReady()
+    const delta = 0.00025
+    const { values } = await this.db.query(
+      `SELECT * FROM reverseGeocoding WHERE abs(lat-${latLng[0]}) < ${delta} AND abs(lon-${latLng[1]}) < ${delta};`
+    )
+    if (!values || !values.length) return undefined
+    const { geocoding } = values[0]
+    return JSON.parse(geocoding) as ReverseGeocoding
+  }
+
+  async upsertReverseGeocoding(reverseGeocoding: ReverseGeocoding) {
+    await this.ensureDbReady()
+    const previousCoding = await this.getReverseGeocoding(
+      reverseGeocoding.originLatLng
+    )
+    if (!previousCoding) {
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.run(
+        'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?)',
+        [...reverseGeocoding.originLatLng, reverseGeocoding].map(normalize)
+      )
+      if (changes === -1)
+        throw new Error(`couldnt insert reverse-geocoding: ${message}`)
     }
   }
 }
