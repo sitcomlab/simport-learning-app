@@ -39,6 +39,7 @@
     "@mapbox/polyline": "^1.1.1",
     "@mauron85/cordova-plugin-background-geolocation": "git+https://github.com/noerw/cordova-plugin-background-geolocation.git#5ea76c8787fb5dd1b6a6f913901e0399978d14dc",
     "@types/moment": "^2.13.0",
+    "apexcharts": "^3.30.0",
     "capacitor-file-selector": "0.0.5",
     "concaveman": "github:grassick/concaveman#patch-1",
     "cordova-plugin-android-permissions": "^1.1.2",
@@ -52,6 +53,7 @@
     "haversine-distance": "^1.2.1",
     "leaflet": "^1.7.1",
     "moment": "^2.29.0",
+    "ng-apexcharts": "^1.5.12",
     "rxjs": "~6.5.5",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

@@ -446,6 +446,18 @@ export class SqliteService {
     return values.map((v) => TimetableEntry.fromJSON(v))
   }
 
+  async getTimetable(trajectoryId: string): Promise<TimetableEntry[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT weekday, hour, inference, count FROM timetable
+      WHERE trajectory = ?`,
+      [trajectoryId].map(normalize)
+    )
+    if (!values.length) return []
+
+    return values.map((v) => TimetableEntry.fromJSON(v))
+  }
+
   async upsertTimetable(
     visits: TimetableEntry[],
     trajectoryId: string

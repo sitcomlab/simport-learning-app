@@ -74,7 +74,7 @@ export class TimetableService {
       async (taskId) => {
         // OS signalled that background-processing-time is available
         this.currentPredictionState.next(PredictionState.background)
-        await this.predictWithNotification(undefined)
+        await this.predictUserTrackWithNotification(undefined)
         BackgroundFetch.finish(taskId)
       },
       async (taskId) => {
@@ -85,7 +85,11 @@ export class TimetableService {
     )
   }
 
-  async predictWithNotification(callback: () => Promise<void>) {
+  /**
+   * @description predicts upcoming poi visit and triggers a new notification when a prediction was found
+   * @param callback callback function
+   */
+  async predictUserTrackWithNotification(callback: () => Promise<void>) {
     try {
       this.trajectoryService
         .getFullUserTrack()
@@ -113,7 +117,7 @@ export class TimetableService {
     }
   }
 
-  predictNextVisit(trajectoryId): Promise<TimetableEntry[]> {
+  predictNextVisit(trajectoryId: string): Promise<TimetableEntry[]> {
     const date = new Date()
     date.setHours(date.getHours() + 1) // predict next hour
     const queryDay = date.getDay()
@@ -124,5 +128,9 @@ export class TimetableService {
       queryDay,
       queryHour
     )
+  }
+
+  async getTimetable(trajectoryId: string): Promise<TimetableEntry[]> {
+    return await this.sqliteService.getTimetable(trajectoryId)
   }
 }
