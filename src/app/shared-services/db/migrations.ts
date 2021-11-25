@@ -115,4 +115,11 @@ export const MIGRATIONS = [
 
   // add field 'start' to table points
   `ALTER TABLE points ADD COLUMN state TEXT`,
+
+  // add geocoding persistence
+  `CREATE TABLE IF NOT EXISTS reverseGeocoding (
+    lat FLOAT NOT NULL,
+    lon FLOAT NOT NULL,
+    geocoding TEXT,
+    PRIMARY KEY (lat, lon));`,
 ]
