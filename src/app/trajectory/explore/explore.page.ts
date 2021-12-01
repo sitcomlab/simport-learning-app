@@ -85,11 +85,19 @@ export class ExplorePage implements OnInit {
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
+  }
+
+  async ionViewWillEnter() {
     this.timetable = await this.timetableService.getTimetable(this.trajectoryId)
     // get all POI inferences
-    this.inferences = await (
-      await this.inferenceService.loadPersistedInferences(this.trajectoryId)
-    ).inferences.filter((i) => i.type === InferenceType.poi)
+    const allInferences = await this.inferenceService.loadPersistedInferences(
+      this.trajectoryId
+    )
+    this.inferences = allInferences.inferences.filter(
+      (i) => i.type === InferenceType.poi
+    )
+
+    this.timetableService.predictUserTrackWithNotification()
 
     const series = new Array(7).fill({}).map((d, i) => ({
       name: this.dayOfWeekAsString(i),
