@@ -124,8 +124,9 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.trajSubscription.unsubscribe()
-    this.inferenceFilterSubscription.unsubscribe()
+    if (this.trajSubscription) this.trajSubscription.unsubscribe()
+    if (this.inferenceFilterSubscription)
+      this.inferenceFilterSubscription.unsubscribe()
   }
 
   ionViewDidEnter() {
