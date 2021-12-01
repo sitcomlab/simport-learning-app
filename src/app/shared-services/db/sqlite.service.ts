@@ -340,7 +340,11 @@ export class SqliteService {
       [inferenceId]
     )
     if (!values.length) return undefined
-    return Inference.fromObject(values[0])
+    const inference = Inference.fromObject(values[0])
+    const geocoding = await this.getReverseGeocoding(inference.latLng)
+    if (geocoding) inference.geocoding = geocoding
+
+    return inference
   }
 
   private async updateDurationDaysInTrajectory(
