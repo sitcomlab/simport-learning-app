@@ -97,8 +97,6 @@ export class ExplorePage implements OnInit {
       (i) => i.type === InferenceType.poi
     )
 
-    this.timetableService.predictUserTrackWithNotification()
-
     const series = new Array(7).fill({}).map((d, i) => ({
       name: this.dayOfWeekAsString(i),
       data: new Array(24).fill({}).map((h, j) => ({
