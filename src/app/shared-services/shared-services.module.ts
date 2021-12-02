@@ -9,6 +9,7 @@ import { TrajectoryImportExportService } from './trajectory/trajectory-import-ex
 import { TrajectoryService } from './trajectory/trajectory.service'
 import { StaypointDetector } from './staypoint/staypoint-detector'
 import { TimetableService } from './timetable/timetable.service'
+import { BackgroundService } from './background/background.service'
 
 @NgModule({
   providers: [
@@ -23,6 +24,7 @@ import { TimetableService } from './timetable/timetable.service'
     SqliteService,
     StaypointDetector,
     TimetableService,
+    BackgroundService,
   ],
   imports: [CommonModule, HttpClientModule],
 })
