@@ -53,19 +53,19 @@ export class TimetableService extends AbstractBackgroundService {
     this.trajectoryService.getFullUserTrack().subscribe(async (trajectory) => {
       const nextVisits = await this.predictNextVisit(trajectory.id)
       nextVisits.forEach(async (nextVisit) => {
-        // TODO just for development, uncomment in production
-        // if (nextVisit.count > 1) {
-        const inference = await this.sqliteService.getInferenceById(
-          nextVisit.inference
-        )
-        const title = `You will visit ${inference.addressDisplayName}`
-        const text = `We think you will visit ${inference.addressDisplayName} in the next hour.`
-        this.notificationService.notify(
-          NotificationType.visitPrediction,
-          title,
-          text
-        )
-        // }
+        // only trigger notification if location has been visited at least two times
+        if (nextVisit.count > 1) {
+          const inference = await this.sqliteService.getInferenceById(
+            nextVisit.inference
+          )
+          const title = `You will visit ${inference.addressDisplayName}`
+          const text = `We think you will visit ${inference.addressDisplayName} in the next hour.`
+          this.notificationService.notify(
+            NotificationType.visitPrediction,
+            title,
+            text
+          )
+        }
       })
     })
   }

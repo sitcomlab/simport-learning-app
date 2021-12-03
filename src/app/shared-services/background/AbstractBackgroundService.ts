@@ -51,10 +51,7 @@ export abstract class AbstractBackgroundService {
     runAsFetch?: boolean,
     referToLastRun: boolean = false
   ) {
-    if (
-      this.backgroundService.currentBackgroundState.value !==
-      BackgroundState.idle
-    ) {
+    if (this.backgroundService.backgroundState !== BackgroundState.idle) {
       return
     }
     runAsFetch ??= !(await App.getState()).isActive
@@ -102,9 +99,8 @@ export abstract class AbstractBackgroundService {
             taskId,
           })
         }
-        this.backgroundService.currentBackgroundState.next(
-          BackgroundState.foreground
-        )
+        this.backgroundService.backgroundState = BackgroundState.foreground
+
         await this.internalBackgroundFuction(callback)
       })
     }
@@ -117,7 +113,7 @@ export abstract class AbstractBackgroundService {
       await this.backgroundFuction()
       this.lastRunTime.next(this.lastTryTime.value)
     } finally {
-      this.backgroundService.currentBackgroundState.next(BackgroundState.idle)
+      this.backgroundService.backgroundState = BackgroundState.idle
       if (callback !== undefined) await callback()
     }
   }

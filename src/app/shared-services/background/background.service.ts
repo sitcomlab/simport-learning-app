@@ -16,13 +16,12 @@ export enum BackgroundState {
 
 @Injectable({ providedIn: 'root' }) // Singleton
 export class BackgroundService {
-  public currentBackgroundState: BehaviorSubject<BackgroundState> =
+  private currentBackgroundState: BehaviorSubject<BackgroundState> =
     new BehaviorSubject<BackgroundState>(BackgroundState.idle)
 
   private functions: BackgroundFunction[] = []
 
-  // TODO: just for testing, change to 60 in production
-  private fetchInterval = 15
+  private fetchInterval = 60
 
   constructor() {
     this.initBackgroundFetch()
@@ -53,6 +52,7 @@ export class BackgroundService {
         // OS signalled that background-processing-time is available
         this.currentBackgroundState.next(BackgroundState.background)
 
+        // run background functions
         this.functions.forEach(async (f) => await f.run(undefined))
 
         BackgroundFetch.finish(taskId)
@@ -75,5 +75,13 @@ export class BackgroundService {
       taskId,
       run: backgroundFunction,
     })
+  }
+
+  get backgroundState(): BackgroundState {
+    return this.currentBackgroundState.value
+  }
+
+  set backgroundState(nextBackgroundState: BackgroundState) {
+    this.currentBackgroundState.next(nextBackgroundState)
   }
 }

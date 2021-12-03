@@ -227,10 +227,7 @@ export class InferenceService
   // helper methods
 
   private async updateLoadingDialog() {
-    if (
-      this.backgroundService.currentBackgroundState.value ===
-      BackgroundState.foreground
-    ) {
+    if (this.backgroundService.backgroundState === BackgroundState.foreground) {
       await this.showLoadingDialog()
     } else {
       await this.hideLoadingDialog()
