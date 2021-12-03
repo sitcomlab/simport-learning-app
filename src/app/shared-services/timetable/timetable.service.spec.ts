@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing'
 import { empty } from 'rxjs'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
+import { BackgroundService } from '../background/background.service'
 import { NotificationService } from '../notification/notification.service'
 
 import { TimetableService } from './timetable.service'
@@ -14,6 +15,7 @@ describe('TimetableService', () => {
   let dbServiceSpy: jasmine.SpyObj<SqliteService>
   let trajectoryServiceSpy: jasmine.SpyObj<TrajectoryService>
   let notificationServiceSpy: jasmine.SpyObj<NotificationService>
+  let backgroundServiceSpy: jasmine.SpyObj<BackgroundService>
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,11 +49,15 @@ describe('TimetableService', () => {
     trajectoryServiceSpy = TestBed.inject(
       TrajectoryService
     ) as jasmine.SpyObj<TrajectoryService>
+    backgroundServiceSpy = TestBed.inject(
+      BackgroundService
+    ) as jasmine.SpyObj<BackgroundService>
 
     service = new TimetableService(
       dbServiceSpy,
       notificationServiceSpy,
-      trajectoryServiceSpy
+      trajectoryServiceSpy,
+      backgroundServiceSpy
     )
   })
 
