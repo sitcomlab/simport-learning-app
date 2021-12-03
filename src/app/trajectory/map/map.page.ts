@@ -26,6 +26,8 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
+import { FeatureFlag } from 'src/app/shared-services/feature-flag/feature-flag.fixtures'
 
 @Component({
   selector: 'app-map',
@@ -57,6 +59,10 @@ export class MapPage implements OnInit, OnDestroy {
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
 
+  featureFlagEnum = FeatureFlag
+  isInferencesEnabled = this.featureFlagService.hasFeatureFlag(
+    FeatureFlag.TrajectoryInferences
+  )
   inferences: Inference[] = []
   generatedInferences = false
 
@@ -69,6 +75,7 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
+    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,

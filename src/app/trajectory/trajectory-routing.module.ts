@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 import { TrajectoryPage } from './trajectory.page'
 
-enum TrajectoryPagePath {
-  INFERENCES = 'inferences',
-  MAP = 'map',
-  EXPLORE = 'explore',
-  INFERENCE_FILTER = 'inference-filter',
+export enum TrajectoryPagePath {
+  Inferences = 'trajectory-inferences',
+  Map = 'trajectory-map',
+  Exploration = 'trajectory-exploration',
+  InferenceFilter = 'trajectory-inference-filter',
 }
 
 const routes: Routes = [
@@ -15,24 +15,24 @@ const routes: Routes = [
     component: TrajectoryPage,
     children: [
       {
-        path: TrajectoryPagePath.INFERENCES,
+        path: TrajectoryPagePath.Inferences,
         loadChildren: () =>
           import('./inferences/inferences.module').then(
             (m) => m.InferencesPageModule
           ),
       },
       {
-        path: TrajectoryPagePath.MAP,
+        path: TrajectoryPagePath.Map,
         loadChildren: () =>
           import('./map/map.module').then((m) => m.MapPageModule),
       },
       {
-        path: TrajectoryPagePath.EXPLORE,
+        path: TrajectoryPagePath.Exploration,
         loadChildren: () =>
           import('./explore/explore.module').then((m) => m.ExplorePageModule),
       },
       {
-        path: TrajectoryPagePath.INFERENCE_FILTER,
+        path: TrajectoryPagePath.InferenceFilter,
         loadChildren: () =>
           import('./inference-filter/inference-filter.module').then(
             (m) => m.InferenceFilterModule
@@ -40,7 +40,8 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: TrajectoryPagePath.INFERENCES,
+        canActivate: [TrajectoryPage],
+        redirectTo: TrajectoryPagePath.Map,
         pathMatch: 'full',
       },
     ],
