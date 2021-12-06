@@ -19,7 +19,7 @@
       <ion-label>Select POI</ion-label>
       <ion-select
         interface="action-sheet"
-        (ionChange)="drawTimetableChart($event)"
+        (ionChange)="drawChartFromEvent($event)"
       >
         <ion-select-option *ngFor="let i of inferences" [value]="i"
           >{{i.addressDisplayName}}</ion-select-option

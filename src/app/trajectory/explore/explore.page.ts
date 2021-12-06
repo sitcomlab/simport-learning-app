@@ -36,8 +36,10 @@ export type ChartOptions = {
 export class ExplorePage implements OnInit {
   trajectoryId: string
   inferences: Inference[]
+  selectedInference: Inference
   timetable: TimetableEntry[]
   @ViewChild('chart') chart: ChartComponent
+
   public chartOptions: Partial<ChartOptions> = {
     series: [],
     chart: {
@@ -97,30 +99,15 @@ export class ExplorePage implements OnInit {
       (i) => i.type === InferenceType.poi
     )
 
-    const series = new Array(7).fill({}).map((d, i) => ({
-      name: this.dayOfWeekAsString(i),
-      data: new Array(24).fill({}).map((h, j) => ({
-        x: j,
-        y: 0,
-      })),
-    }))
-
-    // move sunday to end of array
-    const sunday = series.splice(0, 1)
-    series.splice(6, 0, sunday[0])
-
-    // create empty chart
-    this.chartOptions = {
-      ...this.chartOptions,
-      series: series.reverse(), // reverse to have monday to sunday
-    }
+    // create chart for selected inference or empty if undefined
+    this.drawChart(this.selectedInference)
   }
 
-  drawTimetableChart(e: CustomEvent) {
-    // get selected inference and filter timetable data
-    const inference: Inference = e.detail.value
+  // creates heatmap for inference or empty chart if inference is undefined
+  drawChart(inference: Inference) {
+    // get timetable for inference
     const inferenceTimetable = this.timetable.filter(
-      (te) => te.inference === inference.id
+      (te) => te.inference === inference?.id
     )
 
     // create chart series for apexchart heatmap
@@ -142,9 +129,14 @@ export class ExplorePage implements OnInit {
       ...this.chartOptions,
       series: series.reverse(), // reverse to have monday to sunday
       title: {
-        text: inference.addressDisplayName,
+        text: inference?.addressDisplayName || '',
       },
     }
+  }
+
+  drawChartFromEvent(e: CustomEvent) {
+    this.selectedInference = e.detail.value
+    this.drawChart(this.selectedInference)
   }
 
   /**
