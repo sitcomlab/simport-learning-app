@@ -43,6 +43,7 @@ export class InferenceDefinition {
 export enum InferenceType {
   home = 'home',
   work = 'work',
+  poi = 'poi',
 }
 
 export enum InferenceResultStatus {

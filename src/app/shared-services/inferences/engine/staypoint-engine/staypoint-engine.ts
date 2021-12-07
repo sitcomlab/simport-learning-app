@@ -63,11 +63,20 @@ export class StaypointEngine implements IInferenceEngine {
           weekDaysInTrajectory
         )
       }
+      if (i.type === InferenceType.poi) {
+        return this.inferPOIFromStayPointClusters(stayPointClusters)
+      }
     })
     // flatten and filter
-    const inferenceResults: Inference[] = [].concat
+    let inferenceResults: Inference[] = [].concat
       .apply([], inferenceResultsNested)
       .filter((i) => i)
+
+    // top home and work inference should not be listed as POIs
+    inferenceResults =
+      this.removePOIInferenceCorrespondingToTopHomeAndWorkInference(
+        inferenceResults
+      )
 
     return {
       status:
@@ -76,6 +85,41 @@ export class StaypointEngine implements IInferenceEngine {
           : InferenceResultStatus.successful,
       inferences: inferenceResults,
     }
+  }
+
+  private removePOIInferenceCorrespondingToTopHomeAndWorkInference(
+    inferences: Inference[]
+  ): Inference[] {
+    // takes array of all inferences, returning all inferences except POI-inferences on same location as top home and work inference
+    const homeInferences = inferences.filter(
+      (inference) => inference.type === InferenceType.home
+    )
+    if (homeInferences.length > 0) {
+      const topHomeInference = homeInferences.reduce((prev, curr) => {
+        return prev.confidence > curr.confidence ? prev : curr
+      })
+      inferences = inferences.filter((inference) => {
+        return (
+          inference.type !== InferenceType.poi ||
+          inference.latLng !== topHomeInference.latLng
+        )
+      })
+    }
+    const workInferences = inferences.filter(
+      (inference) => inference.type === InferenceType.work
+    )
+    if (workInferences.length > 0) {
+      const topWorkInference = workInferences.reduce((prev, curr) => {
+        return prev.confidence > curr.confidence ? prev : curr
+      })
+      inferences = inferences.filter((inference) => {
+        return (
+          inference.type !== InferenceType.poi ||
+          inference.latLng !== topWorkInference.latLng
+        )
+      })
+    }
+    return inferences
   }
 
   private countDays(trajectory: Trajectory): number {
@@ -192,6 +236,26 @@ export class StaypointEngine implements IInferenceEngine {
       .sort((a, b) => b.confidence - a.confidence)
   }
 
+  /**
+   * TODO
+   */
+  private inferPOIFromStayPointClusters(
+    stayPointClusters: StayPointCluster[]
+  ): Inference[] {
+    if (stayPointClusters === undefined || stayPointClusters.length === 0) {
+      return undefined
+    }
+    // filter out clusters which will not be POIs (for now, those with only one visit)
+    const poiClusters = stayPointClusters.filter((stayPointCluster) => {
+      return stayPointCluster.onSiteTimes.length > 1
+    })
+    if (poiClusters.length === 0) return undefined
+    return poiClusters.map((poiCluster) => {
+      // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
+      return this.createInferenceForCluster(InferenceType.poi, poiCluster, 1, 1)
+    })
+  }
+
   // how many nights were spent at this cluster
   private calculateHomeScore(stayPointCluster: StayPointCluster): number {
     let score = 0
@@ -252,6 +316,11 @@ export class StaypointEngine implements IInferenceEngine {
     return score
   }
 
+  // TODO: implement
+  private calculatePOIScore(stayPointCluster: StayPointCluster): number {
+    return 1
+  }
+
   // assemble an inference object
   private createInferenceForCluster(
     inferenceType: InferenceType,
@@ -272,6 +341,10 @@ export class StaypointEngine implements IInferenceEngine {
           'Location where ' +
           clusterScore.toString() +
           ' workdays (weekdays from 10am to 12am and 2pm to 4pm) were spent'
+        break
+      case InferenceType.poi:
+        description = `Location that was visited ${clusterScore.toString()} times`
+        break
     }
     const convexHull = concaveman(stayPointCluster.componentCoordinates)
     return new Inference(

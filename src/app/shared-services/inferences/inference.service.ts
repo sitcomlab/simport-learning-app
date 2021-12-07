@@ -1,8 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core'
-import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType, Point } from 'src/app/model/trajectory'
 import {
   AllInferences,
   HomeInference,
+  POIInference,
   WorkInference,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine/simple-engine'
@@ -18,6 +19,7 @@ import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import { Plugins, Capacitor } from '@capacitor/core'
 import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 
 const { App, BackgroundTask } = Plugins
 
@@ -29,6 +31,7 @@ class InferenceFilterConfiguration {
 export enum InferenceServiceEvent {
   configureFilter = 'configureFilter',
   filterConfigurationChanged = 'filterConfigurationChanged',
+  inferencesUpdated = 'inferencesUpdated',
 }
 
 enum InferenceGenerationState {
@@ -78,6 +81,7 @@ export class InferenceService implements OnDestroy {
     private trajectoryService: TrajectoryService,
     private notificationService: NotificationService,
     private dbService: SqliteService,
+    private geocodingService: ReverseGeocodingService,
     private loadingController: LoadingController,
     private staypointService: StaypointService
   ) {
@@ -157,6 +161,7 @@ export class InferenceService implements OnDestroy {
     const inference = await this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
+      POIInference,
     ])
 
     await this.dbService.deleteInferences(traj.id)
@@ -177,11 +182,14 @@ export class InferenceService implements OnDestroy {
       }
     }
 
+    await this.geocodingService.reverseGeocodeInferences(inference.inferences)
+
     return inference
   }
 
   async loadPersistedInferences(
-    trajectoryId: string
+    trajectoryId: string,
+    runGeocoding: boolean = false
   ): Promise<InferenceResult> {
     const filterConfig = this.filterConfiguration.value
     const inferences = (
@@ -196,6 +204,11 @@ export class InferenceService implements OnDestroy {
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,
+    }
+    if (runGeocoding) {
+      this.geocodingService.reverseGeocodeInferences(inferences).then((_) => {
+        this.triggerEvent(InferenceServiceEvent.inferencesUpdated)
+      })
     }
     return persisted
   }
@@ -244,7 +257,7 @@ export class InferenceService implements OnDestroy {
       this.lastInferenceTryTime.next(new Date().getTime())
       BackgroundFetch.scheduleTask({
         taskId: InferenceService.backgroundFetchId,
-        delay: 1000, // schedule to run in one second
+        delay: 0,
       })
     }
   }

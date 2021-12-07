@@ -8,9 +8,8 @@ export const WorkInference = new InferenceDefinition(
   'business',
   (lang?: string) => 'Workplace',
   (r: Inference, lang?: string) => {
-    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are working at ${latLng} with a confidence of ${confidence} %.`
+    return `We assume you are working at ${r.addressDisplayName} with a confidence of ${confidence} %.`
   },
   [
     {
@@ -37,9 +36,8 @@ export const HomeInference = new InferenceDefinition(
   'home',
   (lang?: string) => 'Home',
   (r: Inference, lang?: string) => {
-    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are living at ${latLng} with a confidence of ${confidence} %.`
+    return `We assume you are living at ${r.addressDisplayName} with a confidence of ${confidence} %.`
   },
   [
     {
@@ -60,7 +58,20 @@ export const HomeInference = new InferenceDefinition(
   ]
 )
 
+export const POIInference = new InferenceDefinition(
+  'poi',
+  InferenceType.poi,
+  'flag',
+  (lang?: string) => 'Point of interest',
+  (r: Inference, lang?: string) => {
+    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
+    return `We assume you visited ${latLng}.`
+  },
+  []
+)
+
 export const AllInferences = {
   [HomeInference.type]: HomeInference,
   [WorkInference.type]: WorkInference,
+  [POIInference.type]: POIInference,
 }

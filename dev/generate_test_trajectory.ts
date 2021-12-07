@@ -1,4 +1,4 @@
-const USAGE = `ts-node -r tsconfig-paths/register --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> ]`
+const USAGE = `ts-node -r tsconfig-paths/register --dir dev generate_test_trajectory.ts [ <gpx-file-home> <gpx-file-home-to-work> <gpx-file-work> <gpx-file-work-to-home> <gpx-file-home-to-sport> <gpx-file-sport> <gpx-file-sport-to-home> ]`
 
 import {
   Trajectory,
@@ -15,6 +15,9 @@ type TrajectoryTestBase = {
   homeToWorkTrajectory: Trajectory
   workTrajectory: Trajectory
   workToHomeTrajectory: Trajectory
+  homeToSportTrajectory: Trajectory
+  sportTrajectory: Trajectory
+  sportToHomeTrajectory: Trajectory
 }
 
 const filepaths = {
@@ -22,6 +25,9 @@ const filepaths = {
   homeToWork: __dirname + '/test-data-gpx/track_home_to_work.gpx',
   work: __dirname + '/test-data-gpx/track_work.gpx',
   workToHome: __dirname + '/test-data-gpx/track_work_to_home.gpx',
+  homeToSport: __dirname + '/test-data-gpx/track_home_to_sport.gpx',
+  sport: __dirname + '/test-data-gpx/track_sport.gpx',
+  sportToHome: __dirname + '/test-data-gpx/track_sport_to_home.gpx',
 }
 
 const testDataNames = {
@@ -29,6 +35,7 @@ const testDataNames = {
   homeWork: 'test-home-work',
   spatiallyDense: 'test-home-work-spatially-dense',
   temporallySparse: 'test-home-work-temporally-sparse',
+  sport: 'test-home-sport-home',
 }
 
 const trajectoryTimes = {
@@ -38,15 +45,22 @@ const trajectoryTimes = {
   workEndDate: new Date('2021-02-24T17:00:00Z'),
   homeAfterWorkStartDate: new Date('2021-02-24T17:15:00Z'),
   homeAfterWorkEndDate: new Date('2021-02-25T08:45:00Z'),
+  homeSportStartDate: new Date('2021-02-24T18:05:00Z'),
+  sportStartDate: new Date('2021-02-24T18:15:00Z'),
+  sportEndDate: new Date('2021-02-24T20:00:00Z'),
+  sportHomeEndDate: new Date('2021-02-24T20:10:00Z'),
 }
 
 function argparse() {
   const args = process.argv.slice(2)
-  if (args.length == 4) {
+  if (args.length == 7) {
     filepaths.home = args[0]
     filepaths.homeToWork = args[1]
     filepaths.work = args[2]
     filepaths.workToHome = args[3]
+    filepaths.homeToSport = args[4]
+    filepaths.sport = args[5]
+    filepaths.sportToHome = args[6]
   } else if (args.length != 0) {
     console.error(`usage: ${USAGE}`)
     process.exit(1)
@@ -62,7 +76,7 @@ function createCluster(
   const resultTrajectory = trajectory.getCopy()
   const seed =
     resultTrajectory.coordinates[resultTrajectory.coordinates.length - 1]
-  for (var i: number = 0; i < numberPoints; i++) {
+  for (let i = 0; i < numberPoints; i++) {
     const rand = randomGeo(seed[0], seed[1], minRadius, maxRadius)
     resultTrajectory.coordinates.push([rand.latitude, rand.longitude])
     resultTrajectory.timestamps.push(null)
@@ -162,7 +176,7 @@ function combineTrajectories(
   meta: TrajectoryMeta,
   trajectories: Trajectory[]
 ): Trajectory {
-  var combinedTrajectory = new Trajectory(meta)
+  const combinedTrajectory = new Trajectory(meta)
   trajectories.forEach((trajectory) => {
     trajectory.coordinates.forEach((latLng, i) => {
       combinedTrajectory.addPoint({ latLng, time: trajectory.timestamps[i] })
@@ -440,6 +454,53 @@ function createSpatiallyDenseTrajectory(
   return trajectorySpatiallyDense
 }
 
+function createSportTrajectory(testBase: TrajectoryTestBase): Trajectory {
+  const spatiallyDenseMinRadius = 1
+  const spatiallyDenseMaxRadius = 30
+  const clusterPointsPerMinute = 0.5
+
+  const trajectoryHomeToSport = addTimestampsForTrajectory(
+    trajectoryTimes.homeSportStartDate,
+    trajectoryTimes.sportStartDate,
+    testBase.homeToSportTrajectory
+  )
+
+  const trajectorySportSpatiallyDense = addTimestampsForTrajectory(
+    trajectoryTimes.sportStartDate,
+    trajectoryTimes.sportEndDate,
+    createCluster(
+      testBase.sportTrajectory,
+      computeNumberOfPointsPerMinute(
+        trajectoryTimes.sportStartDate,
+        trajectoryTimes.sportEndDate,
+        clusterPointsPerMinute
+      ),
+      spatiallyDenseMinRadius,
+      spatiallyDenseMaxRadius
+    )
+  )
+
+  const trajectorySportToHome = addTimestampsForTrajectory(
+    trajectoryTimes.sportEndDate,
+    trajectoryTimes.sportHomeEndDate,
+    testBase.sportToHomeTrajectory
+  )
+
+  const trajectorySport = combineTrajectories(
+    {
+      id: testDataNames.sport,
+      placename: testDataNames.sport,
+      type: TrajectoryType.EXAMPLE,
+    },
+    [
+      trajectoryHomeToSport,
+      trajectorySportSpatiallyDense,
+      trajectorySportToHome,
+    ]
+  )
+  return trajectorySport
+}
+
 /**
  * main routine, that loads data, generates various test-trajectories
  * and exports those into ../src/app/shared-services/inferences/test-data/
@@ -456,11 +517,23 @@ async function main() {
   const baseTrajectoryWorkToHome = await TestTrajectoryIO.loadFromGpx(
     filepaths.workToHome
   )
+
+  const baseSportTrajectoy = await TestTrajectoryIO.loadFromGpx(filepaths.sport)
+  const baseHomeToSportTrajectoy = await TestTrajectoryIO.loadFromGpx(
+    filepaths.homeToSport
+  )
+  const baseSportToHomeTrajectoy = await TestTrajectoryIO.loadFromGpx(
+    filepaths.sportToHome
+  )
+
   const trajectoryTestBase = {
     homeTrajectory: baseTrajectoryHome,
     homeToWorkTrajectory: baseTrajectoryHomeToWork,
     workTrajectory: baseTrajectoryWork,
     workToHomeTrajectory: baseTrajectoryWorkToHome,
+    homeToSportTrajectory: baseHomeToSportTrajectoy,
+    sportTrajectory: baseSportTrajectoy,
+    sportToHomeTrajectory: baseSportToHomeTrajectoy,
   }
 
   // export various test-trajectories
@@ -469,6 +542,7 @@ async function main() {
     createHomeWorkTrajectory(trajectoryTestBase),
     createTemporallySparseTrajectory(trajectoryTestBase),
     createSpatiallyDenseTrajectory(trajectoryTestBase),
+    createSportTrajectory(trajectoryTestBase),
   ]
 
   exportTrajectories.forEach((trajectory) => {

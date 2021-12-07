@@ -110,19 +110,23 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    await this.reloadInferences()
+    await this.reloadInferences(true)
 
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
-        if (event === InferenceServiceEvent.filterConfigurationChanged) {
+        if (
+          event === InferenceServiceEvent.filterConfigurationChanged ||
+          event === InferenceServiceEvent.inferencesUpdated
+        ) {
           await this.reloadInferences()
         }
       })
   }
 
   ngOnDestroy() {
-    this.trajSubscription.unsubscribe()
-    this.inferenceFilterSubscription.unsubscribe()
+    if (this.trajSubscription) this.trajSubscription.unsubscribe()
+    if (this.inferenceFilterSubscription)
+      this.inferenceFilterSubscription.unsubscribe()
   }
 
   ionViewDidEnter() {
@@ -156,9 +160,10 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
-  async reloadInferences(): Promise<void> {
+  async reloadInferences(runGeocoding: boolean = false): Promise<void> {
     const inferenceResult = await this.inferenceService.loadPersistedInferences(
-      this.trajectoryId
+      this.trajectoryId,
+      runGeocoding
     )
     this.inferences = inferenceResult.inferences
     this.updateInferenceMarkers()
@@ -193,7 +198,7 @@ export class MapPage implements OnInit, OnDestroy {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
       const h = new Polygon(inference.coordinates, {
-        color: inference.type === InferenceType.home ? '#347d39' : 'orange',
+        color: this.getIconColor(inference),
         weight: 2,
         opacity: inference.confidence || 0,
       })
@@ -237,5 +242,16 @@ export class MapPage implements OnInit, OnDestroy {
 
   private async hideLoadingDialog() {
     await this.loadingController.dismiss()
+  }
+
+  private getIconColor(inference: Inference) {
+    switch (inference.type) {
+      case InferenceType.home:
+        return '#347d39'
+      case InferenceType.work:
+        return 'orange'
+      case InferenceType.poi:
+        return '#68347d'
+    }
   }
 }

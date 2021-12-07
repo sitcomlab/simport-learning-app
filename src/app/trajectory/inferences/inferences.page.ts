@@ -27,10 +27,13 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    await this.reloadInferences()
+    await this.reloadInferences(true)
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
-        if (event === InferenceServiceEvent.filterConfigurationChanged) {
+        if (
+          event === InferenceServiceEvent.filterConfigurationChanged ||
+          event === InferenceServiceEvent.inferencesUpdated
+        ) {
           await this.reloadInferences()
         }
       })
@@ -42,9 +45,12 @@ export class InferencesPage implements OnInit, OnDestroy {
     }
   }
 
-  async reloadInferences(): Promise<void> {
+  async reloadInferences(runGeocoding: boolean = false): Promise<void> {
     const inferencesResult =
-      await this.inferenceService.loadPersistedInferences(this.trajectoryId)
+      await this.inferenceService.loadPersistedInferences(
+        this.trajectoryId,
+        runGeocoding
+      )
     this.inferences = inferencesResult.inferences.sort(
       (a, b) => b.confidence - a.confidence
     )
