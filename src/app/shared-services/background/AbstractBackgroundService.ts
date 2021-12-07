@@ -33,7 +33,7 @@ export abstract class AbstractBackgroundService {
 
   init() {
     this.backgroundService.addBackgroundFunction(this.backgroundFetchId, () =>
-      this.internalBackgroundFuction(undefined)
+      this.internalBackgroundFunction(undefined)
     )
   }
 
@@ -101,16 +101,16 @@ export abstract class AbstractBackgroundService {
         }
         this.backgroundService.backgroundState = BackgroundState.foreground
 
-        await this.internalBackgroundFuction(callback)
+        await this.internalBackgroundFunction(callback)
       })
     }
   }
 
-  private async internalBackgroundFuction(
+  private async internalBackgroundFunction(
     callback: () => Promise<void>
   ): Promise<void> {
     try {
-      await this.backgroundFuction()
+      await this.backgroundFunction()
       this.lastRunTime.next(this.lastTryTime.value)
     } finally {
       this.backgroundService.backgroundState = BackgroundState.idle
@@ -122,7 +122,7 @@ export abstract class AbstractBackgroundService {
    * The background function to run.
    * @param callback callback function
    */
-  protected abstract backgroundFuction(): Promise<void>
+  protected abstract backgroundFunction(): Promise<void>
 
   // helper methods
 

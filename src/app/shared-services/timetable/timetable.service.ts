@@ -26,7 +26,7 @@ export class TimetableService extends AbstractBackgroundService {
     super(backgroundService, 'com.transistorsoft.timetableprediction')
   }
 
-  protected async backgroundFuction(): Promise<void> {
+  protected async backgroundFunction(): Promise<void> {
     this.predictUserTrackWithNotification()
     this.lastRunTime.next(this.lastTryTime.value)
   }

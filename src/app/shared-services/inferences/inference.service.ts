@@ -142,7 +142,7 @@ export class InferenceService
     }
   }
 
-  protected async backgroundFuction(): Promise<void> {
+  protected async backgroundFunction(): Promise<void> {
     try {
       await this.updateLoadingDialog()
       await this.generateUserInferences()
