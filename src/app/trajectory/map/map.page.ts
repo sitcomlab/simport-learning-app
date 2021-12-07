@@ -209,8 +209,20 @@ export class MapPage implements OnInit, OnDestroy {
     const nextVisits = await this.timetableService.predictNextVisit(
       this.trajectoryId
     )
-    this.predictedInferenceIds = nextVisits.map((v) => v.inference)
-    this.updateInferenceMarkers()
+    if (nextVisits.length > 0) {
+      this.predictedInferenceIds = nextVisits.map((v) => v.inference)
+      this.updateInferenceMarkers()
+      return await this.showToast(
+        `We think that you will visit the highlighted ${
+          nextVisits.length === 1 ? 'place' : 'places'
+        } in the next hour`,
+        'success'
+      )
+    } else {
+      return await this.showErrorToast(
+        `We couldn't make a prediction for the next hour`
+      )
+    }
   }
 
   updateInferenceMarkers() {
@@ -246,9 +258,13 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   private async showErrorToast(message: string) {
+    await this.showToast(message, 'danger')
+  }
+
+  private async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastController.create({
       message,
-      color: 'danger',
+      color,
       duration: 2000,
     })
     await toast.present()
