@@ -1,18 +1,23 @@
-export enum FeatureFlag {
-  TrajectoryInferences = 'trajectory-inferences',
-  TrajectoryMap = 'trajectory-map',
-  TrajectoryExploration = 'trajectory-exploration',
+export interface FeatureFlags {
+  isTrajectoryInferencesEnabled: boolean
+  isTrajectoryMapEnabled: boolean
+  isTrajectoryExplorationEnabled: boolean
+  isBackgroundInferencesEnabled: boolean
+  isBackgroundReverseGeocodingEnabled: boolean
 }
 
-export const DefaultFeatureFlags: Map<FeatureFlag | string, boolean> = new Map([
-  [FeatureFlag.TrajectoryInferences, true],
-  [FeatureFlag.TrajectoryMap, true],
-  [FeatureFlag.TrajectoryExploration, true],
-])
+export const DefaultFeatureFlags: FeatureFlags = {
+  isTrajectoryInferencesEnabled: true,
+  isTrajectoryMapEnabled: true,
+  isTrajectoryExplorationEnabled: true,
+  isBackgroundInferencesEnabled: true,
+  isBackgroundReverseGeocodingEnabled: true,
+}
 
-export const DeploymentStudy1FeatureFlags: Map<FeatureFlag | string, boolean> =
-  new Map([
-    [FeatureFlag.TrajectoryInferences, false],
-    [FeatureFlag.TrajectoryMap, true],
-    [FeatureFlag.TrajectoryExploration, false],
-  ])
+export const DeploymentStudy1FeatureFlags: FeatureFlags = {
+  isTrajectoryInferencesEnabled: false,
+  isTrajectoryMapEnabled: true,
+  isTrajectoryExplorationEnabled: false,
+  isBackgroundInferencesEnabled: false,
+  isBackgroundReverseGeocodingEnabled: false,
+}

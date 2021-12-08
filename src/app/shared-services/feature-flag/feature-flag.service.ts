@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core'
-import { DefaultFeatureFlags, FeatureFlag } from './feature-flag.fixtures'
+import { DefaultFeatureFlags, FeatureFlags } from './feature-flag.fixtures'
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeatureFlagService {
-  featureFlags = DefaultFeatureFlags
+  featureFlags: FeatureFlags = DefaultFeatureFlags
 
   constructor() {}
-
-  hasFeatureFlag(key: FeatureFlag | string): boolean {
-    return this.featureFlags.get(key) || false
-  }
 }

@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
-import { FeatureFlag } from '../shared-services/feature-flag/feature-flag.fixtures'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import {
   InferenceService,
@@ -32,25 +31,21 @@ export class TrajectoryPage implements OnInit, OnDestroy {
     private inferenceService: InferenceService,
     private featureFlagService: FeatureFlagService
   ) {
-    if (
-      this.featureFlagService.hasFeatureFlag(FeatureFlag.TrajectoryInferences)
-    ) {
+    if (this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Inferences,
         icon: 'magnet-outline',
         title: 'Insights',
       })
     }
-    if (this.featureFlagService.hasFeatureFlag(FeatureFlag.TrajectoryMap)) {
+    if (this.featureFlagService.featureFlags.isTrajectoryMapEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Map,
         icon: 'map-outline',
         title: 'Map',
       })
     }
-    if (
-      this.featureFlagService.hasFeatureFlag(FeatureFlag.TrajectoryExploration)
-    ) {
+    if (this.featureFlagService.featureFlags.isTrajectoryExplorationEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Exploration,
         icon: 'bar-chart-outline',
