@@ -132,6 +132,7 @@ export class InferenceService
 
   async generateUserInferences(): Promise<InferenceResult> {
     try {
+      await this.updateLoadingDialog()
       const trajectory = await this.trajectoryService
         .getFullUserTrack()
         .pipe(take(1))
@@ -147,6 +148,7 @@ export class InferenceService
       await this.updateLoadingDialog()
       await this.generateUserInferences()
     } finally {
+      this.backgroundService.backgroundState = BackgroundState.idle
       await this.updateLoadingDialog()
     }
   }
