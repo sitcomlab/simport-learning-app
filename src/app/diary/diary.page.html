@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Diary</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="exportDiary()">
+        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <app-item-card
+      date="2021-12-14"
+      content="Lorem ipsum dolor sit amet..."
+      (click)="navigateDetail('0')"
+    ></app-item-card>
+    <app-item-card
+      date="2021-12-15"
+      content="Lorem ipsum dolor sit amet..."
+    ></app-item-card>
+    <app-item-card
+      date="2021-12-16"
+      content="Lorem ipsum dolor sit amet..."
+    ></app-item-card>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createEntry()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

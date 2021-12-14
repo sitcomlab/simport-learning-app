@@ -28,6 +28,11 @@ const routes: Routes = [
     loadChildren: () =>
       import('./tracking/tracking.module').then((m) => m.TrackingPageModule),
   },
+  {
+    path: 'diary',
+    loadChildren: () =>
+      import('./diary/diary.module').then((m) => m.DiaryPageModule),
+  },
 ]
 @NgModule({
   imports: [
