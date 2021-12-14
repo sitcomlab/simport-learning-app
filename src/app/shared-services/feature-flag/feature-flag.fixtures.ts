@@ -2,22 +2,25 @@ export interface FeatureFlags {
   isTrajectoryInferencesEnabled: boolean
   isTrajectoryMapEnabled: boolean
   isTrajectoryExplorationEnabled: boolean
-  isBackgroundInferencesEnabled: boolean
-  isBackgroundReverseGeocodingEnabled: boolean
+  isInferencesEnabled: boolean
+  isReverseGeocodingEnabled: boolean
+  isTimetablePredicitionEnabled: boolean
 }
 
 export const DefaultFeatureFlags: FeatureFlags = {
   isTrajectoryInferencesEnabled: true,
   isTrajectoryMapEnabled: true,
   isTrajectoryExplorationEnabled: true,
-  isBackgroundInferencesEnabled: true,
-  isBackgroundReverseGeocodingEnabled: true,
+  isInferencesEnabled: true,
+  isReverseGeocodingEnabled: true,
+  isTimetablePredicitionEnabled: true,
 }
 
 export const DeploymentStudy1FeatureFlags: FeatureFlags = {
   isTrajectoryInferencesEnabled: false,
   isTrajectoryMapEnabled: true,
   isTrajectoryExplorationEnabled: false,
-  isBackgroundInferencesEnabled: false,
-  isBackgroundReverseGeocodingEnabled: false,
+  isInferencesEnabled: false,
+  isReverseGeocodingEnabled: false,
+  isTimetablePredicitionEnabled: false,
 }

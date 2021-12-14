@@ -26,7 +26,12 @@
     <div [leafletLayer]="lastLocation"></div>
   </div>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    *ngIf="isInferencesEnabled || isPredictionsEnabled || trajectoryType === TrajectoryTypes.USERTRACK"
+  >
     <ion-fab-button>
       <ion-icon name="layers-outline"></ion-icon>
     </ion-fab-button>
@@ -39,7 +44,11 @@
         <ion-icon name="analytics-outline"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button (click)="predictNextVisit()" text="Predict next visit">
+      <ion-fab-button
+        *ngIf="isPredictionsEnabled"
+        (click)="predictNextVisit()"
+        text="Predict next visit"
+      >
         <ion-icon name="flag-outline"></ion-icon>
       </ion-fab-button>
 
