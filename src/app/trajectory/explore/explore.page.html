@@ -8,8 +8,33 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="centered">
-    <div>Nothing to explore so far.</div>
-    <div><a routerLink="../map">Look at the map instead?</a></div>
+  <div class="ion-padding">
+    <h2>POI Timetable</h2>
+    <p>
+      The timetable visualizes frequent visits of selected POIs for each
+      weekday. Select an identified POI and explore when you have visited it in
+      the past.
+    </p>
+    <ion-item lines="none">
+      <ion-label>Select POI</ion-label>
+      <ion-select
+        interface="action-sheet"
+        (ionChange)="drawChartFromEvent($event)"
+      >
+        <ion-select-option *ngFor="let i of inferences" [value]="i"
+          >{{i.addressDisplayName}}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [dataLabels]="chartOptions.dataLabels"
+      [title]="chartOptions.title"
+      [colors]="chartOptions.colors"
+      [xaxis]="chartOptions.xaxis"
+      [plotOptions]="chartOptions.plotOptions"
+      [legend]="chartOptions.legend"
+    ></apx-chart>
   </div>
 </ion-content>

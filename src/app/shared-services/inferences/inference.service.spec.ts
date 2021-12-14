@@ -18,6 +18,7 @@ describe('InferenceService', () => {
         SqliteService,
         LocationService,
         BackgroundGeolocation,
+        TrajectoryService,
       ],
     })
     service = TestBed.inject(InferenceService)
