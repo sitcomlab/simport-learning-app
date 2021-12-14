@@ -69,6 +69,10 @@ div.inference-icon {
   }
   &.poi {
     border: 2px solid #68347d;
+
+    &.predicted {
+      box-shadow: 0 0 0 6px #68347d46;
+    }
   }
 
   ion-icon {

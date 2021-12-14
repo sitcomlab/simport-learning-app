@@ -4,10 +4,12 @@ import { InferenceResultStatus, InferenceType } from '../types'
 import { StaypointEngine } from './staypoint-engine'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import { TestBed } from '@angular/core/testing'
+import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 
 describe('StaypointEngine', () => {
   let engine: StaypointEngine
   let staypointServiceSpy: jasmine.SpyObj<StaypointService>
+  let timetableServiceSpy: jasmine.SpyObj<TimetableService>
 
   beforeEach(() => {
     const spySPService = jasmine.createSpyObj('StaypointService', [
@@ -15,13 +17,20 @@ describe('StaypointEngine', () => {
       'getStayPoints',
       'computeStayPointClusters',
     ])
+    const spyTTService = jasmine.createSpyObj('TimetableService', ['addPoi'])
     TestBed.configureTestingModule({
-      providers: [{ provide: StaypointService, useValue: spySPService }],
+      providers: [
+        { provide: StaypointService, useValue: spySPService },
+        { provide: TimetableService, useValue: spyTTService },
+      ],
     })
     staypointServiceSpy = TestBed.inject(
       StaypointService
     ) as jasmine.SpyObj<StaypointService>
-    engine = new StaypointEngine(staypointServiceSpy)
+    timetableServiceSpy = TestBed.inject(
+      TimetableService
+    ) as jasmine.SpyObj<TimetableService>
+    engine = new StaypointEngine(staypointServiceSpy, timetableServiceSpy)
   })
 
   it('should be created', () => {
