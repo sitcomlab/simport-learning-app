@@ -16,7 +16,7 @@ import {
 } from 'leaflet'
 import { Subscription } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
-import { TrajectoryType } from 'src/app/model/trajectory'
+import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
@@ -50,7 +50,6 @@ export class MapPage implements OnInit, OnDestroy {
     ],
   }
   mapBounds: LatLngBounds
-  polyline: Polyline
   inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
@@ -62,6 +61,7 @@ export class MapPage implements OnInit, OnDestroy {
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
+  private polylines: Polyline[] = []
   private trajSubscription: Subscription
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
@@ -84,9 +84,27 @@ export class MapPage implements OnInit, OnDestroy {
     this.trajSubscription = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
-        this.polyline = new Polyline(t.coordinates, {
-          weight: 1,
+        const length = t.coordinates.length
+
+        let temporarycoordinates = []
+
+        this.polylines.forEach((polyline) => {
+          polyline.removeFrom(this.map)
         })
+
+        this.polylines = []
+
+        for (let i = 0; i < length; i++) {
+          if ((t.state[i] === PointState.START && i > 0) || i === length - 1) {
+            const polyline = new Polyline(t.coordinates, {
+              weight: 1,
+            })
+            this.polylines.push(polyline)
+            polyline.addTo(this.map)
+            temporarycoordinates = []
+          }
+          temporarycoordinates.push(t.coordinates[i])
+        }
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
@@ -103,7 +121,7 @@ export class MapPage implements OnInit, OnDestroy {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
-          this.mapBounds = this.polyline.getBounds()
+          //          this.mapBounds = this.polyline.getBounds()   TODO: recalculate mapBounds
           this.map?.invalidateSize()
         }
 
