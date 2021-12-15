@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
+import { DiaryEntry } from '../model/diary-entry'
+import { DiaryService } from '../shared-services/diary/diary.service'
 
 @Component({
   selector: 'app-diary',
@@ -7,9 +9,15 @@ import { Router } from '@angular/router'
   styleUrls: ['./diary.page.scss'],
 })
 export class DiaryPage implements OnInit {
-  constructor(private router: Router) {}
+  diary: DiaryEntry[]
+
+  constructor(private router: Router, private diaryService: DiaryService) {}
 
   ngOnInit() {}
+
+  async ionViewWillEnter() {
+    this.diary = await this.diaryService.getDiary()
+  }
 
   exportDiary() {}
 

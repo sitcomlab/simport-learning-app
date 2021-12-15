@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-title>Diary</ion-title>
     <ion-buttons slot="end">
@@ -12,20 +12,17 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
+  <p *ngIf="!diary || diary.length === 0" class="ion-text-center">
+    It seems like you haven't written anything down yet.
+    <a (click)="createEntry()">Create new diary entry</a>
+  </p>
   <ion-list>
     <app-item-card
-      date="2021-12-14"
-      content="Lorem ipsum dolor sit amet..."
-      (click)="navigateDetail('0')"
-    ></app-item-card>
-    <app-item-card
-      date="2021-12-15"
-      content="Lorem ipsum dolor sit amet..."
-    ></app-item-card>
-    <app-item-card
-      date="2021-12-16"
-      content="Lorem ipsum dolor sit amet..."
+      *ngFor="let e of diary"
+      [date]="e.date | date"
+      [content]="e.abstract"
+      (click)="navigateDetail(e.id)"
     ></app-item-card>
   </ion-list>
 

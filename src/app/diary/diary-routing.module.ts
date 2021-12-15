@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-import { DetailComponent } from './detail/detail.component'
+import { DiaryDetailComponent } from './diary-detail/diary-detail.component'
 
 import { DiaryPage } from './diary.page'
-import { EditComponent } from './edit/edit.component'
+import { DiaryEditComponent } from './diary-edit/diary-edit.component'
 
 const routes: Routes = [
   {
@@ -12,11 +12,11 @@ const routes: Routes = [
   },
   {
     path: 'edit/:id',
-    component: EditComponent,
+    component: DiaryEditComponent,
   },
   {
     path: ':id',
-    component: DetailComponent,
+    component: DiaryDetailComponent,
   },
 ]
 

@@ -8,8 +8,8 @@ import { DiaryPageRoutingModule } from './diary-routing.module'
 
 import { DiaryPage } from './diary.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
-import { EditComponent } from './edit/edit.component'
-import { DetailComponent } from './detail/detail.component'
+import { DiaryEditComponent } from './diary-edit/diary-edit.component'
+import { DiaryDetailComponent } from './diary-detail/diary-detail.component'
 
 @NgModule({
   imports: [
@@ -19,6 +19,6 @@ import { DetailComponent } from './detail/detail.component'
     DiaryPageRoutingModule,
     SharedUiModule,
   ],
-  declarations: [DiaryPage, EditComponent, DetailComponent],
+  declarations: [DiaryPage, DiaryEditComponent, DiaryDetailComponent],
 })
 export class DiaryPageModule {}

@@ -1,24 +1,24 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { RouterModule } from '@angular/router'
 import { RouterTestingModule } from '@angular/router/testing'
 import { IonicModule } from '@ionic/angular'
-import { SqliteService } from '../shared-services/db/sqlite.service'
+import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
+import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 
-import { DiaryPage } from './diary.page'
+import { DiaryEditComponent } from './diary-edit.component'
 
-describe('DiaryPage', () => {
-  let component: DiaryPage
-  let fixture: ComponentFixture<DiaryPage>
+describe('DiaryEditComponent', () => {
+  let component: DiaryEditComponent
+  let fixture: ComponentFixture<DiaryEditComponent>
 
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        declarations: [DiaryPage],
+        declarations: [DiaryEditComponent],
+        providers: [DiaryService, SqliteService],
         imports: [IonicModule.forRoot(), RouterTestingModule],
-        providers: [SqliteService],
       }).compileComponents()
 
-      fixture = TestBed.createComponent(DiaryPage)
+      fixture = TestBed.createComponent(DiaryEditComponent)
       component = fixture.componentInstance
       fixture.detectChanges()
     })
