@@ -20,6 +20,7 @@ import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
 import { TimetableEntry } from 'src/app/model/timetable'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
+import { DiaryEntry } from 'src/app/model/diary-entry'
 
 @Injectable()
 export class SqliteService {
@@ -539,6 +540,52 @@ export class SqliteService {
       if (changes === -1)
         throw new Error(`couldnt insert reverse-geocoding: ${message}`)
     }
+  }
+
+  async upsertDiaryEntry({ id, created, updated, date, content }: DiaryEntry) {
+    await this.ensureDbReady()
+
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      'INSERT OR REPLACE INTO diaryEntry VALUES (?,?,?,?,?)',
+      [id, created, updated, date, content].map(normalize)
+    )
+    if (changes === -1)
+      throw new Error(`couldnt insert diary-entry: ${message}`)
+  }
+
+  async getDiary(): Promise<DiaryEntry[]> {
+    await this.ensureDbReady()
+
+    const { values } = await this.db.query(`SELECT * FROM diaryEntry`)
+    if (!values.length) return []
+
+    return values.map((v) => DiaryEntry.fromJSON(v))
+  }
+
+  async getDiaryEntry(id: string): Promise<DiaryEntry> {
+    await this.ensureDbReady()
+
+    const { values } = await this.db.query(
+      `SELECT * FROM diaryEntry WHERE id = ?`,
+      [id].map(normalize)
+    )
+
+    if (!values.length) return undefined
+    return DiaryEntry.fromJSON(values[0])
+  }
+
+  async deleteDiaryEntry(id: string): Promise<void> {
+    await this.ensureDbReady()
+
+    const statement = `DELETE FROM diaryEntry WHERE id = '${id}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(statement)
+    if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
   }
 }
 
