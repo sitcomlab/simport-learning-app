@@ -16,5 +16,7 @@
 </ion-header>
 
 <ion-content class="ion-padding" *ngIf="entry">
-  {{ entry.content }}
+  <markdown>
+    {{ entry.content }}
+  </markdown>
 </ion-content>

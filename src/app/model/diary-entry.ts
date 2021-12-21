@@ -18,6 +18,6 @@ export class DiaryEntry {
   }
 
   get abstract(): string {
-    return `${this.content.substring(0, 20)}...`
+    return `${this.content.split('\n')[0].substring(0, 20)} ...`
   }
 }
