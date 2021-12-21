@@ -11,7 +11,10 @@
     <ion-title *ngIf="!id || id === 'new'">Create new entry</ion-title>
     <ion-title *ngIf="id && id !== 'new'">Update entry</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="saveEntry()">
+      <ion-button
+        [disabled]="!content || content.length === 0"
+        (click)="saveEntry()"
+      >
         <ion-icon slot="icon-only" name="save-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
