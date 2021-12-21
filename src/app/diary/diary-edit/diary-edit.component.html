@@ -3,6 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
+    <ion-buttons *ngIf="isModal" slot="start">
+      <ion-button (click)="dismiss()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title *ngIf="!id || id === 'new'">Create new entry</ion-title>
     <ion-title *ngIf="id && id !== 'new'">Update entry</ion-title>
     <ion-buttons slot="end">
@@ -18,10 +23,11 @@
     <ion-label position="stacked">Date</ion-label>
     <ion-datetime [(ngModel)]="date"></ion-datetime>
   </ion-item>
-  <ion-item>
+  <ion-item *ngIf="loaded">
     <ion-label position="stacked">Content</ion-label>
     <ion-textarea
-      auto-grow
+      autoGrow="true"
+      inputmode="text"
       placeholder="Enter your thoughts..."
       [value]="content"
       [(ngModel)]="content"

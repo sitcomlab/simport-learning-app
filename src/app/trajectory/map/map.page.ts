@@ -272,6 +272,9 @@ export class MapPage implements OnInit, OnDestroy {
       swipeToClose: true,
       backdropDismiss: true,
       presentingElement: this.routerOutlet.nativeEl,
+      componentProps: {
+        isModal: true,
+      },
     })
     modal.present()
   }
