@@ -5,6 +5,9 @@
     </ion-buttons>
     <ion-title> Map View </ion-title>
     <ion-buttons slot="end">
+      <ion-button id="trigger-button" (click)="openDiaryModal()">
+        <ion-icon slot="icon-only" name="book-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="openInferenceFilter()">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>
