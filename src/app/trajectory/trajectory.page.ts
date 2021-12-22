@@ -7,12 +7,18 @@ import {
   InferenceServiceEvent,
 } from '../shared-services/inferences/inference.service'
 import { InferenceFilterComponent } from './inference-filter/inference-filter.component'
-import { TrajectoryPagePath } from './trajectory-routing.module'
 
 export interface TrajectoryPageTab {
   path: string
   icon: string
   title: string
+}
+
+export enum TrajectoryPagePath {
+  Inferences = 'trajectory-inferences',
+  Map = 'trajectory-map',
+  Exploration = 'trajectory-exploration',
+  InferenceFilter = 'trajectory-inference-filter',
 }
 
 @Component({

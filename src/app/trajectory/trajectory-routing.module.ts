@@ -1,13 +1,6 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-import { TrajectoryPage } from './trajectory.page'
-
-export enum TrajectoryPagePath {
-  Inferences = 'trajectory-inferences',
-  Map = 'trajectory-map',
-  Exploration = 'trajectory-exploration',
-  InferenceFilter = 'trajectory-inference-filter',
-}
+import { TrajectoryPage, TrajectoryPagePath } from './trajectory.page'
 
 const routes: Routes = [
   {
