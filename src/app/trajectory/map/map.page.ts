@@ -26,6 +26,7 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 
 @Component({
   selector: 'app-map',
@@ -59,6 +60,7 @@ export class MapPage implements OnInit, OnDestroy {
 
   inferences: Inference[] = []
   generatedInferences = false
+  predictedInferenceIds: string[] = []
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -72,7 +74,8 @@ export class MapPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private timetableService: TimetableService
   ) {}
 
   async ngOnInit() {
@@ -194,6 +197,35 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
+  async predictNextVisit() {
+    if (!this.generatedInferences) {
+      await this.showLoadingDialog('Loading inferences...')
+      const inferenceResult = await this.inferenceService
+        .generateInferences(this.trajectoryType, this.trajectoryId)
+        .finally(async () => {
+          await this.hideLoadingDialog()
+        })
+      this.inferences = inferenceResult.inferences
+    }
+    const nextVisits = await this.timetableService.predictNextVisit(
+      this.trajectoryId
+    )
+    if (nextVisits.length > 0) {
+      this.predictedInferenceIds = nextVisits.map((v) => v.inference)
+      this.updateInferenceMarkers()
+      return await this.showToast(
+        `We think that you will visit the highlighted ${
+          nextVisits.length === 1 ? 'place' : 'places'
+        } in the next hour`,
+        'success'
+      )
+    } else {
+      return await this.showErrorToast(
+        `We couldn't make a prediction for the next hour`
+      )
+    }
+  }
+
   updateInferenceMarkers() {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
@@ -202,9 +234,12 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
+      const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {
         icon: new DivIcon({
-          className: `inference-icon ${inference.type}`,
+          className: `inference-icon ${inference.type} ${
+            isPredicted ? 'predicted' : ''
+          }`,
           iconSize: [32, 32],
           iconAnchor: [16, 16],
           html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
@@ -224,9 +259,13 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   private async showErrorToast(message: string) {
+    await this.showToast(message, 'danger')
+  }
+
+  private async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastController.create({
       message,
-      color: 'danger',
+      color,
       duration: 2000,
     })
     await toast.present()

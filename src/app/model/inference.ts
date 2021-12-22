@@ -7,6 +7,7 @@ export class Inference {
   public geocoding?: ReverseGeocoding
 
   constructor(
+    public id: string,
     public name: string,
     public type: InferenceType,
     public description: string,
@@ -14,11 +15,14 @@ export class Inference {
     public latLng: [number, number],
     public coordinates: [number, number][],
     public confidence?: number,
-    public accuracy?: number
+    public accuracy?: number,
+    // onSiteTimes are not saved in the database, therefore not present in fromObject()
+    public onSiteTimes?: [Date, Date][]
   ) {}
 
   static fromObject(val: any): Inference {
     const {
+      id,
       name,
       type,
       description,
@@ -31,6 +35,7 @@ export class Inference {
     } = val
 
     return new Inference(
+      id,
       name,
       type,
       description,

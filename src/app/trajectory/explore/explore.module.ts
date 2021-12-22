@@ -4,12 +4,20 @@ import { FormsModule } from '@angular/forms'
 
 import { IonicModule } from '@ionic/angular'
 
+import { NgApexchartsModule } from 'ng-apexcharts'
+
 import { ExplorePageRoutingModule } from './explore-routing.module'
 
 import { ExplorePage } from './explore.page'
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ExplorePageRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    ExplorePageRoutingModule,
+    NgApexchartsModule,
+  ],
   declarations: [ExplorePage],
 })
 export class ExplorePageModule {}

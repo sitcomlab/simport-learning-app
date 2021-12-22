@@ -13,6 +13,8 @@ import { WorkHoursScoring } from '../../scoring/work-hours-scoring'
 import { StaypointService } from 'src/app/shared-services/staypoint/staypoint.service'
 import { StayPointCluster } from 'src/app/model/staypoints'
 import concaveman from 'concaveman'
+import { v4 as uuid } from 'uuid'
+import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 
 export class StaypointEngine implements IInferenceEngine {
   scorings: IInferenceScoring[] = [
@@ -20,7 +22,10 @@ export class StaypointEngine implements IInferenceEngine {
     new WorkHoursScoring(),
   ]
 
-  constructor(private staypointService: StaypointService) {}
+  constructor(
+    private staypointService: StaypointService,
+    private timetableService: TimetableService
+  ) {}
 
   private inputCoordinatesLimit = 100000
 
@@ -252,7 +257,14 @@ export class StaypointEngine implements IInferenceEngine {
     if (poiClusters.length === 0) return undefined
     return poiClusters.map((poiCluster) => {
       // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
-      return this.createInferenceForCluster(InferenceType.poi, poiCluster, 1, 1)
+      const inference = this.createInferenceForCluster(
+        InferenceType.poi,
+        poiCluster,
+        poiCluster.onSiteTimes.length,
+        poiCluster.onSiteTimes.length // pass number of visits for description
+      )
+
+      return inference
     })
   }
 
@@ -348,13 +360,16 @@ export class StaypointEngine implements IInferenceEngine {
     }
     const convexHull = concaveman(stayPointCluster.componentCoordinates)
     return new Inference(
+      uuid(),
       inferenceType,
       inferenceType,
       description,
       stayPointCluster.trajID,
       stayPointCluster.coordinates,
       convexHull.map((c) => [c[0], c[1]]),
-      clusterScore / numberOfDays
+      clusterScore / numberOfDays,
+      undefined,
+      stayPointCluster.onSiteTimes
     )
   }
 
