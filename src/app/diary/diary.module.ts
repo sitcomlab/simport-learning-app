@@ -10,7 +10,6 @@ import { DiaryPage } from './diary.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { DiaryEditComponent } from './diary-edit/diary-edit.component'
 import { DiaryDetailComponent } from './diary-detail/diary-detail.component'
-import { MarkdownModule } from 'ngx-markdown'
 
 @NgModule({
   imports: [
@@ -19,7 +18,6 @@ import { MarkdownModule } from 'ngx-markdown'
     IonicModule,
     DiaryPageRoutingModule,
     SharedUiModule,
-    MarkdownModule.forRoot(),
   ],
   declarations: [DiaryPage, DiaryEditComponent, DiaryDetailComponent],
 })
