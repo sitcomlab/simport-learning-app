@@ -26,6 +26,7 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 
 @Component({
@@ -58,6 +59,10 @@ export class MapPage implements OnInit, OnDestroy {
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
 
+  isInferencesEnabled =
+    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+  isPredictionsEnabled =
+    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
@@ -71,6 +76,7 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
+    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,

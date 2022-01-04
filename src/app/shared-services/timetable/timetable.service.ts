@@ -4,6 +4,7 @@ import { TimetableEntry } from 'src/app/model/timetable'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
 import { BackgroundService } from '../background/background.service'
 import { SqliteService } from '../db/sqlite.service'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { TrajectoryService } from '../trajectory/trajectory.service'
@@ -16,11 +17,14 @@ export class TimetableService extends AbstractBackgroundService {
   protected foregroundInterval = 720
   protected backgroundInterval = 15
   protected backgroundFetchId = 'com.transistorsoft.timetableprediction'
+  protected isEnabled =
+    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
 
   constructor(
     private sqliteService: SqliteService,
     private notificationService: NotificationService,
     private trajectoryService: TrajectoryService,
+    private featureFlagService: FeatureFlagService,
     protected backgroundService: BackgroundService
   ) {
     super(backgroundService, 'com.transistorsoft.timetableprediction')
