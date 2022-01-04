@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
+import { ToastController } from '@ionic/angular'
 import { DiaryEntry } from '../model/diary-entry'
 import { DiaryService } from '../shared-services/diary/diary.service'
 
@@ -11,7 +12,11 @@ import { DiaryService } from '../shared-services/diary/diary.service'
 export class DiaryPage implements OnInit {
   diary: DiaryEntry[]
 
-  constructor(private router: Router, private diaryService: DiaryService) {}
+  constructor(
+    private router: Router,
+    private diaryService: DiaryService,
+    private toastController: ToastController
+  ) {}
 
   ngOnInit() {}
 
@@ -19,7 +24,18 @@ export class DiaryPage implements OnInit {
     this.diary = await this.diaryService.getDiary()
   }
 
-  exportDiary() {}
+  async exportDiary() {
+    try {
+      await this.diaryService.exportDiary()
+    } catch (e) {
+      const toast = await this.toastController.create({
+        message: e,
+        color: 'danger',
+        duration: 2000,
+      })
+      await toast.present()
+    }
+  }
 
   navigateDetail(id: string) {
     this.router.navigate([`/diary/${id}`])

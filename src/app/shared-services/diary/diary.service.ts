@@ -2,12 +2,20 @@ import { Injectable } from '@angular/core'
 import { v4 as uuid } from 'uuid'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { SqliteService } from '../db/sqlite.service'
+import { Platform } from '@ionic/angular'
+import {
+  FilesystemDirectory,
+  FilesystemEncoding,
+  Plugins,
+} from '@capacitor/core'
+
+const { Filesystem, Share } = Plugins
 
 @Injectable({
   providedIn: 'root',
 })
 export class DiaryService {
-  constructor(private dbService: SqliteService) {}
+  constructor(private dbService: SqliteService, private platform: Platform) {}
 
   async getDiary(): Promise<DiaryEntry[]> {
     return this.dbService.getDiary()
@@ -40,5 +48,36 @@ export class DiaryService {
 
   async deleteDiaryEntry(id: string) {
     return this.dbService.deleteDiaryEntry(id)
+  }
+
+  async exportDiary() {
+    try {
+      const diary = await this.getDiary()
+      const fileData = diary
+        .map((d) => {
+          return `\n${d.date.toISOString()}\n${d.content}\n`
+        })
+        .join(`\n===========\n`)
+
+      const fileResult = await Filesystem.writeFile({
+        data: fileData,
+        path: `SIMPORT_diary_${
+          new Date().toISOString().replace(/:/g, '-').split('.')[0]
+        }.txt`,
+        directory: FilesystemDirectory.ExternalStorage,
+        encoding: FilesystemEncoding.UTF8,
+      })
+
+      if (this.platform.is('android')) {
+        await Share.requestPermissions()
+      }
+
+      Share.share({
+        title: 'My SIMPORT diary',
+        url: fileResult.uri,
+      })
+    } catch (e) {
+      throw new Error(`Could not export diary: ${e}`)
+    }
   }
 }
