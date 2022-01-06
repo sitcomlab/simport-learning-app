@@ -43,6 +43,7 @@ export class DiaryDetailComponent implements OnInit {
         },
         {
           text: 'Delete',
+          cssClass: 'danger',
           handler: async () => {
             try {
               await this.diaryService.deleteDiaryEntry(this.entry.id)
