@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonicModule, IonRouterOutlet } from '@ionic/angular'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
 import { LocationService } from '../../shared-services/location/location.service'
 import { TrajectoryService } from '../../shared-services/trajectory/trajectory.service'
@@ -33,6 +34,7 @@ describe('MapPage', () => {
           provide: IonRouterOutlet,
           useValue: { nativeEl: '' },
         },
+        FeatureFlagService,
       ],
     }).compileComponents()
 

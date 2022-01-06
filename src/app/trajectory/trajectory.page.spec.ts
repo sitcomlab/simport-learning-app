@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonicModule, IonRouterOutlet } from '@ionic/angular'
 import { SqliteService } from '../shared-services/db/sqlite.service'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
@@ -21,6 +22,7 @@ describe('TrajectoryPage', () => {
         LocationService,
         BackgroundGeolocation,
         SqliteService,
+        FeatureFlagService,
         TrajectoryService,
         TrajectoryImportExportService,
         {

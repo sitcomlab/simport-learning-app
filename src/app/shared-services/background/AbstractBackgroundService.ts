@@ -13,6 +13,7 @@ export abstract class AbstractBackgroundService {
   // interval for background function via independent and limited background-fetch
   protected abstract backgroundInterval: number
   protected backgroundFetchId: string
+  protected isEnabled: boolean
 
   lastTryTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
   lastRunTime: BehaviorSubject<number> = new BehaviorSubject<number>(0)
@@ -22,13 +23,15 @@ export abstract class AbstractBackgroundService {
     backgroundFetchId: string
   ) {
     this.backgroundFetchId = backgroundFetchId
-    this.init()
-    App.addListener('appStateChange', async (state) => {
-      if (state.isActive) {
-        // trigger background function to ensure an up-to-date state of the app
-        await this.triggerBackgroundFunctionIfViable(false, true)
-      }
-    })
+    if (this.isEnabled) {
+      this.init()
+      App.addListener('appStateChange', async (state) => {
+        if (state.isActive) {
+          // trigger background function to ensure an up-to-date state of the app
+          await this.triggerBackgroundFunctionIfViable(false, true)
+        }
+      })
+    }
   }
 
   init() {
@@ -51,7 +54,10 @@ export abstract class AbstractBackgroundService {
     runAsFetch?: boolean,
     referToLastRun: boolean = false
   ) {
-    if (this.backgroundService.backgroundState !== BackgroundState.idle) {
+    if (
+      this.backgroundService.backgroundState !== BackgroundState.idle ||
+      !this.isEnabled
+    ) {
       return
     }
     runAsFetch ??= !(await App.getState()).isActive
@@ -61,7 +67,7 @@ export abstract class AbstractBackgroundService {
     if (runAsFetch && Capacitor.isNative) {
       this.triggerBackgroundFunctionAsFetch(lastRun)
     } else {
-      await this.triggerBackgroundFunctionAsTask(lastRun)
+      this.triggerBackgroundFunctionAsTask(lastRun)
     }
   }
 
@@ -90,7 +96,7 @@ export abstract class AbstractBackgroundService {
    *
    * @param lastRunTime last run time that is taken as reference for verifying the schedule.
    */
-  private async triggerBackgroundFunctionAsTask(lastRunTime: number) {
+  private triggerBackgroundFunctionAsTask(lastRunTime: number) {
     if (this.isWithinSchedule(this.foregroundInterval, lastRunTime)) {
       this.lastTryTime.next(new Date().getTime())
       const taskId = BackgroundTask.beforeExit(async () => {
