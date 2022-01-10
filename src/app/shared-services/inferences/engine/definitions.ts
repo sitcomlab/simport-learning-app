@@ -1,4 +1,4 @@
-import { Inference } from 'src/app/model/inference'
+import { Inference, InferenceThresholds } from 'src/app/model/inference'
 import { InferenceScoringType } from '../scoring/types'
 import { InferenceDefinition, InferenceType } from './types'
 
@@ -9,7 +9,9 @@ export const WorkInference = new InferenceDefinition(
   (lang?: string) => 'Workplace',
   (r: Inference, lang?: string) => {
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are working at ${r.addressDisplayName} with a confidence of ${confidence} %.`
+    return `We assume you are working at ${
+      r.addressDisplayName
+    } with ${InferenceThresholds.getQualitativeConfidence(r.confidence)}.`
   },
   [
     {
@@ -37,7 +39,9 @@ export const HomeInference = new InferenceDefinition(
   (lang?: string) => 'Home',
   (r: Inference, lang?: string) => {
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are living at ${r.addressDisplayName} with a confidence of ${confidence} %.`
+    return `We assume you are living at ${
+      r.addressDisplayName
+    } with ${InferenceThresholds.getQualitativeConfidence(r.confidence)}.`
   },
   [
     {
