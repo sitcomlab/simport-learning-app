@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
-import { InferenceThresholds } from 'src/app/model/inference'
+import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 
 @Component({
   selector: 'app-inference-filter',
@@ -12,7 +12,7 @@ export class InferenceFilterComponent implements OnDestroy {
   static inferenceFilterEvent = 'inference-filter-event'
 
   filterConfiguration = this.inferenceService.filterConfiguration.value
-  confidenceThresholdCutoffs = InferenceThresholds
+  confidenceThresholdCutoffs = InferenceConfidenceThresholds
 
   constructor(private inferenceService: InferenceService) {}
 

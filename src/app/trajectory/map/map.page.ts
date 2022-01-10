@@ -15,7 +15,10 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
-import { Inference, InferenceThresholds } from 'src/app/model/inference'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
@@ -246,7 +249,7 @@ export class MapPage implements OnInit, OnDestroy {
       } else {
         popupText = `${
           inference.name
-        } (${InferenceThresholds.getQualitativeConfidence(
+        } (${InferenceConfidenceThresholds.getQualitativeConfidence(
           inference.confidence
         )})`
       }

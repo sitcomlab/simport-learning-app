@@ -85,7 +85,7 @@ export class Inference {
   }
 }
 
-export abstract class InferenceThresholds {
+export abstract class InferenceConfidenceThresholds {
   public static high = 0.6
   public static medium = 0.3
   public static low = 0.05
