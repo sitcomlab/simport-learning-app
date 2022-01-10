@@ -30,6 +30,7 @@ import {
   BackgroundState,
 } from '../background/background.service'
 import { FeatureFlagService } from '../feature-flag/feature-flag.service'
+import { InferenceThresholds } from 'src/app/model/inference'
 
 const { App } = Plugins
 
@@ -64,7 +65,7 @@ export class InferenceService
   readonly useStaypointEngine: boolean = true
 
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
-    confidenceThreshold: 0.5,
+    confidenceThreshold: InferenceThresholds.medium,
     inferenceVisiblities: new Map([
       // show all inference-types by default
       ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
