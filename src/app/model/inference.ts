@@ -86,21 +86,9 @@ export class Inference {
 }
 
 export abstract class InferenceThresholds {
-  public static high = 60
-  public static medium = 30
-  public static low = 5
-
-  public static isHighConfidence(confidenceValue: number): boolean {
-    return confidenceValue >= this.high
-  }
-
-  public static isMediumConfidence(confidenceValue: number): boolean {
-    return confidenceValue >= this.medium
-  }
-
-  public static isLowConfidence(confidenceValue: number): boolean {
-    return confidenceValue >= this.low
-  }
+  public static high = 0.6
+  public static medium = 0.3
+  public static low = 0.05
 
   public static getQualitativeConfidence(confidenceValue: number): string {
     if (confidenceValue >= this.high) return 'high confidence'
