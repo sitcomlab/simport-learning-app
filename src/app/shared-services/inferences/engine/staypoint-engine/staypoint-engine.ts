@@ -1,5 +1,5 @@
 import { Inference } from 'src/app/model/inference'
-import { Trajectory } from 'src/app/model/trajectory'
+import { PointState, Trajectory } from 'src/app/model/trajectory'
 import {
   IInferenceEngine,
   InferenceDefinition,
@@ -127,23 +127,142 @@ export class StaypointEngine implements IInferenceEngine {
     return inferences
   }
 
+  /**
+   * @param trajectory a user trajectory
+   * @returns the number of days during which the trajectory was recorded
+   */
   private countDays(trajectory: Trajectory): number {
-    // TODO update this method when start/stop are encoded in trajectory
-    const diffMs =
-      trajectory.timestamps[trajectory.timestamps.length - 1].getTime() -
-      trajectory.timestamps[0].getTime()
+    if (!trajectory.state) {
+      return this.countContinuousDays(
+        trajectory.timestamps[0],
+        trajectory.timestamps[trajectory.timestamps.length - 1]
+      )
+    }
+    // find indices where trajectory has started
+    const startIndices = []
+    let idx = 0
+    while (idx !== -1) {
+      startIndices.push(idx)
+      idx = trajectory.state.indexOf(PointState.START, idx + 1)
+    }
+    // process each section after start individually
+    let sumDays = 0
+    for (let i = 0; i++; i < startIndices.length - 1) {
+      const date1 = trajectory.timestamps[startIndices[i]]
+      const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
+      sumDays += this.countContinuousDays(date1, date2)
+      // countContinuousDays counts every started day as one, so we need to
+      // make sure we dont double count for start/end in same day
+      if (i !== 0) {
+        const prevDate = trajectory.timestamps[startIndices[i] - 1]
+        if (
+          date1.getDate() === prevDate.getDate() &&
+          date1.getMonth() === prevDate.getMonth() &&
+          date1.getFullYear() === prevDate.getFullYear()
+        ) {
+          sumDays -= 1
+        }
+      }
+    }
+    // count days after the last start of recording
+    if (
+      startIndices[startIndices.length - 1] !== trajectory.timestamps.length
+    ) {
+      const lastStartIndex = startIndices[startIndices.length - 1]
+      const date1 = trajectory.timestamps[lastStartIndex]
+      const date2 = trajectory.timestamps[trajectory.timestamps.length - 1]
+      sumDays += this.countContinuousDays(date1, date2)
+      if (lastStartIndex !== 0) {
+        const prevDate = trajectory.timestamps[lastStartIndex - 1]
+        if (
+          date1.getDate() === prevDate.getDate() &&
+          date1.getMonth() === prevDate.getMonth() &&
+          date1.getFullYear() === prevDate.getFullYear()
+        ) {
+          sumDays -= 1
+        }
+      }
+    }
+    return sumDays
+  }
+
+  /**
+   * count number of days between two dates, such that the last started day counts as a full one
+   */
+  private countContinuousDays(startDate: Date, endDate: Date): number {
+    const diffMs = endDate.getTime() - startDate.getTime()
     const diffDays = diffMs / (1000 * 60 * 60 * 24)
     // we round up as half a day can also get counted as a work/home day in scoring
     return Math.floor(diffDays) + 1
   }
 
+  /**
+   * @param trajectory a user trajectory
+   * @returns the number of week days during which the trajectory was recorded
+   */
   private countWeekDays(trajectory: Trajectory): number {
-    // TODO update this method when start/stop are encoded in trajectory
+    if (!trajectory.state) {
+      return this.countContinuousWeekDays(
+        trajectory.timestamps[0],
+        trajectory.timestamps[trajectory.timestamps.length - 1]
+      )
+    }
+    // find indices where trajectory has started
+    const startIndices = []
+    let idx = 0
+    while (idx !== -1) {
+      startIndices.push(idx)
+      idx = trajectory.state.indexOf(PointState.START, idx + 1)
+    }
+    // process each section after start individually
+    let sumWeekDays = 0
+    for (let i = 0; i++; i < startIndices.length - 1) {
+      const date1 = trajectory.timestamps[startIndices[i]]
+      const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
+      sumWeekDays += this.countContinuousWeekDays(date1, date2)
+      // countContinuousDays counts every started weekday as one, so we need to
+      // make sure we dont double count for start/end in same weekday
+      if (i !== 0) {
+        const prevDate = trajectory.timestamps[startIndices[i] - 1]
+        if (
+          date1.getDate() === prevDate.getDate() &&
+          date1.getMonth() === prevDate.getMonth() &&
+          date1.getFullYear() === prevDate.getFullYear() &&
+          !(date1.getDay() in [0, 6])
+        ) {
+          sumWeekDays -= 1
+        }
+      }
+    }
+    // count days after the last start of recording
+    if (
+      startIndices[startIndices.length - 1] !== trajectory.timestamps.length
+    ) {
+      const lastStartIndex = startIndices[startIndices.length - 1]
+      const date1 = trajectory.timestamps[lastStartIndex]
+      const date2 = trajectory.timestamps[trajectory.timestamps.length - 1]
+      sumWeekDays += this.countContinuousWeekDays(date1, date2)
+      if (lastStartIndex !== 0) {
+        const prevDate = trajectory.timestamps[lastStartIndex - 1]
+        if (
+          date1.getDate() === prevDate.getDate() &&
+          date1.getMonth() === prevDate.getMonth() &&
+          date1.getFullYear() === prevDate.getFullYear() &&
+          !(date1.getDay() in [0, 6])
+        ) {
+          sumWeekDays -= 1
+        }
+      }
+    }
+    return sumWeekDays
+  }
+
+  /**
+   * count number of weekdays between two dates, such that the last started day counts as a full one
+   */
+  private countContinuousWeekDays(startDate: Date, endDate: Date): number {
     let count = 0
-    const endDate = new Date(
-      trajectory.timestamps[trajectory.timestamps.length - 1].getTime()
-    )
-    const currentDate = new Date(trajectory.timestamps[0].getTime())
+    const currentDate = new Date(startDate)
     while (currentDate <= endDate) {
       if (!(currentDate.getDay() in [0, 6])) count += 1
       currentDate.setDate(currentDate.getDate() + 1)
