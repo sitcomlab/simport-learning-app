@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { LoadingController, ToastController } from '@ionic/angular'
-import L, {
+import {
   CircleMarker,
   DivIcon,
   latLng,
@@ -26,6 +26,7 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import haversine from 'haversine-distance'
 
 @Component({
   selector: 'app-map',
@@ -84,8 +85,10 @@ export class MapPage implements OnInit, OnDestroy {
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         const length = t.coordinates.length
+        const disThreshold = 6000
+        let distance = 0
 
-        let temporarycoordinates = []
+        let temporaryCoordinates = []
 
         this.polylines.forEach((polyline) => {
           polyline.removeFrom(this.map)
@@ -94,15 +97,31 @@ export class MapPage implements OnInit, OnDestroy {
         this.polylines = []
 
         for (let i = 0; i < length; i++) {
-          if ((t.state[i] === PointState.START && i > 0) || i === length - 1) {
-            const polyline = new Polyline(temporarycoordinates, {
+          if (
+            ((t.state[i] === PointState.START || distance > disThreshold) &&
+              i > 0) ||
+            i === length - 1
+          ) {
+            const polyline = new Polyline(temporaryCoordinates, {
               weight: 1,
             })
             this.polylines.push(polyline)
             polyline.addTo(this.map)
-            temporarycoordinates = []
+            temporaryCoordinates = []
           }
-          temporarycoordinates.push(t.coordinates[i])
+          if (i + 1 < length) {
+            distance = haversine(
+              {
+                latitude: t.coordinates[i][1],
+                longitude: t.coordinates[i][0],
+              },
+              {
+                latitude: t.coordinates[i + 1][1],
+                longitude: t.coordinates[i + 1][0],
+              }
+            )
+          }
+          temporaryCoordinates.push(t.coordinates[i])
         }
 
         const lastMeasurement = {
