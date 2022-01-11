@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { LoadingController, ToastController } from '@ionic/angular'
-import {
+import L, {
   CircleMarker,
   DivIcon,
   latLng,
@@ -55,7 +55,6 @@ export class MapPage implements OnInit, OnDestroy {
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
-
   inferences: Inference[] = []
   generatedInferences = false
 
@@ -93,17 +92,15 @@ export class MapPage implements OnInit, OnDestroy {
         })
 
         this.polylines = []
-        let j = 0
+
         for (let i = 0; i < length; i++) {
           if ((t.state[i] === PointState.START && i > 0) || i === length - 1) {
-            const polyline = new Polyline(t.coordinates.slice(j, i), {
-              // const polyline = new Polyline(t.coordinates, {
+            const polyline = new Polyline(temporarycoordinates, {
               weight: 1,
             })
             this.polylines.push(polyline)
             polyline.addTo(this.map)
             temporarycoordinates = []
-            j = i
           }
           temporarycoordinates.push(t.coordinates[i])
         }
@@ -122,10 +119,9 @@ export class MapPage implements OnInit, OnDestroy {
         if (this.followPosition) {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
-          // this.mapBounds = this.polylines[j].getBounds()
         } else if (this.mapBounds === undefined) {
-          this.mapBounds = this.polylines[j].getBounds()
-          //          this.mapBounds = this.polyline.getBounds()   TODO: recalculate mapBounds
+          const boundPolyline = new Polyline(t.coordinates)
+          this.mapBounds = boundPolyline.getBounds()
           this.map?.invalidateSize()
         }
 
