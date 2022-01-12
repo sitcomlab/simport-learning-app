@@ -54,6 +54,7 @@ export class DiaryService {
     try {
       const diary = await this.getDiary()
       const fileData = diary
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
         .map((d) => {
           return `\n${d.date.toISOString()}\n${d.content}\n`
         })

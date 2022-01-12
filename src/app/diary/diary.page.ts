@@ -21,7 +21,9 @@ export class DiaryPage implements OnInit {
   ngOnInit() {}
 
   async ionViewWillEnter() {
-    this.diary = await this.diaryService.getDiary()
+    this.diary = (await this.diaryService.getDiary()).sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
+    )
   }
 
   async exportDiary() {
