@@ -85,10 +85,11 @@ export class MapPage implements OnInit, OnDestroy {
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         const length = t.coordinates.length
-        const disThreshold = 6000
+        const disThreshold = 30000
         let distance = 0
 
         let temporaryCoordinates = []
+        const boundCoordinates = []
 
         this.polylines.forEach((polyline) => {
           polyline.removeFrom(this.map)
@@ -107,6 +108,7 @@ export class MapPage implements OnInit, OnDestroy {
             })
             this.polylines.push(polyline)
             polyline.addTo(this.map)
+            boundCoordinates.push(temporaryCoordinates)
             temporaryCoordinates = []
           }
           if (i + 1 < length) {
@@ -139,7 +141,7 @@ export class MapPage implements OnInit, OnDestroy {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
-          const boundPolyline = new Polyline(t.coordinates)
+          const boundPolyline = new Polyline(boundCoordinates)
           this.mapBounds = boundPolyline.getBounds()
           this.map?.invalidateSize()
         }
