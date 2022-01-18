@@ -1,6 +1,11 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { LoadingController, ToastController } from '@ionic/angular'
+import {
+  IonRouterOutlet,
+  LoadingController,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
 import {
   CircleMarker,
   DivIcon,
@@ -28,6 +33,7 @@ import {
 } from 'src/app/shared-services/inferences/inference.service'
 import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
+import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
 
 @Component({
   selector: 'app-map',
@@ -81,7 +87,9 @@ export class MapPage implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private timetableService: TimetableService
+    private timetableService: TimetableService,
+    private modalController: ModalController,
+    private routerOutlet: IonRouterOutlet
   ) {}
 
   async ngOnInit() {
@@ -262,6 +270,19 @@ export class MapPage implements OnInit, OnDestroy {
 
   openInferenceFilter() {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
+  }
+
+  async openDiaryModal() {
+    const modal = await this.modalController.create({
+      component: DiaryEditComponent,
+      swipeToClose: true,
+      backdropDismiss: true,
+      presentingElement: this.routerOutlet.nativeEl,
+      componentProps: {
+        isModal: true,
+      },
+    })
+    modal.present()
   }
 
   private async showErrorToast(message: string) {

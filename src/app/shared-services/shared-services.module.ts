@@ -11,6 +11,7 @@ import { StaypointDetector } from './staypoint/staypoint-detector'
 import { FeatureFlagService } from './feature-flag/feature-flag.service'
 import { TimetableService } from './timetable/timetable.service'
 import { BackgroundService } from './background/background.service'
+import { DiaryService } from './diary/diary.service'
 
 @NgModule({
   providers: [
@@ -27,6 +28,7 @@ import { BackgroundService } from './background/background.service'
     StaypointDetector,
     TimetableService,
     BackgroundService,
+    DiaryService,
   ],
   imports: [CommonModule, HttpClientModule],
 })
