@@ -155,11 +155,7 @@ export class StaypointEngine implements IInferenceEngine {
       // make sure we dont double count for start/end in same day
       if (i !== 0) {
         const prevDate = trajectory.timestamps[startIndices[i] - 1]
-        if (
-          date1.getDate() === prevDate.getDate() &&
-          date1.getMonth() === prevDate.getMonth() &&
-          date1.getFullYear() === prevDate.getFullYear()
-        ) {
+        if (this.isSameDate(date1, prevDate)) {
           sumDays -= 1
         }
       }
@@ -174,11 +170,7 @@ export class StaypointEngine implements IInferenceEngine {
       sumDays += this.countContinuousDays(date1, date2)
       if (lastStartIndex !== 0) {
         const prevDate = trajectory.timestamps[lastStartIndex - 1]
-        if (
-          date1.getDate() === prevDate.getDate() &&
-          date1.getMonth() === prevDate.getMonth() &&
-          date1.getFullYear() === prevDate.getFullYear()
-        ) {
+        if (this.isSameDate(date1, prevDate)) {
           sumDays -= 1
         }
       }
@@ -224,12 +216,7 @@ export class StaypointEngine implements IInferenceEngine {
       // make sure we dont double count for start/end in same weekday
       if (i !== 0) {
         const prevDate = trajectory.timestamps[startIndices[i] - 1]
-        if (
-          date1.getDate() === prevDate.getDate() &&
-          date1.getMonth() === prevDate.getMonth() &&
-          date1.getFullYear() === prevDate.getFullYear() &&
-          !(date1.getDay() in [0, 6])
-        ) {
+        if (this.isSameDate(date1, prevDate) && !(date1.getDay() in [0, 6])) {
           sumWeekDays -= 1
         }
       }
@@ -244,12 +231,7 @@ export class StaypointEngine implements IInferenceEngine {
       sumWeekDays += this.countContinuousWeekDays(date1, date2)
       if (lastStartIndex !== 0) {
         const prevDate = trajectory.timestamps[lastStartIndex - 1]
-        if (
-          date1.getDate() === prevDate.getDate() &&
-          date1.getMonth() === prevDate.getMonth() &&
-          date1.getFullYear() === prevDate.getFullYear() &&
-          !(date1.getDay() in [0, 6])
-        ) {
+        if (this.isSameDate(date1, prevDate) && !(date1.getDay() in [0, 6])) {
           sumWeekDays -= 1
         }
       }
@@ -419,11 +401,7 @@ export class StaypointEngine implements IInferenceEngine {
       endtime = new Date(onSiteTime[1].getTime())
       while (starttime.getTime() < endtime.getTime()) {
         // due to the possibility of multi-day staypoints, we check each day separately
-        if (
-          starttime.getDate() === endtime.getDate() &&
-          starttime.getMonth() === endtime.getMonth() &&
-          starttime.getFullYear() === endtime.getFullYear()
-        ) {
+        if (this.isSameDate(starttime, endtime)) {
           // weekday, we count full workday (morning and afternoon) as 1 points
           if (starttime.getDay() !== 0 && starttime.getDay() !== 6) {
             if (starttime.getHours() <= 10 && endtime.getHours() >= 12)
@@ -507,5 +485,13 @@ export class StaypointEngine implements IInferenceEngine {
       }
     }
     return [max[2].index, max[1].index, max[0].index]
+  }
+
+  private isSameDate(firstDate: Date, secondDate: Date): boolean {
+    return (
+      firstDate.getDate() === secondDate.getDate() &&
+      firstDate.getMonth() === secondDate.getMonth() &&
+      firstDate.getFullYear() === secondDate.getFullYear()
+    )
   }
 }
