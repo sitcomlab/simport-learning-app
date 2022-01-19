@@ -20,7 +20,10 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
-import { Inference } from 'src/app/model/inference'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
@@ -248,6 +251,16 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
+      let popupText
+      if (inference.type === InferenceType.poi) {
+        popupText = `${inference.name}`
+      } else {
+        popupText = `${
+          inference.name
+        } (${InferenceConfidenceThresholds.getQualitativeConfidence(
+          inference.confidence
+        )})`
+      }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {
         icon: new DivIcon({
@@ -258,9 +271,7 @@ export class MapPage implements OnInit, OnDestroy {
           iconAnchor: [16, 16],
           html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
         }),
-      }).bindPopup(
-        `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
-      )
+      }).bindPopup(popupText)
 
       const l = new LayerGroup([h, i])
 
