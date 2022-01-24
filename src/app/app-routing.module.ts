@@ -28,6 +28,23 @@ const routes: Routes = [
     loadChildren: () =>
       import('./tracking/tracking.module').then((m) => m.TrackingPageModule),
   },
+  {
+    path: 'settings',
+    loadChildren: () =>
+      import('./settings/settings.module').then((m) => m.SettingsPageModule),
+  },
+  {
+    path: 'imprint',
+    loadChildren: () =>
+      import('./imprint/imprint.module').then((m) => m.ImprintPageModule),
+  },
+  {
+    path: 'open-sources',
+    loadChildren: () =>
+      import('./open-sources/open-sources.module').then(
+        (m) => m.OpenSourcesPageModule
+      ),
+  },
 ]
 @NgModule({
   imports: [
