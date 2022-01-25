@@ -7,6 +7,7 @@ import {
   ToastController,
 } from '@ionic/angular'
 import { ToastButton } from '@ionic/core'
+import { TranslateService } from '@ngx-translate/core'
 import { DebugWindowComponent } from '../debug-window/debug-window.component'
 import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
@@ -32,7 +33,8 @@ export class SelectTrajectoryPage {
     private routerOutlet: IonRouterOutlet,
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    public locationService: LocationService
+    public locationService: LocationService,
+    public translateService: TranslateService
   ) {}
 
   private CLICK_INTERVAL = 500

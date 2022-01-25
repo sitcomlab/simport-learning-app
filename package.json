@@ -38,6 +38,8 @@
     "@ionic/angular": "^5.0.0",
     "@mapbox/polyline": "^1.1.1",
     "@mauron85/cordova-plugin-background-geolocation": "git+https://github.com/noerw/cordova-plugin-background-geolocation.git#5ea76c8787fb5dd1b6a6f913901e0399978d14dc",
+    "@ngx-translate/core": "^13.0.0",
+    "@ngx-translate/http-loader": "^6.0.0",
     "@turf/bbox": "^6.5.0",
     "@turf/buffer": "^6.5.0",
     "@turf/helpers": "^6.5.0",
