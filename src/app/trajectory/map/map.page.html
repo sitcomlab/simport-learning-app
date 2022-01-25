@@ -4,7 +4,7 @@
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-title> Map View </ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="isInferencesEnabled" slot="end">
       <ion-button (click)="openInferenceFilter()">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>
@@ -25,17 +25,36 @@
     <div [leafletLayer]="lastLocation"></div>
   </div>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="openDiaryModal()">
+      <ion-icon name="book-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    *ngIf="isInferencesEnabled || isPredictionsEnabled || trajectoryType === TrajectoryTypes.USERTRACK"
+  >
     <ion-fab-button>
       <ion-icon name="layers-outline"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button
-        *ngIf="!generatedInferences"
+        *ngIf="!generatedInferences && isInferencesEnabled"
         (click)="showInferences()"
         text="Create inferences"
       >
         <ion-icon name="analytics-outline"></ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-button
+        *ngIf="isPredictionsEnabled"
+        (click)="predictNextVisit()"
+        text="Predict next visit"
+      >
+        <ion-icon name="flag-outline"></ion-icon>
       </ion-fab-button>
 
       <ion-fab-button

@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Diary</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="exportDiary()">
+        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p *ngIf="!diary || diary.length === 0" class="ion-text-center">
+    It seems like you haven't written anything down yet.
+    <a (click)="createEntry()">Create new diary entry</a>
+  </p>
+  <ion-list>
+    <app-item-card
+      *ngFor="let e of diary"
+      [date]="e.date | date"
+      [content]="e.abstract"
+      (click)="navigateDetail(e.id)"
+    ></app-item-card>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createEntry()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

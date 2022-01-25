@@ -7,6 +7,7 @@ export class Inference {
   public geocoding?: ReverseGeocoding
 
   constructor(
+    public id: string,
     public name: string,
     public type: InferenceType,
     public description: string,
@@ -14,11 +15,14 @@ export class Inference {
     public latLng: [number, number],
     public coordinates: [number, number][],
     public confidence?: number,
-    public accuracy?: number
+    public accuracy?: number,
+    // onSiteTimes are not saved in the database, therefore not present in fromObject()
+    public onSiteTimes?: [Date, Date][]
   ) {}
 
   static fromObject(val: any): Inference {
     const {
+      id,
       name,
       type,
       description,
@@ -31,6 +35,7 @@ export class Inference {
     } = val
 
     return new Inference(
+      id,
       name,
       type,
       description,
@@ -77,5 +82,17 @@ export class Inference {
 
   get outlinedIcon(): string {
     return AllInferences[this.type].outlinedIcon
+  }
+}
+
+export abstract class InferenceConfidenceThresholds {
+  public static high = 0.6
+  public static medium = 0.3
+  public static low = 0.05
+
+  public static getQualitativeConfidence(confidenceValue: number): string {
+    if (confidenceValue >= this.high) return 'high confidence'
+    else if (confidenceValue >= this.medium) return 'medium confidence'
+    else if (confidenceValue >= this.low) return 'low confidence'
   }
 }

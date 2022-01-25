@@ -45,6 +45,11 @@ const routes: Routes = [
         (m) => m.OpenSourcesPageModule
       ),
   },
+  {
+    path: 'diary',
+    loadChildren: () =>
+      import('./diary/diary.module').then((m) => m.DiaryPageModule),
+  },
 ]
 @NgModule({
   imports: [

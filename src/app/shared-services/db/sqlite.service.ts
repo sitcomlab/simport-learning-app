@@ -18,7 +18,9 @@ import {
 } from '../../model/trajectory'
 import { MIGRATIONS, runMigrations } from './migrations'
 import { StayPoints } from 'src/app/model/staypoints'
+import { TimetableEntry } from 'src/app/model/timetable'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
+import { DiaryEntry } from 'src/app/model/diary-entry'
 
 @Injectable()
 export class SqliteService {
@@ -261,6 +263,7 @@ export class SqliteService {
         infIndex++
       ) {
         const {
+          id,
           name,
           type,
           description,
@@ -272,8 +275,9 @@ export class SqliteService {
         } = inferences[infIndex]
 
         if (latLng.length === 2) {
-          placeholders.push(`(?,?,?,?,?,?,?,?,?,?)`)
+          placeholders.push(`(?,?,?,?,?,?,?,?,?,?,?)`)
           values.push(
+            id,
             trajectoryId,
             type,
             timestamp,
@@ -328,6 +332,20 @@ export class SqliteService {
     )
 
     return inferences
+  }
+
+  async getInferenceById(inferenceId: string): Promise<Inference> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT * FROM inferences WHERE id=?;`,
+      [inferenceId]
+    )
+    if (!values.length) return undefined
+    const inference = Inference.fromObject(values[0])
+    const geocoding = await this.getReverseGeocoding(inference.latLng)
+    if (geocoding) inference.geocoding = geocoding
+
+    return inference
   }
 
   private async updateDurationDaysInTrajectory(
@@ -421,6 +439,78 @@ export class SqliteService {
     if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
   }
 
+  async getMostFrequentVisitByDayAndHour(
+    trajectoryId: string,
+    weekday: number,
+    hour: number
+  ): Promise<TimetableEntry[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT weekday, hour, inference, count FROM timetable
+      WHERE trajectory = ? AND weekday = ? AND hour = ? AND count = (
+        SELECT max(count)
+        from timetable
+        WHERE trajectory = ? AND weekday = ? AND hour = ?
+      )`,
+      [trajectoryId, weekday, hour, trajectoryId, weekday, hour].map(normalize)
+    )
+    if (!values.length) return []
+
+    return values.map((v) => TimetableEntry.fromJSON(v))
+  }
+
+  async getTimetable(trajectoryId: string): Promise<TimetableEntry[]> {
+    await this.ensureDbReady()
+    const { values } = await this.db.query(
+      `SELECT weekday, hour, inference, count FROM timetable
+      WHERE trajectory = ?`,
+      [trajectoryId].map(normalize)
+    )
+    if (!values.length) return []
+
+    return values.map((v) => TimetableEntry.fromJSON(v))
+  }
+
+  async upsertTimetable(
+    visits: TimetableEntry[],
+    trajectoryId: string
+  ): Promise<void> {
+    await this.ensureDbReady()
+
+    const visitsLength = visits.length
+
+    for (
+      let chunkIndex = 0, visitIndex = 0;
+      chunkIndex < visitsLength;
+      chunkIndex += SqliteService.chunkSize
+    ) {
+      const placeholders = []
+      const values = []
+      for (
+        ;
+        visitIndex < chunkIndex + SqliteService.chunkSize &&
+        visitIndex < visitsLength;
+        visitIndex++
+      ) {
+        const { weekday, hour, inference, count } = visits[visitIndex]
+
+        placeholders.push(`(?,?,?,?,?)`)
+        values.push(trajectoryId, weekday, hour, inference, count)
+      }
+
+      const placeholderString = placeholders.join(', ')
+      const statement = `INSERT OR REPLACE INTO timetable VALUES ${placeholderString}`
+      const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
+      const {
+        changes: { changes },
+        message,
+      } = await this.db.executeSet(set)
+      if (changes === -1) {
+        throw new Error(`couldnt insert visits: ${message}`)
+      }
+    }
+  }
+
   async getReverseGeocoding(
     latLng: [number, number]
   ): Promise<ReverseGeocoding> {
@@ -450,6 +540,52 @@ export class SqliteService {
       if (changes === -1)
         throw new Error(`couldnt insert reverse-geocoding: ${message}`)
     }
+  }
+
+  async upsertDiaryEntry({ id, created, updated, date, content }: DiaryEntry) {
+    await this.ensureDbReady()
+
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      'INSERT OR REPLACE INTO diaryEntry VALUES (?,?,?,?,?)',
+      [id, created, updated, date, content].map(normalize)
+    )
+    if (changes === -1)
+      throw new Error(`couldnt insert diary-entry: ${message}`)
+  }
+
+  async getDiary(): Promise<DiaryEntry[]> {
+    await this.ensureDbReady()
+
+    const { values } = await this.db.query(`SELECT * FROM diaryEntry`)
+    if (!values.length) return []
+
+    return values.map((v) => DiaryEntry.fromJSON(v))
+  }
+
+  async getDiaryEntry(id: string): Promise<DiaryEntry> {
+    await this.ensureDbReady()
+
+    const { values } = await this.db.query(
+      `SELECT * FROM diaryEntry WHERE id = ?`,
+      [id].map(normalize)
+    )
+
+    if (!values.length) return undefined
+    return DiaryEntry.fromJSON(values[0])
+  }
+
+  async deleteDiaryEntry(id: string): Promise<void> {
+    await this.ensureDbReady()
+
+    const statement = `DELETE FROM diaryEntry WHERE id = '${id}';`
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(statement)
+    if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
   }
 }
 

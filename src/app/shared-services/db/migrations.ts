@@ -122,4 +122,41 @@ export const MIGRATIONS = [
     lon FLOAT NOT NULL,
     geocoding TEXT,
     PRIMARY KEY (lat, lon));`,
+
+  // add primary key 'id' to table inferendes
+  // drop table inferences beforehand
+  `DROP TABLE IF EXISTS inferences;`,
+
+  // create new inferences table with ids
+  `CREATE TABLE IF NOT EXISTS inferences (
+      id varchar(255) NOT NULL PRIMARY KEY,
+      trajectory TEXT NOT NULL,
+      type TEXT NOT NULL,
+      updated DATETIME NOT NULL,
+      lon FLOAT NOT NULL,
+      lat FLOAT NOT NULL,
+      coordinates TEXT,
+      confidence FLOAT,
+      accuracy FLOAT,
+      name TEXT,
+      description TEXT,
+      FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE);`,
+
+  `CREATE TABLE IF NOT EXISTS timetable (
+      trajectory TEXT NOT NULL,
+      weekday INTEGER NOT NULL,
+      hour INTEGER NOT NULL,
+      inference TEXT NOT NULL,
+      count INTEGER NOT NULL,
+      PRIMARY KEY (trajectory, weekday, hour, inference),
+      FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE,
+      FOREIGN KEY (inference) REFERENCES inferences(id) ON DELETE CASCADE);`,
+
+  // creat diary table
+  `CREATE TABLE IF NOT EXISTS diaryEntry (
+      id varchar(255) NOT NULL PRIMARY KEY,
+      created DATETIME NOT NULL,
+      updated DATETIME NOT NULL,
+      date DATETIME NOT NULL,
+      content TEXT NOT NULL);`,
 ]
