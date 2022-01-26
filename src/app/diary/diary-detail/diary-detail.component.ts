@@ -35,12 +35,8 @@ export class DiaryDetailComponent implements OnInit {
     const message = this.translateService.instant(
       'diary.deleteEntryAlertMessage'
     )
-    const cancelButton = this.translateService.instant(
-      'diary.deleteEntryAlertCancelButton'
-    )
-    const deleteButton = this.translateService.instant(
-      'diary.deleteEntryAlertDeleteButton'
-    )
+    const cancelButton = this.translateService.instant('general.cancel')
+    const deleteButton = this.translateService.instant('general.delete')
     await this.showDeleteEntryAlert(header, message, cancelButton, deleteButton)
   }
 
