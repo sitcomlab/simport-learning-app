@@ -34,6 +34,20 @@
       "title": "Insights",
       "noInferences": "No inferences made so far.",
       "lookAtMapLink": "Look at the map instead?"
+    },
+    "map": {
+      "title": "Map View",
+      "error": {
+        "tooManyCoordinates": "Trajectory couldn't be analyzed, because it has too many coordinates",
+        "noInferencesFound": "No inferences were found within your trajectory",
+        "default": "Trajectory couldn't be analyzed"
+      },
+      "loadingInferences": "Loading inferences...",
+      "predictionButtonText": "Predict next visit",
+      "predictionSuccess": "We think that you will visit the highlighted {count, plural, one{place} other{places}} in the next hour",
+      "predictionFail": "We couldn't make a prediction for the next hour",
+      "toggleLocationButtonText": "Toggle location",
+      "createInferencesButtonText": "Create inferences"
     }
   }
 }

@@ -34,6 +34,21 @@
       "title": "Ergebnisse",
       "noInferences": "Es konnten noch keine Ergebnisse gesammelt werden.",
       "lookAtMapLink": "Karte öffnen?"
+    },
+    "map": {
+      "title": "Kartenansicht",
+      "error": {
+        "tooManyCoordinates": "Standortverlauf kann nicht analysiert werden. Zu viele Koordinaten.",
+        "noInferencesFound": "Aus deinem Standortverlauf wurden keine Erkentnisse gesammelt werden.",
+        "default": "Standortverlauf kann nicht analysiert werden."
+      },
+      "loadingInferences": "Lade Ergebnisse...",
+      "predictionButtonText": "Nächsten Aufenthaltsort bestimmen",
+      "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen.",
+      "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen.",
+      "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
+      "toggleLocationButtonText": "Position ein- / ausblenden",
+      "createInferencesButtonText": "Ergebnisse berechnen"
     }
   }
 }

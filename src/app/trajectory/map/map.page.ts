@@ -37,6 +37,7 @@ import {
 import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
+import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-map',
@@ -92,7 +93,8 @@ export class MapPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private timetableService: TimetableService,
     private modalController: ModalController,
-    private routerOutlet: IonRouterOutlet
+    private routerOutlet: IonRouterOutlet,
+    private translateService: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -190,7 +192,9 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   async showInferences() {
-    await this.showLoadingDialog('Loading inferences...')
+    await this.showLoadingDialog(
+      this.translateService.instant('trajectory.map.loadingInferences')
+    )
     const inferenceResult = await this.inferenceService
       .generateInferences(this.trajectoryType, this.trajectoryId)
       .finally(async () => {
@@ -203,20 +207,28 @@ export class MapPage implements OnInit, OnDestroy {
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
-          `Trajectory couldn't be analyzed, because it has too many coordinates`
+          this.translateService.instant(
+            'trajectory.map.error.tooManyCoordinates'
+          )
         )
       case InferenceResultStatus.noInferencesFound:
         return await this.showErrorToast(
-          `No inferences were found within your trajectory`
+          this.translateService.instant(
+            'trajectory.map.error.noInferencesFound'
+          )
         )
       default:
-        return await this.showErrorToast(`Trajectory couldn't be analyzed`)
+        return await this.showErrorToast(
+          this.translateService.instant('trajectory.map.error.default')
+        )
     }
   }
 
   async predictNextVisit() {
     if (!this.generatedInferences) {
-      await this.showLoadingDialog('Loading inferences...')
+      await this.showLoadingDialog(
+        this.translateService.instant('trajectory.map.loadingInferences')
+      )
       const inferenceResult = await this.inferenceService
         .generateInferences(this.trajectoryType, this.trajectoryId)
         .finally(async () => {
@@ -231,14 +243,16 @@ export class MapPage implements OnInit, OnDestroy {
       this.predictedInferenceIds = nextVisits.map((v) => v.inference)
       this.updateInferenceMarkers()
       return await this.showToast(
-        `We think that you will visit the highlighted ${
-          nextVisits.length === 1 ? 'place' : 'places'
-        } in the next hour`,
+        this.translateService.instant(
+          `trajectory.map.predictionSuccess.${
+            nextVisits.length === 1 ? 'singular' : 'plural'
+          }`
+        ),
         'success'
       )
     } else {
       return await this.showErrorToast(
-        `We couldn't make a prediction for the next hour`
+        this.translateService.instant('trajectory.map.predictionFail')
       )
     }
   }
