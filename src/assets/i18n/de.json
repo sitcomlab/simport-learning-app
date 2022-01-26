@@ -1,0 +1,18 @@
+{
+  "selectTrajectory": {
+    "title": "SIMPORT DE",
+    "recordTrajectoryTitle": "Standortverlauf aufzeichnen",
+    "recordTrajectorySubtitle": "Erhalte Benachrichtigungen, sobald Informationen über dich abgeleitet werden können",
+    "exploreTrajectoryTitle": "Standortverläufe entdecken",
+    "exploreTrajectorySubtitle": "Erkunde interaktiv deinen Aufenthaltsort und den anderer Personen",
+    "addTrajectoryTitle": "Lade eigene Standortverläufe",
+    "addTrajectorySubtitle": "Importiere JSON-Dateien",
+    "diaryTitle": "Schreibe dein Tagebuch",
+    "diarySubitle": "Halten deine Gedanken fest"
+  },
+  "diary": {
+    "title": "Tagebuch",
+    "noEntryDescription": "Es scheint, als hättest du noch keine Einträge verfasst…",
+    "createEntryTitle": "Tagebucheintrag erstellen"
+  }
+}

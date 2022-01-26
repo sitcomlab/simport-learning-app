@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
-    <ion-title>Diary</ion-title>
+    <ion-title>{{ 'diary.title' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="exportDiary()">
         <ion-icon slot="icon-only" name="share-outline"></ion-icon>
@@ -14,8 +14,8 @@
 
 <ion-content class="ion-padding">
   <p *ngIf="!diary || diary.length === 0" class="ion-text-center">
-    It seems like you haven't written anything down yet.
-    <a (click)="createEntry()">Create new diary entry</a>
+    {{ 'diary.noEntryDescription' | translate }}
+    <a (click)="createEntry()">{{ 'diary.createEntryTitle' | translate }}</a>
   </p>
   <ion-list>
     <app-item-card

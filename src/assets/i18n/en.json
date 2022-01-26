@@ -1,0 +1,18 @@
+{
+  "selectTrajectory": {
+    "title": "SIMPORT EN",
+    "recordTrajectoryTitle": "Record your own trajectory",
+    "recordTrajectorySubtitle": "Get notified when information about you could be derived",
+    "exploreTrajectoryTitle": "Explore trajectories",
+    "exploreTrajectorySubtitle": "Interactively explore your own and others whereabouts",
+    "addTrajectoryTitle": "Add your own trajectory",
+    "addTrajectorySubtitle": "Import a json file",
+    "diaryTitle": "Write your diary",
+    "diarySubitle": "Record your thoughts"
+  },
+  "diary": {
+    "title": "Diary",
+    "noEntryDescription": "It seems like you haven't written anything down yet…",
+    "createEntryTitle": "Create new diary entry"
+  }
+}

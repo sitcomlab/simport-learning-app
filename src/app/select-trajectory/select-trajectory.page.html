@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title (click)="onTitleClick()"
-      >{{ 'APP_TITLE' | translate }}</ion-title
+      >{{ 'selectTrajectory.title' | translate }}</ion-title
     >
   </ion-toolbar>
 </ion-header>
@@ -14,16 +14,16 @@
           [disabled]="!locationService.isSupportedPlatform"
           (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
           icon="locate-outline"
-          title="Record your own trajectory"
-          subtitle="get notified when information about you could be derived"
+          [title]="'selectTrajectory.recordTrajectoryTitle' | translate"
+          [subtitle]="'selectTrajectory.recordTrajectorySubtitle' | translate"
         ></app-item-card>
       </ion-col>
 
       <ion-col sizeXs="12" sizeLg="4">
         <app-item-card
           icon="compass-outline"
-          title="Explore trajectories"
-          subtitle="interactively explore your own and others whereabouts"
+          [title]="'selectTrajectory.exploreTrajectoryTitle' | translate"
+          [subtitle]="'selectTrajectory.exploreTrajectorySubtitle' | translate"
           (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
         ></app-item-card>
       </ion-col>
@@ -32,8 +32,8 @@
         <app-item-card
           [disabled]="!locationService.isSupportedPlatform"
           icon="add-outline"
-          title="Add your own trajectory"
-          subtitle="import a JSON file"
+          [title]="'selectTrajectory.addTrajectoryTitle' | translate"
+          [subtitle]="'selectTrajectory.addTrajectorySubtitle' | translate"
           (click)="enableTrajectory(TrajectoryMode.IMPORT)"
         ></app-item-card>
       </ion-col>
@@ -41,8 +41,8 @@
       <ion-col sizeXs="12" sizeLg="4">
         <app-item-card
           icon="book-outline"
-          title="Write your diary"
-          subtitle="Record your thoughts"
+          [title]="'selectTrajectory.diaryTitle' | translate"
+          [subtitle]="'selectTrajectory.diarySubitle' | translate"
           (click)="navigateToDiary()"
         ></app-item-card>
       </ion-col>
