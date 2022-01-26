@@ -14,5 +14,13 @@
     "title": "Diary",
     "noEntryDescription": "It seems like you haven't written anything down yet…",
     "createEntryTitle": "Create new diary entry"
+  },
+  "trajectory": {
+    "explore": {
+      "title": "Data Exploration",
+      "poiTimetableTitle": "POI Timetable",
+      "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified POI and explore when you have visited it in the past.",
+      "selectPOI": "Select POI"
+    }
   }
 }
