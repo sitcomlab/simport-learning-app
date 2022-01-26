@@ -28,7 +28,7 @@
     "exportTrajectoryLoadingDialogMessage": "Exportiere Standortverlauf …",
     "exportTrajectorySuccessfulMessage": "Standortverlauf erfolgreich exportiert",
     "exportTrajectoryPermissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen",
-    "deleteTrajectoryAlertHeader": "{{ value }} löschen",
+    "deleteTrajectoryAlertHeader": "'{{ value }}' löschen",
     "deleteTrajectoryAlertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
     "deleteTrajectoryLoadingDialogMessage": "Lösche Standortverlauf …",
     "deleteTrajectorySuccessfulMessage": "Standortverlauf erfolgreich gelöscht",

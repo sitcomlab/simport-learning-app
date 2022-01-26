@@ -160,7 +160,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
     this.popoverController.dismiss()
     const alert = await this.alertController.create({
       header: this.translateService.instant(
-        'selectTrajectory.deleteTrajectoryAlertMessage',
+        'selectTrajectory.deleteTrajectoryAlertHeader',
         { value: this.trajectory?.placename ?? 'trajectory' }
       ),
       message: this.translateService.instant(

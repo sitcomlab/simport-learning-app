@@ -21,6 +21,7 @@ import { StayPoints } from 'src/app/model/staypoints'
 import { TimetableEntry } from 'src/app/model/timetable'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { DiaryEntry } from 'src/app/model/diary-entry'
+import { TranslateService } from '@ngx-translate/core'
 
 @Injectable()
 export class SqliteService {
@@ -35,7 +36,10 @@ export class SqliteService {
 
   public addPointSub: Subject<Point> = new Subject()
 
-  constructor(private platform: Platform) {}
+  constructor(
+    private platform: Platform,
+    private translateService: TranslateService
+  ) {}
 
   isSupported() {
     return this.platform.is('hybrid') // equivalent to android && ios
@@ -82,6 +86,11 @@ export class SqliteService {
         )
         trajectoryMeta.durationDays = durationDays
       }
+      if (trajectoryMeta.id === Trajectory.trackingTrajectoryID) {
+        trajectoryMeta.placename = this.translateService.instant(
+          'selectTrajectory.userTrajectoryTitle'
+        )
+      }
     })
     return values
   }
@@ -100,6 +109,12 @@ export class SqliteService {
 
     const { type, placename, durationDays } = values[0]
     const meta: TrajectoryMeta = { id, type, placename, durationDays }
+
+    if (id === Trajectory.trackingTrajectoryID) {
+      meta.placename = this.translateService.instant(
+        'selectTrajectory.userTrajectoryTitle'
+      )
+    }
 
     const data = values
       // filter partial results from LEFT JOIN (when there are no matching points)
