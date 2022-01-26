@@ -1,6 +1,6 @@
 <div class="inner-content">
   <ion-card-header>
-    <ion-card-title>Filter insights</ion-card-title>
+    <ion-card-title>{{ 'trajectory.filter.title' | translate }}</ion-card-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="closeComponent()">
         <ion-icon slot="icon-only" name="close"> </ion-icon>
@@ -11,7 +11,9 @@
   <div style="display: flex; justify-content: center">
     <ion-grid>
       <ion-row>
-        <ion-label>Filter by inference type</ion-label>
+        <ion-label>{{
+          'trajectory.filter.byInferenceType' | translate
+        }}</ion-label>
       </ion-row>
       <ion-row *ngFor="let item of inferenceVisiblities | keyvalue">
         <ion-item lines="none">
@@ -24,27 +26,20 @@
       </ion-row>
       <ion-row></ion-row>
       <ion-row>
-        <ion-label>Filter by confidence </ion-label>
+        <ion-label>{{
+          'trajectory.filter.byConfidence' | translate
+        }}</ion-label>
       </ion-row>
       <ion-row>
         <ion-segment [(ngModel)]="confidenceThreshold">
           <ion-segment-button value="{{ confidenceThresholdCutoffs.low }}">
-            <ion-label
-              >Low <br />
-              confidence</ion-label
-            >
+            <ion-label>{{ 'trajectory.filter.low' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.medium }}">
-            <ion-label
-              >Medium <br />
-              confidence</ion-label
-            >
+            <ion-label>{{ 'trajectory.filter.medium' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.high }}">
-            <ion-label
-              >High <br />
-              confidence</ion-label
-            >
+            <ion-label>{{ 'trajectory.filter.high' | translate }}</ion-label>
           </ion-segment-button>
         </ion-segment>
       </ion-row>

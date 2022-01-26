@@ -21,6 +21,15 @@
       "poiTimetableTitle": "POI Timetable",
       "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified POI and explore when you have visited it in the past.",
       "selectPOI": "Select POI"
+    },
+    "filter": {
+      "title": "Filter insights",
+      "byInferenceType": "Filter by inference type",
+      "byConfidence": "Filter by confidence",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "confidence": "confidence"
     }
   }
 }
