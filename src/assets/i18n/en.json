@@ -53,7 +53,8 @@
       },
       "loadingInferences": "Loading inferences...",
       "predictionButtonText": "Predict next visit",
-      "predictionSuccess": "We think that you will visit the highlighted {count, plural, one{place} other{places}} in the next hour",
+      "predictionSuccess.singular": "We think that you will visit the highlighted place in the next hour",
+      "predictionSuccess.plural": "We think that you will visit the highlighted places in the next hour",
       "predictionFail": "We couldn't make a prediction for the next hour",
       "toggleLocationButtonText": "Toggle location",
       "createInferencesButtonText": "Create inferences"
