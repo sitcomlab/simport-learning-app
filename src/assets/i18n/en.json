@@ -7,33 +7,6 @@
     "view": "View",
     "back": "Back"
   },
-  "selectTrajectory": {
-    "title": "SIMPORT",
-    "recordTrajectoryTitle": "Record your own trajectory",
-    "recordTrajectorySubtitle": "Get notified when information about you could be derived",
-    "exploreTrajectoryTitle": "Explore trajectories",
-    "exploreTrajectorySubtitle": "Interactively explore your own and others whereabouts",
-    "addTrajectoryTitle": "Add your own trajectory",
-    "addTrajectorySubtitle": "Import a json file",
-    "diaryTitle": "Write your diary",
-    "diarySubitle": "Record your thoughts",
-    "importTrajectoryLoadingDialogMessage": "Importing trajectory …",
-    "importTrajectorySuccessfulMessage": "Trajectory successfully imported",
-    "recordedBadge": "recorded",
-    "importedBadge": "imported",
-    "exampleBadge": "example",
-    "userTrajectoryTitle": "Your trajectory",
-    "exportTrajectoryAlertHeader": "Export trajectory",
-    "exportTrajectorySaveMessage": "Save to downloads",
-    "exportTrajectoryLoadingDialogMessage": "Exporting trajectory …",
-    "exportTrajectorySuccessfulMessage": "Trajectory successfully exported",
-    "exportTrajectoryPermissionErrorMessage": "Export failed: Missing permissions",
-    "deleteTrajectoryAlertHeader": "Delete '{{ value }}'",
-    "deleteTrajectoryAlertMessage": "Are you sure you want to delete the trajectory?",
-    "deleteTrajectoryLoadingDialogMessage": "Deleting trajectory …",
-    "deleteTrajectorySuccessfulMessage": "Trajectory successfully deleted",
-    "deleteTrajectoryErrorMessage": "Trajectory could not be deleted"
-  },
   "diary": {
     "title": "Diary",
     "noEntryDescription": "It seems like you haven't written anything down yet…",
@@ -49,6 +22,50 @@
     "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
   },
   "trajectory": {
+    "select": {
+      "title": "SIMPORT",
+      "record": {
+        "title": "Record your own trajectory",
+        "subtitle": "Get notified when information about you could be derived"
+      },
+      "explore": {
+        "title": "Explore trajectories",
+        "subtitle": "Interactively explore your own and others whereabouts"
+      },
+      "add": {
+        "title": "Add your own trajectory",
+        "subtitle": "Import a json file"
+      },
+      "diary": {
+        "title": "Write your diary",
+        "subtitle": "Record your thoughts"
+      },
+      "recordedBadge": "recorded",
+      "importedBadge": "imported",
+      "exampleBadge": "example",
+      "userTrajectoryTitle": "Your trajectory"
+    },
+    "import": {
+      "loadingDialogMessage": "Importing trajectory …",
+      "successfulMessage": "Trajectory successfully imported",
+      "errorMessage": "Trajectory could not be imported",
+      "fileTypeErrorMessage": "Please select JSON-files"
+    },
+    "export": {
+      "alertHeader": "Export trajectory",
+      "saveMessage": "Save to downloads",
+      "loadingDialogMessage": "Exporting trajectory …",
+      "successfulMessage": "Trajectory successfully exported",
+      "errorMessage": "Trajectory could not be exported",
+      "permissionErrorMessage": "Export failed: Missing permissions"
+    },
+    "delete": {
+      "alertHeader": "Delete '{{ value }}'",
+      "alertMessage": "Are you sure you want to delete the trajectory?",
+      "loadingDialogMessage": "Deleting trajectory …",
+      "successfulMessage": "Trajectory successfully deleted",
+      "errorMessage": "Trajectory could not be deleted"
+    },
     "explore": {
       "title": "Exploration",
       "poiTimetableTitle": "POI Timetable",

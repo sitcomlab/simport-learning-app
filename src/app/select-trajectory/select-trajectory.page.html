@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title (click)="onTitleClick()"
-      >{{ 'selectTrajectory.title' | translate }}</ion-title
+      >{{ 'trajectory.select.title' | translate }}</ion-title
     >
   </ion-toolbar>
 </ion-header>
@@ -12,29 +12,29 @@
       [disabled]="!locationService.isSupportedPlatform"
       (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
       icon="locate-outline"
-      [title]="'selectTrajectory.recordTrajectoryTitle' | translate"
-      [subtitle]="'selectTrajectory.recordTrajectorySubtitle' | translate"
+      [title]="'trajectory.select.record.title' | translate"
+      [subtitle]="'trajectory.select.record.subtitle' | translate"
     ></app-item-card>
 
     <app-item-card
       icon="compass-outline"
-      [title]="'selectTrajectory.exploreTrajectoryTitle' | translate"
-      [subtitle]="'selectTrajectory.exploreTrajectorySubtitle' | translate"
+      [title]="'trajectory.select.explore.title' | translate"
+      [subtitle]="'trajectory.select.explore.subtitle' | translate"
       (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
     ></app-item-card>
 
     <app-item-card
       [disabled]="!locationService.isSupportedPlatform"
       icon="add-outline"
-      [title]="'selectTrajectory.addTrajectoryTitle' | translate"
-      [subtitle]="'selectTrajectory.addTrajectorySubtitle' | translate"
+      [title]="'trajectory.select.add.title' | translate"
+      [subtitle]="'trajectory.select.add.subtitle' | translate"
       (click)="enableTrajectory(TrajectoryMode.IMPORT)"
     ></app-item-card>
 
     <app-item-card
       icon="book-outline"
-      [title]="'selectTrajectory.diaryTitle' | translate"
-      [subtitle]="'selectTrajectory.diarySubitle' | translate"
+      [title]="'trajectory.select.diary.title' | translate"
+      [subtitle]="'trajectory.select.diary.subtitle' | translate"
       (click)="navigateToDiary()"
     ></app-item-card>
   </ion-list>

@@ -113,7 +113,7 @@ export class SelectTrajectoryPage {
           .selectAndImportTrajectory(async () => {
             // did select file
             const dialogMessage = this.translateService.instant(
-              'selectTrajectory.importTrajectoryLoadingDialogTitle'
+              'trajectory.import.loadingDialogTitle'
             )
             await this.showLoadingDialog(dialogMessage)
           })
@@ -130,7 +130,7 @@ export class SelectTrajectoryPage {
                 },
               }
               const toastMessage = this.translateService.instant(
-                'selectTrajectory.importTrajectorySuccessfulMessage'
+                'trajectory.import.successfulMessage'
               )
               await this.showToastWithButtons(toastMessage, false, [
                 viewTrajectoryButton,

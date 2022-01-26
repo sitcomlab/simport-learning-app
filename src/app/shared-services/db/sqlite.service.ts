@@ -88,7 +88,7 @@ export class SqliteService {
       }
       if (trajectoryMeta.id === Trajectory.trackingTrajectoryID) {
         trajectoryMeta.placename = this.translateService.instant(
-          'selectTrajectory.userTrajectoryTitle'
+          'trajectory.select.userTrajectoryTitle'
         )
       }
     })
@@ -112,7 +112,7 @@ export class SqliteService {
 
     if (id === Trajectory.trackingTrajectoryID) {
       meta.placename = this.translateService.instant(
-        'selectTrajectory.userTrajectoryTitle'
+        'trajectory.select.userTrajectoryTitle'
       )
     }
 

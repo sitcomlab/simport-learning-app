@@ -49,9 +49,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
       await this.presentExportActionSheet()
     } else {
       await this.showLoadingDialog(
-        this.translateService.instant(
-          'selectTrajectory.exportTrajectoryLoadingDialogMessage'
-        )
+        this.translateService.instant('trajectory.export.loadingDialogMessage')
       )
       await this.trajectoryImportExportService
         .exportTrajectoryViaShareDialog(this.trajectory)
@@ -63,21 +61,17 @@ export class TrajectoryCardPopoverPage implements OnInit {
 
   private async presentExportActionSheet() {
     const actionSheet = await this.actionSheetController.create({
-      header: this.translateService.instant(
-        'selectTrajectory.exportTrajectoryAlertHeader'
-      ),
+      header: this.translateService.instant('trajectory.export.alertHeader'),
       buttons: [
         {
-          text: this.translateService.instant(
-            'selectTrajectory.exportTrajectorySaveMessage'
-          ),
+          text: this.translateService.instant('trajectory.export.saveMessage'),
           icon: 'save-outline',
           handler: async () => {
             const hasPermission = await this.requestAndroidPermission()
             if (hasPermission) {
               await this.showLoadingDialog(
                 this.translateService.instant(
-                  'selectTrajectory.exportTrajectoryLoadingDialogMessage'
+                  'trajectory.export.loadingDialogMessage'
                 )
               )
               await this.trajectoryImportExportService
@@ -88,7 +82,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
             } else {
               await this.showToast(
                 this.translateService.instant(
-                  'selectTrajectory.exportTrajectoryPermissionErrorMessage'
+                  'trajectory.export.permissionErrorMessage'
                 ),
                 true
               )
@@ -101,7 +95,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
           handler: async () => {
             await this.showLoadingDialog(
               this.translateService.instant(
-                'selectTrajectory.exportTrajectoryLoadingDialogMessage'
+                'trajectory.export.loadingDialogMessage'
               )
             )
             await this.trajectoryImportExportService
@@ -125,9 +119,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
     await this.hideLoadingDialog()
     if (result.success) {
       await this.showToast(
-        this.translateService.instant(
-          'selectTrajectory.exportTrajectorySuccessfulMessage'
-        ),
+        this.translateService.instant('trajectory.export.successfulMessage'),
         false
       )
     } else {
@@ -159,13 +151,10 @@ export class TrajectoryCardPopoverPage implements OnInit {
     e.stopPropagation()
     this.popoverController.dismiss()
     const alert = await this.alertController.create({
-      header: this.translateService.instant(
-        'selectTrajectory.deleteTrajectoryAlertHeader',
-        { value: this.trajectory?.placename ?? 'trajectory' }
-      ),
-      message: this.translateService.instant(
-        'selectTrajectory.deleteTrajectoryAlertMessage'
-      ),
+      header: this.translateService.instant('trajectory.delete.alertHeader', {
+        value: this.trajectory?.placename ?? 'trajectory',
+      }),
+      message: this.translateService.instant('trajectory.delete.alertMessage'),
       buttons: [
         {
           text: this.translateService.instant('general.cancel'),
@@ -177,7 +166,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
           handler: async () => {
             await this.showLoadingDialog(
               this.translateService.instant(
-                'selectTrajectory.deleteTrajectoryLoadingDialogMessage'
+                'trajectory.delete.loadingDialogMessage'
               )
             )
             if (this.trajectory.type === TrajectoryType.USERTRACK) {
@@ -189,7 +178,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
                 await this.hideLoadingDialog()
                 await this.showToast(
                   this.translateService.instant(
-                    'selectTrajectory.deleteTrajectorySuccessfulMessage'
+                    'trajectory.delete.successfulMessage'
                   ),
                   false
                 )
@@ -199,7 +188,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
                 await this.hideLoadingDialog()
                 await this.showToast(
                   this.translateService.instant(
-                    'selectTrajectory.deleteTrajectoryErrorMessage'
+                    'trajectory.delete.errorMessage'
                   ),
                   true
                 )

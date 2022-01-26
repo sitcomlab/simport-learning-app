@@ -7,33 +7,6 @@
     "view": "Anzeigen",
     "back": "Zurück"
   },
-  "selectTrajectory": {
-    "title": "SIMPORT",
-    "recordTrajectoryTitle": "Standortverlauf aufzeichnen",
-    "recordTrajectorySubtitle": "Erhalte Benachrichtigungen, sobald Informationen über dich abgeleitet werden können",
-    "exploreTrajectoryTitle": "Standortverläufe entdecken",
-    "exploreTrajectorySubtitle": "Erkunde interaktiv deinen Aufenthaltsort und den anderer Personen",
-    "addTrajectoryTitle": "Lade eigene Standortverläufe",
-    "addTrajectorySubtitle": "Importiere JSON-Dateien",
-    "diaryTitle": "Schreibe dein Tagebuch",
-    "diarySubitle": "Halten deine Gedanken fest",
-    "importTrajectoryLoadingDialogMessage": "Importiere Standortverlauf …",
-    "importTrajectorySuccessfulMessage": "Standortverlauf erfolgreich importiert",
-    "recordedBadge": "aufgezeichnet",
-    "importedBadge": "importiert",
-    "exampleBadge": "Beispiel",
-    "userTrajectoryTitle": "Dein Standortverlauf",
-    "exportTrajectoryAlertHeader": "Standortverlauf exportieren",
-    "exportTrajectorySaveMessage": "In Downloads speichern",
-    "exportTrajectoryLoadingDialogMessage": "Exportiere Standortverlauf …",
-    "exportTrajectorySuccessfulMessage": "Standortverlauf erfolgreich exportiert",
-    "exportTrajectoryPermissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen",
-    "deleteTrajectoryAlertHeader": "'{{ value }}' löschen",
-    "deleteTrajectoryAlertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
-    "deleteTrajectoryLoadingDialogMessage": "Lösche Standortverlauf …",
-    "deleteTrajectorySuccessfulMessage": "Standortverlauf erfolgreich gelöscht",
-    "deleteTrajectoryErrorMessage": "Löschen fehlgeschlagen"
-  },
   "diary": {
     "title": "Tagebuch",
     "noEntryDescription": "Es scheint, als hättest du noch keine Tagebucheinträge verfasst…",
@@ -49,6 +22,50 @@
     "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
   },
   "trajectory": {
+    "select": {
+      "title": "SIMPORT",
+      "record": {
+        "title": "Standortverlauf aufzeichnen",
+        "subtitle": "Erhalte Benachrichtigungen, sobald Informationen über dich abgeleitet werden können"
+      },
+      "explore": {
+        "title": "Standortverläufe entdecken",
+        "subtitle": "Erkunde interaktiv deinen Aufenthaltsort und den anderer Personen"
+      },
+      "add": {
+        "title": "Lade eigene Standortverläufe",
+        "subtitle": "Importiere JSON-Dateien"
+      },
+      "diary": {
+        "title": "Schreibe dein Tagebuch",
+        "subtitle": "Halten deine Gedanken fest"
+      },
+      "recordedBadge": "aufgezeichnet",
+      "importedBadge": "importiert",
+      "exampleBadge": "Beispiel",
+      "userTrajectoryTitle": "Dein Standortverlauf"
+    },
+    "import": {
+      "loadingDialogMessage": "Importiere Standortverlauf …",
+      "successfulMessage": "Standortverlauf erfolgreich importiert",
+      "errorMessage": "Import fehlgeschlagen",
+      "fileTypeErrorMessage": "Bitte wähle JSON-Dateien"
+    },
+    "export": {
+      "alertHeader": "Standortverlauf exportieren",
+      "saveMessage": "In Downloads speichern",
+      "loadingDialogMessage": "Exportiere Standortverlauf …",
+      "successfulMessage": "Standortverlauf erfolgreich exportiert",
+      "errorMessage": "Export fehlgeschlagen",
+      "permissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen"
+    },
+    "delete": {
+      "alertHeader": "'{{ value }}' löschen",
+      "alertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
+      "loadingDialogMessage": "Lösche Standortverlauf …",
+      "successfulMessage": "Standortverlauf erfolgreich gelöscht",
+      "errorMessage": "Löschen fehlgeschlagen"
+    },
     "explore": {
       "title": "Datenerkundung",
       "poiTimetableTitle": "Zeitplan deiner Orte",
