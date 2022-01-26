@@ -28,8 +28,12 @@
       "byConfidence": "Filtern nach Wahrscheinlichkeit",
       "low": "Gering",
       "medium": "Mittel",
-      "high": "Hoch",
-      "confidence": "Wahrscheinlichkeit"
+      "high": "Hoch"
+    },
+    "insights": {
+      "title": "Ergebnisse",
+      "noInferences": "Es konnten noch keine Ergebnisse gesammelt werden.",
+      "lookAtMapLink": "Karte öffnen?"
     }
   }
 }

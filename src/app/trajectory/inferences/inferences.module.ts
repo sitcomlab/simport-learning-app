@@ -8,6 +8,7 @@ import { InferencesPageRoutingModule } from './inferences-routing.module'
 
 import { InferencesPage } from './inferences.page'
 import { SharedUiModule } from 'src/app/shared-ui/shared-ui.module'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { SharedUiModule } from 'src/app/shared-ui/shared-ui.module'
     IonicModule,
     InferencesPageRoutingModule,
     SharedUiModule,
+    TranslateModule,
   ],
   declarations: [InferencesPage],
 })

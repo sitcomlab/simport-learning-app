@@ -28,8 +28,12 @@
       "byConfidence": "Filter by confidence",
       "low": "Low",
       "medium": "Medium",
-      "high": "High",
-      "confidence": "confidence"
+      "high": "High"
+    },
+    "insights": {
+      "title": "Insights",
+      "noInferences": "No inferences made so far.",
+      "lookAtMapLink": "Look at the map instead?"
     }
   }
 }
