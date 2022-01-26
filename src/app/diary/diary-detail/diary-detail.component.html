@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
     </ion-buttons>
     <ion-title *ngIf="entry">{{ entry.date | date }}</ion-title>
     <ion-buttons slot="end">

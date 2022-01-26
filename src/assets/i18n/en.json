@@ -4,7 +4,8 @@
     "delete": "Delete",
     "share": "Share",
     "export": "Export",
-    "view": "View"
+    "view": "View",
+    "back": "Back"
   },
   "selectTrajectory": {
     "title": "SIMPORT",
