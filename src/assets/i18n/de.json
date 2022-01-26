@@ -36,7 +36,7 @@
       "lookAtMapLink": "Karte öffnen?"
     },
     "map": {
-      "title": "Kartenansicht",
+      "title": "Karte",
       "error": {
         "tooManyCoordinates": "Standortverlauf kann nicht analysiert werden. Zu viele Koordinaten.",
         "noInferencesFound": "Aus deinem Standortverlauf wurden keine Erkentnisse gesammelt werden.",

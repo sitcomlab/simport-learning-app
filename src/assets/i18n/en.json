@@ -17,7 +17,7 @@
   },
   "trajectory": {
     "explore": {
-      "title": "Data Exploration",
+      "title": "Exploration",
       "poiTimetableTitle": "POI Timetable",
       "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified POI and explore when you have visited it in the past.",
       "selectPOI": "Select POI"
@@ -36,7 +36,7 @@
       "lookAtMapLink": "Look at the map instead?"
     },
     "map": {
-      "title": "Map View",
+      "title": "Map",
       "error": {
         "tooManyCoordinates": "Trajectory couldn't be analyzed, because it has too many coordinates",
         "noInferencesFound": "No inferences were found within your trajectory",
