@@ -1,19 +1,19 @@
 <ion-card class="flex-wrapper" (click)="selectTrajectory()">
-  <ion-badge *ngIf="trajectory?.type == 'track'" color="dark"
-    >recorded</ion-badge
-  >
-  <ion-badge *ngIf="trajectory?.type == 'import'" color="medium"
-    >imported</ion-badge
-  >
-  <ion-badge *ngIf="trajectory?.type == 'example'" color="light"
-    >example</ion-badge
-  >
+  <ion-badge *ngIf="trajectory?.type == 'track'" color="dark">{{
+    'selectTrajectory.recordedBadge' | translate
+  }}</ion-badge>
+  <ion-badge *ngIf="trajectory?.type == 'import'" color="medium">{{
+    'selectTrajectory.importedBadge' | translate
+  }}</ion-badge>
+  <ion-badge *ngIf="trajectory?.type == 'example'" color="light">{{
+    'selectTrajectory.exampleBadge' | translate
+  }}</ion-badge>
   <ion-card-header>
     <ion-card-title>
       <ion-item lines="none">
         <ion-icon name="location-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
-          {{ trajectory?.placename }}
+          {{ placename() }}
         </ion-label>
       </ion-item>
       <ion-item lines="none">

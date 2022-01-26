@@ -120,9 +120,7 @@ export class SelectTrajectoryPage {
           .then(async (result) => {
             await this.hideLoadingDialog()
             if (result.success) {
-              const viewString = this.translateService.instant(
-                'selectTrajectory.importTrajectorySuccessfulViewButton'
-              )
+              const viewString = this.translateService.instant('general.view')
               const viewTrajectoryButton = {
                 text: viewString,
                 handler: async () => {

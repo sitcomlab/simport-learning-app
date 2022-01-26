@@ -1,4 +1,11 @@
 {
+  "general": {
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "share": "Teilen",
+    "export": "Exportieren",
+    "view": "Anzeigen"
+  },
   "selectTrajectory": {
     "title": "SIMPORT",
     "recordTrajectoryTitle": "Standortverlauf aufzeichnen",
@@ -11,7 +18,20 @@
     "diarySubitle": "Halten deine Gedanken fest",
     "importTrajectoryLoadingDialogMessage": "Importiere Standortverlauf …",
     "importTrajectorySuccessfulMessage": "Standortverlauf erfolgreich importiert",
-    "importTrajectorySuccessfulViewButton": "Anzeigen"
+    "recordedBadge": "aufgezeichnet",
+    "importedBadge": "importiert",
+    "exampleBadge": "Beispiel",
+    "userTrajectoryTitle": "Dein Standortverlauf",
+    "exportTrajectoryAlertHeader": "Standortverlauf exportieren",
+    "exportTrajectorySaveMessage": "In Downloads speichern",
+    "exportTrajectoryLoadingDialogMessage": "Exportiere Standortverlauf …",
+    "exportTrajectorySuccessfulMessage": "Standortverlauf erfolgreich exportiert",
+    "exportTrajectoryPermissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen",
+    "deleteTrajectoryAlertHeader": "{{ value }} löschen",
+    "deleteTrajectoryAlertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
+    "deleteTrajectoryLoadingDialogMessage": "Lösche Standortverlauf …",
+    "deleteTrajectorySuccessfulMessage": "Standortverlauf erfolgreich gelöscht",
+    "deleteTrajectoryErrorMessage": "Löschen fehlgeschlagen"
   },
   "diary": {
     "title": "Tagebuch",
@@ -24,8 +44,6 @@
     "contentPlaceholder": "Gib deine Gedanken ein …",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
-    "deleteEntryAlertCancelButton": "Abbrechen",
-    "deleteEntryAlertDeleteButton": "Löschen",
     "exportFileName": "Mein SIMPORT Tagebuch",
     "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
   },
