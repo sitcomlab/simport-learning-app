@@ -16,6 +16,7 @@ import { InferenceService } from 'src/app/shared-services/inferences/inference.s
 import { TimetableEntry } from 'src/app/model/timetable'
 import { Inference } from 'src/app/model/inference'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
+import { TranslateService } from '@ngx-translate/core'
 
 export type ChartOptions = {
   series: ApexAxisChartSeries
@@ -55,7 +56,9 @@ export class ExplorePage implements OnInit {
     colors: ['#68347d'],
     xaxis: {
       title: {
-        text: 'Hour',
+        text: this.translateService.instant(
+          'trajectory.explore.timetableChart.hour'
+        ),
       },
       tooltip: {
         enabled: false,
@@ -82,7 +85,8 @@ export class ExplorePage implements OnInit {
   constructor(
     private timetableService: TimetableService,
     private inferenceService: InferenceService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private translateService: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -146,16 +150,16 @@ export class ExplorePage implements OnInit {
    * @return Returns day as string
    */
   private dayOfWeekAsString(dayIndex: number): string {
+    // https://stackoverflow.com/a/63340931
+    const getWeekDays = (locale) =>
+      [...Array(7).keys()].map((v) =>
+        new Date(Date.UTC(1970, 0, 4 + v)).toLocaleDateString(locale, {
+          weekday: 'long',
+        })
+      )
+
     return (
-      [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ][dayIndex] || ''
+      getWeekDays(this.translateService.getBrowserCultureLang())[dayIndex] || ''
     )
   }
 }

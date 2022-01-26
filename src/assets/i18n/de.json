@@ -53,7 +53,10 @@
       "title": "Datenerkundung",
       "poiTimetableTitle": "Zeitplan deiner Orte",
       "poiTimetableDescription": "Der Zeitplan visualisiert deine häufig besuchten Orte für jeden Wochentag. Wähle einen deiner besuchten Orte aus und schaue dir an, wann du dort gewesen bist.",
-      "selectPOI": "Ort auswählen"
+      "selectPOI": "Ort auswählen",
+      "timetableChart": {
+        "hour": "Stunde"
+      }
     },
     "filter": {
       "title": "Ergebnisse filtern",

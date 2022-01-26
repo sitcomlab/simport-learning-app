@@ -53,7 +53,10 @@
       "title": "Exploration",
       "poiTimetableTitle": "POI Timetable",
       "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified POI and explore when you have visited it in the past.",
-      "selectPOI": "Select POI"
+      "selectPOI": "Select POI",
+      "timetableChart": {
+        "hour": "Hour"
+      }
     },
     "filter": {
       "title": "Filter insights",
