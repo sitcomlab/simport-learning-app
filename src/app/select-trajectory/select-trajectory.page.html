@@ -8,42 +8,34 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-col sizeXs="12" sizeLg="4">
-      <app-item-card
-        [disabled]="!locationService.isSupportedPlatform"
-        (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
-        icon="locate-outline"
-        [title]="'selectTrajectory.recordTrajectoryTitle' | translate"
-        [subtitle]="'selectTrajectory.recordTrajectorySubtitle' | translate"
-      ></app-item-card>
-    </ion-col>
+    <app-item-card
+      [disabled]="!locationService.isSupportedPlatform"
+      (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
+      icon="locate-outline"
+      [title]="'selectTrajectory.recordTrajectoryTitle' | translate"
+      [subtitle]="'selectTrajectory.recordTrajectorySubtitle' | translate"
+    ></app-item-card>
 
-    <ion-col sizeXs="12" sizeLg="4">
-      <app-item-card
-        icon="compass-outline"
-        [title]="'selectTrajectory.exploreTrajectoryTitle' | translate"
-        [subtitle]="'selectTrajectory.exploreTrajectorySubtitle' | translate"
-        (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
-      ></app-item-card>
-    </ion-col>
+    <app-item-card
+      icon="compass-outline"
+      [title]="'selectTrajectory.exploreTrajectoryTitle' | translate"
+      [subtitle]="'selectTrajectory.exploreTrajectorySubtitle' | translate"
+      (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
+    ></app-item-card>
 
-    <ion-col sizeXs="12" sizeLg="4">
-      <app-item-card
-        [disabled]="!locationService.isSupportedPlatform"
-        icon="add-outline"
-        [title]="'selectTrajectory.addTrajectoryTitle' | translate"
-        [subtitle]="'selectTrajectory.addTrajectorySubtitle' | translate"
-        (click)="enableTrajectory(TrajectoryMode.IMPORT)"
-      ></app-item-card>
-    </ion-col>
+    <app-item-card
+      [disabled]="!locationService.isSupportedPlatform"
+      icon="add-outline"
+      [title]="'selectTrajectory.addTrajectoryTitle' | translate"
+      [subtitle]="'selectTrajectory.addTrajectorySubtitle' | translate"
+      (click)="enableTrajectory(TrajectoryMode.IMPORT)"
+    ></app-item-card>
 
-    <ion-col sizeXs="12" sizeLg="4">
-      <app-item-card
-        icon="book-outline"
-        [title]="'selectTrajectory.diaryTitle' | translate"
-        [subtitle]="'selectTrajectory.diarySubitle' | translate"
-        (click)="navigateToDiary()"
-      ></app-item-card>
-    </ion-col>
+    <app-item-card
+      icon="book-outline"
+      [title]="'selectTrajectory.diaryTitle' | translate"
+      [subtitle]="'selectTrajectory.diarySubitle' | translate"
+      (click)="navigateToDiary()"
+    ></app-item-card>
   </ion-list>
 </ion-content>

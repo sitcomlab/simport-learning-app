@@ -8,6 +8,7 @@ import {
   FilesystemEncoding,
   Plugins,
 } from '@capacitor/core'
+import { TranslateService } from '@ngx-translate/core'
 
 const { Filesystem, Share } = Plugins
 
@@ -15,7 +16,11 @@ const { Filesystem, Share } = Plugins
   providedIn: 'root',
 })
 export class DiaryService {
-  constructor(private dbService: SqliteService, private platform: Platform) {}
+  constructor(
+    private dbService: SqliteService,
+    private platform: Platform,
+    private translateService: TranslateService
+  ) {}
 
   async getDiary(): Promise<DiaryEntry[]> {
     return this.dbService.getDiary()
@@ -74,11 +79,15 @@ export class DiaryService {
       }
 
       Share.share({
-        title: 'My SIMPORT diary',
+        title: this.translateService.instant('diary.exportFileName'),
         url: fileResult.uri,
       })
     } catch (e) {
-      throw new Error(`Could not export diary: ${e}`)
+      const errorMessage = this.translateService.instant(
+        'diary.exportFileErrorTitle',
+        { value: e.message }
+      )
+      throw new Error(errorMessage)
     }
   }
 }

@@ -31,7 +31,7 @@ export class DiaryPage implements OnInit {
       await this.diaryService.exportDiary()
     } catch (e) {
       const toast = await this.toastController.create({
-        message: e,
+        message: e.message,
         color: 'danger',
         duration: 2000,
       })

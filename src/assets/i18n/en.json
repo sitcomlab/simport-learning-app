@@ -1,4 +1,12 @@
 {
+  "general": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "share": "Share",
+    "export": "Export",
+    "view": "View",
+    "back": "Back"
+  },
   "selectTrajectory": {
     "title": "SIMPORT",
     "recordTrajectoryTitle": "Record your own trajectory",
@@ -8,7 +16,23 @@
     "addTrajectoryTitle": "Add your own trajectory",
     "addTrajectorySubtitle": "Import a json file",
     "diaryTitle": "Write your diary",
-    "diarySubitle": "Record your thoughts"
+    "diarySubitle": "Record your thoughts",
+    "importTrajectoryLoadingDialogMessage": "Importing trajectory …",
+    "importTrajectorySuccessfulMessage": "Trajectory successfully imported",
+    "recordedBadge": "recorded",
+    "importedBadge": "imported",
+    "exampleBadge": "example",
+    "userTrajectoryTitle": "Your trajectory",
+    "exportTrajectoryAlertHeader": "Export trajectory",
+    "exportTrajectorySaveMessage": "Save to downloads",
+    "exportTrajectoryLoadingDialogMessage": "Exporting trajectory …",
+    "exportTrajectorySuccessfulMessage": "Trajectory successfully exported",
+    "exportTrajectoryPermissionErrorMessage": "Export failed: Missing permissions",
+    "deleteTrajectoryAlertHeader": "Delete {{ value }}",
+    "deleteTrajectoryAlertMessage": "Are you sure you want to delete the trajectory?",
+    "deleteTrajectoryLoadingDialogMessage": "Deleting trajectory …",
+    "deleteTrajectorySuccessfulMessage": "Trajectory successfully deleted",
+    "deleteTrajectoryErrorMessage": "Trajectory could not be deleted"
   },
   "diary": {
     "title": "Diary",
@@ -18,11 +42,11 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Content",
-    "contentPlaceholder": "Enter your thoughts…",
+    "contentPlaceholder": "Enter your thoughts …",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
-    "deleteEntryAlertCancelButton": "Cancel",
-    "deleteEntryAlertDeleteButton": "Delete"
+    "exportFileName": "My SIMPORT diary",
+    "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
   },
   "trajectory": {
     "explore": {

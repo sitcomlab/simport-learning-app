@@ -1,4 +1,12 @@
 {
+  "general": {
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "share": "Teilen",
+    "export": "Exportieren",
+    "view": "Anzeigen",
+    "back": "Zurück"
+  },
   "selectTrajectory": {
     "title": "SIMPORT",
     "recordTrajectoryTitle": "Standortverlauf aufzeichnen",
@@ -8,7 +16,23 @@
     "addTrajectoryTitle": "Lade eigene Standortverläufe",
     "addTrajectorySubtitle": "Importiere JSON-Dateien",
     "diaryTitle": "Schreibe dein Tagebuch",
-    "diarySubitle": "Halten deine Gedanken fest"
+    "diarySubitle": "Halten deine Gedanken fest",
+    "importTrajectoryLoadingDialogMessage": "Importiere Standortverlauf …",
+    "importTrajectorySuccessfulMessage": "Standortverlauf erfolgreich importiert",
+    "recordedBadge": "aufgezeichnet",
+    "importedBadge": "importiert",
+    "exampleBadge": "Beispiel",
+    "userTrajectoryTitle": "Dein Standortverlauf",
+    "exportTrajectoryAlertHeader": "Standortverlauf exportieren",
+    "exportTrajectorySaveMessage": "In Downloads speichern",
+    "exportTrajectoryLoadingDialogMessage": "Exportiere Standortverlauf …",
+    "exportTrajectorySuccessfulMessage": "Standortverlauf erfolgreich exportiert",
+    "exportTrajectoryPermissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen",
+    "deleteTrajectoryAlertHeader": "{{ value }} löschen",
+    "deleteTrajectoryAlertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
+    "deleteTrajectoryLoadingDialogMessage": "Lösche Standortverlauf …",
+    "deleteTrajectorySuccessfulMessage": "Standortverlauf erfolgreich gelöscht",
+    "deleteTrajectoryErrorMessage": "Löschen fehlgeschlagen"
   },
   "diary": {
     "title": "Tagebuch",
@@ -18,11 +42,11 @@
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
     "contentTitle": "Inhalt",
-    "contentPlaceholder": "Gib deine Gedanken ein…",
+    "contentPlaceholder": "Gib deine Gedanken ein …",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
-    "deleteEntryAlertCancelButton": "Abbrechen",
-    "deleteEntryAlertDeleteButton": "Löschen"
+    "exportFileName": "Mein SIMPORT Tagebuch",
+    "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
   },
   "trajectory": {
     "explore": {
