@@ -1,6 +1,6 @@
 {
   "selectTrajectory": {
-    "title": "SIMPORT EN",
+    "title": "SIMPORT",
     "recordTrajectoryTitle": "Record your own trajectory",
     "recordTrajectorySubtitle": "Get notified when information about you could be derived",
     "exploreTrajectoryTitle": "Explore trajectories",
@@ -13,6 +13,15 @@
   "diary": {
     "title": "Diary",
     "noEntryDescription": "It seems like you haven't written anything down yet…",
-    "createEntryTitle": "Create new diary entry"
+    "createEntryTitle": "Create entry",
+    "createNewEntryTitle": "Create new diary entry",
+    "updateEntryTitle": "Update entry",
+    "dateTitle": "Date",
+    "contentTitle": "Content",
+    "contentPlaceholder": "Enter your thoughts…",
+    "deleteEntryAlertHeader": "Delete entry",
+    "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
+    "deleteEntryAlertCancelButton": "Cancel",
+    "deleteEntryAlertDeleteButton": "Delete"
   }
 }

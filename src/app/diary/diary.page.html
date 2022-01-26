@@ -13,10 +13,12 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <p *ngIf="!diary || diary.length === 0" class="ion-text-center">
-    {{ 'diary.noEntryDescription' | translate }}
-    <a (click)="createEntry()">{{ 'diary.createEntryTitle' | translate }}</a>
-  </p>
+  <div *ngIf="!diary || diary.length === 0" class="ion-text-center">
+    <p>{{ 'diary.noEntryDescription' | translate }}</p>
+    <ion-button expand="block" (click)="createEntry()"
+      >{{ 'diary.createNewEntryTitle' | translate }}
+    </ion-button>
+  </div>
   <ion-list>
     <app-item-card
       *ngFor="let e of diary"
