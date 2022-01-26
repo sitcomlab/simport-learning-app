@@ -59,5 +59,18 @@
       "toggleLocationButtonText": "Toggle location",
       "createInferencesButtonText": "Create inferences"
     }
+  },
+  "tracking": {
+    "title": "Tracking",
+    "toggleTitle": "Toggle location tracking",
+    "stateRunning": "Running",
+    "stateStopped": "Stopped",
+    "notSupported": "This platform doesn't support background location tracking",
+    "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
+    "alwaysAllowHint": "For best tracking results enable <i>always allow</i> for this app in your ",
+    "systemSettings": "Systemeinstellungen",
+    "exploreTrajectoryTitle": "Explore your trajectory",
+    "showNotifications": "Show Notifications",
+    "loading": "Waiting…"
   }
 }
