@@ -8,7 +8,10 @@
     "addTrajectoryTitle": "Add your own trajectory",
     "addTrajectorySubtitle": "Import a json file",
     "diaryTitle": "Write your diary",
-    "diarySubitle": "Record your thoughts"
+    "diarySubitle": "Record your thoughts",
+    "importTrajectoryLoadingDialogMessage": "Importing trajectory …",
+    "importTrajectorySuccessfulMessage": "Trajectory successfully imported",
+    "importTrajectorySuccessfulViewButton": "View"
   },
   "diary": {
     "title": "Diary",
@@ -18,11 +21,13 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Content",
-    "contentPlaceholder": "Enter your thoughts…",
+    "contentPlaceholder": "Enter your thoughts …",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
     "deleteEntryAlertCancelButton": "Cancel",
-    "deleteEntryAlertDeleteButton": "Delete"
+    "deleteEntryAlertDeleteButton": "Delete",
+    "exportFileName": "My SIMPORT diary",
+    "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
   },
   "trajectory": {
     "explore": {

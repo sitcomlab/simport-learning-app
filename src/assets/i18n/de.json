@@ -8,7 +8,10 @@
     "addTrajectoryTitle": "Lade eigene Standortverläufe",
     "addTrajectorySubtitle": "Importiere JSON-Dateien",
     "diaryTitle": "Schreibe dein Tagebuch",
-    "diarySubitle": "Halten deine Gedanken fest"
+    "diarySubitle": "Halten deine Gedanken fest",
+    "importTrajectoryLoadingDialogMessage": "Importiere Standortverlauf …",
+    "importTrajectorySuccessfulMessage": "Standortverlauf erfolgreich importiert",
+    "importTrajectorySuccessfulViewButton": "Anzeigen"
   },
   "diary": {
     "title": "Tagebuch",
@@ -18,11 +21,13 @@
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
     "contentTitle": "Inhalt",
-    "contentPlaceholder": "Gib deine Gedanken ein…",
+    "contentPlaceholder": "Gib deine Gedanken ein …",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
     "deleteEntryAlertCancelButton": "Abbrechen",
-    "deleteEntryAlertDeleteButton": "Löschen"
+    "deleteEntryAlertDeleteButton": "Löschen",
+    "exportFileName": "Mein SIMPORT Tagebuch",
+    "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
   },
   "trajectory": {
     "explore": {

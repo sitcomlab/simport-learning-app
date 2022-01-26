@@ -112,24 +112,31 @@ export class SelectTrajectoryPage {
         await this.trajectoryImportExportService
           .selectAndImportTrajectory(async () => {
             // did select file
-            await this.showLoadingDialog('Importing trajectory …')
+            const dialogMessage = this.translateService.instant(
+              'selectTrajectory.importTrajectoryLoadingDialogTitle'
+            )
+            await this.showLoadingDialog(dialogMessage)
           })
           .then(async (result) => {
             await this.hideLoadingDialog()
             if (result.success) {
+              const viewString = this.translateService.instant(
+                'selectTrajectory.importTrajectorySuccessfulViewButton'
+              )
               const viewTrajectoryButton = {
-                text: 'View',
+                text: viewString,
                 handler: async () => {
                   this.router.navigate([
                     `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
                   ])
                 },
               }
-              await this.showToastWithButtons(
-                'Trajectory successfully imported',
-                false,
-                [viewTrajectoryButton]
+              const toastMessage = this.translateService.instant(
+                'selectTrajectory.importTrajectorySuccessfulMessage'
               )
+              await this.showToastWithButtons(toastMessage, false, [
+                viewTrajectoryButton,
+              ])
             } else {
               await this.showToast(result.errorMessage, true)
             }
