@@ -15,7 +15,7 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Content",
-    "contentPlaceholder": "Enter your thoughts …",
+    "contentPlaceholder": "Enter your thoughts…",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
     "exportFileName": "My SIMPORT diary",
@@ -46,7 +46,7 @@
       "userTrajectoryTitle": "Your trajectory"
     },
     "import": {
-      "loadingDialogMessage": "Importing trajectory …",
+      "loadingDialogMessage": "Importing trajectory…",
       "successfulMessage": "Trajectory successfully imported",
       "errorMessage": "Trajectory could not be imported",
       "fileTypeErrorMessage": "Please select JSON-files"
@@ -54,7 +54,7 @@
     "export": {
       "alertHeader": "Export trajectory",
       "saveMessage": "Save to downloads",
-      "loadingDialogMessage": "Exporting trajectory …",
+      "loadingDialogMessage": "Exporting trajectory…",
       "successfulMessage": "Trajectory successfully exported",
       "errorMessage": "Trajectory could not be exported",
       "permissionErrorMessage": "Export failed: Missing permissions"
@@ -62,7 +62,7 @@
     "delete": {
       "alertHeader": "Delete '{{ value }}'",
       "alertMessage": "Are you sure you want to delete the trajectory?",
-      "loadingDialogMessage": "Deleting trajectory …",
+      "loadingDialogMessage": "Deleting trajectory…",
       "successfulMessage": "Trajectory successfully deleted",
       "errorMessage": "Trajectory could not be deleted"
     },
@@ -95,7 +95,7 @@
         "noInferencesFound": "No inferences were found within your trajectory",
         "default": "Trajectory couldn't be analyzed"
       },
-      "loadingInferences": "Loading inferences...",
+      "loadingInferences": "Loading inferences…",
       "predictionButtonText": "Predict next visit",
       "predictionSuccess.singular": "We think that you will visit the highlighted place in the next hour",
       "predictionSuccess.plural": "We think that you will visit the highlighted places in the next hour",
@@ -122,5 +122,26 @@
     "predictionText": "We think you will visit {{value}} in the next hour.",
     "inferencesFoundTitle": "Inferences found",
     "inferencesFoundText": "We're now able to draw {{value}} conclusions from your location history"
+  },
+  "inference": {
+    "work": "Workplace",
+    "home": "Home",
+    "poi": "Point of interest",
+    "unknown": "Unknown inference: {{ value }}",
+    "info": {
+      "work": "We assume you are working at {{ address }} with {{ confidence }}.",
+      "home": "We assume you are living at {{ address }} with {{ confidence }}.",
+      "poi": "We assume you are regularly visiting {{ address }}.",
+      "confidence": {
+        "low": "low confidence",
+        "medium": "medium confidence",
+        "high": "high confidence"
+      }
+    },
+    "confidence": {
+      "low": "low confidence",
+      "medium": "medium confidence",
+      "high": "high confidence"
+    }
   }
 }

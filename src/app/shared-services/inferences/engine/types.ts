@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core'
 import { Inference } from 'src/app/model/inference'
 import { Trajectory } from 'src/app/model/trajectory'
 import {
@@ -20,13 +21,16 @@ export class InferenceDefinition {
     public id: string,
     public type: InferenceType,
     public iconName: string,
-    public name: (lang?: string) => string,
-    public info: (res: Inference, lang?: string) => string,
+    public info: (res: Inference, translate: TranslateService) => string,
     public scoringConfigurations: InferenceScoringConfig[]
   ) {}
 
   public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
     return this.scoringConfigurations.find((config) => config.type === type)
+  }
+
+  public getName(translateSerice: TranslateService): string {
+    return translateSerice.instant(this.type)
   }
 
   get icon(): string {

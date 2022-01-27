@@ -18,6 +18,7 @@
       <ion-label>{{ "trajectory.explore.selectPOI" | translate }}</ion-label>
       <ion-select
         interface="action-sheet"
+        [cancelText]="'general.cancel' | translate"
         (ionChange)="drawChartFromEvent($event)"
       >
         <ion-select-option *ngFor="let i of inferences" [value]="i"

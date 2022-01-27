@@ -2,6 +2,7 @@ import { AllInferences } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
 import { ReverseGeocoding } from './reverse-geocoding'
+import { TranslateService } from '@ngx-translate/core'
 
 export class Inference {
   public geocoding?: ReverseGeocoding
@@ -91,8 +92,8 @@ export abstract class InferenceConfidenceThresholds {
   public static low = 0.05
 
   public static getQualitativeConfidence(confidenceValue: number): string {
-    if (confidenceValue >= this.high) return 'high confidence'
-    else if (confidenceValue >= this.medium) return 'medium confidence'
-    else if (confidenceValue >= this.low) return 'low confidence'
+    if (confidenceValue >= this.high) return 'high'
+    else if (confidenceValue >= this.medium) return 'medium'
+    else if (confidenceValue >= this.low) return 'low'
   }
 }

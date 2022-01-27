@@ -269,11 +269,14 @@ export class MapPage implements OnInit, OnDestroy {
       if (inference.type === InferenceType.poi) {
         popupText = `${inference.name}`
       } else {
-        popupText = `${
-          inference.name
-        } (${InferenceConfidenceThresholds.getQualitativeConfidence(
-          inference.confidence
-        )})`
+        const confidenceValue =
+          InferenceConfidenceThresholds.getQualitativeConfidence(
+            inference.confidence
+          )
+        const confidence = this.translateService.instant(
+          `inference.confidence.${confidenceValue}`
+        )
+        popupText = `${inference.name} (${confidence})`
       }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {

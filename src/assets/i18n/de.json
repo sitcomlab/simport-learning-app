@@ -15,7 +15,7 @@
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
     "contentTitle": "Inhalt",
-    "contentPlaceholder": "Gib deine Gedanken ein …",
+    "contentPlaceholder": "Gib deine Gedanken ein…",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
     "exportFileName": "Mein SIMPORT Tagebuch",
@@ -26,7 +26,7 @@
       "title": "SIMPORT",
       "record": {
         "title": "Standortverlauf aufzeichnen",
-        "subtitle": "Erhalte Benachrichtigungen, sobald Informationen über dich abgeleitet werden können"
+        "subtitle": "Erhalte Benachrichtigungen, sobald Erkenntnisse über dich gesammelt wurden"
       },
       "explore": {
         "title": "Standortverläufe entdecken",
@@ -46,7 +46,7 @@
       "userTrajectoryTitle": "Dein Standortverlauf"
     },
     "import": {
-      "loadingDialogMessage": "Importiere Standortverlauf …",
+      "loadingDialogMessage": "Importiere Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich importiert",
       "errorMessage": "Import fehlgeschlagen",
       "fileTypeErrorMessage": "Bitte wähle JSON-Dateien"
@@ -54,7 +54,7 @@
     "export": {
       "alertHeader": "Standortverlauf exportieren",
       "saveMessage": "In Downloads speichern",
-      "loadingDialogMessage": "Exportiere Standortverlauf …",
+      "loadingDialogMessage": "Exportiere Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich exportiert",
       "errorMessage": "Export fehlgeschlagen",
       "permissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen"
@@ -62,7 +62,7 @@
     "delete": {
       "alertHeader": "'{{ value }}' löschen",
       "alertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
-      "loadingDialogMessage": "Lösche Standortverlauf …",
+      "loadingDialogMessage": "Lösche Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich gelöscht",
       "errorMessage": "Löschen fehlgeschlagen"
     },
@@ -92,10 +92,10 @@
       "title": "Karte",
       "error": {
         "tooManyCoordinates": "Standortverlauf kann nicht analysiert werden. Zu viele Koordinaten.",
-        "noInferencesFound": "Aus deinem Standortverlauf wurden keine Erkentnisse gesammelt werden.",
+        "noInferencesFound": "Aus deinem Standortverlauf konnten noch keine Erkentnisse gesammelt werden.",
         "default": "Standortverlauf kann nicht analysiert werden."
       },
-      "loadingInferences": "Lade Ergebnisse...",
+      "loadingInferences": "Lade Ergebnisse…",
       "predictionButtonText": "Nächsten Aufenthaltsort bestimmen",
       "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen.",
       "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen.",
@@ -122,5 +122,26 @@
     "predictionText": "Wir denken, dass du {{value}} in der nächsten Stunde besuchen wirst.",
     "inferencesFoundTitle": "Neue Ergebnisse gefunden",
     "inferencesFoundText": "Wir können {{value}} Aussagen basierend auf deinem Standortverlauf treffen"
+  },
+  "inference": {
+    "work": "Arbeitsort",
+    "home": "Wohnort",
+    "poi": "Häufig besuchter Ort",
+    "unknown": "Unbekannte Erkenntnis: {{ value }}",
+    "info": {
+      "work": "Wir glauben mit {{ confidence }}, dass hier arbeitest: {{ address }}.",
+      "home": "Wir glauben mit {{ confidence }}, dass hier wohnst: {{ address }}",
+      "poi": "Wir glauben, dass du {{ address }} regelmäßig besuchst.",
+      "confidence": {
+        "low": "geringer Wahrscheinlichkeit",
+        "medium": "mittlerer Wahrscheinlichkeit",
+        "high": "hoher Wahrscheinlichkeit"
+      }
+    },
+    "confidence": {
+      "low": "geringe Wahrscheinlichkeit",
+      "medium": "mittlere Wahrscheinlichkeit",
+      "high": "hohe Wahrscheinlichkeit"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { ModalController, Platform, PopoverController } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import * as moment from 'moment'
 import { Trajectory } from 'src/app/model/trajectory'
 import { TrajectoryCardPopoverPage } from './trajectory-card-popover/trajectory-card-popover.page'
@@ -15,7 +16,8 @@ export class TrajectoryCardComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
-    private platform: Platform
+    private platform: Platform,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {}
@@ -26,7 +28,11 @@ export class TrajectoryCardComponent implements OnInit {
 
   durationString() {
     const days = this.trajectory?.durationDays
-    return days ? moment.duration(days, 'days').humanize() : '—'
+    if (days) {
+      moment.locale(this.translateService.getBrowserLang())
+      return moment.duration(days, 'days').humanize()
+    }
+    return '—'
   }
 
   selectTrajectory() {
