@@ -2,7 +2,19 @@ ion-card {
   min-height: 90px;
 }
 
-ion-grid,
-ion-row {
+ion-grid {
+  min-height: 90px;
   height: 100%;
+}
+
+ion-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+  height: 100%;
+}
+
+ion-card-subtitle {
+  margin: 0;
 }
