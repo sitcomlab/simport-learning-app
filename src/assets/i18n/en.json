@@ -121,7 +121,17 @@
     "predictionTitle": "You will visit {{ value }}",
     "predictionText": "We think you will visit {{ value }} in the next hour.",
     "inferencesFoundTitle": "Inferences found",
-    "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history"
+    "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history",
+    "backgroundGeolocationTitle": "Tracking active …",
+    "backgroundGeolocationText": "Your location is currently tracked in order to show potential inferences.",
+    "locationUpdateTitle": "Location Update",
+    "locationUpdateText": "{{latitude}} / {{longitude}} ({{accuracy}}m)",
+    "trackingStarted": "Tracking started",
+    "trackingStopped": "Tracking stopped"
+  },
+  "confirm": {
+    "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",
+    "grantLocationPermissionSettings": "App requires always on location permission. Please grant permission in settings."
   },
   "inference": {
     "work": "Workplace",

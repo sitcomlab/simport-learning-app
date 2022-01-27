@@ -121,7 +121,17 @@
     "predictionTitle": "Du wirst {{ value }} besuchen",
     "predictionText": "Wir denken, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
     "inferencesFoundTitle": "Neue Ergebnisse gefunden",
-    "inferencesFoundText": "Wir können {{ value }} Aussagen basierend auf deinem Standortverlauf treffen"
+    "inferencesFoundText": "Wir können {{ value }} Aussagen basierend auf deinem Standortverlauf treffen",
+    "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
+    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Erkenntnisse zu sammeln.",
+    "locationUpdateTitle": "Standort aktualisiert",
+    "locationUpdateText": "{{latitude}} / {{longitude}} ({{accuracy}}m)",
+    "trackingStarted": "Aufzeichnung gestartet",
+    "trackingStopped": "Aufzeichnung gestoppt"
+  },
+  "confirm": {
+    "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",
+    "grantLocationPermissionSettings": "Die App benötigt die Erlaubnis auf deinen Standort zuzugreifen. Bitte erteile diese in den Einstellungen."
   },
   "inference": {
     "work": "Arbeitsort",
