@@ -116,5 +116,11 @@
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
     "loading": "Waiting…"
+  },
+  "notification": {
+    "predictionTitle": "You will visit {{value}}",
+    "predictionText": "We think you will visit {{value}} in the next hour.",
+    "inferencesFoundTitle": "Inferences found",
+    "inferencesFoundText": "We're now able to draw {{value}} conclusions from your location history"
   }
 }

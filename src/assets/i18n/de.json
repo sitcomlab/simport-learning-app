@@ -116,5 +116,11 @@
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
     "loading": "Warte…"
+  },
+  "notification": {
+    "predictionTitle": "Du wirst {{value}} besuchen",
+    "predictionText": "Wir denken, dass du {{value}} in der nächsten Stunde besuchen wirst.",
+    "inferencesFoundTitle": "Neue Ergebnisse gefunden",
+    "inferencesFoundText": "Wir können {{value}} Aussagen basierend auf deinem Standortverlauf treffen"
   }
 }

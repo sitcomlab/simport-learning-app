@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { TranslateService } from '@ngx-translate/core'
 import { Inference } from 'src/app/model/inference'
 import { TimetableEntry } from 'src/app/model/timetable'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
@@ -25,7 +26,8 @@ export class TimetableService extends AbstractBackgroundService {
     private notificationService: NotificationService,
     private trajectoryService: TrajectoryService,
     private featureFlagService: FeatureFlagService,
-    protected backgroundService: BackgroundService
+    protected backgroundService: BackgroundService,
+    private translateService: TranslateService
   ) {
     super(backgroundService, 'com.transistorsoft.timetableprediction')
   }
@@ -62,8 +64,14 @@ export class TimetableService extends AbstractBackgroundService {
           const inference = await this.sqliteService.getInferenceById(
             nextVisit.inference
           )
-          const title = `You will visit ${inference.addressDisplayName}`
-          const text = `We think you will visit ${inference.addressDisplayName} in the next hour.`
+          const title = this.translateService.instant(
+            'notification.predictionTitle',
+            { value: inference.addressDisplayName }
+          )
+          const text = this.translateService.instant(
+            'notification.predictionText',
+            { value: inference.addressDisplayName }
+          )
           this.notificationService.notify(
             NotificationType.visitPrediction,
             title,
