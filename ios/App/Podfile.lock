@@ -9,10 +9,10 @@ PODS:
     - Capacitor
   - CordovaPlugins (2.5.0):
     - CapacitorCordova
-  - SQLCipher (4.4.3):
-    - SQLCipher/standard (= 4.4.3)
-  - SQLCipher/common (4.4.3)
-  - SQLCipher/standard (4.4.3):
+  - SQLCipher (4.5.0):
+    - SQLCipher/standard (= 4.5.0)
+  - SQLCipher/common (4.5.0)
+  - SQLCipher/standard (4.5.0):
     - SQLCipher/common
 
 DEPENDENCIES:
@@ -44,8 +44,8 @@ SPEC CHECKSUMS:
   CapacitorCordova: 03d0a19b737e65c94825b20222c804d5467e1c5e
   CapacitorFileSelector: 5c2d14928680d159c2861147974fdc3f204ebe06
   CordovaPlugins: 6aab8c1e8d44a2ffe32f4369101ff17bdb8c69dc
-  SQLCipher: 155ffeafc9ac102e5c9b68e3e9a1297a98a27096
+  SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
 
 PODFILE CHECKSUM: a672178b97c039f637098b9243fa8c6cced428ed
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.11.2

@@ -14,12 +14,14 @@ import {
   testTrajectoryString,
 } from './trajectory-import-export.service.spec.fixtures'
 import { TrajectoryType } from '../../model/trajectory'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 
 describe('TrajectoryImportExportService', () => {
   let service: TrajectoryImportExportService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: APP_TEST_IMPORTS,
       providers: [
         TrajectoryImportExportService,
         LocationService,

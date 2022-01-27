@@ -25,8 +25,6 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    SharedServicesModule, // these need to be imported here, so they are available globally in lazy loaded page modules.
-    HttpClientModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -35,6 +33,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient],
       },
     }),
+    SharedServicesModule, // these need to be imported here, so they are available globally in lazy loaded page modules.
+    HttpClientModule,
   ],
   providers: [
     StatusBar,

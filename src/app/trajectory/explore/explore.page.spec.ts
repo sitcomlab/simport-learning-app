@@ -1,7 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
-import { RouterTestingModule } from '@angular/router/testing'
-import { IonicModule } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
@@ -16,7 +14,7 @@ describe('ExplorePage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ExplorePage],
-      imports: [IonicModule, HttpClientTestingModule, RouterTestingModule],
+      imports: APP_TEST_IMPORTS,
       providers: [
         TimetableService,
         InferenceService,
