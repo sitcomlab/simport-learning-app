@@ -1,4 +1,5 @@
 {
+  "title": "SIMPORT",
   "general": {
     "cancel": "Cancel",
     "delete": "Delete",
@@ -23,7 +24,7 @@
   },
   "trajectory": {
     "select": {
-      "title": "SIMPORT",
+      "title": "Trajectories",
       "record": {
         "title": "Record your own trajectory",
         "subtitle": "Get notified when information about you could be derived"
@@ -121,7 +122,8 @@
     "predictionTitle": "You will visit {{ value }}",
     "predictionText": "We think you will visit {{ value }} in the next hour.",
     "inferencesFoundTitle": "Inferences found",
-    "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history"
+    "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history",
+    "inferencesGenerationLoadingDialog": "Generating inferences from your trajectory…"
   },
   "inference": {
     "work": "Workplace",

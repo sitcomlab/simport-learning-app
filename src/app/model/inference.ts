@@ -2,7 +2,6 @@ import { AllInferences } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
 import { ReverseGeocoding } from './reverse-geocoding'
-import { TranslateService } from '@ngx-translate/core'
 
 export class Inference {
   public geocoding?: ReverseGeocoding
