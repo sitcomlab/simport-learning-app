@@ -118,10 +118,10 @@
     "loading": "Waiting…"
   },
   "notification": {
-    "predictionTitle": "You will visit {{value}}",
-    "predictionText": "We think you will visit {{value}} in the next hour.",
+    "predictionTitle": "You will visit {{ value }}",
+    "predictionText": "We think you will visit {{ value }} in the next hour.",
     "inferencesFoundTitle": "Inferences found",
-    "inferencesFoundText": "We're now able to draw {{value}} conclusions from your location history"
+    "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history"
   },
   "inference": {
     "work": "Workplace",
@@ -131,7 +131,7 @@
     "info": {
       "work": "We assume you are working at {{ address }} with {{ confidence }}.",
       "home": "We assume you are living at {{ address }} with {{ confidence }}.",
-      "poi": "We assume you are regularly visiting {{ address }}.",
+      "poi": "We assume you are regularly visiting { address }}.",
       "confidence": {
         "low": "low confidence",
         "medium": "medium confidence",

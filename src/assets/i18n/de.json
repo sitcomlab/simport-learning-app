@@ -118,10 +118,10 @@
     "loading": "Warte…"
   },
   "notification": {
-    "predictionTitle": "Du wirst {{value}} besuchen",
-    "predictionText": "Wir denken, dass du {{value}} in der nächsten Stunde besuchen wirst.",
+    "predictionTitle": "Du wirst {{ value }} besuchen",
+    "predictionText": "Wir denken, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
     "inferencesFoundTitle": "Neue Ergebnisse gefunden",
-    "inferencesFoundText": "Wir können {{value}} Aussagen basierend auf deinem Standortverlauf treffen"
+    "inferencesFoundText": "Wir können {{ value }} Aussagen basierend auf deinem Standortverlauf treffen"
   },
   "inference": {
     "work": "Arbeitsort",
@@ -129,8 +129,8 @@
     "poi": "Häufig besuchter Ort",
     "unknown": "Unbekannte Erkenntnis: {{ value }}",
     "info": {
-      "work": "Wir glauben mit {{ confidence }}, dass hier arbeitest: {{ address }}.",
-      "home": "Wir glauben mit {{ confidence }}, dass hier wohnst: {{ address }}",
+      "work": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Arbeitsort ist.",
+      "home": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Wohnort ist.",
       "poi": "Wir glauben, dass du {{ address }} regelmäßig besuchst.",
       "confidence": {
         "low": "geringer Wahrscheinlichkeit",

@@ -8,8 +8,8 @@ import { Component, Input, OnInit } from '@angular/core'
 export class ItemCardComponent implements OnInit {
   @Input() disabled: boolean
   @Input() icon?: string
-  @Input() title: string
-  @Input() subtitle: string
+  @Input() title?: string
+  @Input() subtitle?: string
   @Input() content?: string
   @Input() date?: string
 

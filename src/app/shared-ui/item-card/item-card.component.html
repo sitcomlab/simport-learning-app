@@ -6,8 +6,8 @@
       </ion-col>
 
       <ion-col>
-        <ion-card-title>{{ title }}</ion-card-title>
-        <ion-card-subtitle>{{ subtitle }}</ion-card-subtitle>
+        <ion-card-title *ngIf="title">{{ title }}</ion-card-title>
+        <ion-card-subtitle *ngIf="subtitle">{{ subtitle }}</ion-card-subtitle>
         <ion-card-header *ngIf="date"
           ><ion-card-subtitle color="dark">{{
             date
