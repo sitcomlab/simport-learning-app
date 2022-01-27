@@ -1,4 +1,5 @@
 {
+  "title": "SIMPORT",
   "general": {
     "cancel": "Abbrechen",
     "delete": "Löschen",
@@ -23,7 +24,7 @@
   },
   "trajectory": {
     "select": {
-      "title": "SIMPORT",
+      "title": "Standortverläufe",
       "record": {
         "title": "Standortverlauf aufzeichnen",
         "subtitle": "Erhalte Benachrichtigungen, sobald Erkenntnisse über dich gesammelt wurden"
@@ -122,6 +123,7 @@
     "predictionText": "Wir denken, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
     "inferencesFoundTitle": "Neue Ergebnisse gefunden",
     "inferencesFoundText": "Wir können {{ value }} Aussagen basierend auf deinem Standortverlauf treffen",
+    "inferencesGenerationLoadingDialog": "Generiere Erkenntnisse aus deinem Standortverlauf…",
     "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
     "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Erkenntnisse zu sammeln.",
     "locationUpdateTitle": "Standort aktualisiert",

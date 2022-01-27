@@ -261,7 +261,9 @@ export class InferenceService
   private async showLoadingDialog() {
     if (!this.loadingOverlay) {
       this.loadingOverlay = await this.loadingController.create({
-        message: 'Generating inferences from your location history …',
+        message: this.translateService.instant(
+          'notification.inferencesGenerationLoadingDialog'
+        ),
         translucent: true,
       })
       await this.loadingOverlay.present()
