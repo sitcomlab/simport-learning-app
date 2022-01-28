@@ -19,7 +19,7 @@
   <div *ngIf="!inferences.length" class="centered ion-padding">
     <div>{{ 'trajectory.insights.noInferences' | translate }}</div>
     <div>
-      <a routerLink="../map"
+      <a (click)="openMap()"
         >{{ 'trajectory.insights.lookAtMapLink' | translate }}</a
       >
     </div>

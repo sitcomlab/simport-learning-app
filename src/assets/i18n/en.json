@@ -143,7 +143,7 @@
     "info": {
       "work": "We assume you are working at {{ address }} with {{ confidence }}.",
       "home": "We assume you are living at {{ address }} with {{ confidence }}.",
-      "poi": "We assume you are regularly visiting { address }}.",
+      "poi": "We assume you are regularly visiting {{ address }}.",
       "confidence": {
         "low": "low confidence",
         "medium": "medium confidence",

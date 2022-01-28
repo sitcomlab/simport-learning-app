@@ -8,6 +8,7 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import { TrajectoryPagePath } from '../trajectory.page'
 
 @Component({
   selector: 'app-inferences',
@@ -80,7 +81,7 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   openMap(centerLatLon?: [number, number]) {
-    this.router.navigate(['../map'], {
+    this.router.navigate([`../${TrajectoryPagePath.Map}`], {
       relativeTo: this.route,
       state: { center: centerLatLon },
     })
