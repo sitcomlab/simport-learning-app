@@ -31,7 +31,7 @@
       },
       "explore": {
         "title": "Standortverläufe entdecken",
-        "subtitle": "Erkunde interaktiv deinen Aufenthaltsort und den anderer Personen"
+        "subtitle": "Erkunde interaktiv deinen Aufenthaltsort"
       },
       "add": {
         "title": "Standortverlauf hinzufügen",
@@ -62,7 +62,7 @@
     },
     "delete": {
       "alertHeader": "'{{ value }}' löschen",
-      "alertMessage": "Möchtest du diesen Standortverlauf wirklich löschen?",
+      "alertMessage": "Möchtest du den Standortverlauf wirklich löschen?",
       "loadingDialogMessage": "Lösche Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich gelöscht",
       "errorMessage": "Löschen fehlgeschlagen"
@@ -87,7 +87,7 @@
     "insights": {
       "title": "Rückschlüsse",
       "noInferences": "Es konnten noch keine Rückschlüsse gezogen werden.",
-      "lookAtMapLink": "Karte öffnen?"
+      "lookAtMapLink": "Stattdessen die Karte öffnen?"
     },
     "map": {
       "title": "Karte",
@@ -98,8 +98,8 @@
       },
       "loadingInferences": "Lade Rückschlüsse…",
       "predictionButtonText": "Nächsten Aufenthaltsort bestimmen",
-      "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen.",
-      "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen.",
+      "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen",
+      "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen",
       "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
       "toggleLocationButtonText": "Position ein- / ausblenden",
       "createInferencesButtonText": "Rückschlüsse generieren"
@@ -110,7 +110,7 @@
     "toggleTitle": "Aufzeichnung starten / stoppen",
     "stateRunning": "Läuft",
     "stateStopped": "Gestoppt",
-    "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt.",
+    "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
     "androidBatteryHint": "Damit die App korrekt funktioniert solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du unter <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
     "systemSettings": "Systemeinstellungen",
@@ -127,7 +127,7 @@
     "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
     "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Rückschlüsse zu ziehen.",
     "locationUpdateTitle": "Standort aktualisiert",
-    "locationUpdateText": "{{latitude}} / {{longitude}} ({{accuracy}}m)",
+    "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",
     "trackingStopped": "Aufzeichnung gestoppt"
   },

@@ -31,11 +31,11 @@
       },
       "explore": {
         "title": "Explore trajectories",
-        "subtitle": "Interactively explore your own and others whereabouts"
+        "subtitle": "Interactively explore your whereabouts"
       },
       "add": {
         "title": "Add your own trajectory",
-        "subtitle": "Import a json file"
+        "subtitle": "Import json files"
       },
       "diary": {
         "title": "Write your diary",
@@ -127,7 +127,7 @@
     "backgroundGeolocationTitle": "Tracking active …",
     "backgroundGeolocationText": "Your location is currently tracked in order to show potential inferences.",
     "locationUpdateTitle": "Location Update",
-    "locationUpdateText": "{{latitude}} / {{longitude}} ({{accuracy}}m)",
+    "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
     "trackingStopped": "Tracking stopped"
   },
