@@ -27,18 +27,18 @@
       "title": "Standortverläufe",
       "record": {
         "title": "Standortverlauf aufzeichnen",
-        "subtitle": "Erhalte Benachrichtigungen, sobald Erkenntnisse über dich gesammelt wurden"
+        "subtitle": "Erhalte Benachrichtigungen, sobald Rückschlüsse über dich gezogen wurden"
       },
       "explore": {
         "title": "Standortverläufe entdecken",
         "subtitle": "Erkunde interaktiv deinen Aufenthaltsort und den anderer Personen"
       },
       "add": {
-        "title": "Lade eigene Standortverläufe",
+        "title": "Standortverlauf hinzufügen",
         "subtitle": "Importiere JSON-Dateien"
       },
       "diary": {
-        "title": "Schreibe dein Tagebuch",
+        "title": "Tagebuch",
         "subtitle": "Halte deine Gedanken fest"
       },
       "recordedBadge": "aufgezeichnet",
@@ -68,7 +68,7 @@
       "errorMessage": "Löschen fehlgeschlagen"
     },
     "explore": {
-      "title": "Datenerkundung",
+      "title": "Erkundung",
       "poiTimetableTitle": "Zeitplan deiner Orte",
       "poiTimetableDescription": "Der Zeitplan visualisiert deine häufig besuchten Orte für jeden Wochentag. Wähle einen deiner besuchten Orte aus und schaue dir an, wann du dort gewesen bist.",
       "selectPOI": "Ort auswählen",
@@ -77,7 +77,7 @@
       }
     },
     "filter": {
-      "title": "Ergebnisse filtern",
+      "title": "Rückschlüsse filtern",
       "byInferenceType": "Filtern nach Typ",
       "byConfidence": "Filtern nach Wahrscheinlichkeit",
       "low": "Gering",
@@ -85,24 +85,24 @@
       "high": "Hoch"
     },
     "insights": {
-      "title": "Ergebnisse",
-      "noInferences": "Es konnten noch keine Ergebnisse gesammelt werden.",
+      "title": "Rückschlüsse",
+      "noInferences": "Es konnten noch keine Rückschlüsse gezogen werden.",
       "lookAtMapLink": "Karte öffnen?"
     },
     "map": {
       "title": "Karte",
       "error": {
         "tooManyCoordinates": "Standortverlauf kann nicht analysiert werden. Zu viele Koordinaten.",
-        "noInferencesFound": "Aus deinem Standortverlauf konnten noch keine Erkentnisse gesammelt werden.",
+        "noInferencesFound": "Aus deinem Standortverlauf konnten noch keine Rückschlüsse gezogen werden.",
         "default": "Standortverlauf kann nicht analysiert werden."
       },
-      "loadingInferences": "Lade Ergebnisse…",
+      "loadingInferences": "Lade Rückschlüsse…",
       "predictionButtonText": "Nächsten Aufenthaltsort bestimmen",
       "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen.",
       "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen.",
       "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
       "toggleLocationButtonText": "Position ein- / ausblenden",
-      "createInferencesButtonText": "Ergebnisse berechnen"
+      "createInferencesButtonText": "Rückschlüsse generieren"
     }
   },
   "tracking": {
@@ -112,7 +112,7 @@
     "stateStopped": "Gestoppt",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt.",
     "androidBatteryHint": "Damit die App korrekt funktioniert solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du unter <a href='https://dontkillmyapp.com'>dieser Seite</a>",
-    "alwaysAllowHint": "Für die besten Ergebnisse deines Standortverlaufs, nutze bitte <i>Immer</i> für diese App in den ",
+    "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
@@ -120,12 +120,12 @@
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
-    "predictionText": "Wir denken, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
-    "inferencesFoundTitle": "Neue Ergebnisse gefunden",
-    "inferencesFoundText": "Wir können {{ value }} Aussagen basierend auf deinem Standortverlauf treffen",
-    "inferencesGenerationLoadingDialog": "Generiere Erkenntnisse aus deinem Standortverlauf…",
+    "predictionText": "Wir glauben, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
+    "inferencesFoundTitle": "Neue Rückschlüsse gefunden",
+    "inferencesFoundText": "Wir können {{ value }} Rückschlüsse basierend auf deinem Standortverlauf ziehen",
+    "inferencesGenerationLoadingDialog": "Generiere Rückschlüsse aus deinem Standortverlauf…",
     "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
-    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Erkenntnisse zu sammeln.",
+    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Rückschlüsse zu ziehen.",
     "locationUpdateTitle": "Standort aktualisiert",
     "locationUpdateText": "{{latitude}} / {{longitude}} ({{accuracy}}m)",
     "trackingStarted": "Aufzeichnung gestartet",
@@ -139,7 +139,7 @@
     "work": "Arbeitsort",
     "home": "Wohnort",
     "poi": "Häufig besuchter Ort",
-    "unknown": "Unbekannte Erkenntnis: {{ value }}",
+    "unknown": "Unbekannter Rückschluss: {{ value }}",
     "info": {
       "work": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Arbeitsort ist.",
       "home": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Wohnort ist.",

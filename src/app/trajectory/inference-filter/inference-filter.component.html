@@ -22,6 +22,9 @@
             (ngModelChange)="onInferenceVisibilityChanged(item.key)"
           ></ion-toggle>
           <ion-icon name="{{ getIconFromInferenceType(item.key) }}"></ion-icon>
+          <ion-text class="toggle-title">{{
+            getTitleKeyFromInferenceType(item.key) | translate
+          }}</ion-text>
         </ion-item>
       </ion-row>
       <ion-row></ion-row>
