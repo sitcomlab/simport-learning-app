@@ -32,3 +32,6 @@ npm-debug.log*
 
 # do not commit test-data for now
 src/app/shared-services/inferences/test-data/*
+
+resources/android
+resources/ios
