@@ -13,6 +13,11 @@ import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 export class DiaryDetailComponent implements OnInit {
   entry: DiaryEntry
 
+  get localizedDate(): string {
+    const locale = this.translateService.getBrowserCultureLang()
+    return this.entry.date.toLocaleDateString(locale)
+  }
+
   constructor(
     private route: ActivatedRoute,
     private diaryService: DiaryService,

@@ -30,7 +30,13 @@
     <ion-label position="stacked">{{
       'diary.dateTitle' | translate
     }}</ion-label>
-    <ion-datetime [(ngModel)]="date"></ion-datetime>
+    <ion-datetime
+      [displayFormat]="dateFormat()"
+      [monthShortNames]="dateMonthShortNames()"
+      [cancelText]="'general.cancel' | translate"
+      [doneText]="'general.done' | translate"
+      [(ngModel)]="date"
+    ></ion-datetime>
   </ion-item>
   <ion-item *ngIf="loaded">
     <ion-label position="stacked">{{
