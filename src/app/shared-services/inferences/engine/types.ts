@@ -29,8 +29,8 @@ export class InferenceDefinition {
     return this.scoringConfigurations.find((config) => config.type === type)
   }
 
-  public getName(translateSerice: TranslateService): string {
-    return translateSerice.instant(this.type)
+  public getName(translateService: TranslateService): string {
+    return translateService.instant(this.type)
   }
 
   get icon(): string {

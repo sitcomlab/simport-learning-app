@@ -53,8 +53,7 @@ export class MapPage implements OnInit, OnDestroy {
       tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          attribution: this.mapAttributionString,
           subdomains: 'abcd',
           maxZoom: 19,
         }
@@ -76,6 +75,13 @@ export class MapPage implements OnInit, OnDestroy {
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
+
+  private get mapAttributionString(): string {
+    const osmContributors = this.translateService.instant(
+      'trajectory.map.osmContributors'
+    )
+    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
+  }
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -115,11 +121,16 @@ export class MapPage implements OnInit, OnDestroy {
           timestamp: t.timestamps[t.timestamps.length - 1],
         }
 
+        const locale = this.translateService.getBrowserLang()
+        const popupString = this.translateService.instant(
+          'trajectory.map.timestampPopup',
+          { value: lastMeasurement.timestamp.toLocaleString(locale) }
+        )
         this.lastLocation = new CircleMarker(lastMeasurement.location, {
           color: 'white',
           fillColor: '#428cff', // ionic primary blue
           fillOpacity: 1,
-        }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
+        }).bindPopup(popupString)
 
         if (this.followPosition) {
           this.suppressNextMapMoveEvent = true
@@ -265,9 +276,12 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
-      let popupText
+      const inferenceName = this.translateService.instant(
+        `inference.${inference.name}`
+      )
+      let popupText: string
       if (inference.type === InferenceType.poi) {
-        popupText = `${inference.name}`
+        popupText = inferenceName
       } else {
         const confidenceValue =
           InferenceConfidenceThresholds.getQualitativeConfidence(
@@ -276,7 +290,7 @@ export class MapPage implements OnInit, OnDestroy {
         const confidence = this.translateService.instant(
           `inference.confidence.${confidenceValue}`
         )
-        popupText = `${inference.name} (${confidence})`
+        popupText = `${inferenceName} (${confidence})`
       }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {

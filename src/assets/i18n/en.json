@@ -6,7 +6,8 @@
     "share": "Share",
     "export": "Export",
     "view": "View",
-    "back": "Back"
+    "back": "Back",
+    "done": "Done"
   },
   "diary": {
     "title": "Diary",
@@ -68,10 +69,10 @@
       "errorMessage": "Trajectory could not be deleted"
     },
     "explore": {
-      "title": "Exploration",
-      "poiTimetableTitle": "POI Timetable",
-      "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified POI and explore when you have visited it in the past.",
-      "selectPOI": "Select POI",
+      "title": "Timetable",
+      "poiTimetableTitle": "Timetable of your places",
+      "poiTimetableDescription": "The timetable visualizes frequent visits of selected POIs for each weekday. Select an identified frequently visited place and explore when you have visited it in the past.",
+      "selectPOI": "Select place",
       "timetableChart": {
         "hour": "Hour"
       }
@@ -102,7 +103,9 @@
       "predictionSuccess.plural": "We think that you will visit the highlighted places in the next hour",
       "predictionFail": "We couldn't make a prediction for the next hour",
       "toggleLocationButtonText": "Toggle location",
-      "createInferencesButtonText": "Create inferences"
+      "createInferencesButtonText": "Create inferences",
+      "osmContributors": "OpenStreetMap contributors",
+      "timestampPopup": "Timestamp: {{ value }}"
     }
   },
   "tracking": {

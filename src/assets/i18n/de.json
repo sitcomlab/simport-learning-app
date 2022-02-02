@@ -6,7 +6,8 @@
     "share": "Teilen",
     "export": "Exportieren",
     "view": "Anzeigen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "done": "Fertig"
   },
   "diary": {
     "title": "Tagebuch",
@@ -68,7 +69,7 @@
       "errorMessage": "Löschen fehlgeschlagen"
     },
     "explore": {
-      "title": "Erkundung",
+      "title": "Zeitplan",
       "poiTimetableTitle": "Zeitplan deiner Orte",
       "poiTimetableDescription": "Der Zeitplan visualisiert deine häufig besuchten Orte für jeden Wochentag. Wähle einen deiner besuchten Orte aus und schaue dir an, wann du dort gewesen bist.",
       "selectPOI": "Ort auswählen",
@@ -102,7 +103,9 @@
       "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen",
       "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
       "toggleLocationButtonText": "Position ein- / ausblenden",
-      "createInferencesButtonText": "Rückschlüsse generieren"
+      "createInferencesButtonText": "Rückschlüsse generieren",
+      "osmContributors": "OpenStreetMap-Mitwirkende",
+      "timestampPopup": "Zeitpunkt: {{ value }}"
     }
   },
   "tracking": {
@@ -111,7 +114,7 @@
     "stateRunning": "Läuft",
     "stateStopped": "Gestoppt",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
-    "androidBatteryHint": "Damit die App korrekt funktioniert solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du unter <a href='https://dontkillmyapp.com'>dieser Seite</a>",
+    "androidBatteryHint": "Damit die App korrekt funktioniert solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
