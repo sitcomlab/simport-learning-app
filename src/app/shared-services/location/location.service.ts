@@ -149,7 +149,7 @@ export class LocationService implements OnDestroy {
         })
         this.nextLocationIsStart = false
 
-        await this.inferenceService.triggerUserInferenceGenerationIfViable()
+        await this.inferenceService.triggerBackgroundFunctionIfViable()
 
         this.scheduleNotification(
           'Location Update',
@@ -157,6 +157,7 @@ export class LocationService implements OnDestroy {
             1
           )}m)`
         )
+
         this.backgroundGeolocation.finish()
       })
   }

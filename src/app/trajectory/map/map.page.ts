@@ -1,6 +1,11 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { LoadingController, ToastController } from '@ionic/angular'
+import {
+  IonRouterOutlet,
+  LoadingController,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
 import {
   CircleMarker,
   DivIcon,
@@ -15,7 +20,10 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
-import { Inference } from 'src/app/model/inference'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
@@ -27,6 +35,9 @@ import {
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
 import haversine from 'haversine-distance'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
+import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
+import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
 
 @Component({
   selector: 'app-map',
@@ -56,8 +67,14 @@ export class MapPage implements OnInit, OnDestroy {
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
+
+  isInferencesEnabled =
+    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+  isPredictionsEnabled =
+    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
   inferences: Inference[] = []
   generatedInferences = false
+  predictedInferenceIds: string[] = []
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -69,10 +86,14 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
+    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private timetableService: TimetableService,
+    private modalController: ModalController,
+    private routerOutlet: IonRouterOutlet
   ) {}
 
   async ngOnInit() {
@@ -231,6 +252,35 @@ export class MapPage implements OnInit, OnDestroy {
     }
   }
 
+  async predictNextVisit() {
+    if (!this.generatedInferences) {
+      await this.showLoadingDialog('Loading inferences...')
+      const inferenceResult = await this.inferenceService
+        .generateInferences(this.trajectoryType, this.trajectoryId)
+        .finally(async () => {
+          await this.hideLoadingDialog()
+        })
+      this.inferences = inferenceResult.inferences
+    }
+    const nextVisits = await this.timetableService.predictNextVisit(
+      this.trajectoryId
+    )
+    if (nextVisits.length > 0) {
+      this.predictedInferenceIds = nextVisits.map((v) => v.inference)
+      this.updateInferenceMarkers()
+      return await this.showToast(
+        `We think that you will visit the highlighted ${
+          nextVisits.length === 1 ? 'place' : 'places'
+        } in the next hour`,
+        'success'
+      )
+    } else {
+      return await this.showErrorToast(
+        `We couldn't make a prediction for the next hour`
+      )
+    }
+  }
+
   updateInferenceMarkers() {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
@@ -239,16 +289,27 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
+      let popupText
+      if (inference.type === InferenceType.poi) {
+        popupText = `${inference.name}`
+      } else {
+        popupText = `${
+          inference.name
+        } (${InferenceConfidenceThresholds.getQualitativeConfidence(
+          inference.confidence
+        )})`
+      }
+      const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {
         icon: new DivIcon({
-          className: `inference-icon ${inference.type}`,
+          className: `inference-icon ${inference.type} ${
+            isPredicted ? 'predicted' : ''
+          }`,
           iconSize: [32, 32],
           iconAnchor: [16, 16],
           html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
         }),
-      }).bindPopup(
-        `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
-      )
+      }).bindPopup(popupText)
 
       const l = new LayerGroup([h, i])
 
@@ -260,10 +321,27 @@ export class MapPage implements OnInit, OnDestroy {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 
+  async openDiaryModal() {
+    const modal = await this.modalController.create({
+      component: DiaryEditComponent,
+      swipeToClose: true,
+      backdropDismiss: true,
+      presentingElement: this.routerOutlet.nativeEl,
+      componentProps: {
+        isModal: true,
+      },
+    })
+    modal.present()
+  }
+
   private async showErrorToast(message: string) {
+    await this.showToast(message, 'danger')
+  }
+
+  private async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastController.create({
       message,
-      color: 'danger',
+      color,
       duration: 2000,
     })
     await toast.present()

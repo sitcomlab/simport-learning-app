@@ -1,4 +1,7 @@
-import { Inference } from 'src/app/model/inference'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import { InferenceScoringType } from '../scoring/types'
 import { InferenceDefinition, InferenceType } from './types'
 
@@ -9,7 +12,11 @@ export const WorkInference = new InferenceDefinition(
   (lang?: string) => 'Workplace',
   (r: Inference, lang?: string) => {
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are working at ${r.addressDisplayName} with a confidence of ${confidence} %.`
+    return `We assume you are working at ${
+      r.addressDisplayName
+    } with ${InferenceConfidenceThresholds.getQualitativeConfidence(
+      r.confidence
+    )}.`
   },
   [
     {
@@ -37,7 +44,11 @@ export const HomeInference = new InferenceDefinition(
   (lang?: string) => 'Home',
   (r: Inference, lang?: string) => {
     const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are living at ${r.addressDisplayName} with a confidence of ${confidence} %.`
+    return `We assume you are living at ${
+      r.addressDisplayName
+    } with ${InferenceConfidenceThresholds.getQualitativeConfidence(
+      r.confidence
+    )}.`
   },
   [
     {
@@ -64,8 +75,7 @@ export const POIInference = new InferenceDefinition(
   'flag',
   (lang?: string) => 'Point of interest',
   (r: Inference, lang?: string) => {
-    const latLng = `${r.latLng[0].toFixed(2)}, ${r.latLng[1].toFixed(2)}`
-    return `We assume you visited ${latLng}.`
+    return `We assume you visited ${r.addressDisplayName}.`
   },
   []
 )

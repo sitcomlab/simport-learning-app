@@ -139,6 +139,10 @@ export class SelectTrajectoryPage {
     }
   }
 
+  navigateToDiary() {
+    this.router.navigate(['/diary'])
+  }
+
   private async showToast(message: string, isError: boolean) {
     await this.showToastWithButtons(message, isError, null)
   }

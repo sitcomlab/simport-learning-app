@@ -13,7 +13,7 @@ import { PointCountScoring } from '../../scoring/pointcount-scoring'
 
 import clustering from 'density-clustering'
 import haversine from 'haversine-distance'
-
+import { v4 as uuid } from 'uuid'
 import concaveman from 'concaveman'
 
 export class SimpleEngine implements IInferenceEngine {
@@ -115,6 +115,7 @@ export class SimpleEngine implements IInferenceEngine {
     )
 
     return new Inference(
+      uuid(),
       inferenceDef.type,
       inferenceDef.type,
       'TODO: description',
