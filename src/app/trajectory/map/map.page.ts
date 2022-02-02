@@ -20,11 +20,11 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
+import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
   Inference,
   InferenceConfidenceThresholds,
 } from 'src/app/model/inference'
-import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
