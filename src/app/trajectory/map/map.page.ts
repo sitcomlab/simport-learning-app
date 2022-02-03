@@ -121,7 +121,7 @@ export class MapPage implements OnInit, OnDestroy {
           timestamp: t.timestamps[t.timestamps.length - 1],
         }
 
-        const locale = this.translateService.getBrowserLang()
+        const locale = this.translateService.currentLang
         const popupString = this.translateService.instant(
           'trajectory.map.timestampPopup',
           { value: lastMeasurement.timestamp.toLocaleString(locale) }

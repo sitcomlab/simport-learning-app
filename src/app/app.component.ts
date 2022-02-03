@@ -17,8 +17,15 @@ export class AppComponent implements AfterViewInit {
     private statusBar: StatusBar,
     private translateService: TranslateService
   ) {
-    /// init translation with browser-language (== device-language)
-    this.translateService.use(this.translateService.getBrowserLang())
+    // init translation with browser-language (== device-language)
+    this.translateService.addLangs(['en', 'de'])
+    const browserLang = this.translateService.getBrowserLang()
+    alert(this.translateService.getLangs())
+    if (this.translateService.getLangs().includes(browserLang)) {
+      this.translateService.use(browserLang)
+    } else {
+      this.translateService.use(this.translateService.defaultLang)
+    }
   }
 
   ngAfterViewInit() {

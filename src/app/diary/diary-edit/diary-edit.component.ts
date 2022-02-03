@@ -86,7 +86,7 @@ export class DiaryEditComponent implements OnInit {
   }
 
   dateMonthShortNames(): string[] {
-    const locale = this.translateService.getBrowserCultureLang()
+    const locale = this.translateService.currentLang
     return [...Array(12).keys()].map((v) =>
       new Date(Date.UTC(1970, 1 + v, 0)).toLocaleDateString(locale, {
         month: 'short',

@@ -29,7 +29,7 @@ export class TrajectoryCardComponent implements OnInit {
   durationString() {
     const days = this.trajectory?.durationDays
     if (days) {
-      moment.locale(this.translateService.getBrowserLang())
+      moment.locale(this.translateService.currentLang)
       return moment.duration(days, 'days').humanize()
     }
     return '—'

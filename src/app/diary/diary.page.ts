@@ -42,7 +42,7 @@ export class DiaryPage implements OnInit {
   }
 
   getLocalDate(d: Date): string {
-    const locale = this.translateService.getBrowserCultureLang()
+    const locale = this.translateService.currentLang
     return d.toLocaleDateString(locale)
   }
 

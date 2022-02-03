@@ -14,7 +14,7 @@ export class DiaryDetailComponent implements OnInit {
   entry: DiaryEntry
 
   get localizedDate(): string {
-    const locale = this.translateService.getBrowserCultureLang()
+    const locale = this.translateService.currentLang
     return this.entry.date.toLocaleDateString(locale)
   }
 

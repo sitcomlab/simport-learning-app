@@ -158,8 +158,6 @@ export class ExplorePage implements OnInit {
         })
       )
 
-    return (
-      getWeekDays(this.translateService.getBrowserCultureLang())[dayIndex] || ''
-    )
+    return getWeekDays(this.translateService.currentLang)[dayIndex] || ''
   }
 }
