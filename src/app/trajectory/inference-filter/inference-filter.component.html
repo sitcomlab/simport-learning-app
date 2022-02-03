@@ -11,7 +11,7 @@
   <div style="display: flex; justify-content: center">
     <ion-grid>
       <ion-row>
-        <ion-label>Inferences</ion-label>
+        <ion-label>Filter by inference type</ion-label>
       </ion-row>
       <ion-row *ngFor="let item of inferenceVisiblities | keyvalue">
         <ion-item lines="none">
@@ -24,19 +24,29 @@
       </ion-row>
       <ion-row></ion-row>
       <ion-row>
-        <ion-label>Confidence {{ confidenceThreshold.toFixed(0) }} %</ion-label>
+        <ion-label>Filter by confidence </ion-label>
       </ion-row>
       <ion-row>
-        <ion-range
-          min="0"
-          max="100"
-          value="0"
-          step="5"
-          debounce="10"
-          snaps
-          [(ngModel)]="confidenceThreshold"
-        >
-        </ion-range>
+        <ion-segment [(ngModel)]="confidenceThreshold">
+          <ion-segment-button value="{{ confidenceThresholdCutoffs.low }}">
+            <ion-label
+              >Low <br />
+              confidence</ion-label
+            >
+          </ion-segment-button>
+          <ion-segment-button value="{{ confidenceThresholdCutoffs.medium }}">
+            <ion-label
+              >Medium <br />
+              confidence</ion-label
+            >
+          </ion-segment-button>
+          <ion-segment-button value="{{ confidenceThresholdCutoffs.high }}">
+            <ion-label
+              >High <br />
+              confidence</ion-label
+            >
+          </ion-segment-button>
+        </ion-segment>
       </ion-row>
     </ion-grid>
   </div>
