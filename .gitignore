@@ -32,3 +32,6 @@ npm-debug.log*
 
 # do not commit test-data for now
 src/app/shared-services/inferences/test-data/*
+
+# will be generated on build and we don't need that in git 
+src/assets/licenses.json

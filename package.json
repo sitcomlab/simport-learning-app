@@ -11,8 +11,9 @@
     "test:inferences": "ng test --include src/app/shared-services/inferences/",
     "lint": "prettier --loglevel=warn --write src/app && tslint -p . \"src/app/**/*.ts\"",
     "e2e": "ng e2e",
-    "postinstall": "jetifier",
-    "prepare": "husky install"
+    "postinstall": "jetifier && npm run generate-license-file",
+    "prepare": "husky install",
+    "generate-license-file": "license-checker --production --json > src/assets/licenses.json"
   },
   "private": true,
   "dependencies": {
@@ -90,6 +91,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "license-checker": "^25.0.1",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.1",
     "protractor": "~7.0.0",

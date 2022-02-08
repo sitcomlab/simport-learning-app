@@ -33,6 +33,11 @@ const routes: Routes = [
     loadChildren: () =>
       import('./diary/diary.module').then((m) => m.DiaryPageModule),
   },
+  {
+    path: 'licenses',
+    loadChildren: () =>
+      import('./licenses/licenses.module').then((m) => m.LicensesPageModule),
+  },
 ]
 @NgModule({
   imports: [
