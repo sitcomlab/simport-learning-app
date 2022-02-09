@@ -9,6 +9,7 @@ import {
 import {
   CircleMarker,
   DivIcon,
+  FeatureGroup,
   latLng,
   LatLngBounds,
   LayerGroup,
@@ -20,11 +21,11 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
+import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
   Inference,
   InferenceConfidenceThresholds,
 } from 'src/app/model/inference'
-import { TrajectoryType } from 'src/app/model/trajectory'
 import {
   InferenceResultStatus,
   InferenceType,
@@ -34,6 +35,7 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import haversine from 'haversine-distance'
 import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
@@ -61,12 +63,13 @@ export class MapPage implements OnInit, OnDestroy {
     ],
   }
   mapBounds: LatLngBounds
-  polyline: Polyline
+  polylines: FeatureGroup
   inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
+  readonly disThreshold = 30000
 
   isInferencesEnabled =
     this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
@@ -104,9 +107,40 @@ export class MapPage implements OnInit, OnDestroy {
     this.trajSubscription = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
-        this.polyline = new Polyline(t.coordinates, {
-          weight: 1,
-        })
+        const length = t.coordinates.length
+        let distance = 0
+        let temporaryCoordinates = []
+        const segments = new LayerGroup()
+
+        for (let i = 0; i < length; i++) {
+          if (
+            ((t.state[i] === PointState.START ||
+              distance > this.disThreshold) &&
+              i > 0) ||
+            i === length - 1
+          ) {
+            const polyline = new Polyline(temporaryCoordinates, {
+              weight: 1,
+            })
+            polyline.addTo(segments)
+            temporaryCoordinates = []
+          }
+          if (i + 1 < length) {
+            distance = haversine(
+              {
+                latitude: t.coordinates[i][1],
+                longitude: t.coordinates[i][0],
+              },
+              {
+                latitude: t.coordinates[i + 1][1],
+                longitude: t.coordinates[i + 1][0],
+              }
+            )
+          }
+          temporaryCoordinates.push(t.coordinates[i])
+        }
+
+        this.polylines = new FeatureGroup(segments.getLayers())
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
@@ -123,7 +157,7 @@ export class MapPage implements OnInit, OnDestroy {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
-          this.mapBounds = this.polyline.getBounds()
+          this.mapBounds = this.polylines.getBounds()
           this.map?.invalidateSize()
         }
 
