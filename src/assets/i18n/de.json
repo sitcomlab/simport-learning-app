@@ -114,7 +114,7 @@
     "stateRunning": "Läuft",
     "stateStopped": "Gestoppt",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
-    "androidBatteryHint": "Damit die App korrekt funktioniert solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
+    "androidBatteryHint": "Damit die App korrekt funktioniert, solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
