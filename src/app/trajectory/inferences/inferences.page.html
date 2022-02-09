@@ -1,9 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button
+        [text]="'general.back' | translate"
+        defaultHref="/"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-title> Insights </ion-title>
+    <ion-title> {{ 'trajectory.insights.title' | translate }} </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openInferenceFilter()">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
@@ -13,9 +16,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="!inferences.length" class="centered">
-    <div>No inferences made so far.</div>
-    <div><a routerLink="../map">Look at the map instead?</a></div>
+  <div *ngIf="!inferences.length" class="centered ion-padding">
+    <div>{{ 'trajectory.insights.noInferences' | translate }}</div>
+    <div>
+      <a (click)="openMap()"
+        >{{ 'trajectory.insights.lookAtMapLink' | translate }}</a
+      >
+    </div>
   </div>
 
   <app-item-card

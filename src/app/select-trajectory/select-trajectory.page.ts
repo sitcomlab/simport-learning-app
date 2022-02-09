@@ -7,6 +7,7 @@ import {
   ToastController,
 } from '@ionic/angular'
 import { ToastButton } from '@ionic/core'
+import { TranslateService } from '@ngx-translate/core'
 import { DebugWindowComponent } from '../debug-window/debug-window.component'
 import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
@@ -32,7 +33,8 @@ export class SelectTrajectoryPage {
     private routerOutlet: IonRouterOutlet,
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    public locationService: LocationService
+    public locationService: LocationService,
+    public translateService: TranslateService
   ) {}
 
   private CLICK_INTERVAL = 500
@@ -110,24 +112,29 @@ export class SelectTrajectoryPage {
         await this.trajectoryImportExportService
           .selectAndImportTrajectory(async () => {
             // did select file
-            await this.showLoadingDialog('Importing trajectory …')
+            const dialogMessage = this.translateService.instant(
+              'trajectory.import.loadingDialogTitle'
+            )
+            await this.showLoadingDialog(dialogMessage)
           })
           .then(async (result) => {
             await this.hideLoadingDialog()
             if (result.success) {
+              const viewString = this.translateService.instant('general.view')
               const viewTrajectoryButton = {
-                text: 'View',
+                text: viewString,
                 handler: async () => {
                   this.router.navigate([
                     `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
                   ])
                 },
               }
-              await this.showToastWithButtons(
-                'Trajectory successfully imported',
-                false,
-                [viewTrajectoryButton]
+              const toastMessage = this.translateService.instant(
+                'trajectory.import.successfulMessage'
               )
+              await this.showToastWithButtons(toastMessage, false, [
+                viewTrajectoryButton,
+              ])
             } else {
               await this.showToast(result.errorMessage, true)
             }

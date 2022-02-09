@@ -1,0 +1,162 @@
+{
+  "title": "SIMPORT",
+  "general": {
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "share": "Teilen",
+    "export": "Exportieren",
+    "view": "Anzeigen",
+    "back": "Zurück",
+    "done": "Fertig"
+  },
+  "diary": {
+    "title": "Tagebuch",
+    "noEntryDescription": "Es scheint, als hättest du noch keine Tagebucheinträge verfasst…",
+    "createEntryTitle": "Eintrag erstellen",
+    "createNewEntryTitle": "Neuen Eintrag erstellen",
+    "updateEntryTitle": "Eintrag aktualisieren",
+    "dateTitle": "Datum",
+    "contentTitle": "Inhalt",
+    "contentPlaceholder": "Gib deine Gedanken ein…",
+    "deleteEntryAlertHeader": "Eintrag löschen",
+    "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
+    "exportFileName": "Mein SIMPORT Tagebuch",
+    "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
+  },
+  "trajectory": {
+    "select": {
+      "title": "Standortverläufe",
+      "record": {
+        "title": "Standortverlauf aufzeichnen",
+        "subtitle": "Erhalte Benachrichtigungen, sobald Rückschlüsse über dich gezogen wurden"
+      },
+      "explore": {
+        "title": "Standortverläufe entdecken",
+        "subtitle": "Erkunde interaktiv deinen Aufenthaltsort"
+      },
+      "add": {
+        "title": "Standortverlauf hinzufügen",
+        "subtitle": "Importiere JSON-Dateien"
+      },
+      "diary": {
+        "title": "Tagebuch",
+        "subtitle": "Halte deine Gedanken fest"
+      },
+      "recordedBadge": "aufgezeichnet",
+      "importedBadge": "importiert",
+      "exampleBadge": "Beispiel",
+      "userTrajectoryTitle": "Dein Standortverlauf"
+    },
+    "import": {
+      "loadingDialogMessage": "Importiere Standortverlauf…",
+      "successfulMessage": "Standortverlauf erfolgreich importiert",
+      "errorMessage": "Import fehlgeschlagen",
+      "fileTypeErrorMessage": "Bitte wähle JSON-Dateien"
+    },
+    "export": {
+      "alertHeader": "Standortverlauf exportieren",
+      "saveMessage": "In Downloads speichern",
+      "loadingDialogMessage": "Exportiere Standortverlauf…",
+      "successfulMessage": "Standortverlauf erfolgreich exportiert",
+      "errorMessage": "Export fehlgeschlagen",
+      "permissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen"
+    },
+    "delete": {
+      "alertHeader": "'{{ value }}' löschen",
+      "alertMessage": "Möchtest du den Standortverlauf wirklich löschen?",
+      "loadingDialogMessage": "Lösche Standortverlauf…",
+      "successfulMessage": "Standortverlauf erfolgreich gelöscht",
+      "errorMessage": "Löschen fehlgeschlagen"
+    },
+    "explore": {
+      "title": "Zeitplan",
+      "poiTimetableTitle": "Zeitplan deiner Orte",
+      "poiTimetableDescription": "Der Zeitplan visualisiert deine häufig besuchten Orte für jeden Wochentag. Wähle einen deiner besuchten Orte aus und schaue dir an, wann du dort gewesen bist.",
+      "selectPOI": "Ort auswählen",
+      "timetableChart": {
+        "hour": "Stunde"
+      }
+    },
+    "filter": {
+      "title": "Rückschlüsse filtern",
+      "byInferenceType": "Filtern nach Typ",
+      "byConfidence": "Filtern nach Wahrscheinlichkeit",
+      "low": "Gering",
+      "medium": "Mittel",
+      "high": "Hoch"
+    },
+    "insights": {
+      "title": "Rückschlüsse",
+      "noInferences": "Es konnten noch keine Rückschlüsse gezogen werden.",
+      "lookAtMapLink": "Stattdessen die Karte öffnen?"
+    },
+    "map": {
+      "title": "Karte",
+      "error": {
+        "tooManyCoordinates": "Standortverlauf kann nicht analysiert werden. Zu viele Koordinaten.",
+        "noInferencesFound": "Aus deinem Standortverlauf konnten noch keine Rückschlüsse gezogen werden.",
+        "default": "Standortverlauf kann nicht analysiert werden."
+      },
+      "loadingInferences": "Lade Rückschlüsse…",
+      "predictionButtonText": "Nächsten Aufenthaltsort bestimmen",
+      "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen",
+      "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen",
+      "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
+      "toggleLocationButtonText": "Position ein- / ausblenden",
+      "createInferencesButtonText": "Rückschlüsse generieren",
+      "osmContributors": "OpenStreetMap-Mitwirkende",
+      "timestampPopup": "Zeitpunkt: {{ value }}"
+    }
+  },
+  "tracking": {
+    "title": "Standortverlauf",
+    "toggleTitle": "Aufzeichnung starten / stoppen",
+    "stateRunning": "Läuft",
+    "stateStopped": "Gestoppt",
+    "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
+    "androidBatteryHint": "Damit die App korrekt funktioniert, solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
+    "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
+    "systemSettings": "Systemeinstellungen",
+    "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
+    "showNotifications": "Benachrichtigungen anzeigen",
+    "loading": "Warte…"
+  },
+  "notification": {
+    "predictionTitle": "Du wirst {{ value }} besuchen",
+    "predictionText": "Wir glauben, dass du {{ value }} in der nächsten Stunde besuchen wirst.",
+    "inferencesFoundTitle": "Neue Rückschlüsse gefunden",
+    "inferencesFoundText": "Wir können {{ value }} Rückschlüsse basierend auf deinem Standortverlauf ziehen",
+    "inferencesGenerationLoadingDialog": "Generiere Rückschlüsse aus deinem Standortverlauf…",
+    "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
+    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Rückschlüsse zu ziehen.",
+    "locationUpdateTitle": "Standort aktualisiert",
+    "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
+    "trackingStarted": "Aufzeichnung gestartet",
+    "trackingStopped": "Aufzeichnung gestoppt"
+  },
+  "confirm": {
+    "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",
+    "grantLocationPermissionSettings": "Die App benötigt die Erlaubnis auf deinen Standort zuzugreifen. Bitte erteile diese in den Einstellungen."
+  },
+  "inference": {
+    "work": "Arbeitsort",
+    "home": "Wohnort",
+    "poi": "Häufig besuchter Ort",
+    "unknown": "Unbekannter Rückschluss: {{ value }}",
+    "info": {
+      "work": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Arbeitsort ist.",
+      "home": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Wohnort ist.",
+      "poi": "Wir glauben, dass du {{ address }} regelmäßig besuchst.",
+      "confidence": {
+        "low": "geringer Wahrscheinlichkeit",
+        "medium": "mittlerer Wahrscheinlichkeit",
+        "high": "hoher Wahrscheinlichkeit"
+      }
+    },
+    "confidence": {
+      "low": "geringe Wahrscheinlichkeit",
+      "medium": "mittlere Wahrscheinlichkeit",
+      "high": "hohe Wahrscheinlichkeit"
+    }
+  }
+}

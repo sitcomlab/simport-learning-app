@@ -1,24 +1,24 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button
+        [text]="'general.back' | translate"
+        defaultHref="/"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-title> Data Exploration </ion-title>
+    <ion-title> {{ "trajectory.explore.title" | translate }} </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
-    <h2>POI Timetable</h2>
-    <p>
-      The timetable visualizes frequent visits of selected POIs for each
-      weekday. Select an identified POI and explore when you have visited it in
-      the past.
-    </p>
+    <h2>{{ "trajectory.explore.poiTimetableTitle" | translate }}</h2>
+    <p>{{ "trajectory.explore.poiTimetableDescription" | translate }}</p>
     <ion-item lines="none">
-      <ion-label>Select POI</ion-label>
+      <ion-label>{{ "trajectory.explore.selectPOI" | translate }}</ion-label>
       <ion-select
         interface="action-sheet"
+        [cancelText]="'general.cancel' | translate"
         (ionChange)="drawChartFromEvent($event)"
       >
         <ion-select-option *ngFor="let i of inferences" [value]="i"

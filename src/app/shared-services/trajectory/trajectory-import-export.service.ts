@@ -16,6 +16,7 @@ import {
 } from '@capacitor/core'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { take } from 'rxjs/operators'
+import { TranslateService } from '@ngx-translate/core'
 const { FileSelector, Filesystem } = Plugins
 
 interface TrajectoryExportFile {
@@ -46,7 +47,8 @@ export class TrajectoryImportExportService extends TrajectoryService {
     http: HttpClient,
     db: SqliteService,
     private socialSharing: SocialSharing,
-    private platform: Platform
+    private platform: Platform,
+    private translateService: TranslateService
   ) {
     super(http, db)
   }
@@ -89,7 +91,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
     return {
       success: false,
-      errorMessage: 'Trajectory could not be imported',
+      errorMessage: this.translateService.instant(
+        'trajectory.import.errorMessage'
+      ),
       trajectoryId: null,
     }
   }
@@ -138,7 +142,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
       return {
         success: false,
         trajectoryId: null,
-        errorMessage: 'Please select JSON-files',
+        errorMessage: this.translateService.instant(
+          'trajectory.import.fileTypeErrorMessage'
+        ),
       }
     }
 
@@ -161,7 +167,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
               resolve({
                 success: false,
                 trajectoryId: trajectory.id,
-                errorMessage: 'Trajectory could not be imported',
+                errorMessage: this.translateService.instant(
+                  'trajectory.import.errorMessage'
+                ),
               })
             })
         }
@@ -170,7 +178,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
       return {
         success: false,
         trajectoryId: null,
-        errorMessage: 'Trajectory could not be imported',
+        errorMessage: this.translateService.instant(
+          'trajectory.import.errorMessage'
+        ),
       }
     }
   }
@@ -189,20 +199,26 @@ export class TrajectoryImportExportService extends TrajectoryService {
       files: [
         `df:${trajectoryFile.filename}.json;data:application/json;base64,${trajectoryFile.trajectory}`,
       ],
-      chooserTitle: 'Exporting trajectory', // android-only dialog-title
+      chooserTitle: this.translateService.instant(
+        'trajectory.export.alertHeader'
+      ), // android-only dialog-title
     }
     return this.socialSharing
       .shareWithOptions(sharingOptions)
       .then(async (result: { completed: boolean; app: string }) => {
         return {
           success: result.completed,
-          errorMessage: 'Trajectory could not be exported',
+          errorMessage: this.translateService.instant(
+            'trajectory.export.errorMessage'
+          ),
         }
       })
       .catch(async () => {
         return {
           success: false,
-          errorMessage: 'Trajectory could not be exported',
+          errorMessage: this.translateService.instant(
+            'trajectory.export.errorMessage'
+          ),
         }
       })
   }
@@ -229,7 +245,9 @@ export class TrajectoryImportExportService extends TrajectoryService {
     } catch (e) {
       return {
         success: false,
-        errorMessage: 'Trajectory could not be exported',
+        errorMessage: this.translateService.instant(
+          'trajectory.export.errorMessage'
+        ),
       }
     }
   }

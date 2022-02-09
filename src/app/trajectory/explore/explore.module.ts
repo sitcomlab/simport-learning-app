@@ -9,6 +9,7 @@ import { NgApexchartsModule } from 'ng-apexcharts'
 import { ExplorePageRoutingModule } from './explore-routing.module'
 
 import { ExplorePage } from './explore.page'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { ExplorePage } from './explore.page'
     IonicModule,
     ExplorePageRoutingModule,
     NgApexchartsModule,
+    TranslateModule,
   ],
   declarations: [ExplorePage],
 })

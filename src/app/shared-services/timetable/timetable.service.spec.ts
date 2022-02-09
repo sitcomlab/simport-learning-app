@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing'
+import { TranslateService } from '@ngx-translate/core'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { BackgroundService } from '../background/background.service'
@@ -16,9 +18,11 @@ describe('TimetableService', () => {
   let notificationServiceSpy: jasmine.SpyObj<NotificationService>
   let backgroundServiceSpy: jasmine.SpyObj<BackgroundService>
   let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>
+  let translateServiceSpy: jasmine.SpyObj<TranslateService>
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: APP_TEST_IMPORTS,
       providers: [
         {
           provide: SqliteService,
@@ -56,13 +60,17 @@ describe('TimetableService', () => {
     featureFlagServiceSpy = TestBed.inject(
       FeatureFlagService
     ) as jasmine.SpyObj<FeatureFlagService>
+    translateServiceSpy = TestBed.inject(
+      TranslateService
+    ) as jasmine.SpyObj<TranslateService>
 
     service = new TimetableService(
       dbServiceSpy,
       notificationServiceSpy,
       trajectoryServiceSpy,
       featureFlagServiceSpy,
-      backgroundServiceSpy
+      backgroundServiceSpy,
+      translateServiceSpy
     )
   })
 

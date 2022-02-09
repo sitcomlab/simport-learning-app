@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { RouterTestingModule } from '@angular/router/testing'
-import { IonicModule } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 
@@ -15,7 +14,7 @@ describe('DiaryEditComponent', () => {
       TestBed.configureTestingModule({
         declarations: [DiaryEditComponent],
         providers: [DiaryService, SqliteService],
-        imports: [IonicModule.forRoot(), RouterTestingModule],
+        imports: APP_TEST_IMPORTS,
       }).compileComponents()
 
       fixture = TestBed.createComponent(DiaryEditComponent)

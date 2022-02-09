@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core'
 import {
   Inference,
   InferenceConfidenceThresholds,
@@ -9,14 +10,14 @@ export const WorkInference = new InferenceDefinition(
   'workplace',
   InferenceType.work,
   'business',
-  (lang?: string) => 'Workplace',
-  (r: Inference, lang?: string) => {
-    const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are working at ${
-      r.addressDisplayName
-    } with ${InferenceConfidenceThresholds.getQualitativeConfidence(
-      r.confidence
-    )}.`
+  (r: Inference, t: TranslateService) => {
+    const confidenceValue =
+      InferenceConfidenceThresholds.getQualitativeConfidence(r.confidence)
+    const confidence = t.instant(`inference.info.confidence.${confidenceValue}`)
+    return t.instant('inference.info.work', {
+      address: r.addressDisplayName,
+      confidence,
+    })
   },
   [
     {
@@ -41,14 +42,14 @@ export const HomeInference = new InferenceDefinition(
   'home',
   InferenceType.home,
   'home',
-  (lang?: string) => 'Home',
-  (r: Inference, lang?: string) => {
-    const confidence = (r.confidence * 100).toFixed(0)
-    return `We assume you are living at ${
-      r.addressDisplayName
-    } with ${InferenceConfidenceThresholds.getQualitativeConfidence(
-      r.confidence
-    )}.`
+  (r: Inference, t: TranslateService) => {
+    const confidenceValue =
+      InferenceConfidenceThresholds.getQualitativeConfidence(r.confidence)
+    const confidence = t.instant(`inference.info.confidence.${confidenceValue}`)
+    return t.instant('inference.info.home', {
+      address: r.addressDisplayName,
+      confidence,
+    })
   },
   [
     {
@@ -73,9 +74,8 @@ export const POIInference = new InferenceDefinition(
   'poi',
   InferenceType.poi,
   'flag',
-  (lang?: string) => 'Point of interest',
-  (r: Inference, lang?: string) => {
-    return `We assume you visited ${r.addressDisplayName}.`
+  (r: Inference, t: TranslateService) => {
+    return t.instant('inference.info.poi', { address: r.addressDisplayName })
   },
   []
 )

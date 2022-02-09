@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
-import { RouterModule } from '@angular/router'
-import { RouterTestingModule } from '@angular/router/testing'
-import { IonicModule } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from '../app.declarations'
 import { SqliteService } from '../shared-services/db/sqlite.service'
 
 import { DiaryPage } from './diary.page'
@@ -14,7 +12,7 @@ describe('DiaryPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [DiaryPage],
-        imports: [IonicModule.forRoot(), RouterTestingModule],
+        imports: APP_TEST_IMPORTS,
         providers: [SqliteService],
       }).compileComponents()
 
