@@ -63,7 +63,6 @@ export class MapPage implements OnInit, OnDestroy {
     ],
   }
   mapBounds: LatLngBounds
-  segments = new LayerGroup()
   polylines: FeatureGroup
   inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
@@ -111,7 +110,7 @@ export class MapPage implements OnInit, OnDestroy {
         const length = t.coordinates.length
         let distance = 0
         let temporaryCoordinates = []
-        this.segments.clearLayers()
+        const segments = new LayerGroup()
 
         for (let i = 0; i < length; i++) {
           if (
@@ -123,7 +122,7 @@ export class MapPage implements OnInit, OnDestroy {
             const polyline = new Polyline(temporaryCoordinates, {
               weight: 1,
             })
-            polyline.addTo(this.segments)
+            polyline.addTo(segments)
             temporaryCoordinates = []
           }
           if (i + 1 < length) {
@@ -141,7 +140,7 @@ export class MapPage implements OnInit, OnDestroy {
           temporaryCoordinates.push(t.coordinates[i])
         }
 
-        this.polylines = new FeatureGroup(this.segments.getLayers())
+        this.polylines = new FeatureGroup(segments.getLayers())
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
