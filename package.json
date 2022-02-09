@@ -12,7 +12,9 @@
     "lint": "prettier --loglevel=warn --write src/app && tslint -p . \"src/app/**/*.ts\"",
     "e2e": "ng e2e",
     "postinstall": "jetifier",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "resources:ios": "capacitor-resources -i ./resources/icon_ios.png -I -p ios",
+    "resources:android": "capacitor-resources -i ./resources/icon_android.png -I -p android"
   },
   "private": true,
   "dependencies": {
@@ -80,6 +82,7 @@
     "@types/node": "^15.12.2",
     "@types/uuid": "^8.3.0",
     "codelyzer": "^6.0.0",
+    "capacitor-resources": "^2.0.5",
     "gpx-parse": "^0.10.4",
     "husky": "^6.0.0",
     "jasmine-core": "^3.7.1",
