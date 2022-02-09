@@ -21,6 +21,7 @@
     (leafletMapReady)="onMapReady($event)"
     (leafletMapMoveEnd)="onMapMoved($event)"
   >
+    <div [leafletLayer]="polylines"></div>
     <div [leafletLayer]="inferenceHulls"></div>
     <div [leafletLayer]="lastLocation"></div>
   </div>
