@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install npm@7 -g
+          npm install npm@8 -g
           npm config set package-lock false
           npm install
 
