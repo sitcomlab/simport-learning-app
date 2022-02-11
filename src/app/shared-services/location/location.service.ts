@@ -73,9 +73,15 @@ export class LocationService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.locationUpdateSubscription.unsubscribe()
-    this.startEventSubscription.unsubscribe()
-    this.stopEventSubscription.unsubscribe()
+    if (this.locationUpdateSubscription) {
+      this.locationUpdateSubscription.unsubscribe()
+    }
+    if (this.startEventSubscription) {
+      this.startEventSubscription.unsubscribe()
+    }
+    if (this.stopEventSubscription) {
+      this.stopEventSubscription.unsubscribe()
+    }
   }
 
   enableNotifications(enabled: boolean) {
