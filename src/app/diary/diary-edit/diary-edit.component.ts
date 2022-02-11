@@ -1,8 +1,3 @@
-import {
-  FormStyle,
-  getLocaleMonthNames,
-  TranslationWidth,
-} from '@angular/common'
 import { Component, Input, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { ModalController } from '@ionic/angular'
@@ -77,21 +72,8 @@ export class DiaryEditComponent implements OnInit {
     }
   }
 
-  dateFormat(): string {
-    if (this.translateService.currentLang === 'de') {
-      return 'DD. MMM YYYY'
-    } else {
-      return 'MMM D, YYYY'
-    }
-  }
-
-  dateMonthShortNames(): string[] {
-    const locale = this.translateService.currentLang
-    return [...Array(12).keys()].map((v) =>
-      new Date(Date.UTC(1970, 1 + v, 0)).toLocaleDateString(locale, {
-        month: 'short',
-      })
-    )
+  getLocale(): string {
+    return this.translateService.currentLang
   }
 
   dismiss() {

@@ -99,8 +99,10 @@ export class LocationService implements OnDestroy {
         } else return false
       }
       if (
-        status.authorization === 99 ||
-        BackgroundGeolocationAuthorizationStatus.AUTHORIZED
+        status.authorization ===
+          BackgroundGeolocationAuthorizationStatus.AUTHORIZED_FOREGROUND ||
+        status.authorization ===
+          BackgroundGeolocationAuthorizationStatus.AUTHORIZED
       ) {
         this.backgroundGeolocation.start()
         this.nextLocationIsStart = true

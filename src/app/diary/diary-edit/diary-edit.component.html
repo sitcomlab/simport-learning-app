@@ -31,10 +31,8 @@
       'diary.dateTitle' | translate
     }}</ion-label>
     <ion-datetime
-      [displayFormat]="dateFormat()"
-      [monthShortNames]="dateMonthShortNames()"
-      [cancelText]="'general.cancel' | translate"
-      [doneText]="'general.done' | translate"
+      presentation="date"
+      [locale]="getLocale()"
       [(ngModel)]="date"
     ></ion-datetime>
   </ion-item>
