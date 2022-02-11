@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { ToastController } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import { DiaryEntry } from '../model/diary-entry'
 import { DiaryService } from '../shared-services/diary/diary.service'
 
@@ -15,7 +16,8 @@ export class DiaryPage implements OnInit {
   constructor(
     private router: Router,
     private diaryService: DiaryService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {}
@@ -31,12 +33,17 @@ export class DiaryPage implements OnInit {
       await this.diaryService.exportDiary()
     } catch (e) {
       const toast = await this.toastController.create({
-        message: e,
+        message: e.message,
         color: 'danger',
         duration: 2000,
       })
       await toast.present()
     }
+  }
+
+  getLocalDate(d: Date): string {
+    const locale = this.translateService.currentLang
+    return d.toLocaleDateString(locale)
   }
 
   navigateDetail(id: string) {

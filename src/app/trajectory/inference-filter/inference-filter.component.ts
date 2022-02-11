@@ -36,6 +36,10 @@ export class InferenceFilterComponent implements OnDestroy {
     return AllInferences[type].outlinedIcon
   }
 
+  getTitleKeyFromInferenceType(type: string) {
+    return `inference.${type}`
+  }
+
   ngOnDestroy() {
     this.inferenceService.filterConfiguration.next(this.filterConfiguration)
   }

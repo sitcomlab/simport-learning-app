@@ -9,6 +9,7 @@ import {
   Platform,
   ActionSheetController,
 } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
 import { LocationService } from 'src/app/shared-services/location/location.service'
 import {
@@ -34,7 +35,8 @@ export class TrajectoryCardPopoverPage implements OnInit {
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
     private locationService: LocationService,
-    private trajectoryImportExportService: TrajectoryImportExportService
+    private trajectoryImportExportService: TrajectoryImportExportService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {}
@@ -46,7 +48,9 @@ export class TrajectoryCardPopoverPage implements OnInit {
     if (this.platform.is('android')) {
       await this.presentExportActionSheet()
     } else {
-      await this.showLoadingDialog('Exporting trajectory...')
+      await this.showLoadingDialog(
+        this.translateService.instant('trajectory.export.loadingDialogMessage')
+      )
       await this.trajectoryImportExportService
         .exportTrajectoryViaShareDialog(this.trajectory)
         .then(async (result) => {
@@ -57,15 +61,19 @@ export class TrajectoryCardPopoverPage implements OnInit {
 
   private async presentExportActionSheet() {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Export trajectory',
+      header: this.translateService.instant('trajectory.export.alertHeader'),
       buttons: [
         {
-          text: 'Save to downloads',
+          text: this.translateService.instant('trajectory.export.saveMessage'),
           icon: 'save-outline',
           handler: async () => {
             const hasPermission = await this.requestAndroidPermission()
             if (hasPermission) {
-              await this.showLoadingDialog('Exporting trajectory...')
+              await this.showLoadingDialog(
+                this.translateService.instant(
+                  'trajectory.export.loadingDialogMessage'
+                )
+              )
               await this.trajectoryImportExportService
                 .exportTrajectoryToDownloads(this.trajectory)
                 .then(async (result) => {
@@ -73,17 +81,23 @@ export class TrajectoryCardPopoverPage implements OnInit {
                 })
             } else {
               await this.showToast(
-                'Trajectory could not be exported as permissions were denied',
+                this.translateService.instant(
+                  'trajectory.export.permissionErrorMessage'
+                ),
                 true
               )
             }
           },
         },
         {
-          text: 'Share',
+          text: this.translateService.instant('general.share'),
           icon: 'share-social-outline',
           handler: async () => {
-            await this.showLoadingDialog('Exporting trajectory...')
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.export.loadingDialogMessage'
+              )
+            )
             await this.trajectoryImportExportService
               .exportTrajectoryViaShareDialog(this.trajectory)
               .then(async (result) => {
@@ -92,7 +106,7 @@ export class TrajectoryCardPopoverPage implements OnInit {
           },
         },
         {
-          text: 'Cancel',
+          text: this.translateService.instant('general.cancel'),
           icon: 'close',
           role: 'cancel',
         },
@@ -104,7 +118,10 @@ export class TrajectoryCardPopoverPage implements OnInit {
   private async handleExportResult(result: TrajectoryExportResult) {
     await this.hideLoadingDialog()
     if (result.success) {
-      await this.showToast('Trajectory successfully exported', false)
+      await this.showToast(
+        this.translateService.instant('trajectory.export.successfulMessage'),
+        false
+      )
     } else {
       await this.showToast(result.errorMessage, true)
     }
@@ -134,18 +151,24 @@ export class TrajectoryCardPopoverPage implements OnInit {
     e.stopPropagation()
     this.popoverController.dismiss()
     const alert = await this.alertController.create({
-      header: `Delete ${this.trajectory?.placename ?? 'trajectory'}`,
-      message: 'Are you sure you want to delete the trajectory?',
+      header: this.translateService.instant('trajectory.delete.alertHeader', {
+        value: this.trajectory?.placename ?? 'trajectory',
+      }),
+      message: this.translateService.instant('trajectory.delete.alertMessage'),
       buttons: [
         {
-          text: 'Cancel',
+          text: this.translateService.instant('general.cancel'),
           role: 'cancel',
         },
         {
-          text: 'Delete',
+          text: this.translateService.instant('general.delete'),
           cssClass: 'danger',
           handler: async () => {
-            await this.showLoadingDialog('Deleting trajectory...')
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.delete.loadingDialogMessage'
+              )
+            )
             if (this.trajectory.type === TrajectoryType.USERTRACK) {
               this.locationService.stop()
             }
@@ -153,12 +176,22 @@ export class TrajectoryCardPopoverPage implements OnInit {
               .deleteTrajectory(this.trajectory)
               .then(async () => {
                 await this.hideLoadingDialog()
-                await this.showToast('Trajectory successfully deleted', false)
+                await this.showToast(
+                  this.translateService.instant(
+                    'trajectory.delete.successfulMessage'
+                  ),
+                  false
+                )
                 await this.modalController.dismiss()
               })
               .catch(async () => {
                 await this.hideLoadingDialog()
-                await this.showToast('Trajectory could not be deleted', true)
+                await this.showToast(
+                  this.translateService.instant(
+                    'trajectory.delete.errorMessage'
+                  ),
+                  true
+                )
               })
           },
         },

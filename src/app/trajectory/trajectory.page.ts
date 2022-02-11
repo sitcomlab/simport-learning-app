@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import {
@@ -35,27 +36,28 @@ export class TrajectoryPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
     private inferenceService: InferenceService,
-    private featureFlagService: FeatureFlagService
+    private featureFlagService: FeatureFlagService,
+    private translateService: TranslateService
   ) {
     if (this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Inferences,
         icon: 'magnet-outline',
-        title: 'Insights',
+        title: this.translateService.instant('trajectory.insights.title'),
       })
     }
     if (this.featureFlagService.featureFlags.isTrajectoryMapEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Map,
         icon: 'map-outline',
-        title: 'Map',
+        title: this.translateService.instant('trajectory.map.title'),
       })
     }
     if (this.featureFlagService.featureFlags.isTrajectoryExplorationEnabled) {
       this.tabs.push({
         path: TrajectoryPagePath.Exploration,
         icon: 'bar-chart-outline',
-        title: 'Explore',
+        title: this.translateService.instant('trajectory.explore.title'),
       })
     }
   }

@@ -7,6 +7,8 @@ export class DiaryEntry {
     public content: string
   ) {}
 
+  static abstractLength = 20
+
   static fromJSON({ id, created, updated, date, content }): DiaryEntry {
     return new DiaryEntry(
       id,
@@ -18,6 +20,8 @@ export class DiaryEntry {
   }
 
   get abstract(): string {
-    return `${this.content.substring(0, 20)}...`
+    return this.content.length <= DiaryEntry.abstractLength
+      ? this.content
+      : `${this.content.substring(0, DiaryEntry.abstractLength)}…`
   }
 }

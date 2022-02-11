@@ -31,6 +31,7 @@ import {
 } from '../background/background.service'
 import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
+import { TranslateService } from '@ngx-translate/core'
 
 const { App } = Plugins
 
@@ -86,7 +87,8 @@ export class InferenceService
     private loadingController: LoadingController,
     private staypointService: StaypointService,
     private featureFlagService: FeatureFlagService,
-    protected backgroundService: BackgroundService
+    protected backgroundService: BackgroundService,
+    private translateService: TranslateService
   ) {
     super(backgroundService, 'com.transistorsoft.fetch')
 
@@ -233,8 +235,10 @@ export class InferenceService
       if (significantInferencesLength > 0) {
         this.notificationService.notify(
           NotificationType.inferenceUpdate,
-          'Inferences found',
-          `We're now able to draw ${significantInferencesLength} conclusions from your location history`
+          this.translateService.instant('notification.inferencesFoundTitle'),
+          this.translateService.instant('notification.inferencesFoundText', {
+            value: significantInferencesLength,
+          })
         )
       }
     }
@@ -257,7 +261,9 @@ export class InferenceService
   private async showLoadingDialog() {
     if (!this.loadingOverlay) {
       this.loadingOverlay = await this.loadingController.create({
-        message: 'Generating inferences from your location history …',
+        message: this.translateService.instant(
+          'notification.inferencesGenerationLoadingDialog'
+        ),
         translucent: true,
       })
       await this.loadingOverlay.present()

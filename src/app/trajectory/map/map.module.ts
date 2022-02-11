@@ -8,6 +8,7 @@ import { MapPageRoutingModule } from './map-routing.module'
 
 import { MapPage } from './map.page'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet'
     IonicModule,
     MapPageRoutingModule,
     LeafletModule,
+    TranslateModule,
   ],
   declarations: [MapPage],
 })

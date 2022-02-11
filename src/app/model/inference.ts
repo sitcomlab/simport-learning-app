@@ -91,8 +91,8 @@ export abstract class InferenceConfidenceThresholds {
   public static low = 0.05
 
   public static getQualitativeConfidence(confidenceValue: number): string {
-    if (confidenceValue >= this.high) return 'high confidence'
-    else if (confidenceValue >= this.medium) return 'medium confidence'
-    else if (confidenceValue >= this.low) return 'low confidence'
+    if (confidenceValue >= this.high) return 'high'
+    else if (confidenceValue >= this.medium) return 'medium'
+    else if (confidenceValue >= this.low) return 'low'
   }
 }

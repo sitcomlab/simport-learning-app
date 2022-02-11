@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
+import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-tracking',
@@ -27,15 +28,20 @@ export class TrackingPage implements OnInit, OnDestroy {
     public platform: Platform,
     public locationService: LocationService,
     private trajectoryService: TrajectoryService,
-    private router: Router
+    private router: Router,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
-    this.setState('Waiting…')
+    this.setState(this.translateService.instant('tracking.loading'))
     this.setStateIcon(false)
     this.locationServiceStateSubscription =
       this.locationService.isRunning.subscribe((state) => {
-        this.setState(state ? 'Running' : 'Stopped')
+        this.setState(
+          state
+            ? this.translateService.instant('tracking.stateRunning')
+            : this.translateService.instant('tracking.stateStopped')
+        )
         this.setStateIcon(state)
       })
     this.locationServiceNotificationToggleSubscription =

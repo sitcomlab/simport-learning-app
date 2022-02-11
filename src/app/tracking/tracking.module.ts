@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular'
 import { TrackingPageRoutingModule } from './tracking-routing.module'
 import { TrackingPage } from './tracking.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { TranslateModule } from '@ngx-translate/core'
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     IonicModule,
     TrackingPageRoutingModule,
     SharedUiModule,
+    TranslateModule,
   ],
   declarations: [TrackingPage],
 })

@@ -9,6 +9,7 @@ import {
 import {
   CircleMarker,
   DivIcon,
+  FeatureGroup,
   latLng,
   LatLngBounds,
   LayerGroup,
@@ -38,6 +39,7 @@ import haversine from 'haversine-distance'
 import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
+import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-map',
@@ -53,8 +55,7 @@ export class MapPage implements OnInit, OnDestroy {
       tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          attribution: this.mapAttributionString,
           subdomains: 'abcd',
           maxZoom: 19,
         }
@@ -62,11 +63,13 @@ export class MapPage implements OnInit, OnDestroy {
     ],
   }
   mapBounds: LatLngBounds
+  polylines: FeatureGroup
   inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
+  readonly disThreshold = 30000
 
   isInferencesEnabled =
     this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
@@ -76,9 +79,15 @@ export class MapPage implements OnInit, OnDestroy {
   generatedInferences = false
   predictedInferenceIds: string[] = []
 
+  private get mapAttributionString(): string {
+    const osmContributors = this.translateService.instant(
+      'trajectory.map.osmContributors'
+    )
+    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
+  }
+
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
-  private polylines: Polyline[] = []
   private trajSubscription: Subscription
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
@@ -93,7 +102,8 @@ export class MapPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private timetableService: TimetableService,
     private modalController: ModalController,
-    private routerOutlet: IonRouterOutlet
+    private routerOutlet: IonRouterOutlet,
+    private translateService: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -106,28 +116,21 @@ export class MapPage implements OnInit, OnDestroy {
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
         const length = t.coordinates.length
-        const disThreshold = 6000
         let distance = 0
-
         let temporaryCoordinates = []
-
-        this.polylines.forEach((polyline) => {
-          polyline.removeFrom(this.map)
-        })
-
-        this.polylines = []
+        const segments = new LayerGroup()
 
         for (let i = 0; i < length; i++) {
           if (
-            ((t.state[i] === PointState.START || distance > disThreshold) &&
+            ((t.state[i] === PointState.START ||
+              distance > this.disThreshold) &&
               i > 0) ||
             i === length - 1
           ) {
             const polyline = new Polyline(temporaryCoordinates, {
               weight: 1,
             })
-            this.polylines.push(polyline)
-            polyline.addTo(this.map)
+            polyline.addTo(segments)
             temporaryCoordinates = []
           }
           if (i + 1 < length) {
@@ -145,23 +148,29 @@ export class MapPage implements OnInit, OnDestroy {
           temporaryCoordinates.push(t.coordinates[i])
         }
 
+        this.polylines = new FeatureGroup(segments.getLayers())
+
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
           timestamp: t.timestamps[t.timestamps.length - 1],
         }
 
+        const locale = this.translateService.currentLang
+        const popupString = this.translateService.instant(
+          'trajectory.map.timestampPopup',
+          { value: lastMeasurement.timestamp.toLocaleString(locale) }
+        )
         this.lastLocation = new CircleMarker(lastMeasurement.location, {
           color: 'white',
           fillColor: '#428cff', // ionic primary blue
           fillOpacity: 1,
-        }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
+        }).bindPopup(popupString)
 
         if (this.followPosition) {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
-          const boundPolyline = new Polyline(t.coordinates)
-          this.mapBounds = boundPolyline.getBounds()
+          this.mapBounds = this.polylines.getBounds()
           this.map?.invalidateSize()
         }
 
@@ -228,7 +237,9 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   async showInferences() {
-    await this.showLoadingDialog('Loading inferences...')
+    await this.showLoadingDialog(
+      this.translateService.instant('trajectory.map.loadingInferences')
+    )
     const inferenceResult = await this.inferenceService
       .generateInferences(this.trajectoryType, this.trajectoryId)
       .finally(async () => {
@@ -241,20 +252,28 @@ export class MapPage implements OnInit, OnDestroy {
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
-          `Trajectory couldn't be analyzed, because it has too many coordinates`
+          this.translateService.instant(
+            'trajectory.map.error.tooManyCoordinates'
+          )
         )
       case InferenceResultStatus.noInferencesFound:
         return await this.showErrorToast(
-          `No inferences were found within your trajectory`
+          this.translateService.instant(
+            'trajectory.map.error.noInferencesFound'
+          )
         )
       default:
-        return await this.showErrorToast(`Trajectory couldn't be analyzed`)
+        return await this.showErrorToast(
+          this.translateService.instant('trajectory.map.error.default')
+        )
     }
   }
 
   async predictNextVisit() {
     if (!this.generatedInferences) {
-      await this.showLoadingDialog('Loading inferences...')
+      await this.showLoadingDialog(
+        this.translateService.instant('trajectory.map.loadingInferences')
+      )
       const inferenceResult = await this.inferenceService
         .generateInferences(this.trajectoryType, this.trajectoryId)
         .finally(async () => {
@@ -269,14 +288,16 @@ export class MapPage implements OnInit, OnDestroy {
       this.predictedInferenceIds = nextVisits.map((v) => v.inference)
       this.updateInferenceMarkers()
       return await this.showToast(
-        `We think that you will visit the highlighted ${
-          nextVisits.length === 1 ? 'place' : 'places'
-        } in the next hour`,
+        this.translateService.instant(
+          `trajectory.map.predictionSuccess.${
+            nextVisits.length === 1 ? 'singular' : 'plural'
+          }`
+        ),
         'success'
       )
     } else {
       return await this.showErrorToast(
-        `We couldn't make a prediction for the next hour`
+        this.translateService.instant('trajectory.map.predictionFail')
       )
     }
   }
@@ -289,15 +310,21 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
-      let popupText
+      const inferenceName = this.translateService.instant(
+        `inference.${inference.name}`
+      )
+      let popupText: string
       if (inference.type === InferenceType.poi) {
-        popupText = `${inference.name}`
+        popupText = inferenceName
       } else {
-        popupText = `${
-          inference.name
-        } (${InferenceConfidenceThresholds.getQualitativeConfidence(
-          inference.confidence
-        )})`
+        const confidenceValue =
+          InferenceConfidenceThresholds.getQualitativeConfidence(
+            inference.confidence
+          )
+        const confidence = this.translateService.instant(
+          `inference.confidence.${confidenceValue}`
+        )
+        popupText = `${inferenceName} (${confidence})`
       }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {

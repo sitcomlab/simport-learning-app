@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AlertController } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 
@@ -12,11 +13,17 @@ import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 export class DiaryDetailComponent implements OnInit {
   entry: DiaryEntry
 
+  get localizedDate(): string {
+    const locale = this.translateService.currentLang
+    return this.entry.date.toLocaleDateString(locale)
+  }
+
   constructor(
     private route: ActivatedRoute,
     private diaryService: DiaryService,
     private router: Router,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private translateService: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -29,12 +36,27 @@ export class DiaryDetailComponent implements OnInit {
   }
 
   async deleteEntry() {
+    const header = this.translateService.instant('diary.deleteEntryAlertHeader')
+    const message = this.translateService.instant(
+      'diary.deleteEntryAlertMessage'
+    )
+    const cancelButton = this.translateService.instant('general.cancel')
+    const deleteButton = this.translateService.instant('general.delete')
+    await this.showDeleteEntryAlert(header, message, cancelButton, deleteButton)
+  }
+
+  private async showDeleteEntryAlert(
+    header: string,
+    message: string,
+    cancelString: string,
+    deleteString: string
+  ) {
     const alert = await this.alertController.create({
-      header: 'Delete this entry?',
-      message: 'Are you sure to delete this entry?',
+      header,
+      message,
       buttons: [
         {
-          text: 'Cancel',
+          text: cancelString,
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
@@ -42,7 +64,7 @@ export class DiaryDetailComponent implements OnInit {
           },
         },
         {
-          text: 'Delete',
+          text: deleteString,
           cssClass: 'danger',
           handler: async () => {
             try {

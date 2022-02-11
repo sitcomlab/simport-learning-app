@@ -1,9 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { SocialSharing } from '@ionic-native/social-sharing/ngx'
-import { IonicModule } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location/location.service'
 import { TrajectoryImportExportService } from 'src/app/shared-services/trajectory/trajectory-import-export.service'
@@ -17,7 +16,7 @@ describe('TrajectoryCardPopoverPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectoryCardPopoverPage],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: APP_TEST_IMPORTS,
       providers: [
         AndroidPermissions,
         LocationService,

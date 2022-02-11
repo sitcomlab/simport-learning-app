@@ -1,9 +1,12 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button
+        [text]="'general.back' | translate"
+        defaultHref="/"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-title>Diary</ion-title>
+    <ion-title>{{ 'diary.title' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="exportDiary()">
         <ion-icon slot="icon-only" name="share-outline"></ion-icon>
@@ -13,14 +16,16 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <p *ngIf="!diary || diary.length === 0" class="ion-text-center">
-    It seems like you haven't written anything down yet.
-    <a (click)="createEntry()">Create new diary entry</a>
-  </p>
+  <div *ngIf="!diary || diary.length === 0" class="ion-text-center">
+    <p>{{ 'diary.noEntryDescription' | translate }}</p>
+    <ion-button expand="block" (click)="createEntry()"
+      >{{ 'diary.createNewEntryTitle' | translate }}
+    </ion-button>
+  </div>
   <ion-list>
     <app-item-card
       *ngFor="let e of diary"
-      [date]="e.date | date"
+      [date]="getLocalDate(e.date)"
       [content]="e.abstract"
       (click)="navigateDetail(e.id)"
     ></app-item-card>

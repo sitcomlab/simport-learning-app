@@ -1,8 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { IonicModule } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from '../app.declarations'
 import { SqliteService } from '../shared-services/db/sqlite.service'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
@@ -15,7 +13,7 @@ describe('TrackingPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TrackingPage],
-      imports: [IonicModule, RouterTestingModule, HttpClientTestingModule],
+      imports: APP_TEST_IMPORTS,
       providers: [
         LocationService,
         TrajectoryService,
