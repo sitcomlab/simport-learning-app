@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Licenses</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngFor="let l of licensesArray">
+    <ion-card-header class="header-flex">
+      <b>{{l.name}}</b>
+      <p>{{l.publisher}}</p>
+    </ion-card-header>
+
+    <ion-card-content>
+      License:
+      <ion-chip>
+        <ion-label>{{l.licenses}}</ion-label>
+      </ion-chip>
+      <br />
+      <div class="link-flex">
+        <ion-icon name="open-outline"></ion-icon>
+        <a *ngIf="l.repository" [href]="l.repository">{{l.repository}}</a>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

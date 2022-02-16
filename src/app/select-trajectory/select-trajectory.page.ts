@@ -150,6 +150,10 @@ export class SelectTrajectoryPage {
     this.router.navigate(['/diary'])
   }
 
+  navigateToLicenses() {
+    this.router.navigate(['/licenses'])
+  }
+
   private async showToast(message: string, isError: boolean) {
     await this.showToastWithButtons(message, isError, null)
   }
