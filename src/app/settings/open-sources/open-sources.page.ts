@@ -15,11 +15,11 @@ interface License {
 }
 
 @Component({
-  selector: 'app-licenses',
-  templateUrl: './licenses.page.html',
-  styleUrls: ['./licenses.page.scss'],
+  selector: 'app-open-sources',
+  templateUrl: './open-sources.page.html',
+  styleUrls: ['./open-sources.page.scss'],
 })
-export class LicensesPage implements OnInit {
+export class OpenSourcesPage implements OnInit {
   licenses: LicenseFile = licenseFile
 
   constructor() {}

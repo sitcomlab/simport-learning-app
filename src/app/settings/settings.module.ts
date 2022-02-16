@@ -8,6 +8,8 @@ import { SettingsPageRoutingModule } from './settings-routing.module'
 
 import { SettingsPage } from './settings.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
+import { ImprintPage } from './imprint/imprint.page'
+import { OpenSourcesPage } from './open-sources/open-sources.page'
 
 @NgModule({
   imports: [
@@ -17,6 +19,6 @@ import { SharedUiModule } from '../shared-ui/shared-ui.module'
     SettingsPageRoutingModule,
     SharedUiModule,
   ],
-  declarations: [SettingsPage],
+  declarations: [SettingsPage, ImprintPage, OpenSourcesPage],
 })
 export class SettingsPageModule {}

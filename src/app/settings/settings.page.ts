@@ -10,11 +10,11 @@ export class SettingsPage implements OnInit {
   constructor(private router: Router) {}
 
   toImprint() {
-    this.router.navigate(['/imprint'])
+    this.router.navigate(['/settings/imprint'])
   }
 
   toOpenSources() {
-    this.router.navigate(['/open-sources'])
+    this.router.navigate(['/settings/oss-licenses'])
   }
 
   ngOnInit() {}

@@ -34,26 +34,9 @@ const routes: Routes = [
       import('./settings/settings.module').then((m) => m.SettingsPageModule),
   },
   {
-    path: 'imprint',
-    loadChildren: () =>
-      import('./imprint/imprint.module').then((m) => m.ImprintPageModule),
-  },
-  {
-    path: 'open-sources',
-    loadChildren: () =>
-      import('./open-sources/open-sources.module').then(
-        (m) => m.OpenSourcesPageModule
-      ),
-  },
-  {
     path: 'diary',
     loadChildren: () =>
       import('./diary/diary.module').then((m) => m.DiaryPageModule),
-  },
-  {
-    path: 'licenses',
-    loadChildren: () =>
-      import('./licenses/licenses.module').then((m) => m.LicensesPageModule),
   },
 ]
 @NgModule({
