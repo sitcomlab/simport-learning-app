@@ -1,6 +1,7 @@
 import { Component, OnDestroy } from '@angular/core'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 
 @Component({
   selector: 'app-inference-filter',
@@ -11,14 +12,15 @@ export class InferenceFilterComponent implements OnDestroy {
   static inferenceFilterEvent = 'inference-filter-event'
 
   filterConfiguration = this.inferenceService.filterConfiguration.value
+  confidenceThresholdCutoffs = InferenceConfidenceThresholds
 
   constructor(private inferenceService: InferenceService) {}
 
   get confidenceThreshold(): number {
-    return this.filterConfiguration.confidenceThreshold * 100
+    return this.filterConfiguration.confidenceThreshold
   }
   set confidenceThreshold(value: number) {
-    this.filterConfiguration.confidenceThreshold = value / 100.0
+    this.filterConfiguration.confidenceThreshold = value
   }
 
   get inferenceVisiblities(): Map<string, boolean> {
@@ -32,6 +34,10 @@ export class InferenceFilterComponent implements OnDestroy {
 
   getIconFromInferenceType(type: string) {
     return AllInferences[type].outlinedIcon
+  }
+
+  getTitleKeyFromInferenceType(type: string) {
+    return `inference.${type}`
   }
 
   ngOnDestroy() {

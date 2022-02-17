@@ -1,40 +1,39 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title (click)="onTitleClick()">SIMPORT</ion-title>
+    <ion-title (click)="onTitleClick()">{{ 'title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-grid fixed>
-    <ion-row>
-      <ion-col sizeXs="12" sizeLg="4">
-        <app-item-card
-          [disabled]="!locationService.isSupportedPlatform"
-          (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
-          icon="locate-outline"
-          title="Record your own trajectory"
-          subtitle="get notified when information about you could be derived"
-        ></app-item-card>
-      </ion-col>
+<ion-content class="ion-padding">
+  <ion-list>
+    <app-item-card
+      [disabled]="!locationService.isSupportedPlatform"
+      (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
+      icon="locate-outline"
+      [title]="'trajectory.select.record.title' | translate"
+      [subtitle]="'trajectory.select.record.subtitle' | translate"
+    ></app-item-card>
 
-      <ion-col sizeXs="12" sizeLg="4">
-        <app-item-card
-          icon="compass-outline"
-          title="Explore trajectories"
-          subtitle="interactively explore your own and others whereabouts"
-          (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
-        ></app-item-card>
-      </ion-col>
+    <app-item-card
+      icon="compass-outline"
+      [title]="'trajectory.select.explore.title' | translate"
+      [subtitle]="'trajectory.select.explore.subtitle' | translate"
+      (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
+    ></app-item-card>
 
-      <ion-col sizeXs="12" sizeLg="4">
-        <app-item-card
-          [disabled]="!locationService.isSupportedPlatform"
-          icon="add-outline"
-          title="Add your own trajectory"
-          subtitle="import a JSON file"
-          (click)="enableTrajectory(TrajectoryMode.IMPORT)"
-        ></app-item-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <app-item-card
+      [disabled]="!locationService.isSupportedPlatform"
+      icon="add-outline"
+      [title]="'trajectory.select.add.title' | translate"
+      [subtitle]="'trajectory.select.add.subtitle' | translate"
+      (click)="enableTrajectory(TrajectoryMode.IMPORT)"
+    ></app-item-card>
+
+    <app-item-card
+      icon="book-outline"
+      [title]="'trajectory.select.diary.title' | translate"
+      [subtitle]="'trajectory.select.diary.subtitle' | translate"
+      (click)="navigateToDiary()"
+    ></app-item-card>
+  </ion-list>
 </ion-content>

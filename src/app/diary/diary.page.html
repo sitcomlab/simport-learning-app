@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        [text]="'general.back' | translate"
+        defaultHref="/"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'diary.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="exportDiary()">
+        <ion-icon slot="icon-only" name="share-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="!diary || diary.length === 0" class="ion-text-center">
+    <p>{{ 'diary.noEntryDescription' | translate }}</p>
+    <ion-button expand="block" (click)="createEntry()"
+      >{{ 'diary.createNewEntryTitle' | translate }}
+    </ion-button>
+  </div>
+  <ion-list>
+    <app-item-card
+      *ngFor="let e of diary"
+      [date]="getLocalDate(e.date)"
+      [content]="e.abstract"
+      (click)="navigateDetail(e.id)"
+    ></app-item-card>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createEntry()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

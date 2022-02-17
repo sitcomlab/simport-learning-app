@@ -1,9 +1,15 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { LoadingController, ToastController } from '@ionic/angular'
+import {
+  IonRouterOutlet,
+  LoadingController,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
 import {
   CircleMarker,
   DivIcon,
+  FeatureGroup,
   latLng,
   LatLngBounds,
   LayerGroup,
@@ -15,8 +21,11 @@ import {
   tileLayer,
 } from 'leaflet'
 import { Subscription } from 'rxjs'
-import { Inference } from 'src/app/model/inference'
-import { TrajectoryType } from 'src/app/model/trajectory'
+import { PointState, TrajectoryType } from 'src/app/model/trajectory'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import {
   InferenceResultStatus,
   InferenceType,
@@ -26,7 +35,11 @@ import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
+import haversine from 'haversine-distance'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
+import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
+import { TranslateService } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-map',
@@ -42,8 +55,7 @@ export class MapPage implements OnInit, OnDestroy {
       tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          attribution: this.mapAttributionString,
           subdomains: 'abcd',
           maxZoom: 19,
         }
@@ -51,16 +63,28 @@ export class MapPage implements OnInit, OnDestroy {
     ],
   }
   mapBounds: LatLngBounds
-  polyline: Polyline
+  polylines: FeatureGroup
   inferenceHulls = new LayerGroup()
   lastLocation: CircleMarker
   followPosition: boolean
   suppressNextMapMoveEvent: boolean
   trajectoryType: TrajectoryType
+  readonly disThreshold = 30000
 
+  isInferencesEnabled =
+    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+  isPredictionsEnabled =
+    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
+
+  private get mapAttributionString(): string {
+    const osmContributors = this.translateService.instant(
+      'trajectory.map.osmContributors'
+    )
+    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
+  }
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -71,11 +95,15 @@ export class MapPage implements OnInit, OnDestroy {
   constructor(
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
+    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private timetableService: TimetableService
+    private timetableService: TimetableService,
+    private modalController: ModalController,
+    private routerOutlet: IonRouterOutlet,
+    private translateService: TranslateService
   ) {}
 
   async ngOnInit() {
@@ -87,26 +115,62 @@ export class MapPage implements OnInit, OnDestroy {
     this.trajSubscription = this.trajectoryService
       .getOne(this.trajectoryType, this.trajectoryId)
       .subscribe((t) => {
-        this.polyline = new Polyline(t.coordinates, {
-          weight: 1,
-        })
+        const length = t.coordinates.length
+        let distance = 0
+        let temporaryCoordinates = []
+        const segments = new LayerGroup()
+
+        for (let i = 0; i < length; i++) {
+          if (
+            ((t.state[i] === PointState.START ||
+              distance > this.disThreshold) &&
+              i > 0) ||
+            i === length - 1
+          ) {
+            const polyline = new Polyline(temporaryCoordinates, {
+              weight: 1,
+            })
+            polyline.addTo(segments)
+            temporaryCoordinates = []
+          }
+          if (i + 1 < length) {
+            distance = haversine(
+              {
+                latitude: t.coordinates[i][1],
+                longitude: t.coordinates[i][0],
+              },
+              {
+                latitude: t.coordinates[i + 1][1],
+                longitude: t.coordinates[i + 1][0],
+              }
+            )
+          }
+          temporaryCoordinates.push(t.coordinates[i])
+        }
+
+        this.polylines = new FeatureGroup(segments.getLayers())
 
         const lastMeasurement = {
           location: t.coordinates[t.coordinates.length - 1],
           timestamp: t.timestamps[t.timestamps.length - 1],
         }
 
+        const locale = this.translateService.currentLang
+        const popupString = this.translateService.instant(
+          'trajectory.map.timestampPopup',
+          { value: lastMeasurement.timestamp.toLocaleString(locale) }
+        )
         this.lastLocation = new CircleMarker(lastMeasurement.location, {
           color: 'white',
           fillColor: '#428cff', // ionic primary blue
           fillOpacity: 1,
-        }).bindPopup(`Timestamp: ${lastMeasurement.timestamp.toLocaleString()}`)
+        }).bindPopup(popupString)
 
         if (this.followPosition) {
           this.suppressNextMapMoveEvent = true
           this.mapBounds = this.lastLocation.getLatLng().toBounds(100)
         } else if (this.mapBounds === undefined) {
-          this.mapBounds = this.polyline.getBounds()
+          this.mapBounds = this.polylines.getBounds()
           this.map?.invalidateSize()
         }
 
@@ -173,7 +237,9 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   async showInferences() {
-    await this.showLoadingDialog('Loading inferences...')
+    await this.showLoadingDialog(
+      this.translateService.instant('trajectory.map.loadingInferences')
+    )
     const inferenceResult = await this.inferenceService
       .generateInferences(this.trajectoryType, this.trajectoryId)
       .finally(async () => {
@@ -186,20 +252,28 @@ export class MapPage implements OnInit, OnDestroy {
         return this.updateInferenceMarkers()
       case InferenceResultStatus.tooManyCoordinates:
         return await this.showErrorToast(
-          `Trajectory couldn't be analyzed, because it has too many coordinates`
+          this.translateService.instant(
+            'trajectory.map.error.tooManyCoordinates'
+          )
         )
       case InferenceResultStatus.noInferencesFound:
         return await this.showErrorToast(
-          `No inferences were found within your trajectory`
+          this.translateService.instant(
+            'trajectory.map.error.noInferencesFound'
+          )
         )
       default:
-        return await this.showErrorToast(`Trajectory couldn't be analyzed`)
+        return await this.showErrorToast(
+          this.translateService.instant('trajectory.map.error.default')
+        )
     }
   }
 
   async predictNextVisit() {
     if (!this.generatedInferences) {
-      await this.showLoadingDialog('Loading inferences...')
+      await this.showLoadingDialog(
+        this.translateService.instant('trajectory.map.loadingInferences')
+      )
       const inferenceResult = await this.inferenceService
         .generateInferences(this.trajectoryType, this.trajectoryId)
         .finally(async () => {
@@ -214,14 +288,16 @@ export class MapPage implements OnInit, OnDestroy {
       this.predictedInferenceIds = nextVisits.map((v) => v.inference)
       this.updateInferenceMarkers()
       return await this.showToast(
-        `We think that you will visit the highlighted ${
-          nextVisits.length === 1 ? 'place' : 'places'
-        } in the next hour`,
+        this.translateService.instant(
+          `trajectory.map.predictionSuccess.${
+            nextVisits.length === 1 ? 'singular' : 'plural'
+          }`
+        ),
         'success'
       )
     } else {
       return await this.showErrorToast(
-        `We couldn't make a prediction for the next hour`
+        this.translateService.instant('trajectory.map.predictionFail')
       )
     }
   }
@@ -234,6 +310,22 @@ export class MapPage implements OnInit, OnDestroy {
         weight: 2,
         opacity: inference.confidence || 0,
       })
+      const inferenceName = this.translateService.instant(
+        `inference.${inference.name}`
+      )
+      let popupText: string
+      if (inference.type === InferenceType.poi) {
+        popupText = inferenceName
+      } else {
+        const confidenceValue =
+          InferenceConfidenceThresholds.getQualitativeConfidence(
+            inference.confidence
+          )
+        const confidence = this.translateService.instant(
+          `inference.confidence.${confidenceValue}`
+        )
+        popupText = `${inferenceName} (${confidence})`
+      }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const i = new Marker(inference.latLng, {
         icon: new DivIcon({
@@ -244,9 +336,7 @@ export class MapPage implements OnInit, OnDestroy {
           iconAnchor: [16, 16],
           html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
         }),
-      }).bindPopup(
-        `${inference.name} (${Math.round((inference.confidence || 0) * 100)}%)`
-      )
+      }).bindPopup(popupText)
 
       const l = new LayerGroup([h, i])
 
@@ -256,6 +346,19 @@ export class MapPage implements OnInit, OnDestroy {
 
   openInferenceFilter() {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
+  }
+
+  async openDiaryModal() {
+    const modal = await this.modalController.create({
+      component: DiaryEditComponent,
+      swipeToClose: true,
+      backdropDismiss: true,
+      presentingElement: this.routerOutlet.nativeEl,
+      componentProps: {
+        isModal: true,
+      },
+    })
+    modal.present()
   }
 
   private async showErrorToast(message: string) {

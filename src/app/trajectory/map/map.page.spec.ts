@@ -1,9 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
-import { RouterTestingModule } from '@angular/router/testing'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { IonicModule } from '@ionic/angular'
+import { IonRouterOutlet } from '@ionic/angular'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { SqliteService } from '../../shared-services/db/sqlite.service'
 import { LocationService } from '../../shared-services/location/location.service'
 import { TrajectoryService } from '../../shared-services/trajectory/trajectory.service'
@@ -16,17 +16,19 @@ describe('MapPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [MapPage],
-      imports: [
-        IonicModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        LeafletModule,
-      ],
+      imports: [APP_TEST_IMPORTS, LeafletModule],
       providers: [
         LocationService,
         TrajectoryService,
         BackgroundGeolocation,
         SqliteService,
+        {
+          // use empty IonRouterOutlet, since actually providing IonRouterOutlet
+          // creates a conflict with RouterTestingModule and this is sufficent for running tests.
+          provide: IonRouterOutlet,
+          useValue: { nativeEl: '' },
+        },
+        FeatureFlagService,
       ],
     }).compileComponents()
 

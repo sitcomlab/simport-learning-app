@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="entry">{{ localizedDate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="editEntry()">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="deleteEntry()">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="entry">
+  {{ entry.content }}
+</ion-content>

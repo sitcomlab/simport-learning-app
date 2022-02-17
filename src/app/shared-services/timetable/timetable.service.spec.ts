@@ -1,9 +1,10 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { empty } from 'rxjs'
+import { TranslateService } from '@ngx-translate/core'
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { BackgroundService } from '../background/background.service'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { NotificationService } from '../notification/notification.service'
 
 import { TimetableService } from './timetable.service'
@@ -16,9 +17,12 @@ describe('TimetableService', () => {
   let trajectoryServiceSpy: jasmine.SpyObj<TrajectoryService>
   let notificationServiceSpy: jasmine.SpyObj<NotificationService>
   let backgroundServiceSpy: jasmine.SpyObj<BackgroundService>
+  let featureFlagServiceSpy: jasmine.SpyObj<FeatureFlagService>
+  let translateServiceSpy: jasmine.SpyObj<TranslateService>
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: APP_TEST_IMPORTS,
       providers: [
         {
           provide: SqliteService,
@@ -38,6 +42,7 @@ describe('TimetableService', () => {
             'getFullUserTrack',
           ]),
         },
+        FeatureFlagService,
       ],
     })
     dbServiceSpy = TestBed.inject(
@@ -52,12 +57,20 @@ describe('TimetableService', () => {
     backgroundServiceSpy = TestBed.inject(
       BackgroundService
     ) as jasmine.SpyObj<BackgroundService>
+    featureFlagServiceSpy = TestBed.inject(
+      FeatureFlagService
+    ) as jasmine.SpyObj<FeatureFlagService>
+    translateServiceSpy = TestBed.inject(
+      TranslateService
+    ) as jasmine.SpyObj<TranslateService>
 
     service = new TimetableService(
       dbServiceSpy,
       notificationServiceSpy,
       trajectoryServiceSpy,
-      backgroundServiceSpy
+      featureFlagServiceSpy,
+      backgroundServiceSpy,
+      translateServiceSpy
     )
   })
 

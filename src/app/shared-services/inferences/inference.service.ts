@@ -22,7 +22,6 @@ import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
 import { Plugins } from '@capacitor/core'
-import { Inference } from 'src/app/model/inference'
 import { TimetableService } from '../timetable/timetable.service'
 import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
@@ -30,6 +29,9 @@ import {
   BackgroundService,
   BackgroundState,
 } from '../background/background.service'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
+import { InferenceConfidenceThresholds } from 'src/app/model/inference'
+import { TranslateService } from '@ngx-translate/core'
 
 const { App } = Plugins
 
@@ -54,6 +56,7 @@ export class InferenceService
   protected backgroundFetchId = 'com.transistorsoft.fetch'
   protected foregroundInterval = 720
   protected backgroundInterval = 120
+  protected isEnabled = this.featureFlagService.featureFlags.isInferencesEnabled
 
   private filterConfigSubscription: Subscription
   private loadingOverlay: HTMLIonLoadingElement = undefined
@@ -63,7 +66,7 @@ export class InferenceService
   readonly useStaypointEngine: boolean = true
 
   filterConfiguration = new BehaviorSubject<InferenceFilterConfiguration>({
-    confidenceThreshold: 0.5,
+    confidenceThreshold: InferenceConfidenceThresholds.medium,
     inferenceVisiblities: new Map([
       // show all inference-types by default
       ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
@@ -83,7 +86,9 @@ export class InferenceService
     private geocodingService: ReverseGeocodingService,
     private loadingController: LoadingController,
     private staypointService: StaypointService,
-    protected backgroundService: BackgroundService
+    private featureFlagService: FeatureFlagService,
+    protected backgroundService: BackgroundService,
+    private translateService: TranslateService
   ) {
     super(backgroundService, 'com.transistorsoft.fetch')
 
@@ -119,6 +124,12 @@ export class InferenceService
     trajectoryType: TrajectoryType,
     trajectoryId: string
   ): Promise<InferenceResult> {
+    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+      return {
+        status: InferenceResultStatus.noInferencesFound,
+        inferences: [],
+      }
+    }
     try {
       const trajectory = await this.trajectoryService
         .getOne(trajectoryType, trajectoryId)
@@ -130,7 +141,45 @@ export class InferenceService
     }
   }
 
-  async generateUserInferences(): Promise<InferenceResult> {
+  async loadPersistedInferences(
+    trajectoryId: string,
+    runGeocoding: boolean = false
+  ): Promise<InferenceResult> {
+    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+      return {
+        status: InferenceResultStatus.noInferencesFound,
+        inferences: [],
+      }
+    }
+    const filterConfig = this.filterConfiguration.value
+    const inferences = (
+      await this.dbService.getInferences(trajectoryId)
+    ).filter((inf) => {
+      return (
+        inf.confidence >= filterConfig.confidenceThreshold &&
+        filterConfig.inferenceVisiblities.has(inf.type) &&
+        filterConfig.inferenceVisiblities.get(inf.type)
+      )
+    })
+    const persisted: InferenceResult = {
+      status: InferenceResultStatus.successful,
+      inferences,
+    }
+    if (runGeocoding) {
+      this.geocodingService.reverseGeocodeInferences(inferences).then((_) => {
+        this.triggerEvent(InferenceServiceEvent.inferencesUpdated)
+      })
+    }
+    return persisted
+  }
+
+  private async generateUserInferences(): Promise<InferenceResult> {
+    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+      return {
+        status: InferenceResultStatus.noInferencesFound,
+        inferences: [],
+      }
+    }
     try {
       await this.updateLoadingDialog()
       const trajectory = await this.trajectoryService
@@ -153,9 +202,15 @@ export class InferenceService
     }
   }
 
-  async generateInferencesForTrajectory(
+  private async generateInferencesForTrajectory(
     traj: Trajectory
   ): Promise<InferenceResult> {
+    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+      return {
+        status: InferenceResultStatus.noInferencesFound,
+        inferences: [],
+      }
+    }
     const inference = await this.inferenceEngine.infer(traj, [
       HomeInference,
       WorkInference,
@@ -180,8 +235,10 @@ export class InferenceService
       if (significantInferencesLength > 0) {
         this.notificationService.notify(
           NotificationType.inferenceUpdate,
-          'Inferences found',
-          `We're now able to draw ${significantInferencesLength} conclusions from your location history`
+          this.translateService.instant('notification.inferencesFoundTitle'),
+          this.translateService.instant('notification.inferencesFoundText', {
+            value: significantInferencesLength,
+          })
         )
       }
     }
@@ -189,41 +246,6 @@ export class InferenceService
     await this.geocodingService.reverseGeocodeInferences(inference.inferences)
 
     return inference
-  }
-
-  async loadPersistedInferences(
-    trajectoryId: string,
-    runGeocoding: boolean = false
-  ): Promise<InferenceResult> {
-    const filterConfig = this.filterConfiguration.value
-    const inferences = (
-      await this.dbService.getInferences(trajectoryId)
-    ).filter((inf) => {
-      return (
-        inf.confidence >= filterConfig.confidenceThreshold &&
-        filterConfig.inferenceVisiblities.has(inf.type) &&
-        filterConfig.inferenceVisiblities.get(inf.type)
-      )
-    })
-    const persisted: InferenceResult = {
-      status: InferenceResultStatus.successful,
-      inferences,
-    }
-    if (runGeocoding) {
-      this.geocodingService.reverseGeocodeInferences(inferences).then((_) => {
-        this.triggerEvent(InferenceServiceEvent.inferencesUpdated)
-      })
-    }
-    return persisted
-  }
-
-  /**
-   * get inference by id
-   * @param inferenceId id of the inference
-   * @returns Inference or undefined if inference could not be found
-   */
-  async getInferenceById(inferenceId: string): Promise<Inference> {
-    return await this.dbService.getInferenceById(inferenceId)
   }
 
   // helper methods
@@ -239,7 +261,9 @@ export class InferenceService
   private async showLoadingDialog() {
     if (!this.loadingOverlay) {
       this.loadingOverlay = await this.loadingController.create({
-        message: 'Generating inferences from your location history …',
+        message: this.translateService.instant(
+          'notification.inferencesGenerationLoadingDialog'
+        ),
         translucent: true,
       })
       await this.loadingOverlay.present()

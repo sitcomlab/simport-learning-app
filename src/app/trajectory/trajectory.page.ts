@@ -1,11 +1,26 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import {
   InferenceService,
   InferenceServiceEvent,
 } from '../shared-services/inferences/inference.service'
 import { InferenceFilterComponent } from './inference-filter/inference-filter.component'
+
+export interface TrajectoryPageTab {
+  path: string
+  icon: string
+  title: string
+}
+
+export enum TrajectoryPagePath {
+  Inferences = 'trajectory-inferences',
+  Map = 'trajectory-map',
+  Exploration = 'trajectory-exploration',
+  InferenceFilter = 'trajectory-inference-filter',
+}
 
 @Component({
   selector: 'app-trajectory',
@@ -15,11 +30,37 @@ import { InferenceFilterComponent } from './inference-filter/inference-filter.co
 export class TrajectoryPage implements OnInit, OnDestroy {
   private inferenceFilterSubscription: Subscription
 
+  tabs: TrajectoryPageTab[] = []
+
   constructor(
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private inferenceService: InferenceService
-  ) {}
+    private inferenceService: InferenceService,
+    private featureFlagService: FeatureFlagService,
+    private translateService: TranslateService
+  ) {
+    if (this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled) {
+      this.tabs.push({
+        path: TrajectoryPagePath.Inferences,
+        icon: 'magnet-outline',
+        title: this.translateService.instant('trajectory.insights.title'),
+      })
+    }
+    if (this.featureFlagService.featureFlags.isTrajectoryMapEnabled) {
+      this.tabs.push({
+        path: TrajectoryPagePath.Map,
+        icon: 'map-outline',
+        title: this.translateService.instant('trajectory.map.title'),
+      })
+    }
+    if (this.featureFlagService.featureFlags.isTrajectoryExplorationEnabled) {
+      this.tabs.push({
+        path: TrajectoryPagePath.Exploration,
+        icon: 'bar-chart-outline',
+        title: this.translateService.instant('trajectory.explore.title'),
+      })
+    }
+  }
 
   ngOnInit() {
     this.inferenceFilterSubscription =

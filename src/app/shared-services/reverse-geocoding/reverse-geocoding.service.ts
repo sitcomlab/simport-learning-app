@@ -9,6 +9,7 @@ import delay from 'delay'
 import { SqliteService } from '../db/sqlite.service'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { Inference } from 'src/app/model/inference'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 
 @Injectable({
   providedIn: 'root',
@@ -24,19 +25,20 @@ export class ReverseGeocodingService {
   // see https://operations.osmfoundation.org/policies/nominatim/
   private static readonly REVERSE_GEOCODE_DELAY_MS = 1500
 
-  constructor(private dbService: SqliteService, private http: HttpClient) {}
-
-  async reverseGeocodeInferencesForTrajectory(trajectoryId: string) {
-    const inferences = await this.dbService.getInferences(trajectoryId)
-    await this.reverseGeocodeInferences(inferences)
-  }
+  constructor(
+    private dbService: SqliteService,
+    private featureFlagService: FeatureFlagService,
+    private http: HttpClient
+  ) {}
 
   async reverseGeocodeInferences(inferences: Inference[]) {
-    const coordinates = inferences.map((i) => i.latLng)
-    await this.reverseGeocodeMultiple(coordinates)
+    if (this.featureFlagService.featureFlags.isReverseGeocodingEnabled) {
+      const coordinates = inferences.map((i) => i.latLng)
+      await this.reverseGeocodeMultiple(coordinates)
+    }
   }
 
-  async reverseGeocodeMultiple(latLngArray: [number, number][]) {
+  private async reverseGeocodeMultiple(latLngArray: [number, number][]) {
     // filter for latLng, that actually need geocoding
     const geocodingLatLngArray = (
       await Promise.all(

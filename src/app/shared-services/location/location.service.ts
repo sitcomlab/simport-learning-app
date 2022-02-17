@@ -13,6 +13,7 @@ import { InferenceService } from './../inferences/inference.service'
 import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
+import { TranslateService } from '@ngx-translate/core'
 
 const { App } = Plugins
 
@@ -27,9 +28,12 @@ export class LocationService implements OnDestroy {
     debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
     startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
-    notificationTitle: 'Tracking active …',
-    notificationText:
-      'Your location is currently tracked in order to show potential inferences.',
+    notificationTitle: this.translateService.instant(
+      'notification.backgroundGeolocationTitle'
+    ),
+    notificationText: this.translateService.instant(
+      'notification.backgroundGeolocationText'
+    ),
   }
   private locationUpdateSubscription: Subscription
   private startEventSubscription: Subscription
@@ -46,7 +50,8 @@ export class LocationService implements OnDestroy {
     private backgroundGeolocation: BackgroundGeolocation,
     private dbService: SqliteService,
     private inferenceService: InferenceService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private translateService: TranslateService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -87,7 +92,7 @@ export class LocationService implements OnDestroy {
       }
       if (!status.locationServicesEnabled) {
         const showSettings = confirm(
-          'Location services disabled. Would you like to open app settings?'
+          this.translateService.instant('confirm.showLocationServiceSettings')
         )
         if (showSettings) {
           return this.backgroundGeolocation.showAppSettings()
@@ -101,7 +106,9 @@ export class LocationService implements OnDestroy {
         this.nextLocationIsStart = true
       } else {
         const showSettings = confirm(
-          'App requires always on location permission. Please grant permission in settings.'
+          this.translateService.instant(
+            'confirm.grantLocationPermissionSettings'
+          )
         )
         if (showSettings) {
           return this.backgroundGeolocation.showAppSettings()
@@ -152,11 +159,14 @@ export class LocationService implements OnDestroy {
         await this.inferenceService.triggerBackgroundFunctionIfViable()
 
         this.scheduleNotification(
-          'Location Update',
-          `${latitude.toFixed(4)} / ${longitude.toFixed(4)} (${accuracy.toFixed(
-            1
-          )}m)`
+          this.translateService.instant('notification.locationUpdateTitle'),
+          this.translateService.instant('notification.locationUpdateText', {
+            latitude: latitude.toFixed(4),
+            longitude: longitude.toFixed(4),
+            accuracy: accuracy.toFixed(1),
+          })
         )
+
         this.backgroundGeolocation.finish()
       })
   }
@@ -178,7 +188,10 @@ export class LocationService implements OnDestroy {
         }
         this.isRunning.next(true)
         this.nextLocationIsStart = true
-        this.scheduleNotification('Location Update', 'Tracking started')
+        this.scheduleNotification(
+          this.translateService.instant('notification.locationUpdateTitle'),
+          this.translateService.instant('notification.trackingStarted')
+        )
       })
 
     this.stopEventSubscription = this.backgroundGeolocation
@@ -186,7 +199,10 @@ export class LocationService implements OnDestroy {
       .subscribe(() => {
         this.isRunning.next(false)
         this.nextLocationIsStart = false
-        this.scheduleNotification('Location Update', 'Tracking stopped')
+        this.scheduleNotification(
+          this.translateService.instant('notification.locationUpdateTitle'),
+          this.translateService.instant('notification.trackingStopped')
+        )
       })
   }
 

@@ -1,10 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button
+        [text]="'general.back' | translate"
+        defaultHref="/"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-title> Map View </ion-title>
-    <ion-buttons slot="end">
+    <ion-title> {{ 'trajectory.map.title' | translate }} </ion-title>
+    <ion-buttons *ngIf="isInferencesEnabled" slot="end">
       <ion-button (click)="openInferenceFilter()">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>
@@ -21,32 +24,47 @@
     (leafletMapReady)="onMapReady($event)"
     (leafletMapMoveEnd)="onMapMoved($event)"
   >
-    <div [leafletLayer]="polyline"></div>
+    <div [leafletLayer]="polylines"></div>
     <div [leafletLayer]="inferenceHulls"></div>
     <div [leafletLayer]="lastLocation"></div>
   </div>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="openDiaryModal()">
+      <ion-icon name="book-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    *ngIf="isInferencesEnabled || isPredictionsEnabled || trajectoryType === TrajectoryTypes.USERTRACK"
+  >
     <ion-fab-button>
       <ion-icon name="layers-outline"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button
-        *ngIf="!generatedInferences"
+        *ngIf="!generatedInferences && isInferencesEnabled"
         (click)="showInferences()"
-        text="Create inferences"
+        [attr.text]="'trajectory.map.createInferencesButtonText' | translate"
       >
         <ion-icon name="analytics-outline"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button (click)="predictNextVisit()" text="Predict next visit">
+      <ion-fab-button
+        *ngIf="isPredictionsEnabled"
+        (click)="predictNextVisit()"
+        [attr.text]="'trajectory.map.predictionButtonText' | translate"
+      >
         <ion-icon name="flag-outline"></ion-icon>
       </ion-fab-button>
 
       <ion-fab-button
         *ngIf="trajectoryType === TrajectoryTypes.USERTRACK"
         (click)="onToggleFollowMode()"
-        text="Toggle location"
+        [attr.text]="'trajectory.map.toggleLocationButtonText' | translate"
       >
         <ion-icon *ngIf="followPosition" name="location"></ion-icon>
         <ion-icon *ngIf="!followPosition" name="location-outline"></ion-icon>

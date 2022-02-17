@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
+import { TranslateService } from '@ngx-translate/core'
 import { Inference } from 'src/app/model/inference'
 import { TimetableEntry } from 'src/app/model/timetable'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
 import { BackgroundService } from '../background/background.service'
 import { SqliteService } from '../db/sqlite.service'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { TrajectoryService } from '../trajectory/trajectory.service'
@@ -16,12 +18,16 @@ export class TimetableService extends AbstractBackgroundService {
   protected foregroundInterval = 720
   protected backgroundInterval = 15
   protected backgroundFetchId = 'com.transistorsoft.timetableprediction'
+  protected isEnabled =
+    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
 
   constructor(
     private sqliteService: SqliteService,
     private notificationService: NotificationService,
     private trajectoryService: TrajectoryService,
-    protected backgroundService: BackgroundService
+    private featureFlagService: FeatureFlagService,
+    protected backgroundService: BackgroundService,
+    private translateService: TranslateService
   ) {
     super(backgroundService, 'com.transistorsoft.timetableprediction')
   }
@@ -58,8 +64,14 @@ export class TimetableService extends AbstractBackgroundService {
           const inference = await this.sqliteService.getInferenceById(
             nextVisit.inference
           )
-          const title = `You will visit ${inference.addressDisplayName}`
-          const text = `We think you will visit ${inference.addressDisplayName} in the next hour.`
+          const title = this.translateService.instant(
+            'notification.predictionTitle',
+            { value: inference.addressDisplayName }
+          )
+          const text = this.translateService.instant(
+            'notification.predictionText',
+            { value: inference.addressDisplayName }
+          )
           this.notificationService.notify(
             NotificationType.visitPrediction,
             title,

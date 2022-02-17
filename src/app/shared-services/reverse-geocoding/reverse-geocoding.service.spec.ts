@@ -1,6 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
+
+import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from '../db/sqlite.service'
+import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { ReverseGeocodingService } from './reverse-geocoding.service'
 
 describe('ReverseGeocodingService', () => {
@@ -8,8 +10,8 @@ describe('ReverseGeocodingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [SqliteService],
+      imports: APP_TEST_IMPORTS,
+      providers: [SqliteService, FeatureFlagService],
     })
     service = TestBed.inject(ReverseGeocodingService)
   })
