@@ -76,6 +76,10 @@ export class DiaryEditComponent implements OnInit {
     return this.translateService.currentLang
   }
 
+  changeDate(event: Event) {
+    this.date = (event.target as HTMLInputElement).value
+  }
+
   dismiss() {
     if (this.isModal) {
       this.modalController.dismiss()
