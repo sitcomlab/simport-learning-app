@@ -136,7 +136,8 @@
   },
   "confirm": {
     "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",
-    "grantLocationPermissionSettings": "App requires always on location permission. Please grant permission in settings."
+    "grantLocationPermissionSettings": "App requires always on location permission. Please grant permission in settings.",
+    "appSettingsButtonText": "Settings"
   },
   "inference": {
     "work": "Workplace",
