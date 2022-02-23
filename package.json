@@ -28,7 +28,7 @@
     "@angular/platform-browser": "^13.2.0",
     "@angular/platform-browser-dynamic": "^13.2.0",
     "@angular/router": "^13.2.0",
-    "@asymmetrik/ngx-leaflet": "^8.1.0",
+    "@asymmetrik/ngx-leaflet": "^13.0.0",
     "@babel/helper-validator-option": "^7.12.17",
     "@capacitor-community/sqlite": "^2.9.16",
     "@capacitor/android": "^2.5.0",
