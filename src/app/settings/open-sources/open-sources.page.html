@@ -19,9 +19,9 @@
         <ion-label>{{l.licenses}}</ion-label>
       </ion-chip>
       <br />
-      <div class="link-flex">
+      <div *ngIf="l.repository" class="link-flex">
         <ion-icon name="open-outline"></ion-icon>
-        <a *ngIf="l.repository" [href]="l.repository">{{l.repository}}</a>
+        <a [href]="l.repository">{{l.repository}}</a>
       </div>
     </ion-card-content>
   </ion-card>
