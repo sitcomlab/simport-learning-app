@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 
 import licenseFile from 'src/assets/licenses.json'
 
@@ -19,12 +19,10 @@ interface License {
   templateUrl: './open-sources.page.html',
   styleUrls: ['./open-sources.page.scss'],
 })
-export class OpenSourcesPage implements OnInit {
+export class OpenSourcesPage {
   licenses: LicenseFile = licenseFile
 
   constructor() {}
-
-  ngOnInit() {}
 
   get licensesArray() {
     return Object.keys(this.licenses).map((l) => ({
