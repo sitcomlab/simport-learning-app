@@ -58,13 +58,13 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * a trajectory-json on iOS and Android.
    */
   async selectAndImportTrajectory(
-    didSelectFileCallback: () => void
+    didSelectFileCallback: () => Promise<void>
   ): Promise<TrajectoryImportResult> {
     const selectedFile = await FileSelector.fileSelector({
       multiple_selection: false,
       ext: ['*'],
     })
-    didSelectFileCallback()
+    await didSelectFileCallback()
     if (this.platform.is('android')) {
       const parsedPaths = JSON.parse(selectedFile.paths)
       const parsedOriginalNames = JSON.parse(selectedFile.original_names)
@@ -108,29 +108,34 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * @returns trajectory
    */
   createTrajectoryFromImport(json: string, name: string): Trajectory {
-    const trajectoryJson: {
-      coordinates: string
-      timestamps: number[]
-      time0: string
-      timeN?: string
-    } = JSON.parse(json)
-    const data = Trajectory.fromJSON(trajectoryJson)
-    const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
-    const meta: TrajectoryMeta =
-      TrajectoryImportExportService.importAsUserTrajectory
-        ? {
-            id: Trajectory.trackingTrajectoryID,
-            placename,
-            type: TrajectoryType.USERTRACK,
-            durationDays: null,
-          }
-        : {
-            id: uuid(),
-            placename,
-            type: TrajectoryType.IMPORT,
-            durationDays: null,
-          }
-    return new Trajectory(meta, data)
+    try {
+      // try to read given json-string as a trajectory
+      const trajectoryJson: {
+        coordinates: string
+        timestamps: number[]
+        time0: string
+        timeN?: string
+      } = JSON.parse(json)
+      const data = Trajectory.fromJSON(trajectoryJson)
+      const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
+      const meta: TrajectoryMeta =
+        TrajectoryImportExportService.importAsUserTrajectory
+          ? {
+              id: Trajectory.trackingTrajectoryID,
+              placename,
+              type: TrajectoryType.USERTRACK,
+              durationDays: null,
+            }
+          : {
+              id: uuid(),
+              placename,
+              type: TrajectoryType.IMPORT,
+              durationDays: null,
+            }
+      return new Trajectory(meta, data)
+    } catch (e) {
+      return undefined
+    }
   }
 
   private async importFile(
@@ -166,7 +171,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
             .catch(async () => {
               resolve({
                 success: false,
-                trajectoryId: trajectory.id,
+                trajectoryId: null,
                 errorMessage: this.translateService.instant(
                   'trajectory.import.errorMessage'
                 ),
