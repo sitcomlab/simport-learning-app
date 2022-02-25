@@ -3,6 +3,10 @@
   align-items: center;
   justify-content: space-between;
 
+  p {
+    text-align: end;
+  }
+
   > * {
     margin: 0.2rem;
   }
