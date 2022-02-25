@@ -136,7 +136,8 @@
   },
   "confirm": {
     "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",
-    "grantLocationPermissionSettings": "Die App benötigt die Erlaubnis auf deinen Standort zuzugreifen. Bitte erteile diese in den Einstellungen."
+    "grantLocationPermissionSettings": "Die App benötigt die Erlaubnis auf deinen Standort zuzugreifen. Bitte erteile diese in den Einstellungen.",
+    "appSettingsButtonText": "Einstellungen"
   },
   "inference": {
     "work": "Arbeitsort",
