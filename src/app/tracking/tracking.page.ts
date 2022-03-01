@@ -7,6 +7,7 @@ import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
+import { AlertController } from '@ionic/angular'
 
 @Component({
   selector: 'app-tracking',
@@ -29,8 +30,35 @@ export class TrackingPage implements OnInit, OnDestroy {
     public locationService: LocationService,
     private trajectoryService: TrajectoryService,
     private router: Router,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    public alertController: AlertController
   ) {}
+
+  async presentAlertConfirm() {
+    this.alertController
+      .create({
+        header: 'Consent',
+        message:
+          'Do you agree with the <a>terms</a> and <a>privacy policy</a>?',
+        buttons: [
+          {
+            text: 'No',
+            handler: () => {
+              console.log('No')
+            },
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+              console.log('Yes')
+            },
+          },
+        ],
+      })
+      .then((res) => {
+        res.present()
+      })
+  }
 
   ngOnInit() {
     this.setState(this.translateService.instant('tracking.loading'))
