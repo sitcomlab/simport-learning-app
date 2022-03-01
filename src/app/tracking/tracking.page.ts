@@ -19,6 +19,7 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() stateIcon: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
+  consented: boolean
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -33,6 +34,10 @@ export class TrackingPage implements OnInit, OnDestroy {
     private translateService: TranslateService,
     public alertController: AlertController
   ) {}
+
+  async checkBox() {
+    console.log('Consented new state:' + this.consented)
+  }
 
   async presentAlertConfirm() {
     this.alertController
@@ -125,6 +130,10 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   openLocationSettings() {
     this.locationService.openLocationSettings()
+  }
+
+  openTerms() {
+    console.log('This opens inprint page.')
   }
 
   hasAlwaysAllowLocationOption(): boolean {

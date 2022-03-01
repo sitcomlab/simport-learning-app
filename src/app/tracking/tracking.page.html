@@ -11,46 +11,39 @@
   <ion-grid fixed>
     <ion-row>
       <ion-col sizeXs="12" sizeLg="6">
-        <!--<ion-note>
-          <div class="ion-text-center">
-            By enable location tracking, you agree with our <a>terms</a> and
-            <a>privacy policy</a>.
-          </div>
-        </ion-note>-->
-        <!--<ion-item>
-          <ion-label>
-            <ion-note>
-              <div class="ion">
-                I agree with the <a>terms</a> and <a>privacy policy</a>.
-              </div>
-            </ion-note>
-          </ion-label>
-          <ion-checkbox slot="start"></ion-checkbox>
-        </ion-item>-->
-        <app-item-card
-          [disabled]="true"
-          icon="{{ stateIcon }}"
-          [title]="'tracking.toggleTitle' | translate"
-          subtitle="{{ state }}"
-          (click)="toggleBackgroundGeoLocation()"
-        ></app-item-card>
         <ion-item>
           <ion-label>
             <ion-note>
               <div class="ion">
-                I agree with the <a>terms</a> and <a>privacy policy</a>.
+                I agree with the
+                <a [routerLink]="" (click)="openTerms()">terms</a> and
+                <a>privacy policy</a>.
               </div>
             </ion-note>
           </ion-label>
-          <ion-checkbox slot="start"></ion-checkbox>
+          <ion-checkbox
+            [(ngModel)]="consented"
+            slot="start"
+            (ionChange)="checkBox()"
+          ></ion-checkbox>
         </ion-item>
-        <!--<app-item-card
-          [disabled]="!locationService.isSupportedPlatform"
+        <app-item-card
+          *ngIf="consented; else elseBlock"
+          [disabled]="false"
           icon="{{ stateIcon }}"
           [title]="'tracking.toggleTitle' | translate"
           subtitle="{{ state }}"
           (click)="presentAlertConfirm()"
-        ></app-item-card>-->
+        ></app-item-card>
+        <ng-template #elseBlock>
+          <app-item-card
+            [disabled]="true"
+            icon="{{ stateIcon }}"
+            [title]="'tracking.toggleTitle' | translate"
+            subtitle="{{ state }}"
+            (click)="presentAlertConfirm()"
+          ></app-item-card>
+        </ng-template>
         <!--<app-item-card
           [disabled]="!locationService.isSupportedPlatform"
           icon="{{ stateIcon }}"
