@@ -36,3 +36,5 @@ src/app/shared-services/inferences/test-data/*
 
 resources/android
 resources/ios
+# will be generated on build and we don't need that in git 
+src/assets/licenses.json

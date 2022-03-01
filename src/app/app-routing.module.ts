@@ -29,6 +29,11 @@ const routes: Routes = [
       import('./tracking/tracking.module').then((m) => m.TrackingPageModule),
   },
   {
+    path: 'settings',
+    loadChildren: () =>
+      import('./settings/settings.module').then((m) => m.SettingsPageModule),
+  },
+  {
     path: 'diary',
     loadChildren: () =>
       import('./diary/diary.module').then((m) => m.DiaryPageModule),
