@@ -44,18 +44,21 @@ export class TrackingPage implements OnInit, OnDestroy {
       .create({
         header: 'Consent',
         message:
-          'Do you agree with the <a>terms</a> and <a>privacy policy</a>?',
+          'Do you agree with the <a [routerLink]="" (click)="openTerms()">terms and privacy policy</a>?',
         buttons: [
           {
             text: 'No',
             handler: () => {
               console.log('No')
+              this.consented = false
             },
           },
           {
             text: 'Yes',
             handler: () => {
               console.log('Yes')
+              this.consented = true
+              this.toggleBackgroundGeoLocation()
             },
           },
         ],
@@ -134,6 +137,7 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   openTerms() {
     console.log('This opens inprint page.')
+    this.router.navigate(['/settings/imprint'])
   }
 
   hasAlwaysAllowLocationOption(): boolean {
