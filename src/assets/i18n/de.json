@@ -162,6 +162,7 @@
   },
   "privacyPolicy": {
     "title": "Datenschutzerklärung",
+    "titleShort": "Datenschutz",
     "introductionTitle": "Einleitung",
     "introductionText": "Das Entwicklerteam dieser App verpflichtet sich, Ihre Privatsphäre und den Schutz Ihrer Daten zu respektieren. Tatsächlich haben wir diese App nur entwickelt, um Ihnen ein besseres Verständnis zu ermöglichen, was Privatsphäre und Datenschutz im Kontext von Standortinformationen bedeutet. Diese Datenschutzerklärung beschreibt, wie wir Ihre personenbezogenen Daten zu diesem Zweck sammeln und nutzen.",
     "collectedInfoTitle": "Erfasste Informationen",

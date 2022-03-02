@@ -162,6 +162,7 @@
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
+    "titleShort": "Privacy Policy",
     "introductionTitle": "Introduction",
     "introductionText": "The team behind this App is committed to respecting your privacy and seeks to be transparent about our data practices. In fact, we made this App solely so you can get a better understanding of what privacy means in the context of location data. This privacy policy describes how we collect and use personal data for that goal. Personal data means any information relating to you.",
     "collectedInfoTitle": "Collected Information",
