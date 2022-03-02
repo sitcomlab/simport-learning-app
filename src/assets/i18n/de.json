@@ -160,6 +160,9 @@
       "high": "hohe Wahrscheinlichkeit"
     }
   },
+  "settings": {
+    "title": "Einstellungen"
+  },
   "privacyPolicy": {
     "title": "Datenschutzerklärung",
     "titleShort": "Datenschutz",
@@ -185,5 +188,14 @@
     "changesText": "Wir können diese Datenschutzerklärung jederzeit nach unserem Ermessen ändern, wobei Änderungen wirksam sind, sobald sie hier veröffentlicht werden. Solche Veränderungen werden nicht das Ausmaß unserer Sammlung und Verarbeitung Ihrer personenbezogenen Daten betreffen, die vor der Änderung gesammelt wurden. Das Datum, an dem diese Datenschutzerklärung das letzte Mal geändert wurde, ist nachfolgend festgehalten. Wenn wir wesentliche Änderungen an der Art und Weise vornehmen, wie wir Ihre persönlichen Daten verändern, werden wir Sie erneut nach Ihrer Einwilligung im Menü „Standortverlauf aufzeichnen“ fragen.",
     "dateTitle": "Datum des Inkrafttretens dieser Datenschutzerklärung",
     "dateText": "16.02.2022"
+  },
+  "licenses": {
+    "title": "Lizenzen",
+    "subtitle": "Bibliotheken, die wir in dieser App nutzen",
+    "singleLicenseTitle": "Lizenz:"
+  },
+  "imprint": {
+    "title": "Impressum",
+    "text": "Deutscher Platzhalter: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus arcu bibendum at varius vel pharetra vel turpis nunc. Morbi tempus iaculis urna id volutpat lacus laoreet non curabitur. Velit laoreet id donec ultrices tincidunt. Urna porttitor rhoncus dolor purus non. Turpis massa sed elementum tempus egestas. Vitae sapien pellentesque habitant morbi. In massa tempor nec feugiat. A cras semper auctor neque vitae tempus quam pellentesque. Fermentum et sollicitudin ac orci phasellus egestas. Massa ultricies mi quis hendrerit dolor magna eget est. Sagittis orci a scelerisque purus semper. Sit amet nisl suscipit adipiscing bibendum est ultricies integer quis."
   }
 }

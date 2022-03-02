@@ -160,6 +160,9 @@
       "high": "high confidence"
     }
   },
+  "settings": {
+    "title": "Settings"
+  },
   "privacyPolicy": {
     "title": "Privacy Policy",
     "titleShort": "Privacy Policy",
@@ -185,5 +188,14 @@
     "changesText": "We may modify this privacy policy at any time, at our discretion, and modifications are effective upon being posted here. Such modifications will not change the scope of our collection or use of your personal data collected before such modifications. The date on which this privacy policy was last revised is identified below. If we make material changes to how we treat your personal data, we will also ask for your consent to such changes through a dialog in the “Tracking” menu of this app.",
     "dateTitle": "Effective Date of the Privacy Policy",
     "dateText": "16th of February, 2022"
+  },
+  "licenses": {
+    "title": "Licenses",
+    "subtitle": "Libraries that we use to create this app",
+    "singleLicenseTitle": "License:"
+  },
+  "imprint": {
+    "title": "Imprint",
+    "text": "English placeholder: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lectus arcu bibendum at varius vel pharetra vel turpis nunc. Morbi tempus iaculis urna id volutpat lacus laoreet non curabitur. Velit laoreet id donec ultrices tincidunt. Urna porttitor rhoncus dolor purus non. Turpis massa sed elementum tempus egestas. Vitae sapien pellentesque habitant morbi. In massa tempor nec feugiat. A cras semper auctor neque vitae tempus quam pellentesque. Fermentum et sollicitudin ac orci phasellus egestas. Massa ultricies mi quis hendrerit dolor magna eget est. Sagittis orci a scelerisque purus semper. Sit amet nisl suscipit adipiscing bibendum est ultricies integer quis."
   }
 }
