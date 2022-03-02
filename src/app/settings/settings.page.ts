@@ -16,6 +16,7 @@ export class SettingsPage {
   toOpenSources() {
     this.router.navigate(['/settings/oss-licenses'])
   }
+
   toPrivacyPolicy() {
     this.router.navigate(['/settings/privacy-policy'])
   }
