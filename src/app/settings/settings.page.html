@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
     </ion-buttons>
-    <ion-title>Settings</ion-title>
+    <ion-title>{{ 'settings.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -18,8 +18,8 @@
         >
         </app-item-card>
         <app-item-card
-          title="Open-source licences"
-          subtitle="Libraries that we use to create this app"
+          title="{{ 'licenses.title' | translate }}"
+          subtitle="{{ 'licenses.subtitle' | translate }}"
           icon="document-text-outline"
           (click)="toOpenSources()"
         ></app-item-card>
