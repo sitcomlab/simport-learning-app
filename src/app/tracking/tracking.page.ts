@@ -8,6 +8,7 @@ import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
 import { AlertController } from '@ionic/angular'
+import { AppSettingsService } from '../shared-services/appsettings.service'
 
 @Component({
   selector: 'app-tracking',
@@ -32,7 +33,8 @@ export class TrackingPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private router: Router,
     private translateService: TranslateService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private appSettingsService: AppSettingsService
   ) {}
 
   async checkBox() {
@@ -91,6 +93,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
+    this.consented = this.appSettingsService.informedConsent
   }
 
   ngOnDestroy() {

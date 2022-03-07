@@ -13,6 +13,8 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { SharedServicesModule } from './shared-services/shared-services.module'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { APP_INITIALIZER } from '@angular/core'
+import { AppSettingsService } from './shared-services/appsettings.service'
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json')
@@ -40,6 +42,17 @@ export function createTranslateLoader(http: HttpClient) {
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    AppSettingsService,
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [AppSettingsService],
+      useFactory: (appSettingsService: AppSettingsService) => {
+        return () => {
+          return appSettingsService.loadAppConfig()
+        }
+      },
+    },
   ],
   bootstrap: [AppComponent],
 })
