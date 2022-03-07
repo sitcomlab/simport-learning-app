@@ -10,6 +10,7 @@ import { SettingsPage } from './settings.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { ImprintPage } from './imprint/imprint.page'
 import { OpenSourcesPage } from './open-sources/open-sources.page'
+import { PrivacyPolicyPage } from './privacy-policy/privacy-policy.page'
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { OpenSourcesPage } from './open-sources/open-sources.page'
     SettingsPageRoutingModule,
     SharedUiModule,
   ],
-  declarations: [SettingsPage, ImprintPage, OpenSourcesPage],
+  declarations: [SettingsPage, ImprintPage, OpenSourcesPage, PrivacyPolicyPage],
 })
 export class SettingsPageModule {}

@@ -1,22 +1,19 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
     </ion-buttons>
-    <ion-title>Imprint</ion-title>
+    <ion-title>{{ 'imprint.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Lectus arcu bibendum at
-    varius vel pharetra vel turpis nunc. Morbi tempus iaculis urna id volutpat
-    lacus laoreet non curabitur. Velit laoreet id donec ultrices tincidunt. Urna
-    porttitor rhoncus dolor purus non. Turpis massa sed elementum tempus
-    egestas. Vitae sapien pellentesque habitant morbi. In massa tempor nec
-    feugiat. A cras semper auctor neque vitae tempus quam pellentesque.
-    Fermentum et sollicitudin ac orci phasellus egestas. Massa ultricies mi quis
-    hendrerit dolor magna eget est. Sagittis orci a scelerisque purus semper.
-    Sit amet nisl suscipit adipiscing bibendum est ultricies integer quis.
-  </p>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col sizeXs="12" sizeLg="6">
+        <ion-note>
+          <p>{{ 'imprint.text' | translate }}</p>
+        </ion-note>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

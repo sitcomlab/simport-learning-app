@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'privacyPolicy.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col sizeXs="12" sizeLg="6">
+        <ion-note>
+          <b [innerHTML]="'privacyPolicy.introductionTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.introductionText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.collectedInfoTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.collectedInfoText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.providedInfoTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.providedInfoText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.usageTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.usageText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.legalBasisTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.legalBasisText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.retentionTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.retentionText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.sharingTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.sharingText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.rightsTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.rightsText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.contactTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.contactText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.changesTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.changesText' | translate"></p>
+          <b [innerHTML]="'privacyPolicy.dateTitle' | translate"></b>
+          <p [innerHTML]="'privacyPolicy.dateText' | translate"></p>
+        </ion-note>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
