@@ -189,15 +189,16 @@
     "dateTitle": "Effective Date of the Privacy Policy",
     "dateText": "16th of February, 2022"
   },
-  "imprint": {
-    "title": "Imprint",
-    "general": "The Simport Learning App aims to help you get a better understanding of what privacy means in the context of location data. For this reason, it collects your location data and visualizes it.<br><br>This app is developed as part of the Simport research project funded by the German Federal Ministry of Education and Research. You can learn more about the project at <a href='https://simport.net'>https://simport.net</a>. <br><br>You can find the source code of this app at <a href='https://github.com/sitcomlab/simport-learning-app'>https://github.com/sitcomlab/simport-learning-app</a>, licensed under the MIT License. We always welcome new contributors.",
-    "contact": "<b>Contact:</b> <br><br>Simport<br>University of Münster<br>Institute for Geoinformatics<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
-    "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-  },
   "licenses": {
     "title": "Licenses",
     "subtitle": "Software that we use to create this app",
     "singleLicenseTitle": "License:"
+  },
+  "imprint": {
+    "title": "Imprint",
+    "general": "The Simport Learning App aims to help you get a better understanding of what privacy means in the context of location data. For this reason, it collects your location data and visualizes it.<br><br>This app is developed as part of the Simport research project funded by the German Federal Ministry of Education and Research. You can learn more about the project at <a href='https://simport.net'>https://simport.net</a>. <br><br>You can find the source code of this app at <a href='https://github.com/sitcomlab/simport-learning-app'>https://github.com/sitcomlab/simport-learning-app</a>, licensed under the MIT License. We always welcome new contributors.",
+    "contact": "<b>Contact:</b> <br><br>Simport<br>University of Münster<br>Institute for Geoinformatics<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
+    "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+    "bmbfLogo": "<img src='assets/imprint/bmbf_logo_en.png'/>"
   }
 }
