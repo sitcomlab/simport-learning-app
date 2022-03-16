@@ -43,16 +43,6 @@ export function createTranslateLoader(http: HttpClient) {
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     AppSettingsService,
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [AppSettingsService],
-      useFactory: (appSettingsService: AppSettingsService) => {
-        return () => {
-          return appSettingsService.loadAppConfig()
-        }
-      },
-    },
   ],
   bootstrap: [AppComponent],
 })

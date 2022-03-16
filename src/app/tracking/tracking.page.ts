@@ -9,6 +9,7 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { AlertController } from '@ionic/angular'
 import { AppSettingsService } from '../shared-services/appsettings.service'
+import { InformedConsent } from '../shared-services/db/migrations'
 
 @Component({
   selector: 'app-tracking',
@@ -21,6 +22,9 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
   consented: boolean
+
+  consent: boolean
+  informedConsent: InformedConsent
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -93,7 +97,13 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.consented = this.appSettingsService.informedConsent
+    this.appSettingsService.getInformedConsent().subscribe(
+      (informedConsent) => (this.informedConsent = informedConsent),
+      () => null,
+      () => {
+        this.consented = this.informedConsent.defaultInformedConsent
+      }
+    )
   }
 
   ngOnDestroy() {

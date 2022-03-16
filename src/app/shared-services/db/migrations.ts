@@ -160,3 +160,7 @@ export const MIGRATIONS = [
       date DATETIME NOT NULL,
       content TEXT NOT NULL);`,
 ]
+
+export class InformedConsent {
+  defaultInformedConsent = false
+}
