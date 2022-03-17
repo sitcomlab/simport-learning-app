@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Repair cache-files ownership
+        run: sudo chown -R 501:20 "/Users/runner/.npm"
+
       - name: Run ionic build
         run: |
           npm install npm@8 -g
