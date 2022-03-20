@@ -41,16 +41,48 @@ export class TrackingPage implements OnInit, OnDestroy {
     private appSettingsService: AppSettingsService
   ) {}
 
-  async checkBox() {
-    console.log('Consented new state:' + this.consented)
+  async checkBox(): Promise<void> {
+    if (this.state === 'Running' && !this.consented) {
+      this.alertController
+        .create({
+          header: 'Dont you agree with the terms and privacy policy?',
+          message: 'By doing this the app will stop tracking your location.',
+          buttons: [
+            {
+              text: 'No',
+              handler: () => {
+                console.log('No')
+                this.consented = true
+              },
+            },
+            {
+              text: 'Yes',
+              handler: () => {
+                console.log('Yes')
+                this.informedConsent.defaultInformedConsent = this.consented
+                this.appSettingsService.saveInformedConsent(
+                  this.informedConsent
+                )
+                this.toggleBackgroundGeoLocation()
+              },
+            },
+          ],
+        })
+        .then((res) => {
+          res.present()
+        })
+    } else {
+      this.informedConsent.defaultInformedConsent = this.consented
+      this.appSettingsService.saveInformedConsent(this.informedConsent)
+    }
   }
 
   async presentAlertConfirm() {
+    console.log(this.state)
     this.alertController
       .create({
         header: 'Consent',
-        message:
-          'Do you agree with the <a [routerLink]="" (click)="openTerms()">terms and privacy policy</a>?',
+        message: 'Do you agree with the terms and privacy policy?',
         buttons: [
           {
             text: 'No',
@@ -150,7 +182,7 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   openTerms() {
     console.log('This opens inprint page.')
-    this.router.navigate(['/settings/imprint'])
+    this.router.navigate(['/settings/privacy-policy'])
   }
 
   hasAlwaysAllowLocationOption(): boolean {
