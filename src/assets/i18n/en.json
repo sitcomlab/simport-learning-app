@@ -7,7 +7,9 @@
     "export": "Export",
     "view": "View",
     "back": "Back",
-    "done": "Done"
+    "done": "Done",
+    "no": "No",
+    "yes": "Yes"
   },
   "diary": {
     "title": "Diary",
@@ -119,7 +121,13 @@
     "systemSettings": "system settings",
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
-    "loading": "Waiting…"
+    "loading": "Waiting…",
+    "agreement_start": "I agree with the ",
+    "agreement_end": "terms and privacy policy.",
+    "removeAgree": "Are you sure you don't agree to the terms and privacy policy?",
+    "removeAgreeText": "By doing this the app will stop tracking your location.",
+    "consent": "Consent",
+    "agreementQuestion": "Do you agree with the terms and privacy policy?"
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",

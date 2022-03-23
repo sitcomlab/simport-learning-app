@@ -9,7 +9,10 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { AlertController } from '@ionic/angular'
 import { AppSettingsService } from '../shared-services/appsettings.service'
-import { InformedConsent } from '../shared-services/db/migrations'
+import {
+  InformedConsent,
+  FirstTimeConsent,
+} from '../shared-services/db/migrations'
 
 @Component({
   selector: 'app-tracking',
@@ -22,9 +25,11 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
   consented: boolean
+  firstTime: boolean
 
   consent: boolean
   informedConsent: InformedConsent
+  firstTimeConsent: FirstTimeConsent
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -45,23 +50,26 @@ export class TrackingPage implements OnInit, OnDestroy {
     if (this.state === 'Running' && !this.consented) {
       this.alertController
         .create({
-          header: 'Dont you agree with the terms and privacy policy?',
+          header: 'Are you sure?',
           message: 'By doing this the app will stop tracking your location.',
           buttons: [
             {
-              text: 'No',
+              text: 'no',
               handler: () => {
-                console.log('No')
                 this.consented = true
               },
             },
             {
-              text: 'Yes',
+              text: 'yes',
               handler: () => {
-                console.log('Yes')
                 this.informedConsent.defaultInformedConsent = this.consented
                 this.appSettingsService.saveInformedConsent(
                   this.informedConsent
+                )
+                this.firstTime = true
+                this.firstTimeConsent.defaultFirstTimeConsent = this.firstTime
+                this.appSettingsService.saveFirstTimeConsent(
+                  this.firstTimeConsent
                 )
                 this.toggleBackgroundGeoLocation()
               },
@@ -79,31 +87,35 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   async presentAlertConfirm() {
     console.log(this.state)
-    this.alertController
-      .create({
-        header: 'Consent',
-        message: 'Do you agree with the terms and privacy policy?',
-        buttons: [
-          {
-            text: 'No',
-            handler: () => {
-              console.log('No')
-              this.consented = false
+    if (this.firstTime) {
+      this.alertController
+        .create({
+          header: 'Consent',
+          message: 'Do you agree with the terms and privacy policy?',
+          buttons: [
+            {
+              text: 'no',
+              handler: () => {
+                this.consented = false
+              },
             },
-          },
-          {
-            text: 'Yes',
-            handler: () => {
-              console.log('Yes')
-              this.consented = true
-              this.toggleBackgroundGeoLocation()
+            {
+              text: 'yes',
+              handler: () => {
+                this.consented = true
+                this.toggleBackgroundGeoLocation()
+              },
             },
-          },
-        ],
-      })
-      .then((res) => {
-        res.present()
-      })
+          ],
+        })
+        .then((res) => {
+          res.present()
+        })
+      this.firstTime = false
+      this.firstTimeConsent.defaultFirstTimeConsent = this.firstTime
+      this.appSettingsService.saveFirstTimeConsent(this.firstTimeConsent)
+    }
+    this.toggleBackgroundGeoLocation()
   }
 
   ngOnInit() {
@@ -134,6 +146,13 @@ export class TrackingPage implements OnInit, OnDestroy {
       () => null,
       () => {
         this.consented = this.informedConsent.defaultInformedConsent
+      }
+    )
+    this.appSettingsService.getFirstTimeConsent().subscribe(
+      (firstTimeConsent) => (this.firstTimeConsent = firstTimeConsent),
+      () => null,
+      () => {
+        this.firstTime = this.firstTimeConsent.defaultFirstTimeConsent
       }
     )
   }

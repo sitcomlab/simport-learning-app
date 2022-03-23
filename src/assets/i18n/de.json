@@ -7,7 +7,9 @@
     "export": "Exportieren",
     "view": "Anzeigen",
     "back": "Zurück",
-    "done": "Fertig"
+    "done": "Fertig",
+    "no": "Nein",
+    "yes": "Ja"
   },
   "diary": {
     "title": "Tagebuch",
@@ -119,7 +121,13 @@
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
-    "loading": "Warte…"
+    "loading": "Warte…",
+    "agreement_start": "Ich stimme der ",
+    "agreement_end": "Datenschutz­erklärung zu.",
+    "removeAgree": "Bist du sicher, dass du den Bedingungen und der Datenschutz­erklärung nicht zustimmen?",
+    "removeAgreeText": "Dadurch beendet die App die Verfolgung deines Standorts.",
+    "consent": "Zustimmen",
+    "agreementQuestion": "Bist du mit dem Datenschutzerklärung einverstanden?"
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
