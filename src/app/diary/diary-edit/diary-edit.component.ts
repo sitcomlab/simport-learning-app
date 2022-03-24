@@ -85,4 +85,9 @@ export class DiaryEditComponent implements OnInit {
       this.modalController.dismiss()
     }
   }
+
+  navigateToDiary() {
+    this.modalController.dismiss()
+    this.router.navigate([`/diary`])
+  }
 }

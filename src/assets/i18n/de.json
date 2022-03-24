@@ -21,7 +21,8 @@
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
     "exportFileName": "Mein SIMPORT Tagebuch",
-    "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})"
+    "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})",
+    "openEntries": "Meine Einträge öffnen"
   },
   "trajectory": {
     "select": {

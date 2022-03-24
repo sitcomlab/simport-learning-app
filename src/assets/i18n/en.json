@@ -21,7 +21,8 @@
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
     "exportFileName": "My SIMPORT diary",
-    "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
+    "exportFileErrorTitle": "Sharing diary failed ({{ value }})",
+    "openEntries": "Open my entries"
   },
   "trajectory": {
     "select": {
