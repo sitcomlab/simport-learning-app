@@ -33,7 +33,6 @@ jobs:
       - name: Run ionic build
         run: |
           npm install npm@8 -g
-          npm config set package-lock false
           npm install
           ionic cap build android --no-interactive --no-open --confirm --prod
 
