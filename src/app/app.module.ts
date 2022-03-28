@@ -14,7 +14,7 @@ import { AppComponent } from './app.component'
 import { SharedServicesModule } from './shared-services/shared-services.module'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { APP_INITIALIZER } from '@angular/core'
-import { AppSettingsService } from './shared-services/appsettings.service'
+import { InformedConsentService } from './shared-services/informed-consent/informed-consent.service'
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json')
@@ -42,7 +42,7 @@ export function createTranslateLoader(http: HttpClient) {
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    AppSettingsService,
+    InformedConsentService,
   ],
   bootstrap: [AppComponent],
 })
