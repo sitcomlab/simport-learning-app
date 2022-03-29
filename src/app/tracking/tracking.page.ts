@@ -130,14 +130,14 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.informedConsentService.getInformedConsent().subscribe(
+    this.informedConsentService.getInformedConsent('consent').subscribe(
       (informedConsent) => (this.informedConsent = informedConsent),
       () => null,
       () => {
         this.consented = this.informedConsent.defaultInformedConsent
       }
     )
-    this.informedConsentService.getFirstTimeConsent().subscribe(
+    this.informedConsentService.getFirstTimeConsent('firstTime').subscribe(
       (firstTimeConsent) => (this.firstTimeConsent = firstTimeConsent),
       () => null,
       () => {
@@ -208,11 +208,17 @@ export class TrackingPage implements OnInit, OnDestroy {
   setFirstTime() {
     this.firstTime = false
     this.firstTimeConsent.defaultFirstTimeConsent = this.firstTime
-    this.informedConsentService.saveFirstTimeConsent(this.firstTimeConsent)
+    this.informedConsentService.saveFirstTimeConsent(
+      'firstTime',
+      this.firstTimeConsent
+    )
   }
 
   setInformedConsent(consented: boolean) {
     this.informedConsent.defaultInformedConsent = consented
-    this.informedConsentService.saveInformedConsent(this.informedConsent)
+    this.informedConsentService.saveInformedConsent(
+      'consent',
+      this.informedConsent
+    )
   }
 }

@@ -4,24 +4,22 @@ import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { InformedConsent, FirstTimeConsent } from './default'
 
-const SETTINGS_KEY = 'configuration'
-
 @Injectable({
   providedIn: 'root',
 })
 export class InformedConsentService {
   constructor(private http: HttpClient) {}
-  getInformedConsent(): Observable<InformedConsent> {
-    const settings1 = localStorage.getItem(SETTINGS_KEY)
 
-    if (settings1) {
-      return of(JSON.parse(settings1))
+  getInformedConsent(key: string): Observable<InformedConsent> {
+    const value = localStorage.getItem(key)
+    if (value) {
+      return of(JSON.parse(localStorage.getItem(key)))
     } else {
       return this.http.get('/assets/informedConsent/default.json').pipe(
         map((response: any) => {
           const settings = response || {}
           if (settings) {
-            this.saveInformedConsent(settings)
+            this.saveInformedConsent('consent', settings)
           }
 
           return settings
@@ -30,8 +28,12 @@ export class InformedConsentService {
     }
   }
 
-  getFirstTimeConsent(): Observable<FirstTimeConsent> {
-    const settings2 = localStorage.getItem(SETTINGS_KEY)
+  saveInformedConsent(key: string, informedConsent: InformedConsent) {
+    localStorage.setItem(key, JSON.stringify(informedConsent))
+  }
+
+  getFirstTimeConsent(key: string): Observable<FirstTimeConsent> {
+    const settings2 = localStorage.getItem(key)
 
     if (settings2) {
       return of(JSON.parse(settings2))
@@ -40,7 +42,7 @@ export class InformedConsentService {
         map((response: any) => {
           const settings3 = response || {}
           if (settings3) {
-            this.saveFirstTimeConsent(settings3)
+            this.saveFirstTimeConsent('firstTime', settings3)
           }
 
           return settings3
@@ -49,11 +51,7 @@ export class InformedConsentService {
     }
   }
 
-  saveFirstTimeConsent(firstTimeConsent: FirstTimeConsent) {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(firstTimeConsent))
-  }
-
-  saveInformedConsent(informedConsent: InformedConsent) {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(informedConsent))
+  saveFirstTimeConsent(key: string, firstTimeConsent: FirstTimeConsent) {
+    localStorage.setItem(key, JSON.stringify(firstTimeConsent))
   }
 }
