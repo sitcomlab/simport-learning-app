@@ -1,30 +1,23 @@
-import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable, of } from 'rxjs'
-import { map } from 'rxjs/operators'
 import { InformedConsent, FirstTimeConsent } from './default'
 
 @Injectable({
   providedIn: 'root',
 })
 export class InformedConsentService {
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getInformedConsent(key: string): Observable<InformedConsent> {
     const value = localStorage.getItem(key)
     if (value) {
       return of(JSON.parse(localStorage.getItem(key)))
     } else {
-      return this.http.get('/assets/informedConsent/default.json').pipe(
-        map((response: any) => {
-          const settings = response || {}
-          if (settings) {
-            this.saveInformedConsent('consent', settings)
-          }
-
-          return settings
-        })
-      )
+      const value2 = new InformedConsent()
+      if (value2) {
+        this.saveInformedConsent('consent', value2)
+      }
+      return of<InformedConsent>(value2)
     }
   }
 
@@ -33,21 +26,16 @@ export class InformedConsentService {
   }
 
   getFirstTimeConsent(key: string): Observable<FirstTimeConsent> {
-    const settings2 = localStorage.getItem(key)
+    const valueFirst = localStorage.getItem(key)
 
-    if (settings2) {
-      return of(JSON.parse(settings2))
+    if (valueFirst) {
+      return of(JSON.parse(valueFirst))
     } else {
-      return this.http.get('/assets/informedConsent/default.json').pipe(
-        map((response: any) => {
-          const settings3 = response || {}
-          if (settings3) {
-            this.saveFirstTimeConsent('firstTime', settings3)
-          }
-
-          return settings3
-        })
-      )
+      const valueFirst2 = new FirstTimeConsent()
+      if (valueFirst2) {
+        this.saveFirstTimeConsent('consent', valueFirst2)
+      }
+      return of<FirstTimeConsent>(valueFirst2)
     }
   }
 
