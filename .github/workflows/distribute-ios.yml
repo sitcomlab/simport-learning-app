@@ -31,8 +31,7 @@ jobs:
       - name: Run ionic build
         run: |
           npm install npm@8 -g
-          npm config set package-lock false
-          npm install --silent
+          npm ci --silent
           ionic cap build ios --no-interactive --no-open --confirm --prod
 
       - name: Bump version
