@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { ModalController } from '@ionic/angular'
+import { AlertController, ModalController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { DiaryService } from 'src/app/shared-services/diary/diary.service'
 
@@ -26,7 +26,8 @@ export class DiaryEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private modalController: ModalController,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private alertController: AlertController
   ) {}
 
   async ngOnInit() {
@@ -86,8 +87,46 @@ export class DiaryEditComponent implements OnInit {
     }
   }
 
-  navigateToDiary() {
-    this.modalController.dismiss()
-    this.router.navigate([`/diary`])
+  async navigateToDiary() {
+    if (this.content && this.content !== '') {
+      const alert = await this.alertController.create({
+        header: this.translateService.instant(
+          'diary.unsavedChangesAlertHeader'
+        ),
+        message: this.translateService.instant(
+          'diary.unsavedChangesAlertMessage'
+        ),
+        buttons: [
+          // cancel button
+          {
+            text: this.translateService.instant('general.cancel'),
+            role: 'cancel',
+            handler: () => {
+              alert.dismiss()
+            },
+          },
+          // discard changes button
+          {
+            text: this.translateService.instant('general.discard'),
+            handler: async () => {
+              this.dismiss()
+              this.router.navigate([`/diary`])
+            },
+          },
+          // save changes button
+          {
+            text: this.translateService.instant('general.save'),
+            handler: async () => {
+              this.saveEntry()
+              this.router.navigate([`/diary`])
+            },
+          },
+        ],
+      })
+      await alert.present()
+    } else {
+      this.dismiss()
+      this.router.navigate([`/diary`])
+    }
   }
 }

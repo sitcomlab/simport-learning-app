@@ -7,7 +7,9 @@
     "export": "Exportieren",
     "view": "Anzeigen",
     "back": "Zurück",
-    "done": "Fertig"
+    "done": "Fertig",
+    "save": "Speichern",
+    "discard": "Verwerfen"
   },
   "diary": {
     "title": "Tagebuch",
@@ -22,7 +24,9 @@
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
     "exportFileName": "Mein SIMPORT Tagebuch",
     "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})",
-    "openEntries": "Meine Einträge öffnen"
+    "openEntries": "Meine Einträge öffnen",
+    "unsavedChangesAlertHeader": "Änderungen speichern?",
+    "unsavedChangesAlertMessage": "Deine Änderungen gehen verloren, wenn du sie nicht speicherst."
   },
   "trajectory": {
     "select": {
