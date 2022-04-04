@@ -43,14 +43,14 @@ for Cordova) to access native APIs and [Angular][angular] for UI.
 #### Quickstart (Tools)
 
 - [git][git]
-- [node.js][node]
+- [node.js][node] (version 16.14)
 - [Ionic CLI][ionic-cli]
 - [Visual Studio Code][vscode] with [prettier][vscode-prettier]
 - [Android Studio][androidstudio] / [XCode][xcode]
 
 ---
 
-For basic UI development you need [node.js][node] installed - further information can be found [here](https://nodejs.org/de/download/package-manager/).
+For basic UI development you need [node.js][node] (version 16.14) installed - further information can be found [here](https://nodejs.org/de/download/package-manager/).
 As an IDE you can basically choose by your own taste. Our recommendation is to use [Visual Studio Code][vscode] with the code formatter [Prettier][vscode-prettier] using [these settings](.prettierrc.json). This guarantees consistent and uniform code.
 
 ##### Clone the repository
@@ -187,7 +187,7 @@ These tests are automatically executed when pushing to the development branch. T
 
 ```
 SIMPORT Learning App
-Copyright (c) 2020 Sitcom Lab
+Copyright (c) 2022 Sitcom Lab
 ```
 
 [Further information](LICENSE)
