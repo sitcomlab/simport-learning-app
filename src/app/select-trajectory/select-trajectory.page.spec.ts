@@ -1,6 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { IonRouterOutlet } from '@ionic/angular'
 import { APP_TEST_IMPORTS } from '../app.declarations'
 import { SqliteService } from '../shared-services/db/sqlite.service'
@@ -23,7 +22,6 @@ describe('SelectTrajectoryPage', () => {
         SqliteService,
         TrajectoryService,
         TrajectoryImportExportService,
-        SocialSharing,
         {
           // use empty IonRouterOutlet, since actually providing IonRouterOutlet
           // creates a conflict with RouterTestingModule and this is sufficent for running tests.

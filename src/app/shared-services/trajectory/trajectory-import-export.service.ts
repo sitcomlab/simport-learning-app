@@ -14,7 +14,6 @@ import {
   FilesystemDirectory,
   FilesystemEncoding,
 } from '@capacitor/core'
-// import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { take } from 'rxjs/operators'
 import { TranslateService } from '@ngx-translate/core'
 const { FileSelector, Filesystem, Share } = Plugins
@@ -46,7 +45,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
   constructor(
     http: HttpClient,
     db: SqliteService,
-    // private socialSharing: SocialSharing,
     private platform: Platform,
     private translateService: TranslateService
   ) {
@@ -237,25 +235,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
         )}: ${error.errorMessage ? error.errorMessage : error}`,
       }
     }
-
-    // return this.socialSharing
-    //   .shareWithOptions(sharingOptions)
-    //   .then(async (result: { completed: boolean; app: string }) => {
-    //     return {
-    //       success: result.completed,
-    //       errorMessage: this.translateService.instant(
-    //         'trajectory.export.errorMessage'
-    //       ),
-    //     }
-    //   })
-    //   .catch(async () => {
-    //     return {
-    //       success: false,
-    //       errorMessage: this.translateService.instant(
-    //         'trajectory.export.errorMessage'
-    //       ),
-    //     }
-    //   })
   }
 
   /**
