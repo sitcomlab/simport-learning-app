@@ -14,10 +14,10 @@ import {
   FilesystemDirectory,
   FilesystemEncoding,
 } from '@capacitor/core'
-import { SocialSharing } from '@ionic-native/social-sharing/ngx'
+// import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { take } from 'rxjs/operators'
 import { TranslateService } from '@ngx-translate/core'
-const { FileSelector, Filesystem } = Plugins
+const { FileSelector, Filesystem, Share } = Plugins
 
 interface TrajectoryExportFile {
   trajectory: string
@@ -46,7 +46,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
   constructor(
     http: HttpClient,
     db: SqliteService,
-    private socialSharing: SocialSharing,
+    // private socialSharing: SocialSharing,
     private platform: Platform,
     private translateService: TranslateService
   ) {
@@ -198,34 +198,64 @@ export class TrajectoryImportExportService extends TrajectoryService {
   ): Promise<TrajectoryExportResult> {
     const trajectoryFile = await this.createTrajectoryExportFileFromMeta(
       trajectoryMeta,
-      true
+      false
     )
-    const sharingOptions = {
-      files: [
-        `df:${trajectoryFile.filename}.json;data:application/json;base64,${trajectoryFile.trajectory}`,
-      ],
-      chooserTitle: this.translateService.instant(
-        'trajectory.export.alertHeader'
-      ), // android-only dialog-title
+
+    try {
+      // write file temporarily
+      const fileResult = await Filesystem.writeFile({
+        data: trajectoryFile.trajectory,
+        path: `${trajectoryFile.filename}.json`,
+        directory: FilesystemDirectory.Cache, // write in cache as temp folder
+        encoding: FilesystemEncoding.UTF8,
+      })
+
+      if (this.platform.is('android')) {
+        await Share.requestPermissions()
+      }
+
+      // share file
+      await Share.share({
+        title: this.translateService.instant('trajectory.export.alertHeader'),
+        url: fileResult.uri,
+        dialogTitle: this.translateService.instant(
+          'trajectory.export.alertHeader'
+        ),
+      })
+
+      return {
+        success: true,
+        errorMessage: this.translateService.instant(
+          'trajectory.export.errorMessage'
+        ),
+      }
+    } catch (error) {
+      return {
+        success: false,
+        errorMessage: `${this.translateService.instant(
+          'trajectory.export.errorMessage'
+        )}: ${error.errorMessage ? error.errorMessage : error}`,
+      }
     }
-    return this.socialSharing
-      .shareWithOptions(sharingOptions)
-      .then(async (result: { completed: boolean; app: string }) => {
-        return {
-          success: result.completed,
-          errorMessage: this.translateService.instant(
-            'trajectory.export.errorMessage'
-          ),
-        }
-      })
-      .catch(async () => {
-        return {
-          success: false,
-          errorMessage: this.translateService.instant(
-            'trajectory.export.errorMessage'
-          ),
-        }
-      })
+
+    // return this.socialSharing
+    //   .shareWithOptions(sharingOptions)
+    //   .then(async (result: { completed: boolean; app: string }) => {
+    //     return {
+    //       success: result.completed,
+    //       errorMessage: this.translateService.instant(
+    //         'trajectory.export.errorMessage'
+    //       ),
+    //     }
+    //   })
+    //   .catch(async () => {
+    //     return {
+    //       success: false,
+    //       errorMessage: this.translateService.instant(
+    //         'trajectory.export.errorMessage'
+    //       ),
+    //     }
+    //   })
   }
 
   /**
