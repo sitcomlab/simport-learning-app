@@ -7,6 +7,7 @@ import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
+import { LocationTrackingStatus } from '../model/location-tracking'
 
 @Component({
   selector: 'app-tracking',
@@ -34,16 +35,14 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setState(this.translateService.instant('tracking.loading'))
-    this.setStateIcon(false)
+    this.setStateIcon('isStopped')
     this.locationServiceStateSubscription =
-      this.locationService.isRunning.subscribe((state) => {
-        this.setState(
-          state
-            ? this.translateService.instant('tracking.stateRunning')
-            : this.translateService.instant('tracking.stateStopped')
-        )
-        this.setStateIcon(state)
+      this.locationService.trackingStatusChange.subscribe((trackingState) => {
+        // TODO internationalization, proper text
+        this.setState(trackingState)
+        this.setStateIcon(trackingState)
       })
+
     this.locationServiceNotificationToggleSubscription =
       this.locationService.notificationsEnabled.subscribe((enabled) => {
         this.setNotificationToggle(enabled)
@@ -67,15 +66,22 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.locationService.start()
   }
 
-  setState(state: string) {
+  setState(state: LocationTrackingStatus) {
     this.zone.run(() => {
       this.state = state
     })
   }
 
-  setStateIcon(running: boolean) {
+  setStateIcon(state: LocationTrackingStatus) {
     this.zone.run(() => {
-      this.stateIcon = running ? 'stop-circle' : 'play-circle'
+      switch (state) {
+        case 'isRunning':
+          this.stateIcon = 'play-circle'
+          break
+        case 'isStopped':
+          this.stateIcon = 'stop-circle'
+          break
+      }
     })
   }
 

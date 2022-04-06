@@ -17,7 +17,7 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   userTrajectory: Trajectory
   importedTrajectories: TrajectoryMeta[]
   loading = true
-  trackingRunning: boolean
+  trackingRunning: string
   notificationsEnabled: boolean
   segment = 'general'
   showHistory = false
@@ -61,7 +61,7 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
     )
 
     this.subscriptions.push(
-      this.locationService.isRunning.subscribe(
+      this.locationService.trackingStatusChange.subscribe(
         (running) => (this.trackingRunning = running)
       )
     )

@@ -14,9 +14,9 @@ import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
+import { LocationTrackingStatus } from '../../model/location-tracking'
 
 const { App } = Plugins
-
 @Injectable()
 export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
@@ -40,7 +40,9 @@ export class LocationService implements OnDestroy {
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
 
-  isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  private trackingStatus: LocationTrackingStatus = 'isStopped'
+  trackingStatusChange: BehaviorSubject<LocationTrackingStatus> =
+    new BehaviorSubject<LocationTrackingStatus>('isStopped')
   notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   )
@@ -135,7 +137,14 @@ export class LocationService implements OnDestroy {
 
   private updateRunningState() {
     this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-      this.isRunning.next(isRunning)
+      if (isRunning) {
+        this.trackingStatus = 'isRunning'
+        this.trackingStatusChange.next('isRunning')
+      } else {
+        // TODO here we need to account for pauses
+        this.trackingStatus = 'isStopped'
+        this.trackingStatusChange.next('isStopped')
+      }
     })
   }
 
@@ -183,7 +192,8 @@ export class LocationService implements OnDestroy {
         } catch (err) {
           console.error(err)
         }
-        this.isRunning.next(true)
+        this.trackingStatus = 'isRunning'
+        this.trackingStatusChange.next('isRunning')
         this.nextLocationIsStart = true
         this.scheduleNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
@@ -194,7 +204,9 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
-        this.isRunning.next(false)
+        // TODO here we need to account for pauses
+        this.trackingStatus = 'isStopped'
+        this.trackingStatusChange.next('isStopped')
         this.nextLocationIsStart = false
         this.scheduleNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
