@@ -127,6 +127,20 @@ export class LocationService implements OnDestroy {
     })
   }
 
+  pause() {
+    if (!this.isSupportedPlatform) return
+    this.backgroundGeolocation.checkStatus().then((status) => {
+      if (status.isRunning) {
+        this.trackingStatus = 'isPaused'
+        this.backgroundGeolocation.stop().then(() => {
+          this.nextLocationIsStart = false
+          this.updateRunningState()
+        })
+      }
+      // TODO add turning back on
+    })
+  }
+
   openLocationSettings() {
     this.backgroundGeolocation.showAppSettings()
   }
@@ -141,9 +155,12 @@ export class LocationService implements OnDestroy {
         this.trackingStatus = 'isRunning'
         this.trackingStatusChange.next('isRunning')
       } else {
-        // TODO here we need to account for pauses
-        this.trackingStatus = 'isStopped'
-        this.trackingStatusChange.next('isStopped')
+        if (this.trackingStatus === 'isPaused') {
+          this.trackingStatusChange.next('isPaused')
+        } else {
+          this.trackingStatus = 'isStopped'
+          this.trackingStatusChange.next('isStopped')
+        }
       }
     })
   }
@@ -204,14 +221,23 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
-        // TODO here we need to account for pauses
-        this.trackingStatus = 'isStopped'
-        this.trackingStatusChange.next('isStopped')
-        this.nextLocationIsStart = false
-        this.scheduleNotification(
-          this.translateService.instant('notification.locationUpdateTitle'),
-          this.translateService.instant('notification.trackingStopped')
-        )
+        if (this.trackingStatus === 'isPaused') {
+          this.trackingStatusChange.next('isPaused')
+          this.nextLocationIsStart = false
+          // TODO add time of pausing to notification
+          this.scheduleNotification(
+            this.translateService.instant('notification.locationUpdateTitle'),
+            this.translateService.instant('notification.trackingPaused')
+          )
+        } else {
+          this.trackingStatus = 'isStopped'
+          this.trackingStatusChange.next('isStopped')
+          this.nextLocationIsStart = false
+          this.scheduleNotification(
+            this.translateService.instant('notification.locationUpdateTitle'),
+            this.translateService.instant('notification.trackingStopped')
+          )
+        }
       })
   }
 

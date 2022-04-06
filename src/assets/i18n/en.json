@@ -112,8 +112,10 @@
     "title": "Tracking",
     "toggleOn": "Start location tracking",
     "toggleOff": "Stop location tracking",
+    "togglePause": "Pause location tracking",
     "stateRunning": "Tracking is currently running",
     "stateStopped": "Tracking is currently stopped",
+    "statePaused": "Tracking is currently paused",
     "notSupported": "This platform doesn't support background location tracking",
     "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
     "alwaysAllowHint": "For best tracking results enable <i>always allow</i> for this app in your ",
@@ -133,7 +135,8 @@
     "locationUpdateTitle": "Location Update",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
-    "trackingStopped": "Tracking stopped"
+    "trackingStopped": "Tracking stopped",
+    "trackingPaused": "Tracking paused"
   },
   "confirm": {
     "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",

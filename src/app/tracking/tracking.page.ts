@@ -38,7 +38,6 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.updateTrackingButtonUI('isStopped')
     this.locationServiceStateSubscription =
       this.locationService.trackingStatusChange.subscribe((trackingState) => {
-        // TODO internationalization, proper text
         this.updateTrackingButtonUI(trackingState)
       })
 
@@ -65,6 +64,11 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.locationService.start()
   }
 
+  pauseBackgroundGeoLocation() {
+    // TODO add turning back on
+    this.locationService.pause()
+  }
+
   updateTrackingButtonUI(state: LocationTrackingStatus) {
     this.zone.run(() => {
       switch (state) {
@@ -77,6 +81,13 @@ export class TrackingPage implements OnInit, OnDestroy {
         case 'isStopped':
           this.state = this.translateService.instant('tracking.stateStopped')
           this.stateIcon = 'stop-circle'
+          this.startStopButtonLabel =
+            this.translateService.instant('tracking.toggleOn')
+          break
+        case 'isPaused':
+          // TODO add info when turns back on
+          this.state = this.translateService.instant('tracking.statePaused')
+          this.stateIcon = 'pause-circle'
           this.startStopButtonLabel =
             this.translateService.instant('tracking.toggleOn')
           break

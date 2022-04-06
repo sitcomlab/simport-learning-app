@@ -18,6 +18,13 @@
           subtitle="{{ state }}"
           (click)="toggleBackgroundGeoLocation()"
         ></app-item-card>
+        <app-item-card
+          [disabled]="!locationService.isSupportedPlatform"
+          *ngIf=" state === ('tracking.stateRunning' | translate)"
+          icon="pause-circle"
+          [title]="'tracking.togglePause' | translate"
+          (click)="pauseBackgroundGeoLocation()"
+        ></app-item-card>
         <ion-note *ngIf="!locationService.isSupportedPlatform">
           {{ 'tracking.notSupported' | translate }}
         </ion-note>
