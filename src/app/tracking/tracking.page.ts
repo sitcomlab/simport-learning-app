@@ -17,6 +17,7 @@ import { LocationTrackingStatus } from '../model/location-tracking'
 export class TrackingPage implements OnInit, OnDestroy {
   @Input() state: string
   @Input() stateIcon: string
+  @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
 
@@ -34,13 +35,11 @@ export class TrackingPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.setState(this.translateService.instant('tracking.loading'))
-    this.setStateIcon('isStopped')
+    this.updateTrackingButtonUI('isStopped')
     this.locationServiceStateSubscription =
       this.locationService.trackingStatusChange.subscribe((trackingState) => {
         // TODO internationalization, proper text
-        this.setState(trackingState)
-        this.setStateIcon(trackingState)
+        this.updateTrackingButtonUI(trackingState)
       })
 
     this.locationServiceNotificationToggleSubscription =
@@ -66,20 +65,20 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.locationService.start()
   }
 
-  setState(state: LocationTrackingStatus) {
-    this.zone.run(() => {
-      this.state = state
-    })
-  }
-
-  setStateIcon(state: LocationTrackingStatus) {
+  updateTrackingButtonUI(state: LocationTrackingStatus) {
     this.zone.run(() => {
       switch (state) {
         case 'isRunning':
+          this.state = this.translateService.instant('tracking.stateRunning')
           this.stateIcon = 'play-circle'
+          this.startStopButtonLabel =
+            this.translateService.instant('tracking.toggleOff')
           break
         case 'isStopped':
+          this.state = this.translateService.instant('tracking.stateStopped')
           this.stateIcon = 'stop-circle'
+          this.startStopButtonLabel =
+            this.translateService.instant('tracking.toggleOn')
           break
       }
     })

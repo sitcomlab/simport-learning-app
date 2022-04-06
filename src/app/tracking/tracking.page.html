@@ -14,7 +14,7 @@
         <app-item-card
           [disabled]="!locationService.isSupportedPlatform"
           icon="{{ stateIcon }}"
-          [title]="'tracking.toggleTitle' | translate"
+          title="{{ startStopButtonLabel }}"
           subtitle="{{ state }}"
           (click)="toggleBackgroundGeoLocation()"
         ></app-item-card>
