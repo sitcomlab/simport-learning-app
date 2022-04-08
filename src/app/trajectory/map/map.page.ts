@@ -49,8 +49,8 @@ import { TranslateService } from '@ngx-translate/core'
 export class MapPage implements OnInit, OnDestroy {
   TrajectoryTypes: typeof TrajectoryType = TrajectoryType // for use in template
   mapOptions: MapOptions = {
-    center: [51.9694, 7.5954],
-    zoom: 14,
+    center: [0, 0],
+    zoom: 1,
     layers: [
       tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',

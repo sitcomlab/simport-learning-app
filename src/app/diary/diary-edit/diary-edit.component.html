@@ -50,3 +50,11 @@
     ></ion-textarea>
   </ion-item>
 </ion-content>
+
+<ion-footer *ngIf="isModal">
+  <ion-toolbar>
+    <ion-button expand="block" fill="outline" (click)="navigateToDiary()">
+      {{ 'diary.openEntries' | translate }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

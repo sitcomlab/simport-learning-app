@@ -10,6 +10,8 @@
     "done": "Done",
     "no": "No",
     "yes": "Yes"
+    "save": "Save",
+    "discard": "Discard"
   },
   "diary": {
     "title": "Diary",
@@ -23,7 +25,10 @@
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
     "exportFileName": "My SIMPORT diary",
-    "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
+    "exportFileErrorTitle": "Sharing diary failed ({{ value }})",
+    "openEntries": "Open my entries",
+    "unsavedChangesAlertHeader": "Do you want to save your changes?",
+    "unsavedChangesAlertMessage": "Your changes will be lost if you do not save them."
   },
   "trajectory": {
     "select": {
