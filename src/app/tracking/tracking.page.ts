@@ -12,7 +12,7 @@ import { InformedConsentService } from '../shared-services/informed-consent/info
 import {
   InformedConsent,
   FirstTimeConsent,
-} from '../shared-services/informed-consent/default'
+} from '../shared-services/informed-consent/informed-constent.fixtures'
 
 @Component({
   selector: 'app-tracking',
@@ -25,7 +25,7 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
   consented: boolean
-  firstTime: boolean
+  firstTimeConsented: boolean
 
   consent: boolean
   informedConsent: InformedConsent
@@ -50,17 +50,21 @@ export class TrackingPage implements OnInit, OnDestroy {
     if (this.state === 'Running' && !this.consented) {
       this.alertController
         .create({
-          header: this.translateService.instant('tracking.areYousSure'),
-          message: this.translateService.instant('tracking.removeAgreeText'),
+          header: this.translateService.instant(
+            'tracking.removeConsentConfirmation'
+          ),
+          message: this.translateService.instant(
+            'tracking.removeConsentConfirmationText'
+          ),
           buttons: [
             {
-              text: 'cancel',
+              text: this.translateService.instant('general.cancel'),
               handler: () => {
                 this.consented = true
               },
             },
             {
-              text: 'yes',
+              text: this.translateService.instant('general.yes'),
               handler: () => {
                 this.setInformedConsent(this.consented)
                 this.toggleBackgroundGeoLocation()
@@ -78,20 +82,20 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   async presentAlertConfirm() {
     console.log(this.state)
-    if (this.firstTime) {
+    if (this.firstTimeConsented) {
       this.alertController
         .create({
           header: this.translateService.instant('tracking.consent'),
           message: this.translateService.instant('tracking.agreementQuestion'),
           buttons: [
             {
-              text: 'no',
+              text: this.translateService.instant('general.no'),
               handler: () => {
                 this.consented = false
               },
             },
             {
-              text: 'yes',
+              text: this.translateService.instant('general.yes'),
               handler: () => {
                 this.consented = true
                 this.toggleBackgroundGeoLocation()
@@ -103,8 +107,9 @@ export class TrackingPage implements OnInit, OnDestroy {
           res.present()
         })
       this.setFirstTime()
+    } else {
+      this.toggleBackgroundGeoLocation()
     }
-    this.toggleBackgroundGeoLocation()
   }
 
   ngOnInit() {
@@ -130,6 +135,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
+    // localStorage.clear()
     this.informedConsentService.getInformedConsent('consent').subscribe(
       (informedConsent) => (this.informedConsent = informedConsent),
       () => null,
@@ -141,7 +147,7 @@ export class TrackingPage implements OnInit, OnDestroy {
       (firstTimeConsent) => (this.firstTimeConsent = firstTimeConsent),
       () => null,
       () => {
-        this.firstTime = this.firstTimeConsent.defaultFirstTimeConsent
+        this.firstTimeConsented = this.firstTimeConsent.defaultFirstTimeConsent
       }
     )
   }
@@ -189,7 +195,6 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   openTerms() {
-    console.log('This opens inprint page.')
     this.router.navigate(['/settings/privacy-policy'])
   }
 
@@ -206,8 +211,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   setFirstTime() {
-    this.firstTime = false
-    this.firstTimeConsent.defaultFirstTimeConsent = this.firstTime
+    this.firstTimeConsented = false
+    this.firstTimeConsent.defaultFirstTimeConsent = this.firstTimeConsented
     this.informedConsentService.saveFirstTimeConsent(
       'firstTime',
       this.firstTimeConsent

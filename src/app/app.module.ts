@@ -13,7 +13,6 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { SharedServicesModule } from './shared-services/shared-services.module'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { APP_INITIALIZER } from '@angular/core'
 import { InformedConsentService } from './shared-services/informed-consent/informed-consent.service'
 
 export function createTranslateLoader(http: HttpClient) {

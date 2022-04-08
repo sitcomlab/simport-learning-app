@@ -5,3 +5,8 @@ export class InformedConsent {
 export class FirstTimeConsent {
   defaultFirstTimeConsent = true
 }
+
+export class InformedConsentDefaults {
+  hasInformedConsent = false
+  hasFirstTimeConsent = true
+}
