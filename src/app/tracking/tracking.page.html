@@ -23,12 +23,14 @@
             </ion-note>
           </ion-label>
           <ion-checkbox
-            [(ngModel)]="consented"
+            [(ngModel)]="informedConsent.hasInformedConsent"
             slot="start"
             (ionChange)="checkBox()"
           ></ion-checkbox>
         </ion-item>
-        <div *ngIf="consented;then content else other_content"></div>
+        <div
+          *ngIf="informedConsent.hasInformedConsent;then content else other_content"
+        ></div>
         <ng-template #content>
           <app-item-card
             *ngIf="state=='Stopped'; else elseBlock"
