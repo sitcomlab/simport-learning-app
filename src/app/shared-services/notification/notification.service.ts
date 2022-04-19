@@ -8,6 +8,20 @@ import { Plugins } from '@capacitor/core'
 export class NotificationService {
   constructor() {
     this.checkPermission()
+    Plugins.LocalNotifications.addListener(
+      'localNotificationReceived',
+      (notification) => {
+        console.log('a notification has been displayed')
+        console.log(notification.id)
+      }
+    )
+    Plugins.LocalNotifications.addListener(
+      'localNotificationActionPerformed',
+      (notificationPerformed) => {
+        console.log('a notification has been clicked on')
+        console.log(notificationPerformed.notification.id)
+      }
+    )
   }
 
   private checkPermission() {
@@ -29,6 +43,26 @@ export class NotificationService {
           body: text,
         },
       ],
+    })
+  }
+
+  notifyAtTime(
+    type: NotificationType,
+    title: string,
+    text: string,
+    fireDate: Date
+  ) {
+    Plugins.LocalNotifications.schedule({
+      notifications: [
+        {
+          id: type,
+          title,
+          body: text,
+          schedule: { at: new Date(fireDate.getTime()) },
+        },
+      ],
+    }).then(() => {
+      console.log('scheduled notification at date')
     })
   }
 }

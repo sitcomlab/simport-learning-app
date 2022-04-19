@@ -137,7 +137,16 @@ export class LocationService implements OnDestroy {
           this.updateRunningState()
         })
       }
-      // TODO add turning back on
+      const turnBackOnAt = new Date()
+      turnBackOnAt.setSeconds(turnBackOnAt.getSeconds() + 20)
+      this.sendNotification(
+        'Tracking paused',
+        'Tracking will resume at' + turnBackOnAt.toLocaleDateString()
+      )
+      this.sendRestartNotificationAtTime(turnBackOnAt)
+      console.log('paused service')
+
+      // TODO turning back on
     })
   }
 
@@ -181,7 +190,7 @@ export class LocationService implements OnDestroy {
 
         await this.inferenceService.triggerBackgroundFunctionIfViable()
 
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
             latitude: latitude.toFixed(4),
@@ -212,7 +221,7 @@ export class LocationService implements OnDestroy {
         this.trackingStatus = 'isRunning'
         this.trackingStatusChange.next('isRunning')
         this.nextLocationIsStart = true
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.trackingStarted')
         )
@@ -225,7 +234,7 @@ export class LocationService implements OnDestroy {
           this.trackingStatusChange.next('isPaused')
           this.nextLocationIsStart = false
           // TODO add time of pausing to notification
-          this.scheduleNotification(
+          this.sendNotification(
             this.translateService.instant('notification.locationUpdateTitle'),
             this.translateService.instant('notification.trackingPaused')
           )
@@ -233,7 +242,7 @@ export class LocationService implements OnDestroy {
           this.trackingStatus = 'isStopped'
           this.trackingStatusChange.next('isStopped')
           this.nextLocationIsStart = false
-          this.scheduleNotification(
+          this.sendNotification(
             this.translateService.instant('notification.locationUpdateTitle'),
             this.translateService.instant('notification.trackingStopped')
           )
@@ -241,13 +250,24 @@ export class LocationService implements OnDestroy {
       })
   }
 
-  private scheduleNotification(title: string, text: string) {
+  private sendNotification(title: string, text: string) {
     if (this.notificationsEnabled.value === false) return
     this.notificationService.notify(
       NotificationType.locationUpdate,
       title,
       text
     )
+  }
+
+  private sendRestartNotificationAtTime(turnBackOnAt: Date) {
+    this.notificationService.notifyAtTime(
+      NotificationType.locationUpdate,
+      // TODO i8n
+      'Restarting tracking',
+      'The scheduled pause time has ended',
+      turnBackOnAt
+    )
+    console.log('configured pause notification')
   }
 
   private async showGrantPermissionAlert() {
