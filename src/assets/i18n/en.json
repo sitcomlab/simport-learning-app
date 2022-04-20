@@ -19,7 +19,7 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Content",
-    "contentPlaceholder": "Enter your thoughts…",
+    "contentPlaceholder": "Have you looked at your location data today? If yes: What observations have you made?",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
     "exportFileName": "My SIMPORT diary",
