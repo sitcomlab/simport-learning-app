@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { NotificationType } from './types'
-import { Plugins } from '@capacitor/core'
+import { LocalNotificationPendingList, Plugins } from '@capacitor/core'
 import { Router } from '@angular/router'
 
 @Injectable({
@@ -67,7 +67,14 @@ export class NotificationService {
     })
   }
 
-  removeScheduledUnpauseNotifications() {
-    // TODO
+  async removeScheduledUnpauseNotifications() {
+    const pendingUnpauseNotifications: LocalNotificationPendingList = {
+      notifications: [
+        {
+          id: NotificationType.unpauseTrackingNotification.toString(),
+        },
+      ],
+    }
+    await Plugins.LocalNotifications.cancel(pendingUnpauseNotifications)
   }
 }

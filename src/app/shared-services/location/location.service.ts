@@ -110,8 +110,7 @@ export class LocationService implements OnDestroy {
       ) {
         this.backgroundGeolocation.start()
         this.nextLocationIsStart = true
-
-        // TODO remove scheduled unpause notifications
+        await this.notificationService.removeScheduledUnpauseNotifications()
       } else {
         await this.showGrantPermissionAlert()
       }
