@@ -136,7 +136,9 @@
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
     "trackingStopped": "Tracking stopped",
-    "trackingPaused": "Tracking paused"
+    "trackingPaused": "Tracking paused",
+    "trackingUnpausedTitle": "Action required: please restart tracking",
+    "trackingUnpausedText": "The scheduled pause of the location tracking has ended. Please tap here and restart tracking in the app's menu."
   },
   "confirm": {
     "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",

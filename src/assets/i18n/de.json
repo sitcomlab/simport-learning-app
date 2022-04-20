@@ -136,7 +136,9 @@
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",
     "trackingStopped": "Aufzeichnung gestoppt",
-    "trackingPaused": "Aufzeichnung pausiert"
+    "trackingPaused": "Aufzeichnung pausiert",
+    "trackingUnpausedTitle": "Handlung erforderlich: Bitte Aufzeichnung starten",
+    "trackingUnpausedText": "Die planmäßige Pausierung der Standortaufzeichnung ist abgelaufen. Bitte drücke hier und starte die Standortaufzeichnung in der App erneut."
   },
   "confirm": {
     "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",

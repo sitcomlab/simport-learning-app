@@ -110,6 +110,8 @@ export class LocationService implements OnDestroy {
       ) {
         this.backgroundGeolocation.start()
         this.nextLocationIsStart = true
+
+        // TODO remove scheduled unpause notifications
       } else {
         await this.showGrantPermissionAlert()
       }
@@ -144,9 +146,6 @@ export class LocationService implements OnDestroy {
         'Tracking will resume at' + turnBackOnAt.toLocaleDateString()
       )
       this.sendRestartNotificationAtTime(turnBackOnAt)
-      console.log('paused service')
-
-      // TODO turning back on
     })
   }
 
@@ -261,13 +260,11 @@ export class LocationService implements OnDestroy {
 
   private sendRestartNotificationAtTime(turnBackOnAt: Date) {
     this.notificationService.notifyAtTime(
-      NotificationType.locationUpdate,
-      // TODO i8n
-      'Restarting tracking',
-      'The scheduled pause time has ended',
+      NotificationType.unpauseTrackingNotification,
+      this.translateService.instant('notification.trackingUnpausedTitle'),
+      this.translateService.instant('notification.trackingUnpausedText'),
       turnBackOnAt
     )
-    console.log('configured pause notification')
   }
 
   private async showGrantPermissionAlert() {
