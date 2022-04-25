@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
+import { LogEvent } from 'src/app/model/log-event'
 import { SqliteService } from '../db/sqlite.service'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { LogEventLevel, LogEventScope, LogEventType } from './types'
@@ -16,54 +17,43 @@ export class LogfileService {
     private trajectoryService: TrajectoryService
   ) {
     this.platform.ready().then(() => {
-      this.log(LogEventType.start, LogEventScope.app, 'App started')
+      this.log('App started', LogEventScope.app, LogEventType.start)
 
       App.addListener('appStateChange', async (state) => {
         this.log(
-          state.isActive ? LogEventType.active : LogEventType.inactive,
+          'AppStateChange',
           LogEventScope.app,
-          'AppStateChange'
+          state.isActive ? LogEventType.active : LogEventType.inactive
         )
       })
     })
   }
 
   log(
-    type: LogEventType,
-    scope: LogEventScope,
     text: string,
+    scope: LogEventScope = LogEventScope.other,
+    type: LogEventType = LogEventType.other,
     level: LogEventLevel = LogEventLevel.info
   ) {
     const timestamp = new Date()
     this.trajectoryService.getFullUserTrack().subscribe((trajectory) => {
       const locationCount = trajectory.coordinates.length
-      const lastTimestamp =
+      const lastLocationTimestamp =
         trajectory.timestamps[trajectory.timestamps.length - 1]
 
-      console.log(
-        timestamp,
+      this.dbService.upsertLogEntry({
         type,
         scope,
         level,
         text,
+        timestamp,
         locationCount,
-        lastTimestamp
-      )
-      // TODO: implement logging feature
-      return
+        lastLocationTimestamp,
+      })
     })
   }
 
-  warn(type: LogEventType, scope: LogEventScope, text: string) {
-    this.log(type, scope, text, LogEventLevel.warn)
-  }
-
-  error(type: LogEventType, scope: LogEventScope, text: string) {
-    this.log(type, scope, text, LogEventLevel.error)
-  }
-
-  exportLog() {
-    // TODO: implement exporting feature
-    return
+  exportLog(): Promise<LogEvent[]> {
+    return this.dbService.getLogs()
   }
 }
