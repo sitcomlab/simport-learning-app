@@ -14,6 +14,8 @@ import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../logfile/types'
 
 const { App } = Plugins
 
@@ -52,7 +54,8 @@ export class LocationService implements OnDestroy {
     private inferenceService: InferenceService,
     private notificationService: NotificationService,
     private translateService: TranslateService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private logfileService: LogfileService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -90,6 +93,11 @@ export class LocationService implements OnDestroy {
   }
 
   start() {
+    this.logfileService.log(
+      'Tracking started',
+      LogEventScope.tracking,
+      LogEventType.start
+    )
     if (!this.isSupportedPlatform) return
     this.backgroundGeolocation.checkStatus().then(async (status) => {
       if (status.isRunning) {
@@ -115,6 +123,12 @@ export class LocationService implements OnDestroy {
   }
 
   stop() {
+    this.logfileService.log(
+      'Tracking stopped',
+      LogEventScope.tracking,
+      LogEventType.stop
+    )
+
     if (!this.isSupportedPlatform) return
 
     this.backgroundGeolocation.checkStatus().then((status) => {
