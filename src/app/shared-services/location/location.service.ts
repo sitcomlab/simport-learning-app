@@ -169,6 +169,12 @@ export class LocationService implements OnDestroy {
 
         await this.inferenceService.triggerBackgroundFunctionIfViable()
 
+        this.logfileService.log(
+          'Location update',
+          LogEventScope.tracking,
+          LogEventType.change
+        )
+
         this.scheduleNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
@@ -186,6 +192,11 @@ export class LocationService implements OnDestroy {
     this.startEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.start
+        )
         try {
           await this.dbService.upsertTrajectory(
             new Trajectory({
@@ -208,6 +219,12 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.stop
+        )
+
         this.isRunning.next(false)
         this.nextLocationIsStart = false
         this.scheduleNotification(
