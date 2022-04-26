@@ -128,7 +128,7 @@ export class LocationService implements OnDestroy {
     })
   }
 
-  pause() {
+  pauseUntil(unpauseDate: Date) {
     if (!this.isSupportedPlatform) return
     this.backgroundGeolocation.checkStatus().then((status) => {
       if (status.isRunning) {
@@ -138,13 +138,13 @@ export class LocationService implements OnDestroy {
           this.updateRunningState()
         })
       }
-      const turnBackOnAt = new Date()
-      turnBackOnAt.setSeconds(turnBackOnAt.getSeconds() + 20)
+      // TODO i8n
+      // TODO this is currently overrun by notification, move into .then()?
       this.sendNotification(
         'Tracking paused',
-        'Tracking will resume at' + turnBackOnAt.toLocaleDateString()
+        'Tracking will resume at' + unpauseDate.toLocaleDateString()
       )
-      this.sendRestartNotificationAtTime(turnBackOnAt)
+      this.sendRestartNotificationAtTime(unpauseDate)
     })
   }
 

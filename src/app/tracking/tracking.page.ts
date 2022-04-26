@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { Platform } from '@ionic/angular'
+import { PickerController, PickerOptions, Platform } from '@ionic/angular'
 import { Device } from '@ionic-native/device'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
@@ -31,7 +31,8 @@ export class TrackingPage implements OnInit, OnDestroy {
     public locationService: LocationService,
     private trajectoryService: TrajectoryService,
     private router: Router,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private pickerController: PickerController
   ) {}
 
   ngOnInit() {
@@ -64,9 +65,61 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.locationService.start()
   }
 
-  pauseBackgroundGeoLocation() {
-    // TODO add turning back on
-    this.locationService.pause()
+  async showPauseTimePicker() {
+    const options: PickerOptions = {
+      buttons: [
+        {
+          text: this.translateService.instant('general.cancel'),
+          role: 'cancel',
+        },
+        {
+          text: this.translateService.instant('tracking.confirmPause'),
+          handler: (selected) => {
+            this.pauseBackgroundGeoLocationFor(selected.pauseMinutes.value)
+          },
+        },
+      ],
+      columns: [
+        {
+          name: 'pauseMinutes',
+          options: [
+            {
+              text: '30 ' + this.translateService.instant('tracking.minutes'),
+              value: 30,
+            },
+            {
+              text: '60 ' + this.translateService.instant('tracking.minutes'),
+              value: 60,
+            },
+            {
+              text: '90 ' + this.translateService.instant('tracking.minutes'),
+              value: 90,
+            },
+            {
+              text: '2 ' + this.translateService.instant('tracking.hours'),
+              value: 120,
+            },
+            {
+              text: '3 ' + this.translateService.instant('tracking.hours'),
+              value: 180,
+            },
+            {
+              text: '4 ' + this.translateService.instant('tracking.hours'),
+              value: 240,
+            },
+          ],
+        },
+      ],
+    }
+    const picker = await this.pickerController.create(options)
+    await picker.present()
+  }
+
+  pauseBackgroundGeoLocationFor(unpauseMinutes: number) {
+    // TODO display unpause date in status
+    const unpauseDate = new Date()
+    unpauseDate.setMinutes(unpauseDate.getMinutes() + unpauseMinutes)
+    this.locationService.pauseUntil(unpauseDate)
   }
 
   updateTrackingButtonUI(state: LocationTrackingStatus) {

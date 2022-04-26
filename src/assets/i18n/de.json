@@ -122,7 +122,10 @@
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
-    "loading": "Warte…"
+    "loading": "Warte…",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "confirmPause": "Jetzt pausieren"
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
