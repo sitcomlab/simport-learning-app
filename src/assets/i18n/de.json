@@ -28,6 +28,9 @@
     "unsavedChangesAlertHeader": "Änderungen speichern?",
     "unsavedChangesAlertMessage": "Deine Änderungen gehen verloren, wenn du sie nicht speicherst."
   },
+  "log": {
+    "exportFileErrorTitle": "Teilen des Logfiles fehlgeschlagen ({{ value }})"
+  },
   "trajectory": {
     "select": {
       "title": "Standortverläufe",
