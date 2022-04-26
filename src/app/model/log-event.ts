@@ -29,9 +29,9 @@ export class LogEvent {
       scope,
       level,
       text,
-      timestamp,
+      new Date(timestamp * 1000),
       locationCount,
-      lastLocationTimestamp
+      new Date(lastLocationTimestamp * 1000)
     )
   }
 }

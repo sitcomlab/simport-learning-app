@@ -62,12 +62,20 @@ export class LogfileService {
   async exportLog() {
     try {
       const logs = await this.dbService.getLogs()
+
       const csvHeader = `${Object.getOwnPropertyNames(
         new (LogEvent as any)()
       ).join()}\n`
 
       const fileData =
-        csvHeader + logs.map((l) => Object.values(l).join()).join('\n')
+        csvHeader +
+        logs
+          .map((l) =>
+            Object.values(l)
+              .map((v) => (v instanceof Date ? (v as Date).toISOString() : v)) // return ISOString if value is a date
+              .join()
+          )
+          .join('\n')
 
       const fileResult = await Filesystem.writeFile({
         data: fileData,
