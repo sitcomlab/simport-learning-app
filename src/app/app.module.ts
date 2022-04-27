@@ -14,6 +14,7 @@ import { AppComponent } from './app.component'
 import { SharedServicesModule } from './shared-services/shared-services.module'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { InformedConsentService } from './shared-services/informed-consent/informed-consent.service'
+import { FormsModule } from '@angular/forms'
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json')
@@ -36,6 +37,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     SharedServicesModule, // these need to be imported here, so they are available globally in lazy loaded page modules.
     HttpClientModule,
+    FormsModule,
   ],
   providers: [
     StatusBar,
