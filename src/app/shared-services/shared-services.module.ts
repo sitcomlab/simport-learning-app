@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { HttpClientModule } from '@angular/common/http'
+import { FormsModule } from '@angular/forms'
+import { HttpClientModule, HttpClient } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { InferenceService } from './inferences/inference.service'
@@ -30,6 +31,6 @@ import { DiaryService } from './diary/diary.service'
     BackgroundService,
     DiaryService,
   ],
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
 })
 export class SharedServicesModule {}

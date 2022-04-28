@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable, of } from 'rxjs'
 import { InformedConsentDefaults } from './informed-constent.fixtures'
@@ -7,7 +6,7 @@ import { InformedConsentDefaults } from './informed-constent.fixtures'
   providedIn: 'root',
 })
 export class InformedConsentService {
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getInformedConsent(key: string): Observable<InformedConsentDefaults> {
     const informedConsent = localStorage.getItem(key)
