@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core'
-import {
-  FilesystemDirectory,
-  FilesystemEncoding,
-  Plugins,
-} from '@capacitor/core'
+import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { LogEvent } from 'src/app/model/log-event'
 import { SqliteService } from '../db/sqlite.service'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { LogEventLevel, LogEventScope, LogEventType } from './types'
-const { App, Filesystem, Share } = Plugins
+const { App } = Plugins
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +55,10 @@ export class LogfileService {
     })
   }
 
+  /**
+   *
+   * @returns log as csv string
+   */
   async exportLog() {
     try {
       const logs = await this.dbService.getLogs()
@@ -77,23 +77,7 @@ export class LogfileService {
           )
           .join('\n')
 
-      const fileResult = await Filesystem.writeFile({
-        data: fileData,
-        path: `SIMPORT_log_${
-          new Date().toISOString().replace(/:/g, '-').split('.')[0]
-        }.csv`,
-        directory: FilesystemDirectory.ExternalStorage,
-        encoding: FilesystemEncoding.UTF8,
-      })
-
-      if (this.platform.is('android')) {
-        await Share.requestPermissions()
-      }
-
-      Share.share({
-        title: 'SIMPORT Log',
-        url: fileResult.uri,
-      })
+      return fileData
     } catch (e) {
       const errorMessage = this.translateService.instant(
         'log.exportFileErrorTitle',
