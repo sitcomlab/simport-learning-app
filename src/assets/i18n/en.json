@@ -22,7 +22,7 @@
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
-    "exportFileName": "My SIMPORT diary",
+    "exportFileName": "My SIMPORT diary and logfile",
     "exportFileErrorTitle": "Sharing diary failed ({{ value }})",
     "openEntries": "Open my entries",
     "unsavedChangesAlertHeader": "Do you want to save your changes?",
