@@ -66,6 +66,7 @@
     "es6-promise-plugin": "^4.2.2",
     "gps-to-gpx": "^1.5.1",
     "haversine-distance": "^1.2.1",
+    "jszip": "^3.9.1",
     "leaflet": "^1.7.1",
     "moment": "^2.29.0",
     "ng-apexcharts": "^1.7.0",
