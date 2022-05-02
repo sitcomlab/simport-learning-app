@@ -113,6 +113,7 @@
     "toggleOn": "Aufzeichnung starten",
     "toggleOff": "Aufzeichnung stoppen",
     "togglePause": "Aufzeichnung pausieren",
+    "togglePauseSubtitle": "Wähle hier die Länge der Pause",
     "stateRunning": "Standortaufzeichnung ist aktuell aktiv",
     "stateStopped": "Standortaufzeichnung ist aktuell gestoppt",
     "statePaused": "Standortaufzeichnung ist aktuell pausiert",

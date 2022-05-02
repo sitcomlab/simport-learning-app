@@ -23,6 +23,7 @@
           *ngIf=" state === ('tracking.stateRunning' | translate)"
           icon="pause-circle"
           [title]="'tracking.togglePause' | translate"
+          [subtitle]="'tracking.togglePauseSubtitle' | translate"
           (click)="showPauseTimePicker()"
         ></app-item-card>
         <ion-note *ngIf="!locationService.isSupportedPlatform">

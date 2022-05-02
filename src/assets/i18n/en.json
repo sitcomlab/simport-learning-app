@@ -116,6 +116,7 @@
     "stateRunning": "Tracking is currently running",
     "stateStopped": "Tracking is currently stopped",
     "statePaused": "Tracking is currently paused",
+    "togglePauseSubtitle": "Choose length of pause here",
     "notSupported": "This platform doesn't support background location tracking",
     "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
     "alwaysAllowHint": "For best tracking results enable <i>always allow</i> for this app in your ",
