@@ -14,6 +14,7 @@ import { TimetableService } from './timetable/timetable.service'
 import { BackgroundService } from './background/background.service'
 import { DiaryService } from './diary/diary.service'
 import { InformedConsentService } from './informed-consent/informed-consent.service'
+import { LogfileService } from './logfile/logfile.service'
 
 @NgModule({
   providers: [
@@ -32,6 +33,7 @@ import { InformedConsentService } from './informed-consent/informed-consent.serv
     BackgroundService,
     DiaryService,
     InformedConsentService,
+    LogfileService,
   ],
   imports: [CommonModule, FormsModule, HttpClientModule],
 })

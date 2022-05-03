@@ -3,14 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { SqliteService } from '../db/sqlite.service'
 import { Platform } from '@ionic/angular'
-import {
-  FilesystemDirectory,
-  FilesystemEncoding,
-  Plugins,
-} from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
-
-const { Filesystem, Share } = Plugins
 
 @Injectable({
   providedIn: 'root',
@@ -55,33 +48,23 @@ export class DiaryService {
     return this.dbService.deleteDiaryEntry(id)
   }
 
+  /**
+   *
+   * @returns diary as csv string
+   */
   async exportDiary() {
     try {
       const diary = await this.getDiary()
-      const fileData = diary
-        .sort((a, b) => a.date.getTime() - b.date.getTime())
-        .map((d) => {
-          return `\n${d.date.toISOString()}\n${d.content}\n`
-        })
-        .join(`\n===========\n`)
 
-      const fileResult = await Filesystem.writeFile({
-        data: fileData,
-        path: `SIMPORT_diary_${
-          new Date().toISOString().replace(/:/g, '-').split('.')[0]
-        }.txt`,
-        directory: FilesystemDirectory.ExternalStorage,
-        encoding: FilesystemEncoding.UTF8,
-      })
+      const diaryHeader = 'date,content\n'
 
-      if (this.platform.is('android')) {
-        await Share.requestPermissions()
-      }
+      const fileData =
+        diaryHeader +
+        diary
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
+          .map((d) => `${d.date.toISOString()},${d.content}\n`)
 
-      Share.share({
-        title: this.translateService.instant('diary.exportFileName'),
-        url: fileResult.uri,
-      })
+      return fileData
     } catch (e) {
       const errorMessage = this.translateService.instant(
         'diary.exportFileErrorTitle',

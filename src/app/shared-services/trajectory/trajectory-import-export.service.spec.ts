@@ -6,7 +6,6 @@ import { LocationService } from '../location/location.service'
 import { SqliteService } from '../db/sqlite.service'
 import { HttpClient, HttpHandler } from '@angular/common/http'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
-import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import {
   testTrajectory,
   testTrajectoryBase64String,
@@ -29,7 +28,6 @@ describe('TrajectoryImportExportService', () => {
         HttpClient,
         HttpHandler,
         BackgroundGeolocation,
-        SocialSharing,
       ],
     })
     service = TestBed.inject(TrajectoryImportExportService)
