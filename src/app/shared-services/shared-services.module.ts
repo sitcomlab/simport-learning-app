@@ -12,6 +12,7 @@ import { FeatureFlagService } from './feature-flag/feature-flag.service'
 import { TimetableService } from './timetable/timetable.service'
 import { BackgroundService } from './background/background.service'
 import { DiaryService } from './diary/diary.service'
+import { LogfileService } from './logfile/logfile.service'
 
 @NgModule({
   providers: [
@@ -29,6 +30,7 @@ import { DiaryService } from './diary/diary.service'
     TimetableService,
     BackgroundService,
     DiaryService,
+    LogfileService,
   ],
   imports: [CommonModule, HttpClientModule],
 })

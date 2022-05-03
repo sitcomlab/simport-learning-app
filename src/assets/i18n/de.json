@@ -22,11 +22,14 @@
     "contentPlaceholder": "Inhalt",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
-    "exportFileName": "Mein SIMPORT Tagebuch",
+    "exportFileName": "Mein SIMPORT Tagebuch & Logfile",
     "exportFileErrorTitle": "Teilen des Tagebuchs fehlgeschlagen ({{ value }})",
     "openEntries": "Meine Einträge öffnen",
     "unsavedChangesAlertHeader": "Änderungen speichern?",
     "unsavedChangesAlertMessage": "Deine Änderungen gehen verloren, wenn du sie nicht speicherst."
+  },
+  "log": {
+    "exportFileErrorTitle": "Teilen des Logfiles fehlgeschlagen ({{ value }})"
   },
   "trajectory": {
     "select": {

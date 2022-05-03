@@ -22,6 +22,7 @@ import { TimetableEntry } from 'src/app/model/timetable'
 import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { TranslateService } from '@ngx-translate/core'
+import { LogEvent } from 'src/app/model/log-event'
 
 @Injectable()
 export class SqliteService {
@@ -601,6 +602,44 @@ export class SqliteService {
       message,
     } = await this.db.run(statement)
     if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+  }
+
+  async upsertLogEntry({
+    type,
+    scope,
+    level,
+    text,
+    timestamp,
+    locationCount,
+    lastLocationTimestamp,
+  }: LogEvent) {
+    await this.ensureDbReady()
+
+    const {
+      changes: { changes },
+      message,
+    } = await this.db.run(
+      'INSERT INTO logs VALUES (?,?,?,?,?,?,?)',
+      [
+        type.toString(),
+        scope.toString(),
+        level.toString(),
+        text,
+        timestamp,
+        locationCount,
+        lastLocationTimestamp,
+      ].map(normalize)
+    )
+    if (changes === -1) throw new Error(`couldnt insert log-entry: ${message}`)
+  }
+
+  async getLogs(): Promise<LogEvent[]> {
+    await this.ensureDbReady()
+
+    const { values } = await this.db.query(`SELECT * FROM logs`)
+    if (!values.length) return []
+
+    return values.map((v) => LogEvent.fromJSON(v))
   }
 }
 
