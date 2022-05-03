@@ -8,10 +8,10 @@ import { InformedConsentDefaults } from './informed-constent.fixtures'
 export class InformedConsentService {
   constructor() {}
 
-  getInformedConsent(key: string): Observable<InformedConsentDefaults> {
-    const informedConsent = localStorage.getItem(key)
+  getInformedConsent(): Observable<InformedConsentDefaults> {
+    const informedConsent = localStorage.getItem('consent')
     if (informedConsent) {
-      return of(JSON.parse(localStorage.getItem(key)))
+      return of(JSON.parse(localStorage.getItem('consent')))
     } else {
       const informedConsentDefault = new InformedConsentDefaults()
       this.saveInformedConsent('consent', informedConsentDefault)

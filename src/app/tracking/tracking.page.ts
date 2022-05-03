@@ -130,7 +130,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.informedConsentService.getInformedConsent('consent').subscribe(
+    this.informedConsentService.getInformedConsent().subscribe(
       (informedConsent) => (this.informedConsentDefaults = informedConsent),
       () => null,
       () => {
@@ -138,7 +138,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.informedConsent.hasInformedConsent =
           this.informedConsentDefaults.defaultInformedConsent
         this.informedConsent.hasFirstTimeConsent =
-          this.informedConsentDefaults.defaultFirstTimeConsentt
+          this.informedConsentDefaults.defaultFirstTimeConsent
       }
     )
   }
@@ -204,7 +204,7 @@ export class TrackingPage implements OnInit, OnDestroy {
   setInformedConsent(consented: InformedConsent) {
     this.informedConsentDefaults.defaultInformedConsent =
       consented.hasInformedConsent
-    this.informedConsentDefaults.defaultFirstTimeConsentt =
+    this.informedConsentDefaults.defaultFirstTimeConsent =
       consented.hasFirstTimeConsent
     this.informedConsentService.saveInformedConsent(
       'consent',

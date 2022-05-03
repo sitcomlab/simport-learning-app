@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { HttpClientModule, HttpClient } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { InferenceService } from './inferences/inference.service'
@@ -13,6 +13,7 @@ import { FeatureFlagService } from './feature-flag/feature-flag.service'
 import { TimetableService } from './timetable/timetable.service'
 import { BackgroundService } from './background/background.service'
 import { DiaryService } from './diary/diary.service'
+import { InformedConsentService } from './informed-consent/informed-consent.service'
 
 @NgModule({
   providers: [
@@ -30,6 +31,7 @@ import { DiaryService } from './diary/diary.service'
     TimetableService,
     BackgroundService,
     DiaryService,
+    InformedConsentService,
   ],
   imports: [CommonModule, FormsModule, HttpClientModule],
 })
