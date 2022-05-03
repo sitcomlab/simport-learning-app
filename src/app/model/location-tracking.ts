@@ -1,1 +1,1 @@
-export type LocationTrackingStatus = 'isStopped' | 'isRunning' | 'isPaused'
+export type LocationTrackingStatus = 'isStopped' | 'isRunning'

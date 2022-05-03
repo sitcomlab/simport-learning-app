@@ -132,7 +132,7 @@ export class LocationService implements OnDestroy {
     if (!this.isSupportedPlatform) return
     this.backgroundGeolocation.checkStatus().then((status) => {
       if (status.isRunning) {
-        this.trackingStatus = 'isPaused'
+        // this.trackingStatus = 'isPaused'
         this.backgroundGeolocation.stop().then(() => {
           this.nextLocationIsStart = false
           this.updateRunningState()
@@ -162,12 +162,8 @@ export class LocationService implements OnDestroy {
         this.trackingStatus = 'isRunning'
         this.trackingStatusChange.next('isRunning')
       } else {
-        if (this.trackingStatus === 'isPaused') {
-          this.trackingStatusChange.next('isPaused')
-        } else {
-          this.trackingStatus = 'isStopped'
-          this.trackingStatusChange.next('isStopped')
-        }
+        this.trackingStatus = 'isStopped'
+        this.trackingStatusChange.next('isStopped')
       }
     })
   }
@@ -228,23 +224,13 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
-        if (this.trackingStatus === 'isPaused') {
-          this.trackingStatusChange.next('isPaused')
-          this.nextLocationIsStart = false
-          // TODO add time of pausing to notification
-          this.sendNotification(
-            this.translateService.instant('notification.locationUpdateTitle'),
-            this.translateService.instant('notification.trackingPaused')
-          )
-        } else {
-          this.trackingStatus = 'isStopped'
-          this.trackingStatusChange.next('isStopped')
-          this.nextLocationIsStart = false
-          this.sendNotification(
-            this.translateService.instant('notification.locationUpdateTitle'),
-            this.translateService.instant('notification.trackingStopped')
-          )
-        }
+        this.trackingStatus = 'isStopped'
+        this.trackingStatusChange.next('isStopped')
+        this.nextLocationIsStart = false
+        this.sendNotification(
+          this.translateService.instant('notification.locationUpdateTitle'),
+          this.translateService.instant('notification.trackingStopped')
+        )
       })
   }
 

@@ -137,13 +137,6 @@ export class TrackingPage implements OnInit, OnDestroy {
           this.startStopButtonLabel =
             this.translateService.instant('tracking.toggleOn')
           break
-        case 'isPaused':
-          // TODO add info when turns back on
-          this.state = this.translateService.instant('tracking.statePaused')
-          this.stateIcon = 'pause-circle'
-          this.startStopButtonLabel =
-            this.translateService.instant('tracking.toggleOn')
-          break
       }
     })
   }
