@@ -8,6 +8,8 @@
     "view": "View",
     "back": "Back",
     "done": "Done",
+    "no": "No",
+    "yes": "Yes",
     "save": "Save",
     "discard": "Discard"
   },
@@ -124,7 +126,13 @@
     "systemSettings": "system settings",
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
-    "loading": "Waiting…"
+    "loading": "Waiting…",
+    "agreementStart": "I agree with the ",
+    "agreementEnd": "terms and privacy policy.",
+    "removeConsentConfirmation": "Are you sure?",
+    "removeConsentConfirmationText": "By doing this the app will stop tracking your location.",
+    "consent": "Consent",
+    "agreementQuestion": "Do you agree with the terms and privacy policy?"
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",

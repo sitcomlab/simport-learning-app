@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common'
+import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
@@ -12,6 +13,7 @@ import { FeatureFlagService } from './feature-flag/feature-flag.service'
 import { TimetableService } from './timetable/timetable.service'
 import { BackgroundService } from './background/background.service'
 import { DiaryService } from './diary/diary.service'
+import { InformedConsentService } from './informed-consent/informed-consent.service'
 import { LogfileService } from './logfile/logfile.service'
 
 @NgModule({
@@ -30,8 +32,9 @@ import { LogfileService } from './logfile/logfile.service'
     TimetableService,
     BackgroundService,
     DiaryService,
+    InformedConsentService,
     LogfileService,
   ],
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
 })
 export class SharedServicesModule {}

@@ -8,6 +8,8 @@
     "view": "Anzeigen",
     "back": "Zurück",
     "done": "Fertig",
+    "no": "Nein",
+    "yes": "Ja",
     "save": "Speichern",
     "discard": "Verwerfen"
   },
@@ -127,7 +129,13 @@
     "systemSettings": "Systemeinstellungen",
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
-    "loading": "Warte…"
+    "loading": "Warte…",
+    "agreementStart": "Ich stimme der ",
+    "agreementEnd": "Datenschutz­erklärung zu.",
+    "removeConsentConfirmation": "Bist du Sicher?",
+    "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
+    "consent": "Zustimmen",
+    "agreementQuestion": "Bist du mit dem Datenschutzerklärung einverstanden?"
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
