@@ -5,7 +5,7 @@ import {
   BackgroundGeolocationConfig,
   BackgroundGeolocationEvents,
 } from '@ionic-native/background-geolocation/ngx'
-import { Platform } from '@ionic/angular'
+import { AlertController, Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType, PointState } from '../../model/trajectory'
 import { SqliteService } from './../db/sqlite.service'
@@ -14,6 +14,8 @@ import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../logfile/types'
 
 const { App } = Plugins
 
@@ -51,7 +53,9 @@ export class LocationService implements OnDestroy {
     private dbService: SqliteService,
     private inferenceService: InferenceService,
     private notificationService: NotificationService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private alertController: AlertController,
+    private logfileService: LogfileService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -73,9 +77,15 @@ export class LocationService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.locationUpdateSubscription.unsubscribe()
-    this.startEventSubscription.unsubscribe()
-    this.stopEventSubscription.unsubscribe()
+    if (this.locationUpdateSubscription) {
+      this.locationUpdateSubscription.unsubscribe()
+    }
+    if (this.startEventSubscription) {
+      this.startEventSubscription.unsubscribe()
+    }
+    if (this.stopEventSubscription) {
+      this.stopEventSubscription.unsubscribe()
+    }
   }
 
   enableNotifications(enabled: boolean) {
@@ -83,41 +93,42 @@ export class LocationService implements OnDestroy {
   }
 
   start() {
+    this.logfileService.log(
+      'Tracking started',
+      LogEventScope.tracking,
+      LogEventType.start
+    )
     if (!this.isSupportedPlatform) return
-
-    this.backgroundGeolocation.checkStatus().then((status) => {
+    this.backgroundGeolocation.checkStatus().then(async (status) => {
       if (status.isRunning) {
         this.stop()
         return false
       }
       if (!status.locationServicesEnabled) {
-        const showSettings = confirm(
-          this.translateService.instant('confirm.showLocationServiceSettings')
-        )
-        if (showSettings) {
-          return this.backgroundGeolocation.showAppSettings()
-        } else return false
+        await this.showEnableLocationsAlert()
+        return false
       }
+
       if (
-        status.authorization === 99 ||
-        BackgroundGeolocationAuthorizationStatus.AUTHORIZED
+        status.authorization ===
+          BackgroundGeolocationAuthorizationStatus.AUTHORIZED ||
+        (status.authorization as number) === 99
       ) {
         this.backgroundGeolocation.start()
         this.nextLocationIsStart = true
       } else {
-        const showSettings = confirm(
-          this.translateService.instant(
-            'confirm.grantLocationPermissionSettings'
-          )
-        )
-        if (showSettings) {
-          return this.backgroundGeolocation.showAppSettings()
-        } else return false
+        await this.showGrantPermissionAlert()
       }
     })
   }
 
   stop() {
+    this.logfileService.log(
+      'Tracking stopped',
+      LogEventScope.tracking,
+      LogEventType.stop
+    )
+
     if (!this.isSupportedPlatform) return
 
     this.backgroundGeolocation.checkStatus().then((status) => {
@@ -158,6 +169,12 @@ export class LocationService implements OnDestroy {
 
         await this.inferenceService.triggerBackgroundFunctionIfViable()
 
+        this.logfileService.log(
+          'Location update',
+          LogEventScope.tracking,
+          LogEventType.change
+        )
+
         this.scheduleNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
@@ -175,6 +192,11 @@ export class LocationService implements OnDestroy {
     this.startEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.start
+        )
         try {
           await this.dbService.upsertTrajectory(
             new Trajectory({
@@ -197,6 +219,12 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.stop
+        )
+
         this.isRunning.next(false)
         this.nextLocationIsStart = false
         this.scheduleNotification(
@@ -213,5 +241,42 @@ export class LocationService implements OnDestroy {
       title,
       text
     )
+  }
+
+  private async showGrantPermissionAlert() {
+    await this.showAppSettingsAlert(
+      this.translateService.instant('confirm.grantLocationPermissionSettings')
+    )
+  }
+
+  private async showEnableLocationsAlert() {
+    await this.showAppSettingsAlert(
+      this.translateService.instant('confirm.showLocationServiceSettings')
+    )
+  }
+
+  private async showAppSettingsAlert(message: string) {
+    const alert = await this.alertController.create({
+      message,
+      buttons: [
+        {
+          text: this.translateService.instant('confirm.appSettingsButtonText'),
+          cssClass: 'primary',
+          handler: () => {
+            this.backgroundGeolocation.showAppSettings()
+          },
+        },
+        {
+          text: this.translateService.instant('general.cancel'),
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            alert.dismiss()
+          },
+        },
+      ],
+    })
+
+    await alert.present()
   }
 }

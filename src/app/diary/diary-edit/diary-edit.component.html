@@ -30,18 +30,19 @@
     <ion-label position="stacked">{{
       'diary.dateTitle' | translate
     }}</ion-label>
-    <ion-datetime
-      [displayFormat]="dateFormat()"
-      [monthShortNames]="dateMonthShortNames()"
-      [cancelText]="'general.cancel' | translate"
-      [doneText]="'general.done' | translate"
-      [(ngModel)]="date"
-    ></ion-datetime>
+    <ion-input
+      class="dateInput"
+      type="date"
+      [ngModel]="date | date: 'yyyy-MM-dd'"
+      (ionInput)="changeDate($event)"
+    ></ion-input>
   </ion-item>
   <ion-item *ngIf="loaded">
-    <ion-label position="stacked">{{
-      'diary.contentTitle' | translate
-    }}</ion-label>
+    <ion-label class="ion-text-wrap" position="stacked"
+      ><ion-note color="dark">{{
+        'diary.contentTitle' | translate
+      }}</ion-note></ion-label
+    >
     <ion-textarea
       autoGrow="true"
       inputmode="text"
@@ -51,3 +52,11 @@
     ></ion-textarea>
   </ion-item>
 </ion-content>
+
+<ion-footer *ngIf="isModal">
+  <ion-toolbar>
+    <ion-button expand="block" fill="outline" (click)="navigateToDiary()">
+      {{ 'diary.openEntries' | translate }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

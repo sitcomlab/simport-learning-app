@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'imprint.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col sizeXs="12" sizeLg="6">
+        <img src="assets/imprint/simport_logo.png" />
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col
+        sizeXs="6"
+        offsetXs="3"
+        sizeLg="3"
+        offsetLg="6"
+        [innerHTML]="'imprint.bmbfLogo' | translate"
+      >
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col sizeXs="12" sizeLg="6">
+        <p [innerHTML]="'imprint.general' | translate"></p>
+        <p [innerHTML]="'imprint.contact' | translate"></p>
+        <p [innerHTML]="'imprint.license' | translate"></p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

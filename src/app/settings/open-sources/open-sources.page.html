@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="'general.back' | translate"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'licenses.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-card *ngFor="let l of licensesArray">
+    <ion-card-header class="header-flex">
+      <b>{{ l.name }}</b>
+      <p>{{ l.publisher }}</p>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ 'licenses.singleLicenseTitle' | translate }} {{ l.licenses }}
+      <br />
+      <div *ngIf="l.repository" class="link-flex">
+        <ion-icon name="open-outline"></ion-icon>
+        <a [href]="l.repository">{{ l.repository }}</a>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

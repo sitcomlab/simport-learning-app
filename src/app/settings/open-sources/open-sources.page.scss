@@ -1,0 +1,27 @@
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  p {
+    text-align: end;
+  }
+
+  > * {
+    margin: 0.2rem;
+  }
+}
+
+.link-flex {
+  margin-top: 0.8rem;
+  display: flex;
+  align-items: center;
+  > a {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  > * {
+    margin: 0.2rem;
+  }
+}
