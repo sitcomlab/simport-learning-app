@@ -31,7 +31,7 @@ jobs:
       - name: Run ionic build
         run: |
           npm install npm@8 -g
-          npm ci --silent
+          npm ci
           ionic cap build android --no-interactive --no-open --confirm --prod
 
       - name: Setup Android NDK
