@@ -152,11 +152,22 @@ export const MIGRATIONS = [
       FOREIGN KEY (trajectory) REFERENCES trajectories(id) ON DELETE CASCADE,
       FOREIGN KEY (inference) REFERENCES inferences(id) ON DELETE CASCADE);`,
 
-  // creat diary table
+  // create diary table
   `CREATE TABLE IF NOT EXISTS diaryEntry (
       id varchar(255) NOT NULL PRIMARY KEY,
       created DATETIME NOT NULL,
       updated DATETIME NOT NULL,
       date DATETIME NOT NULL,
       content TEXT NOT NULL);`,
+
+  // create logs table
+  `CREATE TABLE IF NOT EXISTS logs (
+    type TEXT NOT NULL,
+    scope TEXT NOT NULL,
+    level TEXT NOT NULL,
+    text TEXT NOT NULL,
+    timestamp DATETIME NOT NULL,
+    locationCount INTEGER NOT NULL,
+    lastLocationTimestamp DATETIME NOT NULL
+    );`,
 ]

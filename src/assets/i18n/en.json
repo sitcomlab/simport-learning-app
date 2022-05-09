@@ -7,7 +7,11 @@
     "export": "Export",
     "view": "View",
     "back": "Back",
-    "done": "Done"
+    "done": "Done",
+    "no": "No",
+    "yes": "Yes",
+    "save": "Save",
+    "discard": "Discard"
   },
   "diary": {
     "title": "Diary",
@@ -16,12 +20,15 @@
     "createNewEntryTitle": "Create new diary entry",
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
-    "contentTitle": "Content",
-    "contentPlaceholder": "Enter your thoughts…",
+    "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
-    "exportFileName": "My SIMPORT diary",
-    "exportFileErrorTitle": "Sharing diary failed ({{ value }})"
+    "exportFileName": "My SIMPORT diary and logfile",
+    "exportFileErrorTitle": "Sharing diary failed ({{ value }})",
+    "openEntries": "Open my entries",
+    "unsavedChangesAlertHeader": "Do you want to save your changes?",
+    "unsavedChangesAlertMessage": "Your changes will be lost if you do not save them."
   },
   "trajectory": {
     "select": {
@@ -128,6 +135,12 @@
     "unpauseReminderQuestion": "Should we remind you to turn tracking back on again?",
     "remind": "Remind me in",
     "dontRemind": "Don't remind me"
+    "agreementStart": "I agree with the ",
+    "agreementEnd": "terms and privacy policy.",
+    "removeConsentConfirmation": "Are you sure?",
+    "removeConsentConfirmationText": "By doing this the app will stop tracking your location.",
+    "consent": "Consent",
+    "agreementQuestion": "Do you agree with the terms and privacy policy?"
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",

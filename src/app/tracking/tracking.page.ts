@@ -9,6 +9,10 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { LocationTrackingStatus } from '../model/location-tracking'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
+import { AlertController } from '@ionic/angular'
+import { InformedConsentService } from '../shared-services/informed-consent/informed-consent.service'
+import { InformedConsentDefaults } from '../shared-services/informed-consent/informed-constent.fixtures'
+import { InformedConsent } from './informed-consent'
 
 @Component({
   selector: 'app-tracking',
@@ -21,6 +25,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
+  informedConsent: InformedConsent
+  informedConsentDefaults: InformedConsentDefaults
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -34,7 +40,76 @@ export class TrackingPage implements OnInit, OnDestroy {
     private router: Router,
     private translateService: TranslateService,
     private modalController: ModalController
+    public alertController: AlertController,
+    private informedConsentService: InformedConsentService
   ) {}
+
+  async checkBox(): Promise<void> {
+    if (this.state === 'Running' && !this.informedConsent.hasInformedConsent) {
+      this.alertController
+        .create({
+          header: this.translateService.instant(
+            'tracking.removeConsentConfirmation'
+          ),
+          message: this.translateService.instant(
+            'tracking.removeConsentConfirmationText'
+          ),
+          buttons: [
+            {
+              text: this.translateService.instant('general.cancel'),
+              handler: () => {
+                this.informedConsent.hasInformedConsent = true
+              },
+            },
+            {
+              text: this.translateService.instant('general.yes'),
+              handler: () => {
+                this.informedConsent.hasFirstTimeConsent = true
+                this.setInformedConsent(this.informedConsent)
+                this.toggleBackgroundGeoLocation()
+              },
+            },
+          ],
+        })
+        .then((res) => {
+          res.present()
+        })
+    } else {
+      this.setInformedConsent(this.informedConsent)
+    }
+  }
+
+  async presentAlertConfirm() {
+    if (this.informedConsent.hasFirstTimeConsent) {
+      this.alertController
+        .create({
+          header: this.translateService.instant('tracking.consent'),
+          message: this.translateService.instant('tracking.agreementQuestion'),
+          buttons: [
+            {
+              text: this.translateService.instant('general.no'),
+              handler: () => {
+                this.informedConsent.hasInformedConsent = false
+              },
+            },
+            {
+              text: this.translateService.instant('general.yes'),
+              handler: () => {
+                this.informedConsent.hasInformedConsent = true
+                this.informedConsent.hasFirstTimeConsent = false
+                this.toggleBackgroundGeoLocation()
+              },
+            },
+          ],
+        })
+        .then((res) => {
+          res.present()
+        })
+      this.setInformedConsent(this.informedConsent)
+    } else {
+      this.toggleBackgroundGeoLocation()
+    }
+  }
 
   ngOnInit() {
     this.updateTrackingButtonUI('isStopped')
@@ -54,6 +129,17 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
+    this.informedConsentService.getInformedConsent().subscribe(
+      (informedConsent) => (this.informedConsentDefaults = informedConsent),
+      () => null,
+      () => {
+        this.informedConsent = new InformedConsent()
+        this.informedConsent.hasInformedConsent =
+          this.informedConsentDefaults.defaultInformedConsent
+        this.informedConsent.hasFirstTimeConsent =
+          this.informedConsentDefaults.defaultFirstTimeConsent
+      }
+    )
   }
 
   ngOnDestroy() {
@@ -138,6 +224,10 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.locationService.openLocationSettings()
   }
 
+  openTerms() {
+    this.router.navigate(['/settings/privacy-policy'])
+  }
+
   hasAlwaysAllowLocationOption(): boolean {
     if (this.platform.is('ios')) {
       // 'always-allow' exists in all iOS-versions supported by this app
@@ -148,5 +238,16 @@ export class TrackingPage implements OnInit, OnDestroy {
       return osVersion >= 10
     }
     return false
+  }
+
+  setInformedConsent(consented: InformedConsent) {
+    this.informedConsentDefaults.defaultInformedConsent =
+      consented.hasInformedConsent
+    this.informedConsentDefaults.defaultFirstTimeConsent =
+      consented.hasFirstTimeConsent
+    this.informedConsentService.saveInformedConsent(
+      'consent',
+      this.informedConsentDefaults
+    )
   }
 }

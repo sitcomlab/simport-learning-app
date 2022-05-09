@@ -12,7 +12,6 @@ import { DebugWindowComponent } from './../debug-window/debug-window.component'
 import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.component'
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
-import { SocialSharing } from '@ionic-native/social-sharing/ngx'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 
@@ -31,6 +30,6 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
     TrajectoryCardComponent,
     TrajectoryCardPopoverPage,
   ],
-  providers: [SocialSharing, AndroidPermissions, TrajectoryImportExportService],
+  providers: [AndroidPermissions, TrajectoryImportExportService],
 })
 export class SelectTrajectoryPageModule {}

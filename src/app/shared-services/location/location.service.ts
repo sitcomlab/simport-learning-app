@@ -15,6 +15,8 @@ import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
 import { LocationTrackingStatus } from '../../model/location-tracking'
+import { LogfileService } from '../logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../logfile/types'
 
 const { App } = Plugins
 @Injectable()
@@ -54,7 +56,8 @@ export class LocationService implements OnDestroy {
     private inferenceService: InferenceService,
     private notificationService: NotificationService,
     private translateService: TranslateService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private logfileService: LogfileService
   ) {
     if (!this.isSupportedPlatform) return
 
@@ -92,6 +95,11 @@ export class LocationService implements OnDestroy {
   }
 
   start() {
+    this.logfileService.log(
+      'Tracking started',
+      LogEventScope.tracking,
+      LogEventType.start
+    )
     if (!this.isSupportedPlatform) return
     this.backgroundGeolocation.checkStatus().then(async (status) => {
       if (status.isRunning) {
@@ -118,6 +126,12 @@ export class LocationService implements OnDestroy {
   }
 
   stop() {
+    this.logfileService.log(
+      'Tracking stopped',
+      LogEventScope.tracking,
+      LogEventType.stop
+    )
+
     if (!this.isSupportedPlatform) return
 
     this.backgroundGeolocation.checkStatus().then((status) => {
@@ -173,7 +187,13 @@ export class LocationService implements OnDestroy {
 
         await this.inferenceService.triggerBackgroundFunctionIfViable()
 
-        this.sendNotification(
+        this.logfileService.log(
+          'Location update',
+          LogEventScope.tracking,
+          LogEventType.change
+        )
+
+        this.scheduleNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
             latitude: latitude.toFixed(4),
@@ -190,6 +210,11 @@ export class LocationService implements OnDestroy {
     this.startEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.start)
       .subscribe(async () => {
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.start
+        )
         try {
           await this.dbService.upsertTrajectory(
             new Trajectory({
@@ -215,6 +240,11 @@ export class LocationService implements OnDestroy {
       .subscribe(() => {
         this.trackingStatus = 'isStopped'
         this.trackingStatusChange.next('isStopped')
+        this.logfileService.log(
+          'Background Geolocation',
+          LogEventScope.tracking,
+          LogEventType.stop
+        )
         this.nextLocationIsStart = false
         this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
