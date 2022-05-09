@@ -39,7 +39,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private router: Router,
     private translateService: TranslateService,
-    private modalController: ModalController
+    private modalController: ModalController,
     public alertController: AlertController,
     private informedConsentService: InformedConsentService
   ) {}
@@ -80,6 +80,12 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   async presentAlertConfirm() {
+    // if tracking is already running, we give option to turn off irrespective of content
+    if (this.state === this.translateService.instant('tracking.stateRunning')) {
+      this.toggleBackgroundGeoLocation()
+      return
+    }
+
     if (this.informedConsent.hasFirstTimeConsent) {
       this.alertController
         .create({

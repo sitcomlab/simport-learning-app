@@ -193,7 +193,7 @@ export class LocationService implements OnDestroy {
           LogEventType.change
         )
 
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
             latitude: latitude.toFixed(4),

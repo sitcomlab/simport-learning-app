@@ -136,9 +136,9 @@
     "hours": "Stunden",
     "unpauseReminderQuestion": "Sollen wir dich erinnern, die Standortaufzeichnung wieder anzuschalten?",
     "remind": "Erinnere mich in",
-    "dontRemind": "Keine Erinnerung"
+    "dontRemind": "Keine Erinnerung",
     "agreementStart": "Ich stimme der ",
-    "agreementEnd": "Datenschutz­erklärung zu.",
+    "agreementEnd": "Datenschutzerklärung zu.",
     "removeConsentConfirmation": "Bist du sicher?",
     "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
     "consent": "Zustimmen",
