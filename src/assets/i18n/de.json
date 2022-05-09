@@ -112,11 +112,9 @@
     "title": "Standortverlauf",
     "toggleOn": "Aufzeichnung starten",
     "toggleOff": "Aufzeichnung stoppen",
-    "togglePause": "Aufzeichnung pausieren",
     "togglePauseSubtitle": "Wähle hier die Länge der Pause",
     "stateRunning": "Standortaufzeichnung ist aktuell aktiv",
     "stateStopped": "Standortaufzeichnung ist aktuell gestoppt",
-    "statePaused": "Standortaufzeichnung ist aktuell pausiert",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
     "androidBatteryHint": "Damit die App korrekt funktioniert, solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
@@ -126,7 +124,9 @@
     "loading": "Warte…",
     "minutes": "Minuten",
     "hours": "Stunden",
-    "confirmPause": "Jetzt pausieren"
+    "unpauseReminderQuestion": "Sollen wir dich erinnern, die Standortaufzeichnung wieder anzuschalten?",
+    "remind": "Erinnere mich in",
+    "dontRemind": "Keine Erinnerung"
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
@@ -140,7 +140,6 @@
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",
     "trackingStopped": "Aufzeichnung gestoppt",
-    "trackingPaused": "Aufzeichnung pausiert",
     "trackingUnpausedTitle": "Handlung erforderlich: Bitte Aufzeichnung starten",
     "trackingUnpausedText": "Die planmäßige Pausierung der Standortaufzeichnung ist abgelaufen. Bitte drücke hier und starte die Standortaufzeichnung in der App erneut."
   },

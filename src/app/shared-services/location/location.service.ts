@@ -128,24 +128,13 @@ export class LocationService implements OnDestroy {
     })
   }
 
-  pauseUntil(unpauseDate: Date) {
-    if (!this.isSupportedPlatform) return
-    this.backgroundGeolocation.checkStatus().then((status) => {
-      if (status.isRunning) {
-        // this.trackingStatus = 'isPaused'
-        this.backgroundGeolocation.stop().then(() => {
-          this.nextLocationIsStart = false
-          this.updateRunningState()
-        })
-      }
-      // TODO i8n
-      // TODO this is currently overrun by notification, move into .then()?
-      this.sendNotification(
-        'Tracking paused',
-        'Tracking will resume at' + unpauseDate.toLocaleDateString()
-      )
-      this.sendRestartNotificationAtTime(unpauseDate)
-    })
+  sendUnpauseNotificationAtTime(unpauseDate: Date) {
+    this.notificationService.notifyAtTime(
+      NotificationType.unpauseTrackingNotification,
+      this.translateService.instant('notification.trackingUnpausedTitle'),
+      this.translateService.instant('notification.trackingUnpausedText'),
+      unpauseDate
+    )
   }
 
   openLocationSettings() {
@@ -240,15 +229,6 @@ export class LocationService implements OnDestroy {
       NotificationType.locationUpdate,
       title,
       text
-    )
-  }
-
-  private sendRestartNotificationAtTime(turnBackOnAt: Date) {
-    this.notificationService.notifyAtTime(
-      NotificationType.unpauseTrackingNotification,
-      this.translateService.instant('notification.trackingUnpausedTitle'),
-      this.translateService.instant('notification.trackingUnpausedText'),
-      turnBackOnAt
     )
   }
 

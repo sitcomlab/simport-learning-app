@@ -112,10 +112,8 @@
     "title": "Tracking",
     "toggleOn": "Start location tracking",
     "toggleOff": "Stop location tracking",
-    "togglePause": "Pause location tracking",
     "stateRunning": "Tracking is currently running",
     "stateStopped": "Tracking is currently stopped",
-    "statePaused": "Tracking is currently paused",
     "togglePauseSubtitle": "Choose length of pause here",
     "notSupported": "This platform doesn't support background location tracking",
     "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
@@ -124,9 +122,12 @@
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
     "loading": "Waiting…",
-    "minutes": "Minutes",
-    "hours": "Hours",
-    "confirmPause": "Pause now"
+    "minutes": "minutes",
+    "hours": "hours",
+    "confirmPause": "Pause now",
+    "unpauseReminderQuestion": "Should we remind you to turn tracking back on again?",
+    "remind": "Remind me in",
+    "dontRemind": "Don't remind me"
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",
@@ -140,7 +141,6 @@
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
     "trackingStopped": "Tracking stopped",
-    "trackingPaused": "Tracking paused",
     "trackingUnpausedTitle": "Action required: please restart tracking",
     "trackingUnpausedText": "The scheduled pause of the location tracking has ended. Please tap here and restart tracking in the app's menu."
   },

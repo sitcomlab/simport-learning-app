@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { PickerController, PickerOptions, Platform } from '@ionic/angular'
+import { ModalController, Platform } from '@ionic/angular'
 import { Device } from '@ionic-native/device'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
@@ -8,6 +8,7 @@ import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
 import { LocationTrackingStatus } from '../model/location-tracking'
+import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 
 @Component({
   selector: 'app-tracking',
@@ -32,7 +33,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private router: Router,
     private translateService: TranslateService,
-    private pickerController: PickerController
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -61,65 +62,41 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.trajectoryServiceSubscription.unsubscribe()
   }
 
-  toggleBackgroundGeoLocation() {
-    this.locationService.start()
-  }
-
-  async showPauseTimePicker() {
-    const options: PickerOptions = {
-      buttons: [
-        {
-          text: this.translateService.instant('general.cancel'),
-          role: 'cancel',
-        },
-        {
-          text: this.translateService.instant('tracking.confirmPause'),
-          handler: (selected) => {
-            this.pauseBackgroundGeoLocationFor(selected.pauseMinutes.value)
-          },
-        },
-      ],
-      columns: [
-        {
-          name: 'pauseMinutes',
-          options: [
-            {
-              text: '30 ' + this.translateService.instant('tracking.minutes'),
-              value: 30,
-            },
-            {
-              text: '60 ' + this.translateService.instant('tracking.minutes'),
-              value: 60,
-            },
-            {
-              text: '90 ' + this.translateService.instant('tracking.minutes'),
-              value: 90,
-            },
-            {
-              text: '2 ' + this.translateService.instant('tracking.hours'),
-              value: 120,
-            },
-            {
-              text: '3 ' + this.translateService.instant('tracking.hours'),
-              value: 180,
-            },
-            {
-              text: '4 ' + this.translateService.instant('tracking.hours'),
-              value: 240,
-            },
-          ],
-        },
-      ],
+  async toggleBackgroundGeoLocation() {
+    if (this.state === this.translateService.instant('tracking.stateRunning')) {
+      await this.openPausetimeSelector()
+    } else {
+      this.locationService.start()
     }
-    const picker = await this.pickerController.create(options)
-    await picker.present()
   }
 
-  pauseBackgroundGeoLocationFor(unpauseMinutes: number) {
-    // TODO display unpause date in status
+  scheduleUnpauseNotification(unpauseMinutes: number) {
     const unpauseDate = new Date()
     unpauseDate.setMinutes(unpauseDate.getMinutes() + unpauseMinutes)
-    this.locationService.pauseUntil(unpauseDate)
+    this.locationService.sendUnpauseNotificationAtTime(unpauseDate)
+  }
+
+  async openPausetimeSelector() {
+    const modal = await this.modalController.create({
+      component: PausetimeSelectorComponent,
+      swipeToClose: true,
+      cssClass: 'auto-height',
+    })
+    modal.present()
+    const { data: modalResponse } = await modal.onWillDismiss()
+    if (modalResponse) {
+      // make sure the user didnt dismiss modal by cancelling
+      if (modalResponse.confirmStop) {
+        this.locationService.start()
+        const unpauseInMinutes = parseInt(
+          modalResponse.selectedPauseMinutes,
+          10
+        )
+        if (unpauseInMinutes !== 0) {
+          this.scheduleUnpauseNotification(unpauseInMinutes)
+        }
+      }
+    }
   }
 
   updateTrackingButtonUI(state: LocationTrackingStatus) {
