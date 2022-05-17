@@ -14,7 +14,6 @@ import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
 import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
-import { LocationTrackingStatus } from '../../model/location-tracking'
 import { LogfileService } from '../logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../logfile/types'
 
@@ -42,9 +41,9 @@ export class LocationService implements OnDestroy {
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
 
-  private trackingStatus: LocationTrackingStatus = 'isStopped'
-  trackingStatusChange: BehaviorSubject<LocationTrackingStatus> =
-    new BehaviorSubject<LocationTrackingStatus>('isStopped')
+  trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  )
   notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   )
@@ -161,13 +160,7 @@ export class LocationService implements OnDestroy {
 
   private updateRunningState() {
     this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-      if (isRunning) {
-        this.trackingStatus = 'isRunning'
-        this.trackingStatusChange.next('isRunning')
-      } else {
-        this.trackingStatus = 'isStopped'
-        this.trackingStatusChange.next('isStopped')
-      }
+      this.trackingRunning.next(isRunning)
     })
   }
 
@@ -226,8 +219,7 @@ export class LocationService implements OnDestroy {
         } catch (err) {
           console.error(err)
         }
-        this.trackingStatus = 'isRunning'
-        this.trackingStatusChange.next('isRunning')
+        this.trackingRunning.next(true)
         this.nextLocationIsStart = true
         this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
@@ -238,8 +230,7 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
-        this.trackingStatus = 'isStopped'
-        this.trackingStatusChange.next('isStopped')
+        this.trackingRunning.next(false)
         this.logfileService.log(
           'Background Geolocation',
           LogEventScope.tracking,

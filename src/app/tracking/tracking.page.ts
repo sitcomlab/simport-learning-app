@@ -7,7 +7,6 @@ import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
-import { LocationTrackingStatus } from '../model/location-tracking'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
 import { InformedConsentService } from '../shared-services/informed-consent/informed-consent.service'
@@ -118,10 +117,10 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.updateTrackingButtonUI('isStopped')
+    this.updateTrackingButtonUI(false)
     this.locationServiceStateSubscription =
-      this.locationService.trackingStatusChange.subscribe((trackingState) => {
-        this.updateTrackingButtonUI(trackingState)
+      this.locationService.trackingRunning.subscribe((trackingRunning) => {
+        this.updateTrackingButtonUI(trackingRunning)
       })
 
     this.locationServiceNotificationToggleSubscription =
@@ -191,16 +190,16 @@ export class TrackingPage implements OnInit, OnDestroy {
     }
   }
 
-  updateTrackingButtonUI(state: LocationTrackingStatus) {
+  updateTrackingButtonUI(trackingRunning: boolean) {
     this.zone.run(() => {
-      switch (state) {
-        case 'isRunning':
+      switch (trackingRunning) {
+        case true:
           this.state = this.translateService.instant('tracking.stateRunning')
           this.stateIcon = 'play-circle'
           this.startStopButtonLabel =
             this.translateService.instant('tracking.toggleOff')
           break
-        case 'isStopped':
+        case false:
           this.state = this.translateService.instant('tracking.stateStopped')
           this.stateIcon = 'stop-circle'
           this.startStopButtonLabel =
