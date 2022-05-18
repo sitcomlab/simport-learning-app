@@ -30,13 +30,6 @@ export class PausetimeSelectorComponent implements OnInit {
     {
       text:
         this.translateService.instant('tracking.remind') +
-        ' 90 ' +
-        this.translateService.instant('tracking.minutes'),
-      value: 90,
-    },
-    {
-      text:
-        this.translateService.instant('tracking.remind') +
         ' 2 ' +
         this.translateService.instant('tracking.hours'),
       value: 120,
@@ -44,16 +37,25 @@ export class PausetimeSelectorComponent implements OnInit {
     {
       text:
         this.translateService.instant('tracking.remind') +
-        ' 3 ' +
+        ' 4 ' +
         this.translateService.instant('tracking.hours'),
-      value: 180,
+      value: 240,
+      default: false,
     },
     {
       text:
         this.translateService.instant('tracking.remind') +
-        ' 4 ' +
+        ' 8 ' +
         this.translateService.instant('tracking.hours'),
-      value: 240,
+      value: 480,
+      default: false,
+    },
+    {
+      text:
+        this.translateService.instant('tracking.remind') +
+        ' 24 ' +
+        this.translateService.instant('tracking.hours'),
+      value: 1440,
       default: false,
     },
   ]
