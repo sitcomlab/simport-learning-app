@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
@@ -12,7 +12,7 @@ describe('TrajectoryCardPopoverPage', () => {
   let component: TrajectoryCardPopoverPage
   let fixture: ComponentFixture<TrajectoryCardPopoverPage>
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectoryCardPopoverPage],
       imports: APP_TEST_IMPORTS,

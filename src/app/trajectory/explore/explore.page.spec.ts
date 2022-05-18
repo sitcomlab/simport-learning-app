@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
@@ -12,7 +12,7 @@ describe('ExplorePage', () => {
   let component: ExplorePage
   let fixture: ComponentFixture<ExplorePage>
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ExplorePage],
       imports: APP_TEST_IMPORTS,

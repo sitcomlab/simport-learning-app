@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonRouterOutlet } from '@ionic/angular'
@@ -13,7 +13,7 @@ describe('MapPage', () => {
   let component: MapPage
   let fixture: ComponentFixture<MapPage>
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MapPage],
       imports: [APP_TEST_IMPORTS, LeafletModule],
