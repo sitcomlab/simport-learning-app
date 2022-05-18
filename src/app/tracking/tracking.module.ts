@@ -7,6 +7,7 @@ import { TrackingPageRoutingModule } from './tracking-routing.module'
 import { TrackingPage } from './tracking.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { TranslateModule } from '@ngx-translate/core'
+import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 
 @NgModule({
   imports: [
@@ -17,6 +18,6 @@ import { TranslateModule } from '@ngx-translate/core'
     SharedUiModule,
     TranslateModule,
   ],
-  declarations: [TrackingPage],
+  declarations: [TrackingPage, PausetimeSelectorComponent],
 })
 export class TrackingPageModule {}

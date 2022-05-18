@@ -117,9 +117,11 @@
   },
   "tracking": {
     "title": "Tracking",
-    "toggleTitle": "Toggle location tracking",
-    "stateRunning": "Running",
-    "stateStopped": "Stopped",
+    "toggleOn": "Start location tracking",
+    "toggleOff": "Stop location tracking",
+    "stateRunning": "Tracking is running",
+    "stateStopped": "Tracking is stopped",
+    "togglePauseSubtitle": "Choose length of pause here",
     "notSupported": "This platform doesn't support background location tracking",
     "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
     "alwaysAllowHint": "For best tracking results enable <i>always allow</i> for this app in your ",
@@ -127,6 +129,12 @@
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
     "loading": "Waiting…",
+    "minutes": "minutes",
+    "hours": "hours",
+    "confirmPause": "Pause now",
+    "unpauseReminderQuestion": "Should we remind you to turn tracking back on again?",
+    "remind": "Remind me in",
+    "dontRemind": "Don't remind me",
     "agreementStart": "I agree with the ",
     "agreementEnd": "terms and privacy policy.",
     "removeConsentConfirmation": "Are you sure?",
@@ -145,7 +153,9 @@
     "locationUpdateTitle": "Location Update",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
-    "trackingStopped": "Tracking stopped"
+    "trackingStopped": "Tracking stopped",
+    "trackingUnpausedTitle": "Action required: please restart tracking",
+    "trackingUnpausedText": "The scheduled pause of the location tracking has ended. Please tap here and restart tracking in the app's menu."
   },
   "confirm": {
     "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",

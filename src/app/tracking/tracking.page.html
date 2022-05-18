@@ -33,28 +33,18 @@
         ></div>
         <ng-template #content>
           <app-item-card
-            *ngIf="state=='Stopped'; else elseBlock"
             [disabled]="false"
             icon="{{ stateIcon }}"
-            [title]="'tracking.toggleTitle' | translate"
+            title="{{ startStopButtonLabel }}"
             subtitle="{{ state }}"
             (click)="presentAlertConfirm()"
-          ></app-item-card
-          ><ng-template #elseBlock>
-            <app-item-card
-              [disabled]="false"
-              icon="{{ stateIcon }}"
-              [title]="'tracking.toggleTitle' | translate"
-              subtitle="{{ state }}"
-              (click)="toggleBackgroundGeoLocation()"
-            ></app-item-card
-          ></ng-template>
+          ></app-item-card>
         </ng-template>
         <ng-template #other_content>
           <app-item-card
             [disabled]="true"
             icon="{{ stateIcon }}"
-            [title]="'tracking.toggleTitle' | translate"
+            title="{{ startStopButtonLabel }}"
             subtitle="{{ state }}"
           ></app-item-card>
         </ng-template>
