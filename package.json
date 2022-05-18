@@ -70,7 +70,7 @@
     "ng-apexcharts": "^1.7.0",
     "rxjs": "^6.6.7",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.2.0",
