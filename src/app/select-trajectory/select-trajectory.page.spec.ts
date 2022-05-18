@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { async, ComponentFixture, TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonRouterOutlet } from '@ionic/angular'
@@ -29,6 +30,7 @@ describe('SelectTrajectoryPage', () => {
           useValue: { nativeEl: '' },
         },
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents()
 
     fixture = TestBed.createComponent(SelectTrajectoryPage)
