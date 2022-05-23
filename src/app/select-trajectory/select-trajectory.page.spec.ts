@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonRouterOutlet } from '@ionic/angular'
 import { APP_TEST_IMPORTS } from '../app.declarations'
@@ -12,7 +13,7 @@ describe('SelectTrajectoryPage', () => {
   let component: SelectTrajectoryPage
   let fixture: ComponentFixture<SelectTrajectoryPage>
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SelectTrajectoryPage],
       imports: APP_TEST_IMPORTS,
@@ -29,6 +30,7 @@ describe('SelectTrajectoryPage', () => {
           useValue: { nativeEl: '' },
         },
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents()
 
     fixture = TestBed.createComponent(SelectTrajectoryPage)

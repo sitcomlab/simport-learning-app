@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
@@ -10,7 +10,7 @@ describe('TrajectorySelectorComponent', () => {
   let component: TrajectorySelectorComponent
   let fixture: ComponentFixture<TrajectorySelectorComponent>
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TrajectorySelectorComponent],
       imports: APP_TEST_IMPORTS,
