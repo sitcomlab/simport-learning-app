@@ -9,7 +9,7 @@
     "build": "ng build",
     "test": "cd dev && npx ts-node -r tsconfig-paths/register generate_test_trajectory.ts ; ng test",
     "test:inferences": "ng test --include src/app/shared-services/inferences/",
-    "lint": "prettier --loglevel=warn --write src/app && tslint -p . \"src/app/**/*.ts\"",
+    "lint": "prettier --loglevel=warn --write src/app && ng lint",
     "e2e": "ng e2e",
     "resources:ios": "capacitor-resources -i ./resources/icon_ios.png -I -p ios",
     "resources:android": "capacitor-resources -i ./resources/icon_android.png -I -p android",
@@ -70,10 +70,15 @@
     "ng-apexcharts": "^1.7.0",
     "rxjs": "^6.6.7",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.2.0",
+    "@angular-eslint/builder": "^13.2.1",
+    "@angular-eslint/eslint-plugin": "^13.2.1",
+    "@angular-eslint/eslint-plugin-template": "^13.2.1",
+    "@angular-eslint/schematics": "^13.2.1",
+    "@angular-eslint/template-parser": "^13.2.1",
     "@angular/cli": "^13.2.0",
     "@angular/compiler": "^13.2.0",
     "@angular/compiler-cli": "^13.2.0",
@@ -87,11 +92,13 @@
     "@types/leaflet": "^1.5.17",
     "@types/node": "^17.0.0",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "5.17.0",
+    "@typescript-eslint/parser": "5.17.0",
     "capacitor-resources": "^2.0.5",
-    "codelyzer": "^6.0.0",
+    "eslint": "^8.12.0",
     "gpx-parse": "^0.10.4",
     "husky": "^7.0.0",
-    "jasmine-core": "~4.0.0",
+    "jasmine-core": "^4.0.0",
     "jasmine-spec-reporter": "^7.0.0",
     "jetifier": "^2.0.0",
     "karma": "~6.3.3",
@@ -105,15 +112,10 @@
     "protractor": "~7.0.0",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
-    "tslint": "~6.1.0",
-    "typescript": "~4.5.0"
-  },
-  "lint-staged": {
-    "src/app/**/*.ts": [
-      "prettier --write",
-      "tslint -p ."
-    ],
-    "**/*.{js,html,css,scss,md,json}": "prettier --write"
+    "typescript": "~4.5.0",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest"
   },
   "description": "An Ionic project"
 }

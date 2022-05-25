@@ -61,7 +61,7 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
     )
 
     this.subscriptions.push(
-      this.locationService.isRunning.subscribe(
+      this.locationService.trackingRunning.subscribe(
         (running) => (this.trackingRunning = running)
       )
     )

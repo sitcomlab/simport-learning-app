@@ -3,4 +3,5 @@ export enum NotificationType {
   locationUpdate,
   inferenceUpdate,
   visitPrediction,
+  unpauseTrackingNotification,
 }

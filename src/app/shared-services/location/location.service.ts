@@ -18,7 +18,6 @@ import { LogfileService } from '../logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../logfile/types'
 
 const { App } = Plugins
-
 @Injectable()
 export class LocationService implements OnDestroy {
   private config: BackgroundGeolocationConfig = {
@@ -42,7 +41,9 @@ export class LocationService implements OnDestroy {
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
 
-  isRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  )
   notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   )
@@ -116,6 +117,7 @@ export class LocationService implements OnDestroy {
       ) {
         this.backgroundGeolocation.start()
         this.nextLocationIsStart = true
+        await this.notificationService.removeScheduledUnpauseNotifications()
       } else {
         await this.showGrantPermissionAlert()
       }
@@ -139,6 +141,15 @@ export class LocationService implements OnDestroy {
     })
   }
 
+  sendUnpauseNotificationAtTime(unpauseDate: Date) {
+    this.notificationService.notifyAtTime(
+      NotificationType.unpauseTrackingNotification,
+      this.translateService.instant('notification.trackingUnpausedTitle'),
+      this.translateService.instant('notification.trackingUnpausedText'),
+      unpauseDate
+    )
+  }
+
   openLocationSettings() {
     this.backgroundGeolocation.showAppSettings()
   }
@@ -149,7 +160,7 @@ export class LocationService implements OnDestroy {
 
   private updateRunningState() {
     this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-      this.isRunning.next(isRunning)
+      this.trackingRunning.next(isRunning)
     })
   }
 
@@ -175,7 +186,7 @@ export class LocationService implements OnDestroy {
           LogEventType.change
         )
 
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.locationUpdateText', {
             latitude: latitude.toFixed(4),
@@ -208,9 +219,9 @@ export class LocationService implements OnDestroy {
         } catch (err) {
           console.error(err)
         }
-        this.isRunning.next(true)
+        this.trackingRunning.next(true)
         this.nextLocationIsStart = true
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.trackingStarted')
         )
@@ -219,22 +230,21 @@ export class LocationService implements OnDestroy {
     this.stopEventSubscription = this.backgroundGeolocation
       .on(BackgroundGeolocationEvents.stop)
       .subscribe(() => {
+        this.trackingRunning.next(false)
         this.logfileService.log(
           'Background Geolocation',
           LogEventScope.tracking,
           LogEventType.stop
         )
-
-        this.isRunning.next(false)
         this.nextLocationIsStart = false
-        this.scheduleNotification(
+        this.sendNotification(
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.trackingStopped')
         )
       })
   }
 
-  private scheduleNotification(title: string, text: string) {
+  private sendNotification(title: string, text: string) {
     if (this.notificationsEnabled.value === false) return
     this.notificationService.notify(
       NotificationType.locationUpdate,

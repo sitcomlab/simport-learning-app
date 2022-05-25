@@ -120,9 +120,11 @@
   },
   "tracking": {
     "title": "Standortverlauf",
-    "toggleTitle": "Aufzeichnung starten / stoppen",
-    "stateRunning": "Läuft",
-    "stateStopped": "Gestoppt",
+    "toggleOn": "Aufzeichnung starten",
+    "toggleOff": "Aufzeichnung stoppen",
+    "togglePauseSubtitle": "Wähle hier die Länge der Pause",
+    "stateRunning": "Standortaufzeichnung ist aktiv",
+    "stateStopped": "Standortaufzeichnung ist gestoppt",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
     "androidBatteryHint": "Damit die App korrekt funktioniert, solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
@@ -130,12 +132,17 @@
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
     "loading": "Warte…",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "unpauseReminderQuestion": "Sollen wir dich erinnern, die Standortaufzeichnung wieder anzuschalten?",
+    "remind": "Erinnere mich in",
+    "dontRemind": "Keine Erinnerung",
     "agreementStart": "Ich stimme der ",
-    "agreementEnd": "Datenschutz­erklärung zu.",
-    "removeConsentConfirmation": "Bist du Sicher?",
+    "agreementEnd": "Datenschutzerklärung zu.",
+    "removeConsentConfirmation": "Bist du sicher?",
     "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
     "consent": "Zustimmen",
-    "agreementQuestion": "Bist du mit dem Datenschutzerklärung einverstanden?"
+    "agreementQuestion": "Bist du mit der Datenschutzerklärung einverstanden?"
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
@@ -148,7 +155,9 @@
     "locationUpdateTitle": "Standort aktualisiert",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",
-    "trackingStopped": "Aufzeichnung gestoppt"
+    "trackingStopped": "Aufzeichnung gestoppt",
+    "trackingUnpausedTitle": "Handlung erforderlich: Bitte Aufzeichnung starten",
+    "trackingUnpausedText": "Die planmäßige Pausierung der Standortaufzeichnung ist abgelaufen. Bitte drücke hier und starte die Standortaufzeichnung in der App erneut."
   },
   "confirm": {
     "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",

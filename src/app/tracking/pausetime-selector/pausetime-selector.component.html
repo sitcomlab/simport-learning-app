@@ -1,0 +1,37 @@
+<div class="inner-content">
+  <ion-card-header>
+    <ion-card-title>{{
+      'tracking.unpauseReminderQuestion' | translate
+    }}</ion-card-title>
+  </ion-card-header>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-list>
+          <ion-radio-group
+            (ionChange)="onPauseSelection($event)"
+            value="{{ pauseOptions[4].value }}"
+          >
+            <ion-item *ngFor="let p of pauseOptions">
+              <ion-label>{{ p.text }}</ion-label>
+              <ion-radio value="{{ p.value }}"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="cancelPause()" expand="block" fill="outline">{{
+          'general.cancel' | translate
+        }}</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="confirmPause()" expand="block">{{
+          'tracking.toggleOff' | translate
+        }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

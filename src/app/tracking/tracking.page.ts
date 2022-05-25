@@ -1,12 +1,13 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { Platform } from '@ionic/angular'
+import { ModalController, Platform } from '@ionic/angular'
 import { Device } from '@ionic-native/device'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
+import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
 import { InformedConsentService } from '../shared-services/informed-consent/informed-consent.service'
 import { InformedConsentDefaults } from '../shared-services/informed-consent/informed-constent.fixtures'
@@ -20,6 +21,7 @@ import { InformedConsent } from './informed-consent'
 export class TrackingPage implements OnInit, OnDestroy {
   @Input() state: string
   @Input() stateIcon: string
+  @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
   informedConsent: InformedConsent
@@ -36,6 +38,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private router: Router,
     private translateService: TranslateService,
+    private modalController: ModalController,
     public alertController: AlertController,
     private informedConsentService: InformedConsentService
   ) {}
@@ -76,6 +79,12 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   async presentAlertConfirm() {
+    // if tracking is already running, we give option to turn off irrespective of content
+    if (this.state === this.translateService.instant('tracking.stateRunning')) {
+      this.toggleBackgroundGeoLocation()
+      return
+    }
+
     if (this.informedConsent.hasFirstTimeConsent) {
       this.alertController
         .create({
@@ -108,17 +117,12 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.setState(this.translateService.instant('tracking.loading'))
-    this.setStateIcon(false)
+    this.updateTrackingButtonUI(false)
     this.locationServiceStateSubscription =
-      this.locationService.isRunning.subscribe((state) => {
-        this.setState(
-          state
-            ? this.translateService.instant('tracking.stateRunning')
-            : this.translateService.instant('tracking.stateStopped')
-        )
-        this.setStateIcon(state)
+      this.locationService.trackingRunning.subscribe((trackingRunning) => {
+        this.updateTrackingButtonUI(trackingRunning)
       })
+
     this.locationServiceNotificationToggleSubscription =
       this.locationService.notificationsEnabled.subscribe((enabled) => {
         this.setNotificationToggle(enabled)
@@ -149,19 +153,59 @@ export class TrackingPage implements OnInit, OnDestroy {
     this.trajectoryServiceSubscription.unsubscribe()
   }
 
-  toggleBackgroundGeoLocation() {
-    this.locationService.start()
+  async toggleBackgroundGeoLocation() {
+    if (this.state === this.translateService.instant('tracking.stateRunning')) {
+      await this.openPausetimeSelector()
+    } else {
+      this.locationService.start()
+    }
   }
 
-  setState(state: string) {
-    this.zone.run(() => {
-      this.state = state
+  scheduleUnpauseNotification(unpauseMinutes: number) {
+    const unpauseDate = new Date()
+    unpauseDate.setMinutes(unpauseDate.getMinutes() + unpauseMinutes)
+    this.locationService.sendUnpauseNotificationAtTime(unpauseDate)
+  }
+
+  async openPausetimeSelector() {
+    const modal = await this.modalController.create({
+      component: PausetimeSelectorComponent,
+      swipeToClose: true,
+      cssClass: 'auto-height',
     })
+    modal.present()
+    const { data: modalResponse } = await modal.onWillDismiss()
+    if (modalResponse) {
+      // make sure the user didnt dismiss modal by cancelling
+      if (modalResponse.confirmStop) {
+        this.locationService.start()
+        const unpauseInMinutes = parseInt(
+          modalResponse.selectedPauseMinutes,
+          10
+        )
+        if (unpauseInMinutes !== 0) {
+          this.scheduleUnpauseNotification(unpauseInMinutes)
+        }
+      }
+    }
   }
 
-  setStateIcon(running: boolean) {
+  updateTrackingButtonUI(trackingRunning: boolean) {
     this.zone.run(() => {
-      this.stateIcon = running ? 'stop-circle' : 'play-circle'
+      switch (trackingRunning) {
+        case true:
+          this.state = this.translateService.instant('tracking.stateRunning')
+          this.stateIcon = 'play-circle'
+          this.startStopButtonLabel =
+            this.translateService.instant('tracking.toggleOff')
+          break
+        case false:
+          this.state = this.translateService.instant('tracking.stateStopped')
+          this.stateIcon = 'stop-circle'
+          this.startStopButtonLabel =
+            this.translateService.instant('tracking.toggleOn')
+          break
+      }
     })
   }
 

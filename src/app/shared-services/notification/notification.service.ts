@@ -1,13 +1,28 @@
 import { Injectable } from '@angular/core'
 import { NotificationType } from './types'
-import { Plugins } from '@capacitor/core'
+import { LocalNotificationPendingList, Plugins } from '@capacitor/core'
+import { Router } from '@angular/router'
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor() {
+  constructor(private router: Router) {
     this.checkPermission()
+
+    // listen for notifications sent to unpause tracking
+    Plugins.LocalNotifications.addListener(
+      'localNotificationActionPerformed',
+      (performed) => {
+        if (
+          performed.actionId === 'tap' &&
+          performed.notification.id ===
+            NotificationType.unpauseTrackingNotification
+        ) {
+          this.router.navigate([`/tracking`])
+        }
+      }
+    )
   }
 
   private checkPermission() {
@@ -30,5 +45,36 @@ export class NotificationService {
         },
       ],
     })
+  }
+
+  notifyAtTime(
+    type: NotificationType,
+    title: string,
+    text: string,
+    fireDate: Date
+  ) {
+    Plugins.LocalNotifications.schedule({
+      notifications: [
+        {
+          id: type,
+          title,
+          body: text,
+          schedule: { at: new Date(fireDate.getTime()) },
+        },
+      ],
+    }).then(() => {
+      console.log('scheduled notification at', fireDate.toString())
+    })
+  }
+
+  async removeScheduledUnpauseNotifications() {
+    const pendingUnpauseNotifications: LocalNotificationPendingList = {
+      notifications: [
+        {
+          id: NotificationType.unpauseTrackingNotification.toString(),
+        },
+      ],
+    }
+    await Plugins.LocalNotifications.cancel(pendingUnpauseNotifications)
   }
 }

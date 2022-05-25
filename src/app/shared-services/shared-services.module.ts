@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common'
-import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
@@ -35,6 +34,6 @@ import { LogfileService } from './logfile/logfile.service'
     InformedConsentService,
     LogfileService,
   ],
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule],
 })
 export class SharedServicesModule {}
