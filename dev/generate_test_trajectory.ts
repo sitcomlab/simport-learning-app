@@ -4,7 +4,7 @@ import {
   Trajectory,
   TrajectoryMeta,
   TrajectoryType,
-} from 'src/app/model/trajectory'
+} from '../src/app/model/trajectory'
 import { TestTrajectoryIO } from './test_trajectory_io'
 
 const isGpxExportEnabled = false
