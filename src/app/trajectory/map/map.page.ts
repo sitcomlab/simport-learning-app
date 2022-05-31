@@ -47,6 +47,7 @@ import { TranslateService } from '@ngx-translate/core'
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit, OnDestroy {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   TrajectoryTypes: typeof TrajectoryType = TrajectoryType // for use in template
   mapOptions: MapOptions = {
     center: [0, 0],
@@ -73,18 +74,13 @@ export class MapPage implements OnInit, OnDestroy {
 
   isInferencesEnabled =
     this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+  isPoiInferencesEnabled =
+    this.featureFlagService.featureFlags.isPoiInferencesEnabled
   isPredictionsEnabled =
     this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
-
-  private get mapAttributionString(): string {
-    const osmContributors = this.translateService.instant(
-      'trajectory.map.osmContributors'
-    )
-    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
-  }
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -105,6 +101,14 @@ export class MapPage implements OnInit, OnDestroy {
     private routerOutlet: IonRouterOutlet,
     private translateService: TranslateService
   ) {}
+
+  private get mapAttributionString(): string {
+    const osmContributors = this.translateService.instant(
+      'trajectory.map.osmContributors'
+    )
+    // eslint-disable-next-line max-len
+    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
+  }
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
