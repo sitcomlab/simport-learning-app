@@ -1,7 +1,7 @@
 name: Android-Distribution
 
 on:
-  # Triggers the workflow on push or pull request events but only for the develop branch
+  # Triggers the workflow on push or pull request events but only for the study-1 branch
   push:
     branches: [study-1]
 
