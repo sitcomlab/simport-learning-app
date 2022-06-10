@@ -1,4 +1,4 @@
-name: Android-Distribution
+name: Google-Play-Android-Distribution
 
 on:
   # Triggers the workflow on push or pull request events but only for the study-1 branch
@@ -50,7 +50,7 @@ jobs:
           echo $ANDROID_KEYSTORE | base64 -di > simport.keystore
           ls -lah
         env:
-          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          ANDROID_KEYSTORE: ${{ secrets.GOOGLE_PLAY_ANDROID_KEYSTORE }}
 
       - name: Bump version
         uses: chkfung/android-version-actions@v1.1
@@ -63,9 +63,9 @@ jobs:
         run: ./gradlew app:bundleRelease
         env:
           ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
-          ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_STORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_PASSWORD }}
 
       - name: Archive build artifact
         uses: actions/upload-artifact@master
