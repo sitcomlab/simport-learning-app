@@ -16,7 +16,11 @@ import {
 } from '@capacitor/core'
 import { take } from 'rxjs/operators'
 import { TranslateService } from '@ngx-translate/core'
-const { FileSelector, Filesystem, Share } = Plugins
+const {
+  FileSelector: fileSelector,
+  Filesystem: filesystem,
+  Share: share,
+} = Plugins
 
 interface TrajectoryExportFile {
   trajectory: string
@@ -41,6 +45,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * it is for debug-purposes only and must be 'false' when pushed remotely.
    */
   private static importAsUserTrajectory = false
+  private id2: string
 
   constructor(
     http: HttpClient,
@@ -58,8 +63,8 @@ export class TrajectoryImportExportService extends TrajectoryService {
   async selectAndImportTrajectory(
     didSelectFileCallback: () => Promise<void>
   ): Promise<TrajectoryImportResult> {
-    const selectedFile = await FileSelector.fileSelector({
-      multiple_selection: false,
+    const selectedFile = await fileSelector.fileSelector({
+      multipleSelection: false,
       ext: ['*'],
     })
     await didSelectFileCallback()
@@ -105,7 +110,11 @@ export class TrajectoryImportExportService extends TrajectoryService {
    *
    * @returns trajectory
    */
-  createTrajectoryFromImport(json: string, name: string): Trajectory {
+  createTrajectoryFromImport(
+    json: string,
+    name: string,
+    example?: boolean
+  ): Trajectory {
     try {
       // try to read given json-string as a trajectory
       const trajectoryJson: {
@@ -116,6 +125,14 @@ export class TrajectoryImportExportService extends TrajectoryService {
       } = JSON.parse(json)
       const data = Trajectory.fromJSON(trajectoryJson)
       const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
+      if (example) {
+        this.id2 = 'example'
+      } else {
+        this.id2 = uuid()
+      }
+      console.log('*************')
+      console.log(this.id2)
+      console.log('*************')
       const meta: TrajectoryMeta =
         TrajectoryImportExportService.importAsUserTrajectory
           ? {
@@ -125,7 +142,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
               durationDays: null,
             }
           : {
-              id: uuid(),
+              id: this.id2,
               placename,
               type: TrajectoryType.IMPORT,
               durationDays: null,
@@ -136,7 +153,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
   }
 
-  private async importFile(
+  async importFile(
     file: Blob,
     name: string,
     extension: string
@@ -157,7 +174,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
       return new Promise((resolve) => {
         reader.onload = async () => {
           const json = reader.result.toString()
-          const trajectory = this.createTrajectoryFromImport(json, name)
+          const trajectory = this.createTrajectoryFromImport(json, name, false)
           return this.addTrajectory(trajectory)
             .then(async () => {
               resolve({
@@ -201,7 +218,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
 
     try {
       // write file temporarily
-      const fileResult = await Filesystem.writeFile({
+      const fileResult = await filesystem.writeFile({
         data: trajectoryFile.trajectory,
         path: `${trajectoryFile.filename}.json`,
         directory: FilesystemDirectory.Cache, // write in cache as temp folder
@@ -209,11 +226,11 @@ export class TrajectoryImportExportService extends TrajectoryService {
       })
 
       if (this.platform.is('android')) {
-        await Share.requestPermissions()
+        await share.requestPermissions()
       }
 
       // share file
-      await Share.share({
+      await share.share({
         title: this.translateService.instant('trajectory.export.alertHeader'),
         url: fileResult.uri,
         dialogTitle: this.translateService.instant(
@@ -239,6 +256,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
 
   /**
    * This is android-only.
+   *
    * @param t trajectory to export
    */
   async exportTrajectoryToDownloads(
@@ -249,7 +267,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
       false
     )
     try {
-      await Filesystem.writeFile({
+      await filesystem.writeFile({
         path: `Download/${trajectoryFile.filename}.json`,
         data: trajectoryFile.trajectory,
         directory: FilesystemDirectory.ExternalStorage,

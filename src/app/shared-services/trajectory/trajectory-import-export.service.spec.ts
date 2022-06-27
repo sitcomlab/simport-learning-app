@@ -40,7 +40,8 @@ describe('TrajectoryImportExportService', () => {
   it('should import and export a trajectory', async () => {
     const importedTrajectory = service.createTrajectoryFromImport(
       testTrajectoryString,
-      testTrajectoryName
+      testTrajectoryName,
+      false
     )
 
     // don't test for id, since it will be a new uuid which we can't predict

@@ -9,9 +9,9 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
-import { InformedConsentService } from '../shared-services/informed-consent/informed-consent.service'
-import { InformedConsentDefaults } from '../shared-services/informed-consent/informed-constent.fixtures'
-import { InformedConsent } from './informed-consent'
+import { SettingsService } from '../shared-services/settings/settings.service'
+import { AppConfigDefaults } from '../../assets/configDefaults'
+import { UserConfiguration } from '../user-configuration'
 
 @Component({
   selector: 'app-tracking',
@@ -24,8 +24,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
-  informedConsent: InformedConsent
-  informedConsentDefaults: InformedConsentDefaults
+  informedConsent: UserConfiguration
+  informedConsentDefaults: AppConfigDefaults
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -40,7 +40,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private modalController: ModalController,
     public alertController: AlertController,
-    private informedConsentService: InformedConsentService
+    private informedConsentService: SettingsService
   ) {}
 
   async checkBox(): Promise<void> {
@@ -134,11 +134,11 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.informedConsentService.getInformedConsent().subscribe(
+    this.informedConsentService.getConfig('consent').subscribe(
       (informedConsent) => (this.informedConsentDefaults = informedConsent),
       () => null,
       () => {
-        this.informedConsent = new InformedConsent()
+        this.informedConsent = new UserConfiguration()
         this.informedConsent.hasInformedConsent =
           this.informedConsentDefaults.defaultInformedConsent
         this.informedConsent.hasFirstTimeConsent =
@@ -245,12 +245,12 @@ export class TrackingPage implements OnInit, OnDestroy {
     return false
   }
 
-  setInformedConsent(consented: InformedConsent) {
+  setInformedConsent(consented: UserConfiguration) {
     this.informedConsentDefaults.defaultInformedConsent =
       consented.hasInformedConsent
     this.informedConsentDefaults.defaultFirstTimeConsent =
       consented.hasFirstTimeConsent
-    this.informedConsentService.saveInformedConsent(
+    this.informedConsentService.saveConfig(
       'consent',
       this.informedConsentDefaults
     )

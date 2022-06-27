@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import {
   IonRouterOutlet,
@@ -6,6 +6,7 @@ import {
   ModalController,
   ToastController,
 } from '@ionic/angular'
+import { HttpClient } from '@angular/common/http'
 import { ToastButton } from '@ionic/core'
 import { TranslateService } from '@ngx-translate/core'
 import { DebugWindowComponent } from '../debug-window/debug-window.component'
@@ -13,11 +14,14 @@ import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
+import { AppConfigDefaults } from '../../assets/configDefaults'
+import { SettingsService } from './../shared-services/settings/settings.service'
+import { UserConfiguration } from '../user-configuration'
 
 enum TrajectoryMode {
-  TRACK = 'tracking',
-  CHOOSE = 'choose',
-  IMPORT = 'import',
+  track = 'tracking',
+  choose = 'choose',
+  import = 'import',
 }
 
 @Component({
@@ -25,7 +29,15 @@ enum TrajectoryMode {
   templateUrl: './select-trajectory.page.html',
   styleUrls: ['./select-trajectory.page.scss'],
 })
-export class SelectTrajectoryPage {
+export class SelectTrajectoryPage implements OnInit {
+  trajectoryMode: typeof TrajectoryMode = TrajectoryMode // for usage in template
+  private clickInterval = 500
+  private debugWindowClicks = 8
+  private lastOnClicks = [] // contains timestamps of title clicks, newest comes first
+  private jsonDataResult: any
+  private firstTimeOpenAppDefault: AppConfigDefaults
+  private userConfiguration: UserConfiguration
+
   constructor(
     private modalController: ModalController,
     private toastController: ToastController,
@@ -34,13 +46,10 @@ export class SelectTrajectoryPage {
     private router: Router,
     private trajectoryImportExportService: TrajectoryImportExportService,
     public locationService: LocationService,
-    public translateService: TranslateService
+    public translateService: TranslateService,
+    private http: HttpClient,
+    private settingsService: SettingsService
   ) {}
-
-  private CLICK_INTERVAL = 500
-  private DEBUG_WINDOW_CLICKS = 8
-  private lastOnClicks = [] // contains timestamps of title clicks, newest comes first
-  TrajectoryMode: typeof TrajectoryMode = TrajectoryMode // for usage in template
 
   // fired on title click
   // used for multiple click detection
@@ -49,7 +58,7 @@ export class SelectTrajectoryPage {
     const now = Date.now()
 
     // the last click was too long ago, reset state
-    if (!lastClick || now - lastClick > this.CLICK_INTERVAL) {
+    if (!lastClick || now - lastClick > this.clickInterval) {
       this.lastOnClicks = [now]
       return
     }
@@ -64,7 +73,7 @@ export class SelectTrajectoryPage {
     // notify the user when they are 3, 2 or 1 click(s) away from the debug window
     // adapted from the android developer settings
     this.lastOnClicks.unshift(now)
-    const clicksAway = this.DEBUG_WINDOW_CLICKS - this.lastOnClicks.length
+    const clicksAway = this.debugWindowClicks - this.lastOnClicks.length
     if (toasts[clicksAway]) {
       const toast = await this.toastController.create({
         duration: 500,
@@ -92,11 +101,11 @@ export class SelectTrajectoryPage {
     // TODO: persist selected mode
 
     switch (mode) {
-      case TrajectoryMode.TRACK:
+      case TrajectoryMode.track:
         this.router.navigate(['/tracking'])
         return
 
-      case TrajectoryMode.CHOOSE:
+      case TrajectoryMode.choose:
         const modal = await this.modalController.create({
           component: TrajectorySelectorComponent,
           swipeToClose: true,
@@ -108,7 +117,7 @@ export class SelectTrajectoryPage {
         if (t) this.router.navigate([`/trajectory/${t.type}/${t.id}`])
         return
 
-      case TrajectoryMode.IMPORT:
+      case TrajectoryMode.import:
         await this.trajectoryImportExportService
           .selectAndImportTrajectory(async () => {
             // did select file
@@ -148,6 +157,74 @@ export class SelectTrajectoryPage {
 
   navigateToDiary() {
     this.router.navigate(['/diary'])
+  }
+
+  async createExample() {
+    this.settingsService.getConfig('newApp').subscribe(
+      (firstTimeOpenApp) => (this.firstTimeOpenAppDefault = firstTimeOpenApp),
+      () => null,
+      () => {
+        this.userConfiguration = new UserConfiguration()
+        this.userConfiguration.hasFirstOpenApp =
+          this.firstTimeOpenAppDefault.defaultFirstTimeOpenApp
+      }
+    )
+    if (this.userConfiguration.hasFirstOpenApp) {
+      this.importExample()
+    }
+  }
+
+  setFirstTimeApp(consented: UserConfiguration) {
+    this.firstTimeOpenAppDefault.defaultFirstTimeOpenApp =
+      consented.hasFirstOpenApp
+    this.settingsService.saveConfig('newApp', this.firstTimeOpenAppDefault)
+  }
+
+  importExample() {
+    this.http.get('assets/trajectories/muenster.json').subscribe((res) => {
+      this.jsonDataResult = res
+    })
+
+    setTimeout(() => {
+      new Promise((resolve) => {
+        const json = JSON.stringify(this.jsonDataResult)
+        const trajectory =
+          this.trajectoryImportExportService.createTrajectoryFromImport(
+            json,
+            'Münster',
+            true
+          )
+        return this.trajectoryImportExportService
+          .addTrajectory(trajectory)
+          .then(async () => {
+            resolve({
+              success: true,
+              trajectoryId: trajectory.id,
+              errorMessage: null,
+            })
+            console.log(trajectory.id)
+            console.log(trajectory.type)
+            console.log(trajectory.placename)
+            console.log(trajectory.durationDays)
+          })
+          .catch(async () => {
+            resolve({
+              success: false,
+              trajectoryId: null,
+              errorMessage: this.translateService.instant(
+                'trajectory.import.errorMessage'
+              ),
+            })
+          })
+      })
+    }, 2000)
+    this.userConfiguration = new UserConfiguration()
+    this.userConfiguration.hasFirstOpenApp = false
+    this.setFirstTimeApp(this.userConfiguration)
+  }
+
+  ngOnInit() {
+    this.createExample()
   }
 
   private async showToast(message: string, isError: boolean) {
