@@ -202,10 +202,6 @@ export class SelectTrajectoryPage implements OnInit {
               trajectoryId: trajectory.id,
               errorMessage: null,
             })
-            console.log(trajectory.id)
-            console.log(trajectory.type)
-            console.log(trajectory.placename)
-            console.log(trajectory.durationDays)
           })
           .catch(async () => {
             resolve({

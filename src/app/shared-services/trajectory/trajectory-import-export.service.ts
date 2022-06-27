@@ -45,7 +45,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * it is for debug-purposes only and must be 'false' when pushed remotely.
    */
   private static importAsUserTrajectory = false
-  private id2: string
+  private trajectoryId: string
 
   constructor(
     http: HttpClient,
@@ -126,13 +126,10 @@ export class TrajectoryImportExportService extends TrajectoryService {
       const data = Trajectory.fromJSON(trajectoryJson)
       const placename = name?.replace(/\.[^/.]+$/, '') ?? 'trajectory' // remove extension from name (e.g. '.json')
       if (example) {
-        this.id2 = 'example'
+        this.trajectoryId = 'example'
       } else {
-        this.id2 = uuid()
+        this.trajectoryId = uuid()
       }
-      console.log('*************')
-      console.log(this.id2)
-      console.log('*************')
       const meta: TrajectoryMeta =
         TrajectoryImportExportService.importAsUserTrajectory
           ? {
@@ -142,7 +139,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
               durationDays: null,
             }
           : {
-              id: this.id2,
+              id: this.trajectoryId,
               placename,
               type: TrajectoryType.IMPORT,
               durationDays: null,
@@ -174,7 +171,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
       return new Promise((resolve) => {
         reader.onload = async () => {
           const json = reader.result.toString()
-          const trajectory = this.createTrajectoryFromImport(json, name, false)
+          const trajectory = this.createTrajectoryFromImport(json, name)
           return this.addTrajectory(trajectory)
             .then(async () => {
               resolve({

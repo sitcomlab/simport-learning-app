@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { combineLatest, from, Observable } from 'rxjs'
+import { from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
   Point,
@@ -51,23 +51,6 @@ export class TrajectoryService {
   // Returns any trajectory data by slug. slug consists of `type/id`.
   // TODO: catch 404 properly?
   getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
-    //switch (type) {
-    // case TrajectoryType.EXAMPLE:
-    //   const getData = this.http
-    //     .get<{ coordinates: string; timestamps: number[]; time0: string }>(
-    //       `assets/trajectories/${id}.json`
-    //     )
-    //     .pipe(map(Trajectory.fromJSON))
-
-    //   const getMeta = this.http
-    //     .get<TrajectoryMeta[]>('assets/trajectories/index.json')
-    //     .pipe(map((ts) => ts.find((t) => t.id === id)))
-
-    //   return combineLatest([getMeta, getData]).pipe(
-    //     map(([meta, data]) => new Trajectory(meta, data))
-    //   )
-
-    //default:
     return new Observable<Trajectory>((subscriber) => {
       this.db.getFullTrajectory(id).then((trajectory) => {
         // publish trajectory
@@ -84,7 +67,6 @@ export class TrajectoryService {
         subscriber.add(inner)
       })
     })
-    //}
   }
 
   addTrajectory(t: Trajectory) {

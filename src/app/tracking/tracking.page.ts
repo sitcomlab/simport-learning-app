@@ -40,7 +40,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private modalController: ModalController,
     public alertController: AlertController,
-    private informedConsentService: SettingsService
+    private settingsService: SettingsService
   ) {}
 
   async checkBox(): Promise<void> {
@@ -134,7 +134,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.informedConsentService.getConfig('consent').subscribe(
+    this.settingsService.getConfig('consent').subscribe(
       (informedConsent) => (this.informedConsentDefaults = informedConsent),
       () => null,
       () => {
@@ -250,9 +250,6 @@ export class TrackingPage implements OnInit, OnDestroy {
       consented.hasInformedConsent
     this.informedConsentDefaults.defaultFirstTimeConsent =
       consented.hasFirstTimeConsent
-    this.informedConsentService.saveConfig(
-      'consent',
-      this.informedConsentDefaults
-    )
+    this.settingsService.saveConfig('consent', this.informedConsentDefaults)
   }
 }
