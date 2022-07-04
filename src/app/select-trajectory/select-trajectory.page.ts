@@ -15,7 +15,10 @@ import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
 import { AppConfigDefaults } from '../../assets/configDefaults'
-import { SettingsService } from './../shared-services/settings/settings.service'
+import {
+  SettingsService,
+  SettingsConfig,
+} from './../shared-services/settings/settings.service'
 import { UserConfiguration } from '../user-configuration'
 
 enum TrajectoryMode {
@@ -160,7 +163,7 @@ export class SelectTrajectoryPage implements OnInit {
   }
 
   async createExample() {
-    this.settingsService.getConfig('newApp').subscribe(
+    this.settingsService.getConfig(SettingsConfig.newApp).subscribe(
       (firstTimeOpenApp) => (this.firstTimeOpenAppDefault = firstTimeOpenApp),
       () => null,
       () => {
@@ -177,7 +180,10 @@ export class SelectTrajectoryPage implements OnInit {
   setFirstTimeApp(consented: UserConfiguration) {
     this.firstTimeOpenAppDefault.defaultFirstTimeOpenApp =
       consented.hasFirstOpenApp
-    this.settingsService.saveConfig('newApp', this.firstTimeOpenAppDefault)
+    this.settingsService.saveConfig(
+      SettingsConfig.newApp,
+      this.firstTimeOpenAppDefault
+    )
   }
 
   importExample() {
@@ -191,7 +197,7 @@ export class SelectTrajectoryPage implements OnInit {
         const trajectory =
           this.trajectoryImportExportService.createTrajectoryFromImport(
             json,
-            'Münster',
+            this.translateService.instant('general.exampleTrajectoryName'),
             true
           )
         return this.trajectoryImportExportService

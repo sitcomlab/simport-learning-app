@@ -9,7 +9,10 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
-import { SettingsService } from '../shared-services/settings/settings.service'
+import {
+  SettingsService,
+  SettingsConfig,
+} from '../shared-services/settings/settings.service'
 import { AppConfigDefaults } from '../../assets/configDefaults'
 import { UserConfiguration } from '../user-configuration'
 
@@ -134,7 +137,7 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.settingsService.getConfig('consent').subscribe(
+    this.settingsService.getConfig(SettingsConfig.consent).subscribe(
       (informedConsent) => (this.informedConsentDefaults = informedConsent),
       () => null,
       () => {
@@ -250,6 +253,9 @@ export class TrackingPage implements OnInit, OnDestroy {
       consented.hasInformedConsent
     this.informedConsentDefaults.defaultFirstTimeConsent =
       consented.hasFirstTimeConsent
-    this.settingsService.saveConfig('consent', this.informedConsentDefaults)
+    this.settingsService.saveConfig(
+      SettingsConfig.consent,
+      this.informedConsentDefaults
+    )
   }
 }

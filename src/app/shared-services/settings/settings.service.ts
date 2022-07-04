@@ -2,24 +2,30 @@ import { Injectable } from '@angular/core'
 import { Observable, of } from 'rxjs'
 import { AppConfigDefaults } from '../../../assets/configDefaults'
 
+export enum SettingsConfig {
+  consent = 'consent',
+  newApp = 'newApp',
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
+  settingsConfig: typeof SettingsConfig = SettingsConfig
   constructor() {}
 
-  getConfig(key: string): Observable<AppConfigDefaults> {
-    const userConfig = localStorage.getItem(key)
+  getConfig(settings: SettingsConfig): Observable<AppConfigDefaults> {
+    const userConfig = localStorage.getItem(settings)
     if (userConfig) {
-      return of(JSON.parse(localStorage.getItem(key)))
+      return of(JSON.parse(localStorage.getItem(settings)))
     } else {
       const appDefaults = new AppConfigDefaults()
-      this.saveConfig(key, appDefaults)
+      this.saveConfig(settings, appDefaults)
       return of<AppConfigDefaults>(appDefaults)
     }
   }
 
-  saveConfig(key: string, appConfig: AppConfigDefaults) {
-    localStorage.setItem(key, JSON.stringify(appConfig))
+  saveConfig(settings: SettingsConfig, appConfig: AppConfigDefaults) {
+    localStorage.setItem(settings, JSON.stringify(appConfig))
   }
 }
