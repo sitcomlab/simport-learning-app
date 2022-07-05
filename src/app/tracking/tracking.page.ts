@@ -88,17 +88,23 @@ export class TrackingPage implements OnInit, OnDestroy {
     if (this.informedConsent.hasFirstTimeConsent) {
       this.alertController
         .create({
-          header: this.translateService.instant('tracking.consent'),
-          message: this.translateService.instant('tracking.agreementQuestion'),
+          header: this.translateService.instant(
+            'tracking.informedConsentTitle'
+          ),
+          message: this.translateService.instant(
+            'tracking.informedConsentText'
+          ),
           buttons: [
             {
-              text: this.translateService.instant('general.no'),
+              text: this.translateService.instant('general.cancel'),
+              role: 'cancel',
+              cssClass: 'secondary',
               handler: () => {
                 this.informedConsent.hasInformedConsent = false
               },
             },
             {
-              text: this.translateService.instant('general.yes'),
+              text: 'Okay',
               handler: () => {
                 this.informedConsent.hasInformedConsent = true
                 this.informedConsent.hasFirstTimeConsent = false
