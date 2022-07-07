@@ -11,7 +11,8 @@
     "no": "Nein",
     "yes": "Ja",
     "save": "Speichern",
-    "discard": "Verwerfen"
+    "discard": "Verwerfen",
+    "exampleTrajectoryName": "Münster"
   },
   "diary": {
     "title": "Tagebuch",
