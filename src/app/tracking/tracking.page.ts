@@ -9,9 +9,12 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
 import { TranslateService } from '@ngx-translate/core'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
-import { InformedConsentService } from '../shared-services/informed-consent/informed-consent.service'
-import { InformedConsentDefaults } from '../shared-services/informed-consent/informed-constent.fixtures'
-import { InformedConsent } from './informed-consent'
+import {
+  SettingsService,
+  SettingsConfig,
+} from '../shared-services/settings/settings.service'
+import { AppConfigDefaults } from '../../assets/configDefaults'
+import { UserConfiguration } from '../user-configuration'
 
 @Component({
   selector: 'app-tracking',
@@ -24,8 +27,8 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
   trajectoryExists: boolean
-  informedConsent: InformedConsent
-  informedConsentDefaults: InformedConsentDefaults
+  informedConsent: UserConfiguration
+  informedConsentDefaults: AppConfigDefaults
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
@@ -40,7 +43,7 @@ export class TrackingPage implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private modalController: ModalController,
     public alertController: AlertController,
-    private informedConsentService: InformedConsentService
+    private settingsService: SettingsService
   ) {}
 
   async checkBox(): Promise<void> {
@@ -88,17 +91,23 @@ export class TrackingPage implements OnInit, OnDestroy {
     if (this.informedConsent.hasFirstTimeConsent) {
       this.alertController
         .create({
-          header: this.translateService.instant('tracking.consent'),
-          message: this.translateService.instant('tracking.agreementQuestion'),
+          header: this.translateService.instant(
+            'tracking.informedConsentTitle'
+          ),
+          message: this.translateService.instant(
+            'tracking.informedConsentText'
+          ),
           buttons: [
             {
-              text: this.translateService.instant('general.no'),
+              text: this.translateService.instant('general.cancel'),
+              role: 'cancel',
+              cssClass: 'secondary',
               handler: () => {
                 this.informedConsent.hasInformedConsent = false
               },
             },
             {
-              text: this.translateService.instant('general.yes'),
+              text: 'Okay',
               handler: () => {
                 this.informedConsent.hasInformedConsent = true
                 this.informedConsent.hasFirstTimeConsent = false
@@ -134,11 +143,11 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.informedConsentService.getInformedConsent().subscribe(
+    this.settingsService.getConfig(SettingsConfig.consent).subscribe(
       (informedConsent) => (this.informedConsentDefaults = informedConsent),
       () => null,
       () => {
-        this.informedConsent = new InformedConsent()
+        this.informedConsent = new UserConfiguration()
         this.informedConsent.hasInformedConsent =
           this.informedConsentDefaults.defaultInformedConsent
         this.informedConsent.hasFirstTimeConsent =
@@ -245,13 +254,13 @@ export class TrackingPage implements OnInit, OnDestroy {
     return false
   }
 
-  setInformedConsent(consented: InformedConsent) {
+  setInformedConsent(consented: UserConfiguration) {
     this.informedConsentDefaults.defaultInformedConsent =
       consented.hasInformedConsent
     this.informedConsentDefaults.defaultFirstTimeConsent =
       consented.hasFirstTimeConsent
-    this.informedConsentService.saveInformedConsent(
-      'consent',
+    this.settingsService.saveConfig(
+      SettingsConfig.consent,
       this.informedConsentDefaults
     )
   }

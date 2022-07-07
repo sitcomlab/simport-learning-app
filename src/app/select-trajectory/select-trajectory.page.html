@@ -13,7 +13,7 @@
   <ion-list>
     <app-item-card
       [disabled]="!locationService.isSupportedPlatform"
-      (click)="locationService.isSupportedPlatform && enableTrajectory(TrajectoryMode.TRACK)"
+      (click)="locationService.isSupportedPlatform && enableTrajectory(trajectoryMode.track)"
       icon="locate-outline"
       [title]="'trajectory.select.record.title' | translate"
       [subtitle]="'trajectory.select.record.subtitle' | translate"
@@ -23,7 +23,7 @@
       icon="compass-outline"
       [title]="'trajectory.select.explore.title' | translate"
       [subtitle]="'trajectory.select.explore.subtitle' | translate"
-      (click)="enableTrajectory(TrajectoryMode.CHOOSE)"
+      (click)="enableTrajectory(trajectoryMode.choose)"
     ></app-item-card>
 
     <app-item-card
@@ -31,7 +31,7 @@
       icon="add-outline"
       [title]="'trajectory.select.add.title' | translate"
       [subtitle]="'trajectory.select.add.subtitle' | translate"
-      (click)="enableTrajectory(TrajectoryMode.IMPORT)"
+      (click)="enableTrajectory(trajectoryMode.import)"
     ></app-item-card>
 
     <app-item-card
