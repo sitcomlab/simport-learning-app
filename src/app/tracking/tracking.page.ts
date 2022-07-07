@@ -47,7 +47,10 @@ export class TrackingPage implements OnInit, OnDestroy {
   ) {}
 
   async checkBox(): Promise<void> {
-    if (this.state === 'Running' && !this.informedConsent.hasInformedConsent) {
+    if (
+      this.state === this.translateService.instant('tracking.stateRunning') &&
+      !this.informedConsent.hasInformedConsent
+    ) {
       this.alertController
         .create({
           header: this.translateService.instant(
@@ -68,7 +71,7 @@ export class TrackingPage implements OnInit, OnDestroy {
               handler: () => {
                 this.informedConsent.hasFirstTimeConsent = true
                 this.setInformedConsent(this.informedConsent)
-                this.toggleBackgroundGeoLocation()
+                this.locationService.stop()
               },
             },
           ],
@@ -204,13 +207,13 @@ export class TrackingPage implements OnInit, OnDestroy {
       switch (trackingRunning) {
         case true:
           this.state = this.translateService.instant('tracking.stateRunning')
-          this.stateIcon = 'play-circle'
+          this.stateIcon = 'stop-circle'
           this.startStopButtonLabel =
             this.translateService.instant('tracking.toggleOff')
           break
         case false:
           this.state = this.translateService.instant('tracking.stateStopped')
-          this.stateIcon = 'stop-circle'
+          this.stateIcon = 'play-circle'
           this.startStopButtonLabel =
             this.translateService.instant('tracking.toggleOn')
           break
