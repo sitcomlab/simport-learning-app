@@ -63,7 +63,7 @@
         >
         </ion-note>
         <app-item-card
-          *ngIf="trajectoryExists"
+          *ngIf="trajectoryExists && featureFlagService.featureFlags.isExploreTrajectoryEnabled"
           icon="compass-outline"
           [title]="'tracking.exploreTrajectoryTitle' | translate"
           (click)="navigateUserTrajectory()"

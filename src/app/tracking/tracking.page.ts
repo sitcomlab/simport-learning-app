@@ -14,7 +14,8 @@ import {
   SettingsConfig,
 } from '../shared-services/settings/settings.service'
 import { AppConfigDefaults } from '../../assets/configDefaults'
-import { UserConfiguration } from '../user-configuration'
+import { UserConfiguration } from '../model/user-configuration'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 
 @Component({
   selector: 'app-tracking',
@@ -35,14 +36,15 @@ export class TrackingPage implements OnInit, OnDestroy {
   private trajectoryServiceSubscription: Subscription
 
   constructor(
-    private zone: NgZone,
     public platform: Platform,
+    public alertController: AlertController,
     public locationService: LocationService,
-    private trajectoryService: TrajectoryService,
+    public featureFlagService: FeatureFlagService,
+    private zone: NgZone,
     private router: Router,
+    private trajectoryService: TrajectoryService,
     private translateService: TranslateService,
     private modalController: ModalController,
-    public alertController: AlertController,
     private settingsService: SettingsService
   ) {}
 

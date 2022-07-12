@@ -20,6 +20,7 @@
     ></app-item-card>
 
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isExploreTrajectoryEnabled"
       icon="compass-outline"
       [title]="'trajectory.select.explore.title' | translate"
       [subtitle]="'trajectory.select.explore.subtitle' | translate"
@@ -27,6 +28,7 @@
     ></app-item-card>
 
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isImportTrajectoryEnabled"
       [disabled]="!locationService.isSupportedPlatform"
       icon="add-outline"
       [title]="'trajectory.select.add.title' | translate"

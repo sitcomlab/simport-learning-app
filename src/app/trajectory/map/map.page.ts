@@ -73,7 +73,7 @@ export class MapPage implements OnInit, OnDestroy {
   readonly disThreshold = 30000
 
   isInferencesEnabled =
-    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+    this.featureFlagService.featureFlags.isTrajectoryInferencesTabEnabled
   isPoiInferencesEnabled =
     this.featureFlagService.featureFlags.isPoiInferencesEnabled
   isPredictionsEnabled =

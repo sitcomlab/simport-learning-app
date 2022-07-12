@@ -19,7 +19,8 @@ import {
   SettingsService,
   SettingsConfig,
 } from './../shared-services/settings/settings.service'
-import { UserConfiguration } from '../user-configuration'
+import { UserConfiguration } from '../model/user-configuration'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 
 enum TrajectoryMode {
   track = 'tracking',
@@ -42,15 +43,16 @@ export class SelectTrajectoryPage implements OnInit {
   private userConfiguration: UserConfiguration
 
   constructor(
+    public locationService: LocationService,
+    public translateService: TranslateService,
+    public featureFlagService: FeatureFlagService,
     private modalController: ModalController,
     private toastController: ToastController,
     private loadingController: LoadingController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    private trajectoryImportExportService: TrajectoryImportExportService,
-    public locationService: LocationService,
-    public translateService: TranslateService,
     private http: HttpClient,
+    private trajectoryImportExportService: TrajectoryImportExportService,
     private settingsService: SettingsService
   ) {}
 
