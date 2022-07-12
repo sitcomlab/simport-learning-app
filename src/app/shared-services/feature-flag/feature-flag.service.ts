@@ -5,7 +5,31 @@ import { defaultFeatureFlags, FeatureFlags } from './feature-flag.fixtures'
   providedIn: 'root',
 })
 export class FeatureFlagService {
-  featureFlags: FeatureFlags = defaultFeatureFlags
+  // define active featureflags here
+  private primaryFeatureFlags: FeatureFlags = defaultFeatureFlags
+  private secondaryFeatureFlags?: FeatureFlags
+  private isAlternativeFeatureFlagsActive = false
 
   constructor() {}
+
+  get featureFlags(): FeatureFlags {
+    if (this.useAlternativeFeatureFlags) {
+      return this.secondaryFeatureFlags
+    }
+    return this.primaryFeatureFlags
+  }
+
+  get hasAlternativeFeatureFlags(): boolean {
+    return this.secondaryFeatureFlags !== undefined
+  }
+
+  get useAlternativeFeatureFlags(): boolean {
+    return (
+      this.hasAlternativeFeatureFlags && this.isAlternativeFeatureFlagsActive
+    )
+  }
+
+  set useAlternativeFeatureFlags(newValue: boolean) {
+    this.isAlternativeFeatureFlagsActive = newValue
+  }
 }

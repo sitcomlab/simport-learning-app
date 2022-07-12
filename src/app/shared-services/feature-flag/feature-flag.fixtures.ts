@@ -1,4 +1,5 @@
 export interface FeatureFlags {
+  appModeSwitchPassword?: string
   isExploreTrajectoryEnabled: boolean
   isImportTrajectoryEnabled: boolean
   isTrajectoryInferencesTabEnabled: boolean
@@ -23,6 +24,7 @@ export const defaultFeatureFlags: FeatureFlags = {
 }
 
 export const deploymentStudy1FeatureFlags: FeatureFlags = {
+  appModeSwitchPassword: 'wwu',
   isExploreTrajectoryEnabled: true,
   isImportTrajectoryEnabled: true,
   isTrajectoryInferencesTabEnabled: false,
@@ -35,6 +37,7 @@ export const deploymentStudy1FeatureFlags: FeatureFlags = {
 }
 
 export const deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
+  appModeSwitchPassword: 'wwu',
   isExploreTrajectoryEnabled: false,
   isImportTrajectoryEnabled: false,
   isTrajectoryInferencesTabEnabled: false,

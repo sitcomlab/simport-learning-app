@@ -45,6 +45,11 @@ ion-modal.auto-height {
   }
 }
 
+.md ion-back-button {
+  // hide back-button-text on non-iOS-devices
+  font-size: 0px !important;
+}
+
 // trajectory delete alert
 // delete button in red
 .alert-wrapper .danger {

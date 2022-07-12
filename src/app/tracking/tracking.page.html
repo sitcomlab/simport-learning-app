@@ -70,7 +70,10 @@
         ></app-item-card>
       </ion-col>
     </ion-row>
-    <ion-row class="ion-padding ion-justify-content-between">
+    <ion-row
+      *ngIf="featureFlagService.featureFlags.isInferencesEnabled"
+      class="ion-padding ion-justify-content-between"
+    >
       <ion-col size="auto">
         <ion-label>{{ 'tracking.showNotifications' | translate }}</ion-label>
       </ion-col>
