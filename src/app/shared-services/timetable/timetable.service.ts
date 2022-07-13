@@ -19,7 +19,7 @@ export class TimetableService extends AbstractBackgroundService {
   protected backgroundInterval = 15
   protected backgroundFetchId = 'com.transistorsoft.timetableprediction'
   protected isEnabled =
-    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
+    this.featureFlagService.featureFlags.isTimetableComputationEnabled
 
   constructor(
     private sqliteService: SqliteService,
@@ -30,11 +30,6 @@ export class TimetableService extends AbstractBackgroundService {
     private translateService: TranslateService
   ) {
     super(backgroundService, 'com.transistorsoft.timetableprediction')
-  }
-
-  protected async backgroundFunction(): Promise<void> {
-    this.predictUserTrackWithNotification()
-    this.lastRunTime.next(this.lastTryTime.value)
   }
 
   async createAndSaveTimetable(
@@ -97,5 +92,10 @@ export class TimetableService extends AbstractBackgroundService {
 
   async getTimetable(trajectoryId: string): Promise<TimetableEntry[]> {
     return await this.sqliteService.getTimetable(trajectoryId)
+  }
+
+  protected async backgroundFunction(): Promise<void> {
+    this.predictUserTrackWithNotification()
+    this.lastRunTime.next(this.lastTryTime.value)
   }
 }

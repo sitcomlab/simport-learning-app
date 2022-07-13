@@ -22,6 +22,7 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentNoLocationTrackingTitle": "How have you used your smartphone today?",
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",

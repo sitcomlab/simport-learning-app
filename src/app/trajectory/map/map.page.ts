@@ -77,7 +77,7 @@ export class MapPage implements OnInit, OnDestroy {
   isPoiInferencesEnabled =
     this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
   isPredictionsEnabled =
-    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
+    this.featureFlagService.featureFlags.isTimetableComputationEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []

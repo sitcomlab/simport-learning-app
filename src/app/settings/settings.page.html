@@ -30,7 +30,7 @@
         ></app-item-card>
         <app-item-card
           *ngIf="featureFlagService.hasAlternativeFeatureFlags"
-          [disabled]="featureFlagService.featureFlags.canSwitchToAlternativeMode !== true"
+          [disabled]="featureFlagService.featureFlags.canSwitchAppMode !== true"
           title="{{ 'appMode.title' | translate }}"
           subtitle="{{ (featureFlagService.useAlternativeFeatureFlags ? 'appMode.subtitleModeB' : 'appMode.subtitleModeA') | translate }}"
           icon="{{ featureFlagService.useAlternativeFeatureFlags ? 'invert-mode-outline' : 'invert-mode' }}"

@@ -22,6 +22,7 @@
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
     "contentTitle": "Haben Sie sich heute Ihre Ortsdaten angeschaut? Falls ja: Welche Beobachtungen haben Sie gemacht?",
+    "contentNoLocationTrackingTitle": "Wie hast du heute dein Smartphone genutzt?",
     "contentPlaceholder": "Inhalt",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",

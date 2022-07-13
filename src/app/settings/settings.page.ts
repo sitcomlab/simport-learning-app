@@ -33,7 +33,7 @@ export class SettingsPage {
   async askToSwitchAppMode() {
     if (
       this.featureFlagService.hasAlternativeFeatureFlags &&
-      this.featureFlagService.featureFlags.canSwitchToAlternativeMode === true
+      this.featureFlagService.featureFlags.canSwitchAppMode === true
     ) {
       const usesPassword =
         this.featureFlagService.featureFlags.appModeSwitchPassword !== undefined
@@ -50,9 +50,9 @@ export class SettingsPage {
             ),
             handler: (data: any) => {
               if (usesPassword) {
-                const passphrase = data.passphrase ?? undefined
+                const password = data.password ?? undefined
                 if (
-                  passphrase ===
+                  password ===
                   this.featureFlagService.featureFlags.appModeSwitchPassword
                 ) {
                   this.switchAppMode()
@@ -71,10 +71,11 @@ export class SettingsPage {
         inputs: usesPassword
           ? [
               {
-                label: this.translateService.instant(
-                  'appMode.switchModeDialogPasswordPlaceholder'
-                ),
-                name: 'passphrase',
+                name: 'password',
+                attributes: {
+                  autocomplete: 'off',
+                  autocorrect: 'off',
+                },
                 placeholder: this.translateService.instant(
                   'appMode.switchModeDialogPasswordPlaceholder'
                 ),

@@ -1,61 +1,69 @@
 export interface FeatureFlags {
+  // app-mode config
+  canSwitchAppMode?: boolean
   appModeSwitchPassword?: string
-  canSwitchToAlternativeMode?: boolean
+  // home-menu entries
   isHomeLocationTrackingEnabled: boolean
   isHomeExploreTrajectoryEnabled: boolean
   isHomeImportTrajectoryEnabled: boolean
   isHomeDiaryEnabled: boolean
+  // trajectory-submenu entries
   isTrajectoryInferencesTabEnabled: boolean
   isTrajectoryMapTabEnabled: boolean
   isTrajectoryExplorationTabEnabled: boolean
+  // computational features
   isInferenceComputationEnabled: boolean
   isPoiInferenceComputationEnabled: boolean
   isReverseGeocodingEnabled: boolean
-  isTimetablePredicitionEnabled: boolean
+  isTimetableComputationEnabled: boolean
 }
 
-export const defaultFeatureFlags: FeatureFlags = {
-  isHomeLocationTrackingEnabled: true,
-  isHomeExploreTrajectoryEnabled: true,
-  isHomeImportTrajectoryEnabled: true,
-  isHomeDiaryEnabled: true,
-  isTrajectoryInferencesTabEnabled: true,
-  isTrajectoryMapTabEnabled: true,
-  isTrajectoryExplorationTabEnabled: true,
-  isInferenceComputationEnabled: true,
-  isPoiInferenceComputationEnabled: true,
-  isReverseGeocodingEnabled: true,
-  isTimetablePredicitionEnabled: true,
-}
+// default feature flags
+export class FeatureFlagConfig {
+  static defaultFeatureFlags: FeatureFlags = {
+    isHomeLocationTrackingEnabled: true,
+    isHomeExploreTrajectoryEnabled: true,
+    isHomeImportTrajectoryEnabled: true,
+    isHomeDiaryEnabled: true,
+    isTrajectoryInferencesTabEnabled: true,
+    isTrajectoryMapTabEnabled: true,
+    isTrajectoryExplorationTabEnabled: true,
+    isInferenceComputationEnabled: true,
+    isPoiInferenceComputationEnabled: true,
+    isReverseGeocodingEnabled: true,
+    isTimetableComputationEnabled: true,
+  }
 
-export const deploymentStudy1FeatureFlags: FeatureFlags = {
-  appModeSwitchPassword: 'wwu',
-  canSwitchToAlternativeMode: false,
-  isHomeLocationTrackingEnabled: true,
-  isHomeExploreTrajectoryEnabled: true,
-  isHomeImportTrajectoryEnabled: true,
-  isHomeDiaryEnabled: true,
-  isTrajectoryInferencesTabEnabled: false,
-  isTrajectoryMapTabEnabled: true,
-  isTrajectoryExplorationTabEnabled: false,
-  isInferenceComputationEnabled: false,
-  isPoiInferenceComputationEnabled: true,
-  isReverseGeocodingEnabled: false,
-  isTimetablePredicitionEnabled: false,
-}
+  // feature flags for the first deployment-study incl. control-group
+  static deploymentStudy1FeatureFlags: FeatureFlags = {
+    canSwitchAppMode: false,
+    appModeSwitchPassword: 'wwu',
+    isHomeLocationTrackingEnabled: true,
+    isHomeExploreTrajectoryEnabled: true,
+    isHomeImportTrajectoryEnabled: true,
+    isHomeDiaryEnabled: true,
+    isTrajectoryInferencesTabEnabled: false,
+    isTrajectoryMapTabEnabled: true,
+    isTrajectoryExplorationTabEnabled: false,
+    isInferenceComputationEnabled: false,
+    isPoiInferenceComputationEnabled: true,
+    isReverseGeocodingEnabled: false,
+    isTimetableComputationEnabled: false,
+  }
 
-export const deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
-  appModeSwitchPassword: 'wwu',
-  canSwitchToAlternativeMode: true,
-  isHomeLocationTrackingEnabled: false,
-  isHomeExploreTrajectoryEnabled: false,
-  isHomeImportTrajectoryEnabled: false,
-  isHomeDiaryEnabled: true,
-  isTrajectoryInferencesTabEnabled: false,
-  isTrajectoryMapTabEnabled: true,
-  isTrajectoryExplorationTabEnabled: false,
-  isInferenceComputationEnabled: false,
-  isPoiInferenceComputationEnabled: false,
-  isReverseGeocodingEnabled: false,
-  isTimetablePredicitionEnabled: false,
+  static deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
+    canSwitchAppMode: true,
+    appModeSwitchPassword: 'wwu',
+    isHomeLocationTrackingEnabled: false,
+    isHomeExploreTrajectoryEnabled: false,
+    isHomeImportTrajectoryEnabled: false,
+    isHomeDiaryEnabled: true,
+    isTrajectoryInferencesTabEnabled: false,
+    isTrajectoryMapTabEnabled: true,
+    isTrajectoryExplorationTabEnabled: false,
+    isInferenceComputationEnabled: false,
+    isPoiInferenceComputationEnabled: false,
+    isReverseGeocodingEnabled: false,
+    isTimetableComputationEnabled: false,
+  }
 }
