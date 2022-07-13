@@ -63,7 +63,7 @@
         >
         </ion-note>
         <app-item-card
-          *ngIf="trajectoryExists && featureFlagService.featureFlags.isExploreTrajectoryEnabled"
+          *ngIf="trajectoryExists && featureFlagService.featureFlags.isHomeExploreTrajectoryEnabled"
           icon="compass-outline"
           [title]="'tracking.exploreTrajectoryTitle' | translate"
           (click)="navigateUserTrajectory()"
@@ -71,7 +71,7 @@
       </ion-col>
     </ion-row>
     <ion-row
-      *ngIf="featureFlagService.featureFlags.isInferencesEnabled"
+      *ngIf="featureFlagService.featureFlags.isInferenceComputationEnabled"
       class="ion-padding ion-justify-content-between"
     >
       <ion-col size="auto">

@@ -33,7 +33,7 @@ export class SettingsPage {
   async askToSwitchAppMode() {
     if (
       this.featureFlagService.hasAlternativeFeatureFlags &&
-      !this.featureFlagService.useAlternativeFeatureFlags
+      this.featureFlagService.featureFlags.canSwitchToAlternativeMode === true
     ) {
       const usesPassword =
         this.featureFlagService.featureFlags.appModeSwitchPassword !== undefined

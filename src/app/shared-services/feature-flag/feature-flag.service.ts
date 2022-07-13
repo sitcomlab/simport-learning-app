@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { SettingsConfig, SettingsService } from '../settings/settings.service'
 import { defaultFeatureFlags, FeatureFlags } from './feature-flag.fixtures'
 
 @Injectable({
@@ -8,9 +9,8 @@ export class FeatureFlagService {
   // define active featureflags here
   private primaryFeatureFlags: FeatureFlags = defaultFeatureFlags
   private secondaryFeatureFlags?: FeatureFlags
-  private isAlternativeFeatureFlagsActive = false
 
-  constructor() {}
+  constructor(private settingsService: SettingsService) {}
 
   get featureFlags(): FeatureFlags {
     if (this.useAlternativeFeatureFlags) {
@@ -25,11 +25,18 @@ export class FeatureFlagService {
 
   get useAlternativeFeatureFlags(): boolean {
     return (
-      this.hasAlternativeFeatureFlags && this.isAlternativeFeatureFlagsActive
+      this.hasAlternativeFeatureFlags &&
+      this.settingsService.getValue(
+        SettingsConfig.usesAlternativeAppMode,
+        false
+      )
     )
   }
 
   set useAlternativeFeatureFlags(newValue: boolean) {
-    this.isAlternativeFeatureFlagsActive = newValue
+    this.settingsService.saveValue(
+      SettingsConfig.usesAlternativeAppMode,
+      newValue
+    )
   }
 }

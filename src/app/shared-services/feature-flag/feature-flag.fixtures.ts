@@ -1,50 +1,61 @@
 export interface FeatureFlags {
   appModeSwitchPassword?: string
-  isExploreTrajectoryEnabled: boolean
-  isImportTrajectoryEnabled: boolean
+  canSwitchToAlternativeMode?: boolean
+  isHomeLocationTrackingEnabled: boolean
+  isHomeExploreTrajectoryEnabled: boolean
+  isHomeImportTrajectoryEnabled: boolean
+  isHomeDiaryEnabled: boolean
   isTrajectoryInferencesTabEnabled: boolean
   isTrajectoryMapTabEnabled: boolean
   isTrajectoryExplorationTabEnabled: boolean
-  isInferencesEnabled: boolean
-  isPoiInferencesEnabled: boolean
+  isInferenceComputationEnabled: boolean
+  isPoiInferenceComputationEnabled: boolean
   isReverseGeocodingEnabled: boolean
   isTimetablePredicitionEnabled: boolean
 }
 
 export const defaultFeatureFlags: FeatureFlags = {
-  isExploreTrajectoryEnabled: true,
-  isImportTrajectoryEnabled: true,
+  isHomeLocationTrackingEnabled: true,
+  isHomeExploreTrajectoryEnabled: true,
+  isHomeImportTrajectoryEnabled: true,
+  isHomeDiaryEnabled: true,
   isTrajectoryInferencesTabEnabled: true,
   isTrajectoryMapTabEnabled: true,
   isTrajectoryExplorationTabEnabled: true,
-  isInferencesEnabled: true,
-  isPoiInferencesEnabled: true,
+  isInferenceComputationEnabled: true,
+  isPoiInferenceComputationEnabled: true,
   isReverseGeocodingEnabled: true,
   isTimetablePredicitionEnabled: true,
 }
 
 export const deploymentStudy1FeatureFlags: FeatureFlags = {
   appModeSwitchPassword: 'wwu',
-  isExploreTrajectoryEnabled: true,
-  isImportTrajectoryEnabled: true,
+  canSwitchToAlternativeMode: false,
+  isHomeLocationTrackingEnabled: true,
+  isHomeExploreTrajectoryEnabled: true,
+  isHomeImportTrajectoryEnabled: true,
+  isHomeDiaryEnabled: true,
   isTrajectoryInferencesTabEnabled: false,
   isTrajectoryMapTabEnabled: true,
   isTrajectoryExplorationTabEnabled: false,
-  isInferencesEnabled: false,
-  isPoiInferencesEnabled: true,
+  isInferenceComputationEnabled: false,
+  isPoiInferenceComputationEnabled: true,
   isReverseGeocodingEnabled: false,
   isTimetablePredicitionEnabled: false,
 }
 
 export const deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
   appModeSwitchPassword: 'wwu',
-  isExploreTrajectoryEnabled: false,
-  isImportTrajectoryEnabled: false,
+  canSwitchToAlternativeMode: true,
+  isHomeLocationTrackingEnabled: false,
+  isHomeExploreTrajectoryEnabled: false,
+  isHomeImportTrajectoryEnabled: false,
+  isHomeDiaryEnabled: true,
   isTrajectoryInferencesTabEnabled: false,
   isTrajectoryMapTabEnabled: true,
   isTrajectoryExplorationTabEnabled: false,
-  isInferencesEnabled: false,
-  isPoiInferencesEnabled: false,
+  isInferenceComputationEnabled: false,
+  isPoiInferenceComputationEnabled: false,
   isReverseGeocodingEnabled: false,
   isTimetablePredicitionEnabled: false,
 }

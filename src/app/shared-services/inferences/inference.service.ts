@@ -73,7 +73,8 @@ export class InferenceService
   protected backgroundFetchId = 'com.transistorsoft.fetch'
   protected foregroundInterval = 720
   protected backgroundInterval = 120
-  protected isEnabled = this.featureFlagService.featureFlags.isInferencesEnabled
+  protected isEnabled =
+    this.featureFlagService.featureFlags.isInferenceComputationEnabled
 
   private filterConfigSubscription: Subscription
   private loadingOverlay: HTMLIonLoadingElement = undefined
@@ -127,8 +128,8 @@ export class InferenceService
     trajectoryId: string
   ): Promise<InferenceResult> {
     if (
-      !this.featureFlagService.featureFlags.isInferencesEnabled &&
-      !this.featureFlagService.featureFlags.isPoiInferencesEnabled
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      !this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
     ) {
       return {
         status: InferenceResultStatus.noInferencesFound,
@@ -150,7 +151,7 @@ export class InferenceService
     trajectoryId: string,
     runGeocoding: boolean = false
   ): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
@@ -188,7 +189,7 @@ export class InferenceService
   }
 
   private async generateUserInferences(): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
@@ -210,8 +211,8 @@ export class InferenceService
     traj: Trajectory
   ): Promise<InferenceResult> {
     if (
-      !this.featureFlagService.featureFlags.isInferencesEnabled &&
-      !this.featureFlagService.featureFlags.isPoiInferencesEnabled
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      !this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
     ) {
       return {
         status: InferenceResultStatus.noInferencesFound,
@@ -221,8 +222,8 @@ export class InferenceService
 
     // just use POIs if isInferencesEnabled == false and isPoiInferencesEnabled == true
     const inferenceTypes =
-      !this.featureFlagService.featureFlags.isInferencesEnabled &&
-      this.featureFlagService.featureFlags.isPoiInferencesEnabled
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
         ? [POIInference]
         : [HomeInference, WorkInference, POIInference]
 
