@@ -17,9 +17,17 @@ import { TranslateService } from '@ngx-translate/core'
 import { LogfileService } from '../logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../logfile/types'
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { App } = Plugins
 @Injectable()
 export class LocationService implements OnDestroy {
+  trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  )
+  notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  )
+
   private config: BackgroundGeolocationConfig = {
     desiredAccuracy: 10,
     stationaryRadius: 20,
@@ -40,13 +48,6 @@ export class LocationService implements OnDestroy {
   private startEventSubscription: Subscription
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
-
-  trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false
-  )
-  notificationsEnabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false
-  )
 
   constructor(
     private platform: Platform,
@@ -75,6 +76,10 @@ export class LocationService implements OnDestroy {
         this.updateRunningState()
       }
     })
+  }
+
+  get isSupportedPlatform(): boolean {
+    return this.platform.is('ios') || this.platform.is('android')
   }
 
   ngOnDestroy() {
@@ -152,10 +157,6 @@ export class LocationService implements OnDestroy {
 
   openLocationSettings() {
     this.backgroundGeolocation.showAppSettings()
-  }
-
-  get isSupportedPlatform(): boolean {
-    return this.platform.is('ios') || this.platform.is('android')
   }
 
   private updateRunningState() {
