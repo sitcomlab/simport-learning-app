@@ -124,10 +124,18 @@ export class LocationService implements OnDestroy {
         this.nextLocationIsStart = true
         await this.notificationService.removeScheduledUnpauseNotifications()
       } else {
-        // triger android location runtime permission promt with one time location request
-        await this.backgroundGeolocation.getCurrentLocation()
-
-        await this.showGrantPermissionAlert()
+        try {
+          // triger android location runtime permission promt with one time location request
+          await this.backgroundGeolocation.getCurrentLocation({
+            timeout: 0,
+            enableHighAccuracy: true,
+            maximumAge: 0,
+          })
+        } catch (e) {
+          console.log(e)
+        } finally {
+          await this.showGrantPermissionAlert()
+        }
       }
     })
   }
