@@ -124,6 +124,9 @@ export class LocationService implements OnDestroy {
         this.nextLocationIsStart = true
         await this.notificationService.removeScheduledUnpauseNotifications()
       } else {
+        // triger android location runtime permission promt with one time location request
+        await this.backgroundGeolocation.getCurrentLocation()
+
         await this.showGrantPermissionAlert()
       }
     })
