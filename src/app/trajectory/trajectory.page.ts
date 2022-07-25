@@ -16,10 +16,10 @@ export interface TrajectoryPageTab {
 }
 
 export enum TrajectoryPagePath {
-  Inferences = 'trajectory-inferences',
-  Map = 'trajectory-map',
-  Exploration = 'trajectory-exploration',
-  InferenceFilter = 'trajectory-inference-filter',
+  inferences = 'trajectory-inferences',
+  map = 'trajectory-map',
+  exploration = 'trajectory-exploration',
+  inferenceFilter = 'trajectory-inference-filter',
 }
 
 @Component({
@@ -28,9 +28,8 @@ export enum TrajectoryPagePath {
   styleUrls: ['./trajectory.page.scss'],
 })
 export class TrajectoryPage implements OnInit, OnDestroy {
-  private inferenceFilterSubscription: Subscription
-
   tabs: TrajectoryPageTab[] = []
+  private inferenceFilterSubscription: Subscription
 
   constructor(
     private modalController: ModalController,
@@ -39,23 +38,25 @@ export class TrajectoryPage implements OnInit, OnDestroy {
     private featureFlagService: FeatureFlagService,
     private translateService: TranslateService
   ) {
-    if (this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled) {
+    if (this.featureFlagService.featureFlags.isTrajectoryInferencesTabEnabled) {
       this.tabs.push({
-        path: TrajectoryPagePath.Inferences,
+        path: TrajectoryPagePath.inferences,
         icon: 'magnet-outline',
         title: this.translateService.instant('trajectory.insights.title'),
       })
     }
-    if (this.featureFlagService.featureFlags.isTrajectoryMapEnabled) {
+    if (this.featureFlagService.featureFlags.isTrajectoryMapTabEnabled) {
       this.tabs.push({
-        path: TrajectoryPagePath.Map,
+        path: TrajectoryPagePath.map,
         icon: 'map-outline',
         title: this.translateService.instant('trajectory.map.title'),
       })
     }
-    if (this.featureFlagService.featureFlags.isTrajectoryExplorationEnabled) {
+    if (
+      this.featureFlagService.featureFlags.isTrajectoryExplorationTabEnabled
+    ) {
       this.tabs.push({
-        path: TrajectoryPagePath.Exploration,
+        path: TrajectoryPagePath.exploration,
         icon: 'bar-chart-outline',
         title: this.translateService.instant('trajectory.explore.title'),
       })

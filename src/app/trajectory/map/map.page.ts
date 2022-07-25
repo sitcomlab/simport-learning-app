@@ -73,11 +73,11 @@ export class MapPage implements OnInit, OnDestroy {
   readonly disThreshold = 30000
 
   isInferencesEnabled =
-    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+    this.featureFlagService.featureFlags.isTrajectoryInferencesTabEnabled
   isPoiInferencesEnabled =
-    this.featureFlagService.featureFlags.isPoiInferencesEnabled
+    this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
   isPredictionsEnabled =
-    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
+    this.featureFlagService.featureFlags.isTimetableComputationEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
@@ -89,9 +89,9 @@ export class MapPage implements OnInit, OnDestroy {
   private inferenceFilterSubscription: Subscription
 
   constructor(
+    public featureFlagService: FeatureFlagService,
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
-    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,

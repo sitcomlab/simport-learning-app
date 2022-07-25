@@ -2,19 +2,16 @@ import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { ModalController, Platform } from '@ionic/angular'
 import { Device } from '@ionic-native/device'
-import { Subscription } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { TranslateService } from '@ngx-translate/core'
 import { PausetimeSelectorComponent } from './pausetime-selector/pausetime-selector.component'
 import { AlertController } from '@ionic/angular'
-import {
-  SettingsService,
-  SettingsConfig,
-} from '../shared-services/settings/settings.service'
-import { AppConfigDefaults } from '../../assets/configDefaults'
-import { UserConfiguration } from '../user-configuration'
+import { SettingsService } from '../shared-services/settings/settings.service'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
+import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
 
 @Component({
   selector: 'app-tracking',
@@ -26,62 +23,62 @@ export class TrackingPage implements OnInit, OnDestroy {
   @Input() stateIcon: string
   @Input() startStopButtonLabel: string
   @Input() notificationsEnabled: boolean
+
   trajectoryExists: boolean
-  informedConsent: UserConfiguration
-  informedConsentDefaults: AppConfigDefaults
+  hasInformedConsent: BehaviorSubject<boolean> = new BehaviorSubject(
+    this.settingsService.getValue(SettingsConfig.hasConsent)
+  )
 
   private locationServiceStateSubscription: Subscription
   private locationServiceNotificationToggleSubscription: Subscription
   private trajectoryServiceSubscription: Subscription
 
   constructor(
-    private zone: NgZone,
     public platform: Platform,
+    public alertController: AlertController,
     public locationService: LocationService,
-    private trajectoryService: TrajectoryService,
+    public featureFlagService: FeatureFlagService,
+    private zone: NgZone,
     private router: Router,
+    private trajectoryService: TrajectoryService,
     private translateService: TranslateService,
     private modalController: ModalController,
-    public alertController: AlertController,
     private settingsService: SettingsService
-  ) {}
-
-  async checkBox(): Promise<void> {
-    if (
-      this.state === this.translateService.instant('tracking.stateRunning') &&
-      !this.informedConsent.hasInformedConsent
-    ) {
-      this.alertController
-        .create({
-          header: this.translateService.instant(
-            'tracking.removeConsentConfirmation'
-          ),
-          message: this.translateService.instant(
-            'tracking.removeConsentConfirmationText'
-          ),
-          buttons: [
-            {
-              text: this.translateService.instant('general.cancel'),
-              handler: () => {
-                this.informedConsent.hasInformedConsent = true
+  ) {
+    this.hasInformedConsent.subscribe((newConsent) => {
+      this.settingsService.saveValue(SettingsConfig.hasConsent, newConsent)
+      if (
+        this.state === this.translateService.instant('tracking.stateRunning') &&
+        !newConsent
+      ) {
+        this.alertController
+          .create({
+            header: this.translateService.instant(
+              'tracking.removeConsentConfirmation'
+            ),
+            message: this.translateService.instant(
+              'tracking.removeConsentConfirmationText'
+            ),
+            buttons: [
+              {
+                text: this.translateService.instant('general.cancel'),
+                handler: () => {
+                  this.hasInformedConsent.next(true)
+                },
               },
-            },
-            {
-              text: this.translateService.instant('general.yes'),
-              handler: () => {
-                this.informedConsent.hasFirstTimeConsent = true
-                this.setInformedConsent(this.informedConsent)
-                this.locationService.stop()
+              {
+                text: this.translateService.instant('general.yes'),
+                handler: () => {
+                  this.locationService.stop()
+                },
               },
-            },
-          ],
-        })
-        .then((res) => {
-          res.present()
-        })
-    } else {
-      this.setInformedConsent(this.informedConsent)
-    }
+            ],
+          })
+          .then((res) => {
+            res.present()
+          })
+      }
+    })
   }
 
   async presentAlertConfirm() {
@@ -91,7 +88,7 @@ export class TrackingPage implements OnInit, OnDestroy {
       return
     }
 
-    if (this.informedConsent.hasFirstTimeConsent) {
+    if (this.settingsService.getValue(SettingsConfig.isFirstConsent)) {
       this.alertController
         .create({
           header: this.translateService.instant(
@@ -106,14 +103,17 @@ export class TrackingPage implements OnInit, OnDestroy {
               role: 'cancel',
               cssClass: 'secondary',
               handler: () => {
-                this.informedConsent.hasInformedConsent = false
+                this.hasInformedConsent.next(false)
               },
             },
             {
               text: 'Okay',
               handler: () => {
-                this.informedConsent.hasInformedConsent = true
-                this.informedConsent.hasFirstTimeConsent = false
+                this.hasInformedConsent.next(true)
+                this.settingsService.saveValue(
+                  SettingsConfig.isFirstConsent,
+                  false
+                )
                 this.toggleBackgroundGeoLocation()
               },
             },
@@ -122,7 +122,6 @@ export class TrackingPage implements OnInit, OnDestroy {
         .then((res) => {
           res.present()
         })
-      this.setInformedConsent(this.informedConsent)
     } else {
       this.toggleBackgroundGeoLocation()
     }
@@ -146,17 +145,6 @@ export class TrackingPage implements OnInit, OnDestroy {
         this.trajectoryExists =
           tm.find((t) => t.id === Trajectory.trackingTrajectoryID) !== undefined
       })
-    this.settingsService.getConfig(SettingsConfig.consent).subscribe(
-      (informedConsent) => (this.informedConsentDefaults = informedConsent),
-      () => null,
-      () => {
-        this.informedConsent = new UserConfiguration()
-        this.informedConsent.hasInformedConsent =
-          this.informedConsentDefaults.defaultInformedConsent
-        this.informedConsent.hasFirstTimeConsent =
-          this.informedConsentDefaults.defaultFirstTimeConsent
-      }
-    )
   }
 
   ngOnDestroy() {
@@ -255,16 +243,5 @@ export class TrackingPage implements OnInit, OnDestroy {
       return osVersion >= 10
     }
     return false
-  }
-
-  setInformedConsent(consented: UserConfiguration) {
-    this.informedConsentDefaults.defaultInformedConsent =
-      consented.hasInformedConsent
-    this.informedConsentDefaults.defaultFirstTimeConsent =
-      consented.hasFirstTimeConsent
-    this.settingsService.saveConfig(
-      SettingsConfig.consent,
-      this.informedConsentDefaults
-    )
   }
 }

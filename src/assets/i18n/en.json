@@ -22,6 +22,7 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentNoLocationTrackingTitle": "How have you used your smartphone today?",
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
@@ -36,7 +37,7 @@
       "title": "Trajectories",
       "record": {
         "title": "Record your own trajectory",
-        "subtitle": "Get notified when information about you could be derived"
+        "subtitle": "Start / stop tracking"
       },
       "explore": {
         "title": "Explore trajectories",
@@ -224,5 +225,16 @@
     "contact": "<b>Contact:</b> <br><br>Simport<br>University of Münster<br>Institute for Geoinformatics<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
     "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "bmbfLogo": "<img src='assets/imprint/bmbf_logo_en.png'/>"
+  },
+  "appMode": {
+    "title": "App-Mode",
+    "subtitleModeA": "Mode 1 is active",
+    "subtitleModeB": "Mode 2 is active",
+    "switchModeDialogTitle": "Switch app-mode",
+    "switchModeDialogMessage": "Enter the password to switch the app-mode, if you've received one.",
+    "switchModeDialogPasswordPlaceholder": "Password",
+    "switchModeProceedButton": "Switch mode",
+    "switchModeSuccessMessage": "App mode switched",
+    "switchModeWrongPasswordMessage": "Invalid password"
   }
 }

@@ -38,11 +38,16 @@
     ></ion-input>
   </ion-item>
   <ion-item *ngIf="loaded">
-    <ion-label class="ion-text-wrap" position="stacked"
-      ><ion-note color="dark">{{
-        'diary.contentTitle' | translate
-      }}</ion-note></ion-label
-    >
+    <ion-label class="ion-text-wrap" position="stacked">
+      <ion-note color="dark"
+        >{{
+          (featureFlagService.featureFlags.isHomeLocationTrackingEnabled
+            ? 'diary.contentTitle'
+            : 'diary.contentNoLocationTrackingTitle'
+          ) | translate
+        }}
+      </ion-note>
+    </ion-label>
     <ion-textarea
       autoGrow="true"
       inputmode="text"

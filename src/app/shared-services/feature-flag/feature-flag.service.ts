@@ -1,11 +1,40 @@
 import { Injectable } from '@angular/core'
-import { defaultFeatureFlags, FeatureFlags } from './feature-flag.fixtures'
+import { SettingsConfig } from '../settings/settings.fixtures'
+import { SettingsService } from '../settings/settings.service'
+import { FeatureFlags, FeatureFlagConfig } from './feature-flag.fixtures'
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeatureFlagService {
-  featureFlags: FeatureFlags = defaultFeatureFlags
+  // define active featureflags here
+  private primaryFlags: FeatureFlags = FeatureFlagConfig.defaultFeatureFlags
+  private secondaryFlags?: FeatureFlags = undefined
 
-  constructor() {}
+  constructor(private settingsService: SettingsService) {}
+
+  get featureFlags(): FeatureFlags {
+    if (this.useAlternativeFeatureFlags) {
+      return this.secondaryFlags
+    }
+    return this.primaryFlags
+  }
+
+  get hasAlternativeFeatureFlags(): boolean {
+    return this.secondaryFlags !== undefined
+  }
+
+  get useAlternativeFeatureFlags(): boolean {
+    return (
+      this.hasAlternativeFeatureFlags &&
+      this.settingsService.getValue(SettingsConfig.useAlternativeAppMode)
+    )
+  }
+
+  set useAlternativeFeatureFlags(newValue: boolean) {
+    this.settingsService.saveValue(
+      SettingsConfig.useAlternativeAppMode,
+      newValue
+    )
+  }
 }

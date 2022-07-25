@@ -30,7 +30,10 @@
   </div>
 
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
-    <ion-fab-button (click)="openDiaryModal()">
+    <ion-fab-button
+      *ngIf="featureFlagService.featureFlags.isHomeDiaryEnabled"
+      (click)="openDiaryModal()"
+    >
       <ion-icon name="book-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
