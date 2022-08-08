@@ -1,8 +1,10 @@
 import { Router } from '@angular/router'
 import { Component } from '@angular/core'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
-import { AlertController, AlertButton, ToastController } from '@ionic/angular'
+import { AlertController, ToastController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../shared-services/logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
 
 @Component({
   selector: 'app-settings',
@@ -15,10 +17,12 @@ export class SettingsPage {
     private translateService: TranslateService,
     private alertController: AlertController,
     private toastController: ToastController,
-    private router: Router
+    private router: Router,
+    private logfileService: LogfileService
   ) {}
 
   toImprint() {
+    this.logfileService.log('Imprint', LogEventScope.app, LogEventType.click)
     this.router.navigate(['/settings/imprint'])
   }
 
@@ -27,6 +31,11 @@ export class SettingsPage {
   }
 
   toPrivacyPolicy() {
+    this.logfileService.log(
+      'Privacy policy',
+      LogEventScope.app,
+      LogEventType.click
+    )
     this.router.navigate(['/settings/privacy-policy'])
   }
 
