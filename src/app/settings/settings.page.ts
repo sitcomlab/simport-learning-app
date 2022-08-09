@@ -32,7 +32,7 @@ export class SettingsPage {
 
   toPrivacyPolicy() {
     this.logfileService.log(
-      'Privacy policy',
+      'Settings Privacy policy',
       LogEventScope.app,
       LogEventType.click
     )
