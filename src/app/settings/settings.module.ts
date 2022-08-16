@@ -12,6 +12,7 @@ import { ImprintPage } from './imprint/imprint.page'
 import { OpenSourcesPage } from './open-sources/open-sources.page'
 import { PrivacyPolicyPage } from './privacy-policy/privacy-policy.page'
 import { SharedServicesModule } from '../shared-services/shared-services.module'
+import { LogfileService } from './../shared-services/logfile/logfile.service'
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { SharedServicesModule } from '../shared-services/shared-services.module'
     SettingsPageRoutingModule,
     SharedUiModule,
     SharedServicesModule,
+    LogfileService,
   ],
   declarations: [SettingsPage, ImprintPage, OpenSourcesPage, PrivacyPolicyPage],
 })
