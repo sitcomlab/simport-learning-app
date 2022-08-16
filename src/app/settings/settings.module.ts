@@ -12,7 +12,7 @@ import { ImprintPage } from './imprint/imprint.page'
 import { OpenSourcesPage } from './open-sources/open-sources.page'
 import { PrivacyPolicyPage } from './privacy-policy/privacy-policy.page'
 import { SharedServicesModule } from '../shared-services/shared-services.module'
-import { LogfileService } from './../shared-services/logfile/logfile.service'
+import { SqliteService } from './../shared-services/db/sqlite.service'
 
 @NgModule({
   imports: [
@@ -22,8 +22,8 @@ import { LogfileService } from './../shared-services/logfile/logfile.service'
     SettingsPageRoutingModule,
     SharedUiModule,
     SharedServicesModule,
-    LogfileService,
   ],
   declarations: [SettingsPage, ImprintPage, OpenSourcesPage, PrivacyPolicyPage],
+  providers: [SqliteService],
 })
 export class SettingsPageModule {}
