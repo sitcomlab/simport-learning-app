@@ -13,10 +13,10 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { SharedServicesModule } from './shared-services/shared-services.module'
 import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { SettingsPageModule } from './settings/settings.module'
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json')
-}
+const createTranslateLoader = (http: HttpClient) =>
+  new TranslateHttpLoader(http, './assets/i18n/', '.json')
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +35,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     SharedServicesModule, // these need to be imported here, so they are available globally in lazy loaded page modules.
     HttpClientModule,
+    SettingsPageModule,
   ],
   providers: [
     StatusBar,
