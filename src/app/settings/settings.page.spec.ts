@@ -1,8 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { APP_TEST_IMPORTS } from '../app.declarations'
-import { SqliteService } from '../shared-services/db/sqlite.service'
-import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
+import { SharedServicesModule } from './../shared-services/shared-services.module'
 
 import { SettingsPage } from './settings.page'
 
@@ -14,8 +13,7 @@ describe('SettingsPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [SettingsPage],
-        imports: APP_TEST_IMPORTS,
-        providers: [SqliteService, TrajectoryService],
+        imports: [APP_TEST_IMPORTS, SharedServicesModule],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
       }).compileComponents()
 
