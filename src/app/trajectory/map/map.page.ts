@@ -47,6 +47,7 @@ import { TranslateService } from '@ngx-translate/core'
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit, OnDestroy {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   TrajectoryTypes: typeof TrajectoryType = TrajectoryType // for use in template
   mapOptions: MapOptions = {
     center: [0, 0],
@@ -72,19 +73,14 @@ export class MapPage implements OnInit, OnDestroy {
   readonly disThreshold = 30000
 
   isInferencesEnabled =
-    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+    this.featureFlagService.featureFlags.isTrajectoryInferencesTabEnabled
+  isPoiInferencesEnabled =
+    this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
   isPredictionsEnabled =
-    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
+    this.featureFlagService.featureFlags.isTimetableComputationEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
-
-  private get mapAttributionString(): string {
-    const osmContributors = this.translateService.instant(
-      'trajectory.map.osmContributors'
-    )
-    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
-  }
 
   // should only be used for invalidateSize(), content changes via directive bindings!
   private map: Map | undefined
@@ -93,9 +89,9 @@ export class MapPage implements OnInit, OnDestroy {
   private inferenceFilterSubscription: Subscription
 
   constructor(
+    public featureFlagService: FeatureFlagService,
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
-    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
@@ -105,6 +101,14 @@ export class MapPage implements OnInit, OnDestroy {
     private routerOutlet: IonRouterOutlet,
     private translateService: TranslateService
   ) {}
+
+  private get mapAttributionString(): string {
+    const osmContributors = this.translateService.instant(
+      'trajectory.map.osmContributors'
+    )
+    // eslint-disable-next-line max-len
+    return `&copy; <a href="https://www.openstreetmap.org/copyright">${osmContributors}</a> &copy; <a href="https://carto.com/attributions">CARTO</a>`
+  }
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')

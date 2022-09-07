@@ -11,7 +11,8 @@
     "no": "No",
     "yes": "Yes",
     "save": "Save",
-    "discard": "Discard"
+    "discard": "Discard",
+    "exampleTrajectoryName": "Münster"
   },
   "diary": {
     "title": "Diary",
@@ -21,6 +22,7 @@
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
     "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentNoLocationTrackingTitle": "How have you used your smartphone today?",
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
     "deleteEntryAlertMessage": "Are you sure to delete this diary entry?",
@@ -35,7 +37,7 @@
       "title": "Trajectories",
       "record": {
         "title": "Record your own trajectory",
-        "subtitle": "Get notified when information about you could be derived"
+        "subtitle": "Start / stop tracking"
       },
       "explore": {
         "title": "Explore trajectories",
@@ -117,9 +119,11 @@
   },
   "tracking": {
     "title": "Tracking",
-    "toggleTitle": "Toggle location tracking",
-    "stateRunning": "Running",
-    "stateStopped": "Stopped",
+    "toggleOn": "Start location tracking",
+    "toggleOff": "Stop location tracking",
+    "stateRunning": "Tracking is running",
+    "stateStopped": "Tracking is stopped",
+    "togglePauseSubtitle": "Choose length of pause here",
     "notSupported": "This platform doesn't support background location tracking",
     "androidBatteryHint": "In order for this app to work correctly, you should disable battery optimizations in the settings for this app. For more information check <a href='https://dontkillmyapp.com'>this site</a>",
     "alwaysAllowHint": "For best tracking results enable <i>always allow</i> for this app in your ",
@@ -127,12 +131,18 @@
     "exploreTrajectoryTitle": "Explore your trajectory",
     "showNotifications": "Show Notifications",
     "loading": "Waiting…",
+    "minutes": "minutes",
+    "hours": "hours",
+    "confirmPause": "Pause now",
+    "unpauseReminderQuestion": "Should we remind you to turn tracking back on again?",
+    "remind": "Remind me in",
+    "dontRemind": "Don't remind me",
     "agreementStart": "I agree with the ",
     "agreementEnd": "terms and privacy policy.",
     "removeConsentConfirmation": "Are you sure?",
     "removeConsentConfirmationText": "By doing this the app will stop tracking your location.",
-    "consent": "Consent",
-    "agreementQuestion": "Do you agree with the terms and privacy policy?"
+    "informedConsentTitle": "Provided Information",
+    "informedConsentText": "The Simport Learning App collects your location data and saves it on your device to visualize, aggregate, (identify frequently visited locations) and analyze (estimate work and home location, create predictions) them. If you opt in to have background location on in the app, your location data is collected even when you are not using the app and when the app is closed (as permitted by your device settings).  <br><br>This data never leaves your local device (i.e., phone or tablet) unless you export it manually – we do not upload or save the location data collected to a server. All processing is done locally on the device."
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",
@@ -145,7 +155,9 @@
     "locationUpdateTitle": "Location Update",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
-    "trackingStopped": "Tracking stopped"
+    "trackingStopped": "Tracking stopped",
+    "trackingUnpausedTitle": "Action required: please restart tracking",
+    "trackingUnpausedText": "The scheduled pause of the location tracking has ended. Please tap here and restart tracking in the app's menu."
   },
   "confirm": {
     "showLocationServiceSettings": "Location services disabled. Would you like to open app settings?",
@@ -213,5 +225,16 @@
     "contact": "<b>Contact:</b> <br><br>Simport<br>University of Münster<br>Institute for Geoinformatics<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
     "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "bmbfLogo": "<img src='assets/imprint/bmbf_logo_en.png'/>"
+  },
+  "appMode": {
+    "title": "App-Mode",
+    "subtitleModeA": "Mode 1 is active",
+    "subtitleModeB": "Mode 2 is active",
+    "switchModeDialogTitle": "Switch app-mode",
+    "switchModeDialogMessage": "Enter the password to switch the app-mode, if you've received one.",
+    "switchModeDialogPasswordPlaceholder": "Password",
+    "switchModeProceedButton": "Switch mode",
+    "switchModeSuccessMessage": "App mode switched",
+    "switchModeWrongPasswordMessage": "Invalid password"
   }
 }

@@ -8,24 +8,24 @@ const routes: Routes = [
     component: TrajectoryPage,
     children: [
       {
-        path: TrajectoryPagePath.Inferences,
+        path: TrajectoryPagePath.inferences,
         loadChildren: () =>
           import('./inferences/inferences.module').then(
             (m) => m.InferencesPageModule
           ),
       },
       {
-        path: TrajectoryPagePath.Map,
+        path: TrajectoryPagePath.map,
         loadChildren: () =>
           import('./map/map.module').then((m) => m.MapPageModule),
       },
       {
-        path: TrajectoryPagePath.Exploration,
+        path: TrajectoryPagePath.exploration,
         loadChildren: () =>
           import('./explore/explore.module').then((m) => m.ExplorePageModule),
       },
       {
-        path: TrajectoryPagePath.InferenceFilter,
+        path: TrajectoryPagePath.inferenceFilter,
         loadChildren: () =>
           import('./inference-filter/inference-filter.module').then(
             (m) => m.InferenceFilterModule
@@ -34,7 +34,7 @@ const routes: Routes = [
       {
         path: '',
         canActivate: [TrajectoryPage],
-        redirectTo: TrajectoryPagePath.Map,
+        redirectTo: TrajectoryPagePath.map,
         pathMatch: 'full',
       },
     ],

@@ -6,6 +6,7 @@ import com.bkon.capacitor.fileselector.FileSelector;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.community.database.sqlite.CapacitorSQLite;
+import com.getcapacitor.plugin.Filesystem;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class MainActivity extends BridgeActivity {
       // Ex: add(TotallyAwesomePlugin.class);
       add(CapacitorSQLite.class);
       add(FileSelector.class);
+      add(Filesystem.class);
     }});
   }
 }

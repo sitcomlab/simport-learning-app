@@ -11,7 +11,8 @@
     "no": "Nein",
     "yes": "Ja",
     "save": "Speichern",
-    "discard": "Verwerfen"
+    "discard": "Verwerfen",
+    "exampleTrajectoryName": "Münster"
   },
   "diary": {
     "title": "Tagebuch",
@@ -21,6 +22,7 @@
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
     "contentTitle": "Haben Sie sich heute Ihre Ortsdaten angeschaut? Falls ja: Welche Beobachtungen haben Sie gemacht?",
+    "contentNoLocationTrackingTitle": "Wie hast du heute dein Smartphone genutzt?",
     "contentPlaceholder": "Inhalt",
     "deleteEntryAlertHeader": "Eintrag löschen",
     "deleteEntryAlertMessage": "Möchtest du diesen Tagebucheintrag wirklich löschen?",
@@ -38,7 +40,7 @@
       "title": "Standortverläufe",
       "record": {
         "title": "Standortverlauf aufzeichnen",
-        "subtitle": "Erhalte Benachrichtigungen, sobald Rückschlüsse über dich gezogen wurden"
+        "subtitle": "Tracking starten / stoppen"
       },
       "explore": {
         "title": "Standortverläufe entdecken",
@@ -120,9 +122,11 @@
   },
   "tracking": {
     "title": "Standortverlauf",
-    "toggleTitle": "Aufzeichnung starten / stoppen",
-    "stateRunning": "Läuft",
-    "stateStopped": "Gestoppt",
+    "toggleOn": "Aufzeichnung starten",
+    "toggleOff": "Aufzeichnung stoppen",
+    "togglePauseSubtitle": "Wähle hier die Länge der Pause",
+    "stateRunning": "Standortaufzeichnung ist aktiv",
+    "stateStopped": "Standortaufzeichnung ist gestoppt",
     "notSupported": "Auf dieser Plattform wird die Aufzeichnung des Standortes nicht unterstützt",
     "androidBatteryHint": "Damit die App korrekt funktioniert, solltest du in den Einstellungen die Batterieoptimierung für diese App deaktivieren. Weitere Informationen findest du auf <a href='https://dontkillmyapp.com'>dieser Seite</a>",
     "alwaysAllowHint": "Für optimale Standortbestimmung, nutze die Option <i>Immer</i> für diese App in den ",
@@ -130,12 +134,17 @@
     "exploreTrajectoryTitle": "Erkunde deinen Standortverlauf",
     "showNotifications": "Benachrichtigungen anzeigen",
     "loading": "Warte…",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "unpauseReminderQuestion": "Sollen wir dich erinnern, die Standortaufzeichnung wieder anzuschalten?",
+    "remind": "Erinnere mich in",
+    "dontRemind": "Keine Erinnerung",
     "agreementStart": "Ich stimme der ",
-    "agreementEnd": "Datenschutz­erklärung zu.",
-    "removeConsentConfirmation": "Bist du Sicher?",
+    "agreementEnd": "Datenschutzerklärung zu.",
+    "removeConsentConfirmation": "Bist du sicher?",
     "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
-    "consent": "Zustimmen",
-    "agreementQuestion": "Bist du mit dem Datenschutzerklärung einverstanden?"
+    "informedConsentTitle": "Erfasste Informationen",
+    "informedConsentText": "Die Simport Learning App erfasst Ihre Standortinformationen und speichert sie auf Ihrem Gerät um diese zu visualisieren, aggregieren (häufig besuchte Orte identifizieren) und analysieren (Wohn- und Arbeitsort bestimmen, Vorhersagen treffen). Wenn Sie außerdem dem Erfassen von Standortdaten im Hintergrund zustimmen, erfasst die App Ihre Standortdaten auch wenn Sie sie gerade nicht benutzen oder sie geschlossen ist. <br><br>Die gesammelten Daten verlassen nie Ihr lokales Gerät (Smartphone oder Tablet), es sei denn, Sie exportieren diese von Hand – wir speichern die Daten nicht auf einem Server. Alle Datenverarbeitung findet lokal auf Ihrem Gerät statt."
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
@@ -148,7 +157,9 @@
     "locationUpdateTitle": "Standort aktualisiert",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",
-    "trackingStopped": "Aufzeichnung gestoppt"
+    "trackingStopped": "Aufzeichnung gestoppt",
+    "trackingUnpausedTitle": "Handlung erforderlich: Bitte Aufzeichnung starten",
+    "trackingUnpausedText": "Die planmäßige Pausierung der Standortaufzeichnung ist abgelaufen. Bitte drücke hier und starte die Standortaufzeichnung in der App erneut."
   },
   "confirm": {
     "showLocationServiceSettings": "Standortdienste deaktiviert. Möchtest du die App Einstellungen öffnen?",
@@ -216,5 +227,16 @@
     "contact": "<b>Kontakt:</b> <br><br>Simport<br>Westfälische Wilhelms-Universität Münster<br>Institut für Geoinformatik<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
     "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "bmbfLogo": "<img src='assets/imprint/bmbf_logo_de.png'/>"
+  },
+  "appMode": {
+    "title": "App-Modus",
+    "subtitleModeA": "Modus 1 ist aktiv",
+    "subtitleModeB": "Modus 2 ist aktiv",
+    "switchModeDialogTitle": "App-Modus wechseln",
+    "switchModeDialogMessage": "Falls dir ein Passwort zum Wechseln des App-Modus genannt wurde. Andernfalls kannst du den Modus nicht ändern.",
+    "switchModeDialogPasswordPlaceholder": "Passwort",
+    "switchModeProceedButton": "Modus wechseln",
+    "switchModeSuccessMessage": "App-Modus gewechselt",
+    "switchModeWrongPasswordMessage": "Ungültiges Passwort"
   }
 }

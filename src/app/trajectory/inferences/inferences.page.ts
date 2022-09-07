@@ -81,7 +81,7 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   openMap(centerLatLon?: [number, number]) {
-    this.router.navigate([`../${TrajectoryPagePath.Map}`], {
+    this.router.navigate([`../${TrajectoryPagePath.map}`], {
       relativeTo: this.route,
       state: { center: centerLatLon },
     })

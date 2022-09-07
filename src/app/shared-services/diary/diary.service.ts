@@ -4,6 +4,12 @@ import { DiaryEntry } from 'src/app/model/diary-entry'
 import { SqliteService } from '../db/sqlite.service'
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
+import JSZip from 'jszip'
+import { FilesystemDirectory, Plugins } from '@capacitor/core'
+import { Device } from '@ionic-native/device'
+import { LogfileService } from '../logfile/logfile.service'
+
+const { Filesystem: filesystem, Share: share } = Plugins
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +18,8 @@ export class DiaryService {
   constructor(
     private dbService: SqliteService,
     private platform: Platform,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {}
 
   async getDiary(): Promise<DiaryEntry[]> {
@@ -49,10 +56,42 @@ export class DiaryService {
   }
 
   /**
-   *
-   * @returns diary as csv string
+   * @description Generates a .zip File containing the latest diary and logfile data and exports it via the Capacitor `Share` plugin
    */
   async exportDiary() {
+    const diaryData = await this.createDiaryExport()
+    const logfileData = await this.logfileService.exportLog()
+    const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0]
+    const zip = new JSZip()
+
+    zip.file(`diary_${timestamp}.csv`, diaryData)
+    zip.file(`log_${timestamp}.csv`, logfileData)
+
+    const data = await zip.generateAsync({ type: 'base64' })
+    const directory = this.isAndroid10OrAbove()
+      ? FilesystemDirectory.Documents
+      : FilesystemDirectory.ExternalStorage
+
+    const fileResult = await filesystem.writeFile({
+      data,
+      path: `SIMPORT_export_${timestamp}.zip`,
+      directory,
+    })
+
+    if (this.platform.is('android')) {
+      await share.requestPermissions()
+    }
+
+    share.share({
+      title: this.translateService.instant('diary.exportFileName'),
+      url: fileResult.uri,
+    })
+  }
+
+  /**
+   * @returns diary as csv string
+   */
+  private async createDiaryExport(): Promise<string> {
     try {
       const diary = await this.getDiary()
 
@@ -72,5 +111,14 @@ export class DiaryService {
       )
       throw new Error(errorMessage)
     }
+  }
+
+  private isAndroid10OrAbove(): boolean {
+    if (this.platform.is('android')) {
+      const osVersion = parseInt(Device.version, 10) || 0
+      // 'always-allow' exists since OS-version 10 = API-level 29
+      return osVersion >= 10
+    }
+    return false
   }
 }

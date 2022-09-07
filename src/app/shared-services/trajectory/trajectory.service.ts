@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { combineLatest, from, Observable } from 'rxjs'
+import { from, Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
   Point,
@@ -28,7 +28,7 @@ export class TrajectoryService {
   // Returns an observable yielding metadata of all available trajectories
   getAllMeta(): Observable<TrajectoryMeta[]> {
     // yield on each source update, once all sources have yielded once.
-    return combineLatest([this.getReadonlyMeta(), this.getWritableMeta()]).pipe(
+    return this.getWritableMeta().pipe(
       map((val) => [].concat(...val)) // flatten result arrays
     )
   }
@@ -51,40 +51,22 @@ export class TrajectoryService {
   // Returns any trajectory data by slug. slug consists of `type/id`.
   // TODO: catch 404 properly?
   getOne(type: TrajectoryType, id: string): Observable<Trajectory> {
-    switch (type) {
-      case TrajectoryType.EXAMPLE:
-        const getData = this.http
-          .get<{ coordinates: string; timestamps: number[]; time0: string }>(
-            `assets/trajectories/${id}.json`
-          )
-          .pipe(map(Trajectory.fromJSON))
+    return new Observable<Trajectory>((subscriber) => {
+      this.db.getFullTrajectory(id).then((trajectory) => {
+        // publish trajectory
+        subscriber.next(trajectory)
 
-        const getMeta = this.http
-          .get<TrajectoryMeta[]>('assets/trajectories/index.json')
-          .pipe(map((ts) => ts.find((t) => t.id === id)))
-
-        return combineLatest([getMeta, getData]).pipe(
-          map(([meta, data]) => new Trajectory(meta, data))
-        )
-
-      default:
-        return new Observable<Trajectory>((subscriber) => {
-          this.db.getFullTrajectory(id).then((trajectory) => {
-            // publish trajectory
-            subscriber.next(trajectory)
-
-            // subscribe to addPoint events
-            const inner = this.db.addPointSub.subscribe(async (point) => {
-              // add new point to trajectory and publish it
-              trajectory.addPoint(point)
-              subscriber.next(trajectory)
-            })
-
-            // add inner subscription to add tear down for unsubscribe()
-            subscriber.add(inner)
-          })
+        // subscribe to addPoint events
+        const inner = this.db.addPointSub.subscribe(async (point) => {
+          // add new point to trajectory and publish it
+          trajectory.addPoint(point)
+          subscriber.next(trajectory)
         })
-    }
+
+        // add inner subscription to add tear down for unsubscribe()
+        subscriber.add(inner)
+      })
+    })
   }
 
   addTrajectory(t: Trajectory) {

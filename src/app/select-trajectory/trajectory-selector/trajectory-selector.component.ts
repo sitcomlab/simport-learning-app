@@ -20,26 +20,30 @@ export class TrajectorySelectorComponent implements OnInit, OnDestroy {
       .getAllMeta()
       .subscribe((ts) => {
         this.loading = false
-        this.trajectories = ts.sort((a, b) => {
-          return this.getSortingIndex(a) - this.getSortingIndex(b)
-        })
+        this.trajectories = ts.sort(
+          (a, b) => this.getSortingIndex(a) - this.getSortingIndex(b)
+        )
       })
-  }
-
-  private getSortingIndex(meta: TrajectoryMeta): number {
-    switch (meta.type) {
-      case TrajectoryType.USERTRACK:
-        return 0
-      case TrajectoryType.IMPORT:
-        return 1
-      case TrajectoryType.EXAMPLE:
-        return 2
-      default:
-        return -1
-    }
   }
 
   async ngOnDestroy() {
     this.trajectoriesSub.unsubscribe()
+  }
+
+  private getSortingIndex(meta: TrajectoryMeta): number {
+    if (meta.id === 'example') {
+      return 2
+    } else {
+      switch (meta.type) {
+        case TrajectoryType.USERTRACK:
+          return 0
+        case TrajectoryType.IMPORT:
+          return 1
+        case TrajectoryType.EXAMPLE:
+          return 2
+        default:
+          return -1
+      }
+    }
   }
 }

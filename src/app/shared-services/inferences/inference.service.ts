@@ -33,6 +33,7 @@ import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 import { TranslateService } from '@ngx-translate/core'
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { App } = Plugins
 
 class InferenceFilterConfiguration {
@@ -53,15 +54,6 @@ export class InferenceService
   extends AbstractBackgroundService
   implements OnDestroy
 {
-  protected backgroundFetchId = 'com.transistorsoft.fetch'
-  protected foregroundInterval = 720
-  protected backgroundInterval = 120
-  protected isEnabled = this.featureFlagService.featureFlags.isInferencesEnabled
-
-  private filterConfigSubscription: Subscription
-  private loadingOverlay: HTMLIonLoadingElement = undefined
-
-  private inferenceEngine: StaypointEngine | SimpleEngine
   // flag determines which inference engine to use
   readonly useStaypointEngine: boolean = true
 
@@ -77,6 +69,17 @@ export class InferenceService
   })
 
   inferenceServiceEvent = new Subject<InferenceServiceEvent>()
+
+  protected backgroundFetchId = 'com.transistorsoft.fetch'
+  protected foregroundInterval = 720
+  protected backgroundInterval = 120
+  protected isEnabled =
+    this.featureFlagService.featureFlags.isInferenceComputationEnabled
+
+  private filterConfigSubscription: Subscription
+  private loadingOverlay: HTMLIonLoadingElement = undefined
+
+  private inferenceEngine: StaypointEngine | SimpleEngine
 
   constructor(
     private trajectoryService: TrajectoryService,
@@ -124,7 +127,10 @@ export class InferenceService
     trajectoryType: TrajectoryType,
     trajectoryId: string
   ): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      !this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
+    ) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
@@ -145,7 +151,7 @@ export class InferenceService
     trajectoryId: string,
     runGeocoding: boolean = false
   ): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
@@ -154,13 +160,12 @@ export class InferenceService
     const filterConfig = this.filterConfiguration.value
     const inferences = (
       await this.dbService.getInferences(trajectoryId)
-    ).filter((inf) => {
-      return (
+    ).filter(
+      (inf) =>
         inf.confidence >= filterConfig.confidenceThreshold &&
         filterConfig.inferenceVisiblities.has(inf.type) &&
         filterConfig.inferenceVisiblities.get(inf.type)
-      )
-    })
+    )
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,
@@ -173,8 +178,18 @@ export class InferenceService
     return persisted
   }
 
+  protected async backgroundFunction(): Promise<void> {
+    try {
+      await this.updateLoadingDialog()
+      await this.generateUserInferences()
+    } finally {
+      this.backgroundService.backgroundState = BackgroundState.idle
+      await this.updateLoadingDialog()
+    }
+  }
+
   private async generateUserInferences(): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
@@ -192,30 +207,27 @@ export class InferenceService
     }
   }
 
-  protected async backgroundFunction(): Promise<void> {
-    try {
-      await this.updateLoadingDialog()
-      await this.generateUserInferences()
-    } finally {
-      this.backgroundService.backgroundState = BackgroundState.idle
-      await this.updateLoadingDialog()
-    }
-  }
-
   private async generateInferencesForTrajectory(
     traj: Trajectory
   ): Promise<InferenceResult> {
-    if (!this.featureFlagService.featureFlags.isInferencesEnabled) {
+    if (
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      !this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
+    ) {
       return {
         status: InferenceResultStatus.noInferencesFound,
         inferences: [],
       }
     }
-    const inference = await this.inferenceEngine.infer(traj, [
-      HomeInference,
-      WorkInference,
-      POIInference,
-    ])
+
+    // just use POIs if isInferencesEnabled == false and isPoiInferencesEnabled == true
+    const inferenceTypes =
+      !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
+      this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
+        ? [POIInference]
+        : [HomeInference, WorkInference, POIInference]
+
+    const inference = await this.inferenceEngine.infer(traj, inferenceTypes)
 
     await this.dbService.deleteInferences(traj.id)
     await this.dbService.upsertInference(inference.inferences)

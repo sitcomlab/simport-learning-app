@@ -17,44 +17,34 @@
               <div class="ion">
                 {{'tracking.agreementStart' | translate}}
                 <a [routerLink]="" (click)="openTerms()">
-                  {{'tracking.agreementEnd' | translate}}</a
-                >
+                  {{'tracking.agreementEnd' | translate}}
+                </a>
               </div>
             </ion-note>
           </ion-label>
           <ion-checkbox
-            [(ngModel)]="informedConsent.hasInformedConsent"
+            [ngModel]="hasInformedConsent | async"
+            (ngModelChange)="hasInformedConsent.next($event)"
             slot="start"
-            (ionChange)="checkBox()"
           ></ion-checkbox>
         </ion-item>
         <div
-          *ngIf="informedConsent.hasInformedConsent;then content else other_content"
+          *ngIf="hasInformedConsent; then consent_content else no_consent_content"
         ></div>
-        <ng-template #content>
+        <ng-template #consent_content>
           <app-item-card
-            *ngIf="state=='Stopped'; else elseBlock"
             [disabled]="false"
             icon="{{ stateIcon }}"
-            [title]="'tracking.toggleTitle' | translate"
+            title="{{ startStopButtonLabel }}"
             subtitle="{{ state }}"
             (click)="presentAlertConfirm()"
-          ></app-item-card
-          ><ng-template #elseBlock>
-            <app-item-card
-              [disabled]="false"
-              icon="{{ stateIcon }}"
-              [title]="'tracking.toggleTitle' | translate"
-              subtitle="{{ state }}"
-              (click)="toggleBackgroundGeoLocation()"
-            ></app-item-card
-          ></ng-template>
+          ></app-item-card>
         </ng-template>
-        <ng-template #other_content>
+        <ng-template #no_consent_content>
           <app-item-card
             [disabled]="true"
             icon="{{ stateIcon }}"
-            [title]="'tracking.toggleTitle' | translate"
+            title="{{ startStopButtonLabel }}"
             subtitle="{{ state }}"
           ></app-item-card>
         </ng-template>
@@ -73,14 +63,17 @@
         >
         </ion-note>
         <app-item-card
-          *ngIf="trajectoryExists"
+          *ngIf="trajectoryExists && featureFlagService.featureFlags.isHomeExploreTrajectoryEnabled"
           icon="compass-outline"
           [title]="'tracking.exploreTrajectoryTitle' | translate"
           (click)="navigateUserTrajectory()"
         ></app-item-card>
       </ion-col>
     </ion-row>
-    <ion-row class="ion-padding ion-justify-content-between">
+    <ion-row
+      *ngIf="featureFlagService.featureFlags.isInferenceComputationEnabled"
+      class="ion-padding ion-justify-content-between"
+    >
       <ion-col size="auto">
         <ion-label>{{ 'tracking.showNotifications' | translate }}</ion-label>
       </ion-col>
