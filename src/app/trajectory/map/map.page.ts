@@ -205,7 +205,7 @@ export class MapPage implements OnInit, OnDestroy {
     if (this.inferenceFilterSubscription)
       this.inferenceFilterSubscription.unsubscribe()
     this.logfileService.log(
-      'User leaves map view',
+      'Close trajectory',
       LogEventScope.other,
       LogEventType.click
     )
@@ -365,7 +365,7 @@ export class MapPage implements OnInit, OnDestroy {
 
   async openDiaryModal() {
     this.logfileService.log(
-      'Map create entry',
+      'Create diary-entry from trajectory',
       LogEventScope.other,
       LogEventType.click
     )

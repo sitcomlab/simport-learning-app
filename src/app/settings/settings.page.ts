@@ -22,7 +22,11 @@ export class SettingsPage {
   ) {}
 
   toImprint() {
-    this.logfileService.log('Imprint', LogEventScope.app, LogEventType.click)
+    this.logfileService.log(
+      'View imprint',
+      LogEventScope.app,
+      LogEventType.click
+    )
     this.router.navigate(['/settings/imprint'])
   }
 
@@ -32,7 +36,7 @@ export class SettingsPage {
 
   toPrivacyPolicy() {
     this.logfileService.log(
-      'Settings Privacy policy',
+      'View privacy policyy',
       LogEventScope.app,
       LogEventType.click
     )

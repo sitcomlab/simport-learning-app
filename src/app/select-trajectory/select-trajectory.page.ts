@@ -122,7 +122,7 @@ export class SelectTrajectoryPage implements OnInit {
         const { data: t } = await modal.onWillDismiss<TrajectoryMeta>()
         if (t) {
           this.logfileService.log(
-            'User opens map view',
+            'View trajectory from start-menu',
             LogEventScope.app,
             LogEventType.click
           )
@@ -147,7 +147,7 @@ export class SelectTrajectoryPage implements OnInit {
                 text: viewString,
                 handler: async () => {
                   this.logfileService.log(
-                    'User opens map view',
+                    'View trajectory after import',
                     LogEventScope.app,
                     LogEventType.click
                   )
@@ -174,11 +174,7 @@ export class SelectTrajectoryPage implements OnInit {
   }
 
   navigateToDiary() {
-    this.logfileService.log(
-      'Write your diary',
-      LogEventScope.app,
-      LogEventType.click
-    )
+    this.logfileService.log('View diary', LogEventScope.app, LogEventType.click)
     this.router.navigate(['/diary'])
   }
 

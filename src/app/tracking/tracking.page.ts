@@ -224,8 +224,8 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   navigateUserTrajectory() {
     this.logfileService.log(
-      'Explore your trajectory',
-      LogEventScope.app,
+      'View trajectory',
+      LogEventScope.tracking,
       LogEventType.click
     )
     const type = TrajectoryType.USERTRACK
@@ -239,8 +239,8 @@ export class TrackingPage implements OnInit, OnDestroy {
 
   openTerms() {
     this.logfileService.log(
-      'Tracking privacy policy',
-      LogEventScope.app,
+      'View privacy policy',
+      LogEventScope.tracking,
       LogEventType.click
     )
     this.router.navigate(['/settings/privacy-policy'])
