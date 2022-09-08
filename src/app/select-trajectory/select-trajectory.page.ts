@@ -17,6 +17,8 @@ import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-se
 import { SettingsService } from './../shared-services/settings/settings.service'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
+import { LogfileService } from '../shared-services/logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
 
 enum TrajectoryMode {
   track = 'tracking',
@@ -47,7 +49,8 @@ export class SelectTrajectoryPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private logfileService: LogfileService
   ) {}
 
   ngOnInit() {
@@ -117,7 +120,14 @@ export class SelectTrajectoryPage implements OnInit {
         })
         modal.present()
         const { data: t } = await modal.onWillDismiss<TrajectoryMeta>()
-        if (t) this.router.navigate([`/trajectory/${t.type}/${t.id}`])
+        if (t) {
+          this.logfileService.log(
+            'View trajectory from start-menu',
+            LogEventScope.app,
+            LogEventType.click
+          )
+          this.router.navigate([`/trajectory/${t.type}/${t.id}`])
+        }
         return
 
       case TrajectoryMode.import:
@@ -136,6 +146,11 @@ export class SelectTrajectoryPage implements OnInit {
               const viewTrajectoryButton = {
                 text: viewString,
                 handler: async () => {
+                  this.logfileService.log(
+                    'View trajectory after import',
+                    LogEventScope.app,
+                    LogEventType.click
+                  )
                   this.router.navigate([
                     `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
                   ])
@@ -159,6 +174,7 @@ export class SelectTrajectoryPage implements OnInit {
   }
 
   navigateToDiary() {
+    this.logfileService.log('View diary', LogEventScope.app, LogEventType.click)
     this.router.navigate(['/diary'])
   }
 

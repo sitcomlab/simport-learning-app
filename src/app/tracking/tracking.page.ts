@@ -12,6 +12,8 @@ import { AlertController } from '@ionic/angular'
 import { SettingsService } from '../shared-services/settings/settings.service'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
 import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
+import { LogfileService } from '../shared-services/logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
 
 @Component({
   selector: 'app-tracking',
@@ -43,7 +45,8 @@ export class TrackingPage implements OnInit, OnDestroy {
     private trajectoryService: TrajectoryService,
     private translateService: TranslateService,
     private modalController: ModalController,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private logfileService: LogfileService
   ) {
     this.hasInformedConsent.subscribe((newConsent) => {
       this.settingsService.saveValue(SettingsConfig.hasConsent, newConsent)
@@ -220,6 +223,11 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   navigateUserTrajectory() {
+    this.logfileService.log(
+      'View trajectory',
+      LogEventScope.tracking,
+      LogEventType.click
+    )
     const type = TrajectoryType.USERTRACK
     const id = Trajectory.trackingTrajectoryID
     this.router.navigate([`/trajectory/${type}/${id}`])
@@ -230,6 +238,11 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   openTerms() {
+    this.logfileService.log(
+      'View privacy policy',
+      LogEventScope.tracking,
+      LogEventType.click
+    )
     this.router.navigate(['/settings/privacy-policy'])
   }
 
