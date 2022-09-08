@@ -40,6 +40,11 @@ import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../../shared-services/logfile/logfile.service'
+import {
+  LogEventScope,
+  LogEventType,
+} from '../../shared-services/logfile/types'
 
 @Component({
   selector: 'app-map',
@@ -73,11 +78,11 @@ export class MapPage implements OnInit, OnDestroy {
   readonly disThreshold = 30000
 
   isInferencesEnabled =
-    this.featureFlagService.featureFlags.isTrajectoryInferencesEnabled
+    this.featureFlagService.featureFlags.isTrajectoryInferencesTabEnabled
   isPoiInferencesEnabled =
-    this.featureFlagService.featureFlags.isPoiInferencesEnabled
+    this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
   isPredictionsEnabled =
-    this.featureFlagService.featureFlags.isTimetablePredicitionEnabled
+    this.featureFlagService.featureFlags.isTimetableComputationEnabled
   inferences: Inference[] = []
   generatedInferences = false
   predictedInferenceIds: string[] = []
@@ -89,9 +94,9 @@ export class MapPage implements OnInit, OnDestroy {
   private inferenceFilterSubscription: Subscription
 
   constructor(
+    public featureFlagService: FeatureFlagService,
     private inferenceService: InferenceService,
     private trajectoryService: TrajectoryService,
-    private featureFlagService: FeatureFlagService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef,
     private loadingController: LoadingController,
@@ -99,7 +104,8 @@ export class MapPage implements OnInit, OnDestroy {
     private timetableService: TimetableService,
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {}
 
   private get mapAttributionString(): string {
@@ -198,6 +204,11 @@ export class MapPage implements OnInit, OnDestroy {
     if (this.trajSubscription) this.trajSubscription.unsubscribe()
     if (this.inferenceFilterSubscription)
       this.inferenceFilterSubscription.unsubscribe()
+    this.logfileService.log(
+      'Close trajectory',
+      LogEventScope.other,
+      LogEventType.click
+    )
   }
 
   ionViewDidEnter() {
@@ -353,6 +364,11 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   async openDiaryModal() {
+    this.logfileService.log(
+      'Create diary-entry from trajectory',
+      LogEventScope.other,
+      LogEventType.click
+    )
     const modal = await this.modalController.create({
       component: DiaryEditComponent,
       swipeToClose: true,

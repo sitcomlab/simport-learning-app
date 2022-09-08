@@ -12,6 +12,7 @@
 <ion-content class="ion-padding">
   <ion-list>
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isHomeLocationTrackingEnabled"
       [disabled]="!locationService.isSupportedPlatform"
       (click)="locationService.isSupportedPlatform && enableTrajectory(trajectoryMode.track)"
       icon="locate-outline"
@@ -20,6 +21,7 @@
     ></app-item-card>
 
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isHomeExploreTrajectoryEnabled"
       icon="compass-outline"
       [title]="'trajectory.select.explore.title' | translate"
       [subtitle]="'trajectory.select.explore.subtitle' | translate"
@@ -27,6 +29,7 @@
     ></app-item-card>
 
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isHomeImportTrajectoryEnabled"
       [disabled]="!locationService.isSupportedPlatform"
       icon="add-outline"
       [title]="'trajectory.select.add.title' | translate"
@@ -35,6 +38,7 @@
     ></app-item-card>
 
     <app-item-card
+      *ngIf="featureFlagService.featureFlags.isHomeDiaryEnabled"
       icon="book-outline"
       [title]="'trajectory.select.diary.title' | translate"
       [subtitle]="'trajectory.select.diary.subtitle' | translate"

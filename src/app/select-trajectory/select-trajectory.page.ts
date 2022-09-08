@@ -14,12 +14,11 @@ import { TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
 import { TrajectorySelectorComponent } from './trajectory-selector/trajectory-selector.component'
-import { AppConfigDefaults } from '../../assets/configDefaults'
-import {
-  SettingsService,
-  SettingsConfig,
-} from './../shared-services/settings/settings.service'
-import { UserConfiguration } from '../user-configuration'
+import { SettingsService } from './../shared-services/settings/settings.service'
+import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
+import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
+import { LogfileService } from '../shared-services/logfile/logfile.service'
+import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
 
 enum TrajectoryMode {
   track = 'tracking',
@@ -38,21 +37,25 @@ export class SelectTrajectoryPage implements OnInit {
   private debugWindowClicks = 8
   private lastOnClicks = [] // contains timestamps of title clicks, newest comes first
   private jsonDataResult: any
-  private firstTimeOpenAppDefault: AppConfigDefaults
-  private userConfiguration: UserConfiguration
 
   constructor(
+    public locationService: LocationService,
+    public translateService: TranslateService,
+    public featureFlagService: FeatureFlagService,
     private modalController: ModalController,
     private toastController: ToastController,
     private loadingController: LoadingController,
     private routerOutlet: IonRouterOutlet,
     private router: Router,
-    private trajectoryImportExportService: TrajectoryImportExportService,
-    public locationService: LocationService,
-    public translateService: TranslateService,
     private http: HttpClient,
-    private settingsService: SettingsService
+    private trajectoryImportExportService: TrajectoryImportExportService,
+    private settingsService: SettingsService,
+    private logfileService: LogfileService
   ) {}
+
+  ngOnInit() {
+    this.createExampleOnFirstAppStart()
+  }
 
   // fired on title click
   // used for multiple click detection
@@ -117,7 +120,14 @@ export class SelectTrajectoryPage implements OnInit {
         })
         modal.present()
         const { data: t } = await modal.onWillDismiss<TrajectoryMeta>()
-        if (t) this.router.navigate([`/trajectory/${t.type}/${t.id}`])
+        if (t) {
+          this.logfileService.log(
+            'View trajectory from start-menu',
+            LogEventScope.app,
+            LogEventType.click
+          )
+          this.router.navigate([`/trajectory/${t.type}/${t.id}`])
+        }
         return
 
       case TrajectoryMode.import:
@@ -136,6 +146,11 @@ export class SelectTrajectoryPage implements OnInit {
               const viewTrajectoryButton = {
                 text: viewString,
                 handler: async () => {
+                  this.logfileService.log(
+                    'View trajectory after import',
+                    LogEventScope.app,
+                    LogEventType.click
+                  )
                   this.router.navigate([
                     `/trajectory/${TrajectoryType.IMPORT}/${result.trajectoryId}`,
                   ])
@@ -159,74 +174,46 @@ export class SelectTrajectoryPage implements OnInit {
   }
 
   navigateToDiary() {
+    this.logfileService.log('View diary', LogEventScope.app, LogEventType.click)
     this.router.navigate(['/diary'])
   }
 
-  async createExample() {
-    this.settingsService.getConfig(SettingsConfig.newApp).subscribe(
-      (firstTimeOpenApp) => (this.firstTimeOpenAppDefault = firstTimeOpenApp),
-      () => null,
-      () => {
-        this.userConfiguration = new UserConfiguration()
-        this.userConfiguration.hasFirstOpenApp =
-          this.firstTimeOpenAppDefault.defaultFirstTimeOpenApp
-      }
-    )
-    if (this.userConfiguration.hasFirstOpenApp) {
-      this.importExample()
-    }
-  }
-
-  setFirstTimeApp(consented: UserConfiguration) {
-    this.firstTimeOpenAppDefault.defaultFirstTimeOpenApp =
-      consented.hasFirstOpenApp
-    this.settingsService.saveConfig(
-      SettingsConfig.newApp,
-      this.firstTimeOpenAppDefault
-    )
-  }
-
-  importExample() {
-    this.http.get('assets/trajectories/muenster.json').subscribe((res) => {
-      this.jsonDataResult = res
-    })
-
-    setTimeout(() => {
-      new Promise((resolve) => {
-        const json = JSON.stringify(this.jsonDataResult)
-        const trajectory =
-          this.trajectoryImportExportService.createTrajectoryFromImport(
-            json,
-            this.translateService.instant('general.exampleTrajectoryName'),
-            true
-          )
-        return this.trajectoryImportExportService
-          .addTrajectory(trajectory)
-          .then(async () => {
-            resolve({
-              success: true,
-              trajectoryId: trajectory.id,
-              errorMessage: null,
-            })
-          })
-          .catch(async () => {
-            resolve({
-              success: false,
-              trajectoryId: null,
-              errorMessage: this.translateService.instant(
-                'trajectory.import.errorMessage'
-              ),
-            })
-          })
+  private async createExampleOnFirstAppStart() {
+    if (this.settingsService.getValue(SettingsConfig.isFirstAppStart)) {
+      this.http.get('assets/trajectories/muenster.json').subscribe((res) => {
+        this.jsonDataResult = res
       })
-    }, 2000)
-    this.userConfiguration = new UserConfiguration()
-    this.userConfiguration.hasFirstOpenApp = false
-    this.setFirstTimeApp(this.userConfiguration)
-  }
-
-  ngOnInit() {
-    this.createExample()
+      setTimeout(() => {
+        new Promise((resolve) => {
+          const json = JSON.stringify(this.jsonDataResult)
+          const trajectory =
+            this.trajectoryImportExportService.createTrajectoryFromImport(
+              json,
+              this.translateService.instant('general.exampleTrajectoryName'),
+              true
+            )
+          return this.trajectoryImportExportService
+            .addTrajectory(trajectory)
+            .then(async () => {
+              resolve({
+                success: true,
+                trajectoryId: trajectory.id,
+                errorMessage: null,
+              })
+            })
+            .catch(async () => {
+              resolve({
+                success: false,
+                trajectoryId: null,
+                errorMessage: this.translateService.instant(
+                  'trajectory.import.errorMessage'
+                ),
+              })
+            })
+        })
+      }, 2000)
+      this.settingsService.saveValue(SettingsConfig.isFirstAppStart, false)
+    }
   }
 
   private async showToast(message: string, isError: boolean) {

@@ -9,6 +9,7 @@ import { MapPageRoutingModule } from './map-routing.module'
 import { MapPage } from './map.page'
 import { LeafletModule } from '@asymmetrik/ngx-leaflet'
 import { TranslateModule } from '@ngx-translate/core'
+import { SharedServicesModule } from '../../shared-services/shared-services.module'
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core'
     MapPageRoutingModule,
     LeafletModule,
     TranslateModule,
+    SharedServicesModule,
   ],
   declarations: [MapPage],
 })

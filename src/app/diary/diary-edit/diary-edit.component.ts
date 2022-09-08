@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { AlertController, ModalController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { DiaryService } from 'src/app/shared-services/diary/diary.service'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 
 @Component({
   selector: 'app-diary-edit',
@@ -10,18 +11,19 @@ import { DiaryService } from 'src/app/shared-services/diary/diary.service'
   styleUrls: ['./diary-edit.component.scss'],
 })
 export class DiaryEditComponent implements OnInit {
+  // whether the component is presented as a modal
+  @Input() isModal = false
+
   id: string
   date: string
   content: string
-
-  // whether the component is presented as a modal
-  @Input() isModal = false
 
   // ion-textarea autogrow bug
   // https://github.com/ionic-team/ionic-framework/issues/21242#issuecomment-752595937
   loaded = false
 
   constructor(
+    public featureFlagService: FeatureFlagService,
     private diaryService: DiaryService,
     private router: Router,
     private route: ActivatedRoute,

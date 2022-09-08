@@ -1,31 +1,32 @@
 import { Injectable } from '@angular/core'
-import { Observable, of } from 'rxjs'
-import { AppConfigDefaults } from '../../../assets/configDefaults'
-
-export enum SettingsConfig {
-  consent = 'consent',
-  newApp = 'newApp',
-}
+import { SettingsConfig, SettingsConfigUtil } from './settings.fixtures'
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
   settingsConfig: typeof SettingsConfig = SettingsConfig
-  constructor() {}
 
-  getConfig(settings: SettingsConfig): Observable<AppConfigDefaults> {
-    const userConfig = localStorage.getItem(settings)
-    if (userConfig) {
-      return of(JSON.parse(localStorage.getItem(settings)))
-    } else {
-      const appDefaults = new AppConfigDefaults()
-      this.saveConfig(settings, appDefaults)
-      return of<AppConfigDefaults>(appDefaults)
-    }
+  private legacyKeys = ['consent', 'first-consent', 'newApp']
+  constructor() {
+    // remove unused legacy keys
+    this.legacyKeys.forEach((k) => localStorage.removeItem(k))
   }
 
-  saveConfig(settings: SettingsConfig, appConfig: AppConfigDefaults) {
-    localStorage.setItem(settings, JSON.stringify(appConfig))
+  getValue(settings: SettingsConfig): boolean {
+    const value = localStorage.getItem(settings)
+    if (value) {
+      const parsedValue = JSON.parse(value)
+      if (typeof parsedValue === 'boolean') {
+        return parsedValue
+      }
+    }
+    const defaultValue = SettingsConfigUtil.defaultValue(settings)
+    this.saveValue(settings, defaultValue)
+    return defaultValue
+  }
+
+  saveValue(settings: SettingsConfig, value: boolean) {
+    localStorage.setItem(settings, JSON.stringify(value))
   }
 }
