@@ -130,12 +130,12 @@ export class MapPage implements OnInit, OnDestroy {
         let temporaryCoordinates = []
         const segments = new LayerGroup()
 
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i <= length; i++) {
           if (
             ((t.state[i] === PointState.START ||
               distance > this.disThreshold) &&
               i > 0) ||
-            i === length - 1
+            i === length
           ) {
             const polyline = new Polyline(temporaryCoordinates, {
               weight: 1,
