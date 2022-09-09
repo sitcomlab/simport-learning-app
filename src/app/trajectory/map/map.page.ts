@@ -155,7 +155,7 @@ export class MapPage implements OnInit, OnDestroy {
               }
             )
           }
-          temporaryCoordinates.push(t.coordinates[i])
+          if (i < length) temporaryCoordinates.push(t.coordinates[i])
         }
 
         this.polylines = new FeatureGroup(segments.getLayers())
