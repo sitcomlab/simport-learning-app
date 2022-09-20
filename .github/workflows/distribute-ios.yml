@@ -80,10 +80,18 @@ jobs:
           name: ipa-artifact
           path: ./
 
+      - name: Decode application credentials to JSON file
+        uses: timheuer/base64-to-file@v1.1
+        id: decode-application-credentials
+        with:
+          fileName: 'application-credentials.json'
+          fileDir: './app_distribution/'
+          encodedString: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
       - name: Deploy to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1.3.4
         with:
           appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
+          serviceCredentialsFile: ${{ steps.decode-application-credentials.outputs.filePath }}
           groups: ${{ secrets.FIREBASE_INTERNAL_TEST_GROUP }}
           file: output.ipa
