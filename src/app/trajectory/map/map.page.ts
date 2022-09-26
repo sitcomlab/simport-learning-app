@@ -40,6 +40,11 @@ import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature
 import { TimetableService } from 'src/app/shared-services/timetable/timetable.service'
 import { DiaryEditComponent } from 'src/app/diary/diary-edit/diary-edit.component'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../../shared-services/logfile/logfile.service'
+import {
+  LogEventScope,
+  LogEventType,
+} from '../../shared-services/logfile/types'
 
 @Component({
   selector: 'app-map',
@@ -99,7 +104,8 @@ export class MapPage implements OnInit, OnDestroy {
     private timetableService: TimetableService,
     private modalController: ModalController,
     private routerOutlet: IonRouterOutlet,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {}
 
   private get mapAttributionString(): string {
@@ -124,12 +130,12 @@ export class MapPage implements OnInit, OnDestroy {
         let temporaryCoordinates = []
         const segments = new LayerGroup()
 
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i <= length; i++) {
           if (
             ((t.state[i] === PointState.START ||
               distance > this.disThreshold) &&
               i > 0) ||
-            i === length - 1
+            i === length
           ) {
             const polyline = new Polyline(temporaryCoordinates, {
               weight: 1,
@@ -149,7 +155,7 @@ export class MapPage implements OnInit, OnDestroy {
               }
             )
           }
-          temporaryCoordinates.push(t.coordinates[i])
+          if (i < length) temporaryCoordinates.push(t.coordinates[i])
         }
 
         this.polylines = new FeatureGroup(segments.getLayers())
@@ -198,6 +204,11 @@ export class MapPage implements OnInit, OnDestroy {
     if (this.trajSubscription) this.trajSubscription.unsubscribe()
     if (this.inferenceFilterSubscription)
       this.inferenceFilterSubscription.unsubscribe()
+    this.logfileService.log(
+      'Close trajectory',
+      LogEventScope.other,
+      LogEventType.click
+    )
   }
 
   ionViewDidEnter() {
@@ -353,6 +364,11 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   async openDiaryModal() {
+    this.logfileService.log(
+      'Create diary-entry from trajectory',
+      LogEventScope.other,
+      LogEventType.click
+    )
     const modal = await this.modalController.create({
       component: DiaryEditComponent,
       swipeToClose: true,
