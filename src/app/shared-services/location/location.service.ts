@@ -100,8 +100,12 @@ export class LocationService implements OnDestroy {
 
     this.backgroundGeolocationWatcherId = this.backgroundGeolocation.addWatcher(
       {
-        backgroundMessage: 'Cancel to prevent battery drain.',
-        backgroundTitle: 'Tracking You.',
+        backgroundMessage: this.translateService.instant(
+          'notification.backgroundGeolocationText'
+        ),
+        backgroundTitle: this.translateService.instant(
+          'notification.backgroundGeolocationTitle'
+        ),
         requestPermissions: true,
         stale: false,
         distanceFilter: 30,

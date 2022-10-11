@@ -5,15 +5,11 @@
     <string name="package_name">de.ifgi.simport.learning</string>
     <string name="custom_url_scheme">de.ifgi.simport.learning</string>
 
-    <string name="mauron85_bgloc_account_name">@string/app_name</string>
-    <string name="mauron85_bgloc_account_type">$PACKAGE_NAME.account</string>
-    <string name="mauron85_bgloc_content_authority">$PACKAGE_NAME</string>
-
     <string name="capacitor_background_geolocation_notification_channel_name">
-        Background Tracking
+        Location Tracking
     </string>
 
     <string name="capacitor_background_geolocation_notification_icon">
-        drawable/ic_tracking
+        drawable/ic_tracking_notification
     </string>
 </resources>
