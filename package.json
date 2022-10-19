@@ -37,7 +37,6 @@
     "@capacitor/core": "^2.5.0",
     "@capacitor/ios": "^2.5.0",
     "@ionic-native/android-permissions": "^5.31.1",
-    "@ionic-native/background-geolocation": "^5.28.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/device": "^5.36.0",
     "@ionic-native/splash-screen": "^5.0.0",
@@ -96,6 +95,9 @@
     "@typescript-eslint/parser": "5.17.0",
     "capacitor-resources": "^2.0.5",
     "eslint": "^8.12.0",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
     "gpx-parse": "^0.10.4",
     "husky": "^7.0.0",
     "jasmine-core": "^4.0.0",
@@ -112,10 +114,7 @@
     "protractor": "~7.0.0",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "~4.5.0",
-    "eslint-plugin-import": "latest",
-    "eslint-plugin-jsdoc": "latest",
-    "eslint-plugin-prefer-arrow": "latest"
+    "typescript": "~4.5.0"
   },
   "description": "An Ionic project"
 }

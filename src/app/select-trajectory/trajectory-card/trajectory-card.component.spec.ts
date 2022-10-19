@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location/location.service'
@@ -10,22 +9,19 @@ describe('TrajectoryCardComponent', () => {
   let component: TrajectoryCardComponent
   let fixture: ComponentFixture<TrajectoryCardComponent>
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [TrajectoryCardComponent],
-      imports: APP_TEST_IMPORTS,
-      providers: [
-        TrajectoryService,
-        SqliteService,
-        LocationService,
-        BackgroundGeolocation,
-      ],
-    }).compileComponents()
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [TrajectoryCardComponent],
+        imports: APP_TEST_IMPORTS,
+        providers: [TrajectoryService, SqliteService, LocationService],
+      }).compileComponents()
 
-    fixture = TestBed.createComponent(TrajectoryCardComponent)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }))
+      fixture = TestBed.createComponent(TrajectoryCardComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+    })
+  )
 
   it('should create', () => {
     expect(component).toBeTruthy()
