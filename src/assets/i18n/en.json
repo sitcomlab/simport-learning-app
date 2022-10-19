@@ -111,7 +111,7 @@
       "predictionSuccess.singular": "We think that you will visit the highlighted place in the next hour",
       "predictionSuccess.plural": "We think that you will visit the highlighted places in the next hour",
       "predictionFail": "We couldn't make a prediction for the next hour",
-      "toggleLocationButtonText": "Toggle location",
+      "toggleLocationButtonText": "Current location",
       "createInferencesButtonText": "Create inferences",
       "osmContributors": "OpenStreetMap contributors",
       "timestampPopup": "Timestamp: {{ value }}"
