@@ -49,7 +49,7 @@ SPEC CHECKSUMS:
   CapacitorCommunitySqlite: da1699f18229cb6deafdc829c7e827add8ae76b5
   CapacitorCordova: 03d0a19b737e65c94825b20222c804d5467e1c5e
   CapacitorFileSelector: 5c2d14928680d159c2861147974fdc3f204ebe06
-  CordovaPlugins: 610b735557e39361868d84d3b751dc5f3f8a46dd
+  CordovaPlugins: 0f00bb6d2cb779789b8a0fe361e9a2c608650356
   SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
 
 PODFILE CHECKSUM: 5a135ec6f6db949b6eabab108e72da4c96587124
