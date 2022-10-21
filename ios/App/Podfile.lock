@@ -1,6 +1,8 @@
 PODS:
   - Capacitor (2.5.0):
     - CapacitorCordova
+  - CapacitorCommunityBackgroundGeolocation (0.0.1):
+    - Capacitor
   - CapacitorCommunitySqlite (2.9.16):
     - Capacitor
     - SQLCipher
@@ -9,14 +11,15 @@ PODS:
     - Capacitor
   - CordovaPlugins (2.5.0):
     - CapacitorCordova
-  - SQLCipher (4.5.0):
-    - SQLCipher/standard (= 4.5.0)
-  - SQLCipher/common (4.5.0)
-  - SQLCipher/standard (4.5.0):
+  - SQLCipher (4.5.2):
+    - SQLCipher/standard (= 4.5.2)
+  - SQLCipher/common (4.5.2)
+  - SQLCipher/standard (4.5.2):
     - SQLCipher/common
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorCommunityBackgroundGeolocation (from `../../node_modules/@capacitor-community/background-geolocation`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - CapacitorFileSelector (from `../../node_modules/capacitor-file-selector`)
@@ -29,6 +32,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorCommunityBackgroundGeolocation:
+    :path: "../../node_modules/@capacitor-community/background-geolocation"
   CapacitorCommunitySqlite:
     :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
@@ -40,12 +45,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: cf2174bec9bfe65f1c956616ac1d94afcef7d24d
+  CapacitorCommunityBackgroundGeolocation: 56ea6a55f8b56507c6bb3e2c0f678f0357f9e820
   CapacitorCommunitySqlite: da1699f18229cb6deafdc829c7e827add8ae76b5
   CapacitorCordova: 03d0a19b737e65c94825b20222c804d5467e1c5e
   CapacitorFileSelector: 5c2d14928680d159c2861147974fdc3f204ebe06
   CordovaPlugins: 0f00bb6d2cb779789b8a0fe361e9a2c608650356
-  SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
+  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
 
-PODFILE CHECKSUM: a672178b97c039f637098b9243fa8c6cced428ed
+PODFILE CHECKSUM: 5a135ec6f6db949b6eabab108e72da4c96587124
 
 COCOAPODS: 1.11.2

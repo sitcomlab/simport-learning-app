@@ -9,13 +9,11 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capacitor-community-background-geolocation')
     implementation project(':capacitor-community-sqlite')
     implementation project(':capacitor-file-selector')
-    implementation "com.google.android.gms:play-services-location:11+"
-    implementation "com.android.support:support-v4:26+"
-    implementation "com.android.support:appcompat-v7:26+"
+
 }
-apply from: "../../node_modules/@mauron85/cordova-plugin-background-geolocation/android/dependencies.gradle"
 apply from: "../../node_modules/cordova-plugin-background-fetch/src/android/build.gradle"
 apply from: "../../node_modules/cordova-plugin-badge/src/android/badge.gradle"
 
