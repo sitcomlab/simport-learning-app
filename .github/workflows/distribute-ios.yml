@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macOS-11
+    runs-on: macOS-12
 
     strategy:
       matrix:
@@ -45,10 +45,10 @@ jobs:
       - name: Specify XCode version
         uses: maxim-lobanov/setup-xcode@master
         with:
-          xcode-version: '^12.5'
+          xcode-version: '^14.0'
 
       - name: Run iOS build
-        uses: yukiarrr/ios-build-action@v1.3.2
+        uses: yukiarrr/ios-build-action@v1.5.0
         with:
           project-path: ./ios/App/App.xcodeproj
           workspace-path: ./ios/App/App.xcworkspace
