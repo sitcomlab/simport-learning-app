@@ -1,10 +1,4 @@
 import { Injectable, OnDestroy } from '@angular/core'
-import {
-  BackgroundGeolocation,
-  BackgroundGeolocationAuthorizationStatus,
-  BackgroundGeolocationConfig,
-  BackgroundGeolocationEvents,
-} from '@ionic-native/background-geolocation/ngx'
 import { AlertController, Platform } from '@ionic/angular'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType, PointState } from '../../model/trajectory'
@@ -16,9 +10,13 @@ import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
 import { LogfileService } from '../logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../logfile/types'
+import {
+  BackgroundGeolocationPlugin,
+  Location,
+} from '@capacitor-community/background-geolocation'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins
+const { App, BackgroundGeolocation } = Plugins
 @Injectable()
 export class LocationService implements OnDestroy {
   trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -28,30 +26,19 @@ export class LocationService implements OnDestroy {
     false
   )
 
-  private config: BackgroundGeolocationConfig = {
-    desiredAccuracy: 10,
-    stationaryRadius: 20,
-    distanceFilter: 30,
-    interval: 20000,
-    fastestInterval: 5000,
-    debug: false, // NOTE: Disabled because of https://github.com/mauron85/cordova-plugin-background-geolocation/pull/633
-    stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-    startForeground: true, // higher priority for location service, decreasing probability of OS killing it (Android)
-    notificationTitle: this.translateService.instant(
-      'notification.backgroundGeolocationTitle'
-    ),
-    notificationText: this.translateService.instant(
-      'notification.backgroundGeolocationText'
-    ),
-  }
-  private locationUpdateSubscription: Subscription
-  private startEventSubscription: Subscription
+  private locationUpdateSubscription: BehaviorSubject<Location> =
+    new BehaviorSubject<Location>(undefined)
+  private startEventSubscription: BehaviorSubject<'START' | 'STOP'> =
+    new BehaviorSubject<'START' | 'STOP'>(undefined)
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
 
+  private backgroundGeolocation: BackgroundGeolocationPlugin =
+    BackgroundGeolocation as BackgroundGeolocationPlugin
+  private backgroundGeolocationWatcherId: string
+
   constructor(
     private platform: Platform,
-    private backgroundGeolocation: BackgroundGeolocation,
     private dbService: SqliteService,
     private inferenceService: InferenceService,
     private notificationService: NotificationService,
@@ -61,15 +48,11 @@ export class LocationService implements OnDestroy {
   ) {
     if (!this.isSupportedPlatform) return
 
-    this.backgroundGeolocation.configure(this.config).then(() => {
-      this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-        if (isRunning) this.nextLocationIsStart = true
-      })
+    if (this.isRunning) this.nextLocationIsStart = true
 
-      this.subscribeToLocationUpdates()
-      this.subscribeToStartStopEvents()
-      this.updateRunningState()
-    })
+    this.subscribeToLocationUpdates()
+    this.subscribeToStartStopEvents()
+    this.updateRunningState()
 
     App.addListener('appStateChange', (state) => {
       if (state.isActive) {
@@ -80,6 +63,10 @@ export class LocationService implements OnDestroy {
 
   get isSupportedPlatform(): boolean {
     return this.platform.is('ios') || this.platform.is('android')
+  }
+
+  get isRunning(): boolean {
+    return this.backgroundGeolocationWatcherId !== undefined
   }
 
   ngOnDestroy() {
@@ -105,39 +92,38 @@ export class LocationService implements OnDestroy {
       LogEventType.start
     )
     if (!this.isSupportedPlatform) return
-    this.backgroundGeolocation.checkStatus().then(async (status) => {
-      if (status.isRunning) {
-        this.stop()
-        return false
-      }
-      if (!status.locationServicesEnabled) {
-        await this.showEnableLocationsAlert()
-        return false
-      }
 
-      if (
-        status.authorization ===
-          BackgroundGeolocationAuthorizationStatus.AUTHORIZED ||
-        (status.authorization as number) === 99
-      ) {
-        this.backgroundGeolocation.start()
-        this.nextLocationIsStart = true
-        await this.notificationService.removeScheduledUnpauseNotifications()
-      } else {
-        try {
-          // triger android location runtime permission promt with one time location request
-          await this.backgroundGeolocation.getCurrentLocation({
-            timeout: 0,
-            enableHighAccuracy: true,
-            maximumAge: 0,
-          })
-        } catch (e) {
-          console.log(e)
-        } finally {
-          await this.showGrantPermissionAlert()
+    if (this.isRunning) {
+      this.stop()
+      return false
+    }
+
+    this.backgroundGeolocationWatcherId = this.backgroundGeolocation.addWatcher(
+      {
+        backgroundMessage: this.translateService.instant(
+          'notification.backgroundGeolocationText'
+        ),
+        backgroundTitle: this.translateService.instant(
+          'notification.backgroundGeolocationTitle'
+        ),
+        requestPermissions: true,
+        stale: false,
+        distanceFilter: 30,
+      },
+      async (location, error) => {
+        if (error) {
+          if (error.code === 'NOT_AUTHORIZED') {
+            await this.showGrantPermissionAlert()
+          }
+          return console.error(error)
         }
+
+        this.locationUpdateSubscription.next(location)
       }
-    })
+    )
+    this.nextLocationIsStart = true
+    this.notificationService.removeScheduledUnpauseNotifications()
+    this.startEventSubscription.next('START')
   }
 
   stop() {
@@ -149,12 +135,15 @@ export class LocationService implements OnDestroy {
 
     if (!this.isSupportedPlatform) return
 
-    this.backgroundGeolocation.checkStatus().then((status) => {
-      if (status.isRunning) {
-        this.backgroundGeolocation.stop()
+    this.backgroundGeolocation
+      .removeWatcher({
+        id: this.backgroundGeolocationWatcherId,
+      })
+      .then(() => {
+        this.backgroundGeolocationWatcherId = undefined
         this.nextLocationIsStart = false
-      }
-    })
+        this.startEventSubscription.next('STOP')
+      })
   }
 
   sendUnpauseNotificationAtTime(unpauseDate: Date) {
@@ -167,54 +156,53 @@ export class LocationService implements OnDestroy {
   }
 
   openLocationSettings() {
-    this.backgroundGeolocation.showAppSettings()
+    this.backgroundGeolocation.openSettings()
   }
 
   private updateRunningState() {
-    this.backgroundGeolocation.checkStatus().then(({ isRunning }) => {
-      this.trackingRunning.next(isRunning)
-    })
+    this.trackingRunning.next(this.isRunning)
   }
 
   private subscribeToLocationUpdates() {
-    this.locationUpdateSubscription = this.backgroundGeolocation
-      .on(BackgroundGeolocationEvents.location)
-      .subscribe(async ({ latitude, longitude, accuracy, speed, time }) => {
-        const state = this.nextLocationIsStart ? PointState.START : null
-        await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
-          latLng: [latitude, longitude],
-          time: new Date(time),
-          accuracy,
-          speed,
-          state,
-        })
-        this.nextLocationIsStart = false
+    this.locationUpdateSubscription.subscribe(async (location) => {
+      if (!location) return
 
-        await this.inferenceService.triggerBackgroundFunctionIfViable()
+      const { latitude, longitude, time, accuracy, speed } = location
 
-        this.logfileService.log(
-          'Location update',
-          LogEventScope.tracking,
-          LogEventType.change
-        )
-
-        this.sendNotification(
-          this.translateService.instant('notification.locationUpdateTitle'),
-          this.translateService.instant('notification.locationUpdateText', {
-            latitude: latitude.toFixed(4),
-            longitude: longitude.toFixed(4),
-            accuracy: accuracy.toFixed(1),
-          })
-        )
-
-        this.backgroundGeolocation.finish()
+      const state = this.nextLocationIsStart ? PointState.START : null
+      await this.dbService.upsertPoint(Trajectory.trackingTrajectoryID, {
+        latLng: [latitude, longitude],
+        time: new Date(time),
+        accuracy,
+        speed,
+        state,
       })
+      this.nextLocationIsStart = false
+
+      await this.inferenceService.triggerBackgroundFunctionIfViable()
+
+      this.logfileService.log(
+        'Location update',
+        LogEventScope.tracking,
+        LogEventType.change
+      )
+
+      this.sendNotification(
+        this.translateService.instant('notification.locationUpdateTitle'),
+        this.translateService.instant('notification.locationUpdateText', {
+          latitude: latitude.toFixed(4),
+          longitude: longitude.toFixed(4),
+          accuracy: accuracy.toFixed(1),
+        })
+      )
+    })
   }
 
   private subscribeToStartStopEvents() {
-    this.startEventSubscription = this.backgroundGeolocation
-      .on(BackgroundGeolocationEvents.start)
-      .subscribe(async () => {
+    this.startEventSubscription.subscribe(async (state) => {
+      if (!state) return
+
+      if (state === 'START') {
         this.logfileService.log(
           'Background Geolocation',
           LogEventScope.tracking,
@@ -237,11 +225,9 @@ export class LocationService implements OnDestroy {
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.trackingStarted')
         )
-      })
+      }
 
-    this.stopEventSubscription = this.backgroundGeolocation
-      .on(BackgroundGeolocationEvents.stop)
-      .subscribe(() => {
+      if (state === 'STOP') {
         this.trackingRunning.next(false)
         this.logfileService.log(
           'Background Geolocation',
@@ -253,7 +239,8 @@ export class LocationService implements OnDestroy {
           this.translateService.instant('notification.locationUpdateTitle'),
           this.translateService.instant('notification.trackingStopped')
         )
-      })
+      }
+    })
   }
 
   private sendNotification(title: string, text: string) {
@@ -285,7 +272,7 @@ export class LocationService implements OnDestroy {
           text: this.translateService.instant('confirm.appSettingsButtonText'),
           cssClass: 'primary',
           handler: () => {
-            this.backgroundGeolocation.showAppSettings()
+            this.backgroundGeolocation.openSettings()
           },
         },
         {
