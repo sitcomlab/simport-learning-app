@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { IonRouterOutlet } from '@ionic/angular'
 import { SqliteService } from '../shared-services/db/sqlite.service'
 import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag.service'
@@ -14,31 +13,32 @@ describe('TrajectoryPage', () => {
   let component: TrajectoryPage
   let fixture: ComponentFixture<TrajectoryPage>
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [TrajectoryPage],
-      imports: APP_TEST_IMPORTS,
-      providers: [
-        LocationService,
-        BackgroundGeolocation,
-        SqliteService,
-        FeatureFlagService,
-        TrajectoryService,
-        TrajectoryImportExportService,
-        {
-          // use empty IonRouterOutlet, since actually providing IonRouterOutlet
-          // creates a conflict with RouterTestingModule and this is sufficent for running tests.
-          provide: IonRouterOutlet,
-          useValue: { nativeEl: '' },
-        },
-        TranslateService,
-      ],
-    }).compileComponents()
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [TrajectoryPage],
+        imports: APP_TEST_IMPORTS,
+        providers: [
+          LocationService,
+          SqliteService,
+          FeatureFlagService,
+          TrajectoryService,
+          TrajectoryImportExportService,
+          {
+            // use empty IonRouterOutlet, since actually providing IonRouterOutlet
+            // creates a conflict with RouterTestingModule and this is sufficent for running tests.
+            provide: IonRouterOutlet,
+            useValue: { nativeEl: '' },
+          },
+          TranslateService,
+        ],
+      }).compileComponents()
 
-    fixture = TestBed.createComponent(TrajectoryPage)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  }))
+      fixture = TestBed.createComponent(TrajectoryPage)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+    })
+  )
 
   it('should create', () => {
     expect(component).toBeTruthy()

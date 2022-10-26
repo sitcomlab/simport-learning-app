@@ -29,7 +29,7 @@
           ></ion-checkbox>
         </ion-item>
         <div
-          *ngIf="hasInformedConsent; then consent_content else no_consent_content"
+          *ngIf="hasInformedConsent.value; then consent_content else no_consent_content"
         ></div>
         <ng-template #consent_content>
           <app-item-card
