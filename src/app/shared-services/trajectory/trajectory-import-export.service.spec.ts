@@ -5,7 +5,6 @@ import { TrajectoryImportExportService } from './trajectory-import-export.servic
 import { LocationService } from '../location/location.service'
 import { SqliteService } from '../db/sqlite.service'
 import { HttpClient, HttpHandler } from '@angular/common/http'
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import {
   testTrajectory,
   testTrajectoryBase64String,
@@ -27,7 +26,6 @@ describe('TrajectoryImportExportService', () => {
         SqliteService,
         HttpClient,
         HttpHandler,
-        BackgroundGeolocation,
       ],
     })
     service = TestBed.inject(TrajectoryImportExportService)
