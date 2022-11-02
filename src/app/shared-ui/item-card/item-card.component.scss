@@ -19,3 +19,11 @@ ion-row {
 ion-card-subtitle {
   margin: 0;
 }
+
+ion-card-content {
+  width: 280px;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
