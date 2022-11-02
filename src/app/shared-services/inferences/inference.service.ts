@@ -32,6 +32,11 @@ import {
 import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 import { TranslateService } from '@ngx-translate/core'
+import { LogfileService } from '../../shared-services/logfile/logfile.service'
+import {
+  LogEventScope,
+  LogEventType,
+} from '../../shared-services/logfile/types'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { App } = Plugins
@@ -91,7 +96,8 @@ export class InferenceService
     private staypointService: StaypointService,
     private featureFlagService: FeatureFlagService,
     protected backgroundService: BackgroundService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {
     super(backgroundService, 'com.transistorsoft.fetch')
 
@@ -253,6 +259,11 @@ export class InferenceService
           })
         )
       }
+      this.logfileService.log(
+        'New inference computed total =' + significantInferencesLength,
+        LogEventScope.inference,
+        LogEventType.change
+      )
     }
 
     await this.geocodingService.reverseGeocodeInferences(inference.inferences)
