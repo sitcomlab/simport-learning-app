@@ -114,7 +114,7 @@
       "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen",
       "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen",
       "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
-      "toggleLocationButtonText": "Position ein- / ausblenden",
+      "toggleLocationButtonText": "Letzter Standort",
       "createInferencesButtonText": "Rückschlüsse generieren",
       "osmContributors": "OpenStreetMap-Mitwirkende",
       "timestampPopup": "Zeitpunkt: {{ value }}"
