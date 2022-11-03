@@ -26,7 +26,7 @@
     <app-item-card
       *ngFor="let e of diary"
       [date]="getLocalDate(e.date)"
-      [content]="e.abstract"
+      [content]="e.content"
       (click)="navigateDetail(e.id)"
     ></app-item-card>
   </ion-list>
