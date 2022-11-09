@@ -260,7 +260,10 @@ export class InferenceService
         )
       }
       this.logfileService.log(
-        'New inference computed total =' + significantInferencesLength,
+        'New inference computed, ' +
+          significantInferencesLength +
+          ' in total for ' +
+          traj.placename,
         LogEventScope.inference,
         LogEventType.change
       )
