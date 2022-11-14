@@ -21,7 +21,7 @@
     "createNewEntryTitle": "Create new diary entry",
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
-    "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentTitle": "What observations do you make when you look at your location data? Compared to previous days, what similarities and differences have you noticed?",
     "contentNoLocationTrackingTitle": "How have you used your smartphone today?",
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
@@ -111,7 +111,7 @@
       "predictionSuccess.singular": "We think that you will visit the highlighted place in the next hour",
       "predictionSuccess.plural": "We think that you will visit the highlighted places in the next hour",
       "predictionFail": "We couldn't make a prediction for the next hour",
-      "toggleLocationButtonText": "Toggle location",
+      "toggleLocationButtonText": "Zoom to last location",
       "createInferencesButtonText": "Create inferences",
       "osmContributors": "OpenStreetMap contributors",
       "timestampPopup": "Timestamp: {{ value }}"

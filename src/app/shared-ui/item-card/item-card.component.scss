@@ -1,5 +1,6 @@
 ion-card {
   min-height: 90px;
+  max-height: 145px;
 }
 
 ion-grid {
@@ -17,4 +18,12 @@ ion-row {
 
 ion-card-subtitle {
   margin: 0;
+}
+
+ion-card-content {
+  width: auto;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
