@@ -21,7 +21,7 @@
     "createNewEntryTitle": "Create new diary entry",
     "updateEntryTitle": "Update entry",
     "dateTitle": "Date",
-    "contentTitle": "Have you looked at your location data today? If yes: What observations have you made?",
+    "contentTitle": "What observations do you make when you look at your location data? Compared to previous days, what similarities and differences have you noticed?",
     "contentNoLocationTrackingTitle": "How have you used your smartphone today?",
     "contentPlaceholder": "Content",
     "deleteEntryAlertHeader": "Delete entry",
