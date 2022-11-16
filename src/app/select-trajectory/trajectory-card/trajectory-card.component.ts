@@ -2,7 +2,8 @@ import { Component, Input, OnInit } from '@angular/core'
 import { ModalController, Platform, PopoverController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import * as moment from 'moment'
-import { Trajectory } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TrajectoryCardPopoverPage } from './trajectory-card-popover/trajectory-card-popover.page'
 
 @Component({
@@ -17,13 +18,19 @@ export class TrajectoryCardComponent implements OnInit {
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private platform: Platform,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private featureFlagService: FeatureFlagService
   ) {}
 
   ngOnInit() {}
 
   showTrajectoryMenu(): boolean {
-    return this.platform.is('mobile')
+    if (!this.platform.is('mobile')) return false
+
+    return !(
+      this.trajectory.id === 'example' &&
+      !this.featureFlagService.featureFlags.isTrajectoryExportEnabled
+    )
   }
 
   durationString() {

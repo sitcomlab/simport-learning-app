@@ -7,6 +7,8 @@ export interface FeatureFlags {
   isHomeExploreTrajectoryEnabled: boolean
   isHomeImportTrajectoryEnabled: boolean
   isHomeDiaryEnabled: boolean
+  // trajectories list
+  isTrajectoryExportEnabled: boolean
   // trajectory-submenu entries
   isTrajectoryInferencesTabEnabled: boolean
   isTrajectoryMapTabEnabled: boolean
@@ -25,6 +27,7 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: true,
     isHomeImportTrajectoryEnabled: true,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: true,
     isTrajectoryInferencesTabEnabled: true,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: true,
@@ -40,8 +43,9 @@ export class FeatureFlagConfig {
     appModeSwitchPassword: 'wwu',
     isHomeLocationTrackingEnabled: true,
     isHomeExploreTrajectoryEnabled: true,
-    isHomeImportTrajectoryEnabled: true,
+    isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
@@ -58,6 +62,7 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: false,
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
