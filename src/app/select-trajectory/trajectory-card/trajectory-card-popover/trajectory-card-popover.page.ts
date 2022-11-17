@@ -11,6 +11,7 @@ import {
 } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { LocationService } from 'src/app/shared-services/location/location.service'
 import {
   TrajectoryExportResult,
@@ -36,8 +37,13 @@ export class TrajectoryCardPopoverPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private locationService: LocationService,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private featureFlagService: FeatureFlagService
   ) {}
+
+  get isExportEnabled() {
+    return this.featureFlagService.featureFlags.isTrajectoryExportEnabled
+  }
 
   ngOnInit() {}
 
@@ -57,6 +63,59 @@ export class TrajectoryCardPopoverPage implements OnInit {
           await this.handleExportResult(result)
         })
     }
+  }
+
+  async deleteTrajectory(e: Event) {
+    e.stopPropagation()
+    this.popoverController.dismiss()
+    const alert = await this.alertController.create({
+      header: this.translateService.instant('trajectory.delete.alertHeader', {
+        value: this.trajectory?.placename ?? 'trajectory',
+      }),
+      message: this.translateService.instant('trajectory.delete.alertMessage'),
+      buttons: [
+        {
+          text: this.translateService.instant('general.cancel'),
+          role: 'cancel',
+        },
+        {
+          text: this.translateService.instant('general.delete'),
+          cssClass: 'danger',
+          handler: async () => {
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.delete.loadingDialogMessage'
+              )
+            )
+            if (this.trajectory.type === TrajectoryType.USERTRACK) {
+              this.locationService.stop()
+            }
+            await this.trajectoryImportExportService
+              .deleteTrajectory(this.trajectory)
+              .then(async () => {
+                await this.hideLoadingDialog()
+                await this.showToast(
+                  this.translateService.instant(
+                    'trajectory.delete.successfulMessage'
+                  ),
+                  false
+                )
+                await this.modalController.dismiss()
+              })
+              .catch(async () => {
+                await this.hideLoadingDialog()
+                await this.showToast(
+                  this.translateService.instant(
+                    'trajectory.delete.errorMessage'
+                  ),
+                  true
+                )
+              })
+          },
+        },
+      ],
+    })
+    await alert.present()
   }
 
   private async presentExportActionSheet() {
@@ -140,64 +199,9 @@ export class TrajectoryCardPopoverPage implements OnInit {
             .requestPermission(
               this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
             )
-            .then(async (requestStatus) => {
-              return requestStatus.hasPermission
-            })
+            .then(async (requestStatus) => requestStatus.hasPermission)
         }
       })
-  }
-
-  async deleteTrajectory(e: Event) {
-    e.stopPropagation()
-    this.popoverController.dismiss()
-    const alert = await this.alertController.create({
-      header: this.translateService.instant('trajectory.delete.alertHeader', {
-        value: this.trajectory?.placename ?? 'trajectory',
-      }),
-      message: this.translateService.instant('trajectory.delete.alertMessage'),
-      buttons: [
-        {
-          text: this.translateService.instant('general.cancel'),
-          role: 'cancel',
-        },
-        {
-          text: this.translateService.instant('general.delete'),
-          cssClass: 'danger',
-          handler: async () => {
-            await this.showLoadingDialog(
-              this.translateService.instant(
-                'trajectory.delete.loadingDialogMessage'
-              )
-            )
-            if (this.trajectory.type === TrajectoryType.USERTRACK) {
-              this.locationService.stop()
-            }
-            await this.trajectoryImportExportService
-              .deleteTrajectory(this.trajectory)
-              .then(async () => {
-                await this.hideLoadingDialog()
-                await this.showToast(
-                  this.translateService.instant(
-                    'trajectory.delete.successfulMessage'
-                  ),
-                  false
-                )
-                await this.modalController.dismiss()
-              })
-              .catch(async () => {
-                await this.hideLoadingDialog()
-                await this.showToast(
-                  this.translateService.instant(
-                    'trajectory.delete.errorMessage'
-                  ),
-                  true
-                )
-              })
-          },
-        },
-      ],
-    })
-    await alert.present()
   }
 
   private async showLoadingDialog(message: string) {
