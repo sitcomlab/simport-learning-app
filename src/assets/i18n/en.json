@@ -142,7 +142,7 @@
     "removeConsentConfirmation": "Are you sure?",
     "removeConsentConfirmationText": "By doing this the app will stop tracking your location.",
     "informedConsentTitle": "Provided Information",
-    "informedConsentText": "The Simport Learning App collects your location data to enable visualization, aggregation (identify frequently visited locations), and analyzation (estimate work and home location, create predictions) of your data, even when the app is closed or not in use. <br><br>This data never leaves your local device (i.e., phone or tablet) unless you export it manually – we do not upload or save the location data collected to a server. All processing is done locally on the device."
+    "informedConsentText": "The Simport Learning App collects your location data to enable visualization and aggregation (identify frequently visited locations), even when the app is closed or not in use. <br><br>This data never leaves your local device (i.e., phone or tablet). We do not upload or save the location data collected to a server. All processing is done locally on the device."
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",
@@ -151,7 +151,7 @@
     "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history",
     "inferencesGenerationLoadingDialog": "Generating inferences from your trajectory…",
     "backgroundGeolocationTitle": "Tracking active …",
-    "backgroundGeolocationText": "Your location is currently tracked in order to show potential inferences.",
+    "backgroundGeolocationText": "Your location is currently record.",
     "locationUpdateTitle": "Location Update",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
