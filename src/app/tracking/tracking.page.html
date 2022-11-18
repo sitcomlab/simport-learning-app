@@ -71,7 +71,7 @@
       </ion-col>
     </ion-row>
     <ion-row
-      *ngIf="featureFlagService.featureFlags.isInferenceComputationEnabled"
+      *ngIf="featureFlagService.featureFlags.isInferenceComputationEnabled && featureFlagService.featureFlags.isNotificationShownForInferences"
       class="ion-padding ion-justify-content-between"
     >
       <ion-col size="auto">

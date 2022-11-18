@@ -251,13 +251,17 @@ export class InferenceService
           inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
       if (significantInferencesLength > 0) {
-        this.notificationService.notify(
-          NotificationType.inferenceUpdate,
-          this.translateService.instant('notification.inferencesFoundTitle'),
-          this.translateService.instant('notification.inferencesFoundText', {
-            value: significantInferencesLength,
-          })
-        )
+        if (
+          this.featureFlagService.featureFlags.isNotificationShownForInferences
+        ) {
+          this.notificationService.notify(
+            NotificationType.inferenceUpdate,
+            this.translateService.instant('notification.inferencesFoundTitle'),
+            this.translateService.instant('notification.inferencesFoundText', {
+              value: significantInferencesLength,
+            })
+          )
+        }
       }
       this.logfileService.log(
         'New inference computed, ' +

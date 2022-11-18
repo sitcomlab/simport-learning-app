@@ -45,7 +45,7 @@ export class TrajectoryPage implements OnInit, OnDestroy {
         title: this.translateService.instant('trajectory.insights.title'),
       })
     }
-    if (this.featureFlagService.featureFlags.isTrajectoryMapTabEnabled) {
+    if (this.featureFlagService.featureFlags.isNotificationShownForInferences) {
       this.tabs.push({
         path: TrajectoryPagePath.map,
         icon: 'map-outline',
