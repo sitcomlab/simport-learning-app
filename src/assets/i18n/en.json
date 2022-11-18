@@ -151,7 +151,7 @@
     "inferencesFoundText": "We're now able to draw {{ value }} conclusions from your location history",
     "inferencesGenerationLoadingDialog": "Generating inferences from your trajectory…",
     "backgroundGeolocationTitle": "Tracking active …",
-    "backgroundGeolocationText": "Your location is currently record.",
+    "backgroundGeolocationText": "Your location is currently recorded.",
     "locationUpdateTitle": "Location Update",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Tracking started",
