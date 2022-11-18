@@ -8,8 +8,9 @@ import { FeatureFlags, FeatureFlagConfig } from './feature-flag.fixtures'
 })
 export class FeatureFlagService {
   // define active featureflags here
-  private primaryFlags: FeatureFlags = FeatureFlagConfig.defaultFeatureFlags
-  private secondaryFlags?: FeatureFlags = undefined
+  private primaryFlags: FeatureFlags =
+    FeatureFlagConfig.deploymentStudy1ControlGroupFeatureFlags
+  private secondaryFlags?: FeatureFlags = FeatureFlagConfig.defaultFeatureFlags
 
   constructor(private settingsService: SettingsService) {}
 
