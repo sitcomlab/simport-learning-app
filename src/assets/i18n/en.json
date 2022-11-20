@@ -199,7 +199,7 @@
     "dataProcessingTitle": "3. Data processing in connection with using the SIMPORT Learning App",
     "dataProcessingsScopeTitle": "a) Scope of data processing",
     "dataProcessingsScopeText": "The following personal data is processed by the SIMPORT Learning App:",
-    "dataProcessingsScope": "(1) Location data (only locally on your device)<br>(2) Other data entered by the user into the app<br>(3) Frequency of use and user behaviour",
+    "dataProcessingsScope": "(1) Location data (App Mode 2 only; only locally on your device)<br>(2) Other data entered by the user into the app<br>(3) Frequency of use and user behaviour",
     "dataProcessingPurposesTitle": "b) Purposes of data processing",
     "dataProcessingPurposesText": "The processing of the above-mentioned personal data serves the usage, operation and statistical analysis within the SIMPORT Learning App. The aim is to visualize your location data. For this purpose, the app collects and stores your location data in a database on your device. The collected location history can be visualized on a map. Additionally, the location history is aggregated to identify places you visit frequently.",
     "dataProcessingLegalBasisTitle": "c) Legal basis for processing personal data",
@@ -214,7 +214,7 @@
     "changesTitle": "6. Changes to This Privacy Policy",
     "changesText": "We may modify this privacy policy at any time, at our discretion, and modifications are effective upon being posted here. Such modifications will not change the scope of our collection or use of your personal data collected before such modifications. The date on which this privacy policy was last revised is identified below. If we make material changes to how we treat your personal data, we will also ask for your consent to such changes through a dialog in the “Tracking” menu of this app.",
     "dateTitle": "Effective Date of the Privacy Policy",
-    "dateText": "8th of September, 2022"
+    "dateText": "20th of November, 2022"
   },
   "licenses": {
     "title": "Licenses",

@@ -201,7 +201,7 @@
     "dataProcessingTitle": "3. Datenverarbeitung im Rahmen der Nutzung der SIMPORT Learning App",
     "dataProcessingsScopeTitle": "a) Umfang der Datenverarbeitung",
     "dataProcessingsScopeText": "Die SIMPORT Learning App verarbeitet von Ihnen folgende Daten:",
-    "dataProcessingsScope": "(1) Standortdaten (nur lokal auf Ihrem Gerät)<br>(2) Sonstige der von den Nutzenden in der App angegebenen Daten <br>(3) Nutzungshäufigkeit und Verhalten der Nutzenden",
+    "dataProcessingsScope": "(1) Standortdaten (nur in App Modus 2; nur lokal auf Ihrem Gerät)<br>(2) Sonstige der von den Nutzenden in der App angegebenen Daten <br>(3) Nutzungshäufigkeit und Verhalten der Nutzenden",
     "dataProcessingPurposesTitle": "b) Zwecke der Datenverarbeitung",
     "dataProcessingPurposesText": "Die Verarbeitung Ihrer oben genannten personenbezogenen Daten dient der Nutzung, des Betriebs und der statistischen Auswertung innerhalb der SIMPORT Learning App. Ziel ist es, Ihnen Ihre Standortdaten zu visualisieren. Dazu sammelt und speichert die App Ihre Standortdaten in einer Datenbank auf Ihrem Gerät. Der gesammelte Standortverlauf kann auf einer Karte visualisiert werden. Weiterhin aggregiert die App den Standortverlauf, um häufig besuchte Orte anzuzeigen.",
     "dataProcessingLegalBasisTitle": "c) Rechtsgrundlage für die Verarbeitung personenbezogener Daten",
@@ -216,7 +216,7 @@
     "changesTitle": "Änderungen an dieser Datenschutzerklärung",
     "changesText": "Wir können diese Datenschutzerklärung jederzeit nach unserem Ermessen ändern, wobei Änderungen wirksam sind, sobald sie hier veröffentlicht werden. Solche Veränderungen werden nicht das Ausmaß unserer Sammlung und Verarbeitung Ihrer personenbezogenen Daten betreffen, die vor der Änderung gesammelt wurden. Das Datum, an dem diese Datenschutzerklärung das letzte Mal geändert wurde, ist nachfolgend festgehalten. Wenn wir wesentliche Änderungen an der Art und Weise vornehmen, wie wir Ihre persönlichen Daten verändern, werden wir Sie erneut nach Ihrer Einwilligung im Menü „Standortverlauf aufzeichnen“ fragen.",
     "dateTitle": "Datum des Inkrafttretens dieser Datenschutzerklärung",
-    "dateText": "08.09.2022"
+    "dateText": "20.11.2022"
   },
   "licenses": {
     "title": "Lizenzen",
