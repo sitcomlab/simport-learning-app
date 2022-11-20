@@ -18,6 +18,8 @@ export interface FeatureFlags {
   isPoiInferenceComputationEnabled: boolean
   isReverseGeocodingEnabled: boolean
   isTimetableComputationEnabled: boolean
+  // notifications
+  isNotificationsEnabledForInferences: boolean
 }
 
 // default feature flags
@@ -35,6 +37,7 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: true,
     isReverseGeocodingEnabled: true,
     isTimetableComputationEnabled: true,
+    isNotificationsEnabledForInferences: true,
   }
 
   // feature flags for the first deployment-study incl. control-group
@@ -53,6 +56,7 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: true,
     isReverseGeocodingEnabled: false,
     isTimetableComputationEnabled: false,
+    isNotificationsEnabledForInferences: false,
   }
 
   static deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
@@ -70,5 +74,6 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: false,
     isReverseGeocodingEnabled: false,
     isTimetableComputationEnabled: false,
+    isNotificationsEnabledForInferences: false,
   }
 }
