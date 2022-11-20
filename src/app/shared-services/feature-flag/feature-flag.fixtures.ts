@@ -7,13 +7,11 @@ export interface FeatureFlags {
   isHomeExploreTrajectoryEnabled: boolean
   isHomeImportTrajectoryEnabled: boolean
   isHomeDiaryEnabled: boolean
-  // show notifications
-  isNotificationEnable: boolean
   // trajectories list
   isTrajectoryExportEnabled: boolean
   // trajectory-submenu entries
   isTrajectoryInferencesTabEnabled: boolean
-  isNotificationShownForInferences: boolean
+  isTrajectoryMapTabEnabled: boolean
   isTrajectoryExplorationTabEnabled: boolean
   // computational features
   isInferenceComputationEnabled: boolean
@@ -29,10 +27,9 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: true,
     isHomeImportTrajectoryEnabled: true,
     isHomeDiaryEnabled: true,
-    isNotificationEnable: true,
     isTrajectoryExportEnabled: true,
     isTrajectoryInferencesTabEnabled: true,
-    isNotificationShownForInferences: true,
+    isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: true,
     isInferenceComputationEnabled: true,
     isPoiInferenceComputationEnabled: true,
@@ -48,10 +45,9 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: true,
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
-    isNotificationEnable: false,
     isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
-    isNotificationShownForInferences: false,
+    isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
     isInferenceComputationEnabled: false,
     isPoiInferenceComputationEnabled: true,
@@ -66,10 +62,9 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: false,
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
-    isNotificationEnable: false,
     isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
-    isNotificationShownForInferences: false,
+    isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
     isInferenceComputationEnabled: false,
     isPoiInferenceComputationEnabled: false,
