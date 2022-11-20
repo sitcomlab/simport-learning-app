@@ -250,7 +250,10 @@ export class InferenceService
         (inf) =>
           inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
-      if (significantInferencesLength > 0) {
+      if (
+        significantInferencesLength > 0 &&
+        this.featureFlagService.featureFlags.isNotificationsEnabledForInferences
+      ) {
         this.notificationService.notify(
           NotificationType.inferenceUpdate,
           this.translateService.instant('notification.inferencesFoundTitle'),
