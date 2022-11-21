@@ -42,7 +42,7 @@ export class FeatureFlagConfig {
 
   // feature flags for the first deployment-study incl. control-group
   static deploymentStudy1FeatureFlags: FeatureFlags = {
-    canSwitchAppMode: true,
+    canSwitchAppMode: false,
     appModeSwitchPassword: 'wwu',
     isHomeLocationTrackingEnabled: true,
     isHomeExploreTrajectoryEnabled: true,
@@ -60,7 +60,7 @@ export class FeatureFlagConfig {
   }
 
   static deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
-    canSwitchAppMode: false,
+    canSwitchAppMode: true,
     appModeSwitchPassword: 'wwu',
     isHomeLocationTrackingEnabled: false,
     isHomeExploreTrajectoryEnabled: false,
