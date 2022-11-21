@@ -59,7 +59,7 @@ jobs:
           gradlePath: ./android/app/build.gradle
           versionCode: ${{ github.run_number }}
 
-      - name: Build with Gradle
+      - name: '[.aab] Build with Gradle'
         working-directory: ./android
         run: ./gradlew app:bundleRelease
         env:
@@ -68,11 +68,26 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_PASSWORD }}
 
-      - name: Archive build artifact
+      - name: '[.aab] Archive build artifact'
         uses: actions/upload-artifact@master
         with:
           name: aab-artifact
           path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: '[.apk] Build with Gradle'
+        working-directory: ./android
+        run: ./gradlew app:assembleRelease
+        env:
+          ANDROID_PATH_TO_KEYSTORE: '../simport.keystore'
+          ANDROID_KEY_STORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_ANDROID_KEY_PASSWORD }}
+
+      - name: '[.apk] Archive build artifact'
+        uses: actions/upload-artifact@master
+        with:
+          name: apk-artifact
+          path: android/app/build/outputs/apk/release/app-release.apk
 
   deploy-android:
     needs: [build-android]
