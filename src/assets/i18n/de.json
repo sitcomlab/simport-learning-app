@@ -201,7 +201,7 @@
     "dataProcessingTitle": "3. Datenverarbeitung im Rahmen der Nutzung der SIMPORT Learning App",
     "dataProcessingsScopeTitle": "a) Umfang der Datenverarbeitung",
     "dataProcessingsScopeText": "Die SIMPORT Learning App verarbeitet von Ihnen folgende Daten:",
-    "dataProcessingsScope": "(1) Standortdaten (nur lokal auf Ihrem Gerät)<br>(2) Sonstige der von den Nutzenden in der App angegebenen Daten <br>(3) Nutzungshäufigkeit und Verhalten der Nutzenden",
+    "dataProcessingsScope": "(1) Standortdaten (nur in App Modus 2; nur lokal auf Ihrem Gerät)<br>(2) Sonstige der von den Nutzenden in der App angegebenen Daten <br>(3) Nutzungshäufigkeit und Verhalten der Nutzenden",
     "dataProcessingPurposesTitle": "b) Zwecke der Datenverarbeitung",
     "dataProcessingPurposesText": "Die Verarbeitung Ihrer oben genannten personenbezogenen Daten dient der Nutzung, des Betriebs und der statistischen Auswertung innerhalb der SIMPORT Learning App. Ziel ist es, Ihnen Ihre Standortdaten zu visualisieren. Dazu sammelt und speichert die App Ihre Standortdaten in einer Datenbank auf Ihrem Gerät. Der gesammelte Standortverlauf kann auf einer Karte visualisiert werden. Weiterhin aggregiert die App den Standortverlauf, um häufig besuchte Orte anzuzeigen.",
     "dataProcessingLegalBasisTitle": "c) Rechtsgrundlage für die Verarbeitung personenbezogener Daten",
@@ -216,7 +216,7 @@
     "changesTitle": "Änderungen an dieser Datenschutzerklärung",
     "changesText": "Wir können diese Datenschutzerklärung jederzeit nach unserem Ermessen ändern, wobei Änderungen wirksam sind, sobald sie hier veröffentlicht werden. Solche Veränderungen werden nicht das Ausmaß unserer Sammlung und Verarbeitung Ihrer personenbezogenen Daten betreffen, die vor der Änderung gesammelt wurden. Das Datum, an dem diese Datenschutzerklärung das letzte Mal geändert wurde, ist nachfolgend festgehalten. Wenn wir wesentliche Änderungen an der Art und Weise vornehmen, wie wir Ihre persönlichen Daten verändern, werden wir Sie erneut nach Ihrer Einwilligung im Menü „Standortverlauf aufzeichnen“ fragen.",
     "dateTitle": "Datum des Inkrafttretens dieser Datenschutzerklärung",
-    "dateText": "08.09.2022"
+    "dateText": "20.11.2022"
   },
   "licenses": {
     "title": "Lizenzen",
@@ -225,7 +225,7 @@
   },
   "imprint": {
     "title": "Impressum",
-    "general": "Die Simport Learning App hat das Ziel, Ihnen ein besseres Verständnis zu ermöglichen, was Privatsphäre und Datenschutz im Kontext von Standortinformationen bedeutet. Zu diesem Zweck sammelt und visualisiert sie Ihre Standortinformationen. <br><br>Diese App wird im Rahmen des Forschungsprojektes Simport entwickelt, das vom Deutschen Bundesministerium für Bildung und Forschung gefördert wird. Auf <a href='https://simport.net'>https://simport.net</a> können Sie mehr über das Projekt erfahren.<br><br>Der Quellcode dieser App ist auf <a href='https://github.com/sitcomlab/simport-learning-app'>https://github.com/sitcomlab/simport-learning-app</a> zu finden, lizensiert unter der MIT License. Wir freuen uns immer über neue Mitwirkende.",
+    "general": "Diese App wird im Rahmen des Forschungsprojektes Simport entwickelt, das vom Deutschen Bundesministerium für Bildung und Forschung gefördert wird.",
     "contact": "<b>Kontakt:</b> <br><br>Simport<br>Westfälische Wilhelms-Universität Münster<br>Institut für Geoinformatik<br>Heisenbergstraße 2<br>48149 Münster<br> <a href='mailto:c.kray@uni-muenster.de'>c.kray@uni-muenster.de</a>",
     "license": "<b>The MIT License (MIT)</b><br><br>Copyright (c) 2022 Sitcom Lab<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal  in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: <br><br>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "bmbfLogo": "<img src='assets/imprint/bmbf_logo_de.png'/>"
