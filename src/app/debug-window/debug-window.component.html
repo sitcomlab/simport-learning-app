@@ -1,5 +1,5 @@
-<ion-card>
-  <ion-card-header>
+<div>
+  <ion-card-content>
     <ion-item lines="none" class="debug-header">
       <ion-card-title>Debug Information</ion-card-title>
       <ion-icon
@@ -23,9 +23,7 @@
         <ion-label>Device</ion-label>
       </ion-segment-button>
     </ion-segment>
-  </ion-card-header>
 
-  <ion-card-content>
     <div *ngIf="segment === 'general'">
       <div *ngIf="myDevice">
         <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
@@ -79,36 +77,6 @@
           {{ userTrajectory.state[userTrajectory.state.length - 1] | json }}
         </p>
       </div>
-      <div class="ion-padding-top history-header">
-        <h4>History</h4>
-        <ion-toggle [(ngModel)]="showHistory"></ion-toggle>
-      </div>
-      <div *ngIf="showHistory" class="history-container">
-        <div *ngIf="userTrajectory">
-          <ion-grid>
-            <ion-row>
-              <ion-col size="1">#</ion-col>
-              <ion-col size="4">timestamp</ion-col>
-              <ion-col size="4">coordinates</ion-col>
-              <ion-col>accuracy in m</ion-col>
-              <ion-col>speed in m/s</ion-col>
-              <ion-col>point type</ion-col>
-            </ion-row>
-            <ion-row *ngFor="let ts of userTrajectory.timestamps; index as i">
-              <ion-col size="1">{{ i + 1 }}</ion-col>
-              <ion-col size="4">{{
-                userTrajectory.timestamps[i].toISOString()
-              }}</ion-col>
-              <ion-col size="4">{{
-                userTrajectory.coordinates[i] | json
-              }}</ion-col>
-              <ion-col>{{ userTrajectory.accuracy[i] }}</ion-col>
-              <ion-col>{{ userTrajectory.speed[i] }}</ion-col>
-              <ion-col size="4">>{{ userTrajectory.state[i] }}</ion-col>
-            </ion-row>
-          </ion-grid>
-        </div>
-      </div>
     </div>
 
     <div *ngIf="segment === 'device'">
@@ -117,4 +85,4 @@
       </p>
     </div>
   </ion-card-content>
-</ion-card>
+</div>
