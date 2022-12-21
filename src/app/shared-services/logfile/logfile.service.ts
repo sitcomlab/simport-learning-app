@@ -6,7 +6,7 @@ import { LogEvent } from 'src/app/model/log-event'
 import { SqliteService } from '../db/sqlite.service'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { LogEventLevel, LogEventScope, LogEventType } from './types'
-const { App } = Plugins
+const { App: app } = Plugins
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class LogfileService {
     this.platform.ready().then(() => {
       this.log('App started', LogEventScope.app, LogEventType.start)
 
-      App.addListener('appStateChange', async (state) => {
+      app.addListener('appStateChange', async (state) => {
         this.log(
           'AppStateChange',
           LogEventScope.app,
@@ -38,21 +38,35 @@ export class LogfileService {
     level: LogEventLevel = LogEventLevel.info
   ) {
     const timestamp = new Date()
-    this.trajectoryService.getFullUserTrack().subscribe((trajectory) => {
-      const locationCount = trajectory.coordinates.length
-      const lastLocationTimestamp =
-        trajectory.timestamps[trajectory.timestamps.length - 1]
+    this.trajectoryService.getFullUserTrack().subscribe(
+      (trajectory) => {
+        const locationCount = trajectory.coordinates.length
+        const lastLocationTimestamp =
+          trajectory.timestamps[trajectory.timestamps.length - 1]
 
-      this.dbService.upsertLogEntry({
-        type,
-        scope,
-        level,
-        text,
-        timestamp,
-        locationCount,
-        lastLocationTimestamp,
-      })
-    })
+        this.dbService.upsertLogEntry({
+          type,
+          scope,
+          level,
+          text,
+          timestamp,
+          locationCount,
+          lastLocationTimestamp,
+        })
+      },
+      (_) => {
+        // TrajectoryService threw an error, likely there is no user-trajectory available –> log anyway
+        this.dbService.upsertLogEntry({
+          type,
+          scope,
+          level,
+          text,
+          timestamp,
+          locationCount: 0,
+          lastLocationTimestamp: new Date(0),
+        })
+      }
+    )
   }
 
   /**
