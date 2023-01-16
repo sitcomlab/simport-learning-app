@@ -9,18 +9,12 @@ import { v4 as uuid } from 'uuid'
 import { Platform } from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
 import { SqliteService } from '../db/sqlite.service'
-import {
-  Plugins,
-  FilesystemDirectory,
-  FilesystemEncoding,
-} from '@capacitor/core'
+
 import { take } from 'rxjs/operators'
 import { TranslateService } from '@ngx-translate/core'
-const {
-  FileSelector: fileSelector,
-  Filesystem: filesystem,
-  Share: share,
-} = Plugins
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
+import { Share } from '@capacitor/share'
+import { FilePicker } from '@capawesome/capacitor-file-picker'
 
 interface TrajectoryExportFile {
   trajectory: string
@@ -62,15 +56,16 @@ export class TrajectoryImportExportService extends TrajectoryService {
   async selectAndImportTrajectory(
     didSelectFileCallback: () => Promise<void>
   ): Promise<TrajectoryImportResult> {
-    const selectedFile = await fileSelector.fileSelector({
-      multipleSelection: false,
-      ext: ['*'],
+    const filePickResult = await FilePicker.pickFiles({
+      multiple: false,
+      types: ['*'],
     })
     await didSelectFileCallback()
+    const selectedFile = filePickResult.files[0]
     if (this.platform.is('android')) {
-      const parsedPaths = JSON.parse(selectedFile.paths)
-      const parsedOriginalNames = JSON.parse(selectedFile.original_names)
-      const parsedExtensions = JSON.parse(selectedFile.extensions)
+      const parsedPaths = JSON.parse(selectedFile.path)
+      const parsedOriginalNames = JSON.parse(selectedFile.name)
+      const parsedExtensions = JSON.parse(selectedFile.mimeType)
       for (let index = 0; index < parsedPaths.length; index++) {
         const file = await fetch(parsedPaths[index]).then((r) => r.blob())
         return await this.importFile(
@@ -80,16 +75,16 @@ export class TrajectoryImportExportService extends TrajectoryService {
         )
       }
     } else if (this.platform.is('ios')) {
-      for (let index = 0; index < selectedFile.paths.length; index++) {
-        const file = await fetch(selectedFile.paths[index]).then((r) =>
-          r.blob()
-        )
-        return await this.importFile(
-          file,
-          selectedFile.original_names[index],
-          selectedFile.extensions[index]
-        )
-      }
+      // for (let index = 0; index < selectedFile.paths.length; index++) {
+      //   const file = await fetch(selectedFile.paths[index]).then((r) =>
+      //     r.blob()
+      //   )
+      //   return await this.importFile(
+      //     file,
+      //     selectedFile.name[index],
+      //     selectedFile.mimeType[index]
+      //   )
+      // }
     }
     return {
       success: false,
@@ -210,19 +205,19 @@ export class TrajectoryImportExportService extends TrajectoryService {
 
     try {
       // write file temporarily
-      const fileResult = await filesystem.writeFile({
+      const fileResult = await Filesystem.writeFile({
         data: trajectoryFile.trajectory,
         path: `${trajectoryFile.filename}.json`,
-        directory: FilesystemDirectory.Cache, // write in cache as temp folder
-        encoding: FilesystemEncoding.UTF8,
+        directory: Directory.Cache, // write in cache as temp folder
+        encoding: Encoding.UTF8,
       })
 
       if (this.platform.is('android')) {
-        await share.requestPermissions()
+        // await Share.requestPermissions()
       }
 
       // share file
-      await share.share({
+      await Share.share({
         title: this.translateService.instant('trajectory.export.alertHeader'),
         url: fileResult.uri,
         dialogTitle: this.translateService.instant(
@@ -259,11 +254,11 @@ export class TrajectoryImportExportService extends TrajectoryService {
       false
     )
     try {
-      await filesystem.writeFile({
+      await Filesystem.writeFile({
         path: `Download/${trajectoryFile.filename}.json`,
         data: trajectoryFile.trajectory,
-        directory: FilesystemDirectory.ExternalStorage,
-        encoding: FilesystemEncoding.UTF8,
+        directory: Directory.ExternalStorage,
+        encoding: Encoding.UTF8,
       })
       return { success: true, errorMessage: null }
     } catch (e) {

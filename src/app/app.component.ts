@@ -1,8 +1,6 @@
 import { AfterViewInit, Component } from '@angular/core'
 
 import { Platform } from '@ionic/angular'
-import { SplashScreen } from '@ionic-native/splash-screen/ngx'
-import { StatusBar } from '@ionic-native/status-bar/ngx'
 import { TranslateService } from '@ngx-translate/core'
 
 @Component({
@@ -10,11 +8,9 @@ import { TranslateService } from '@ngx-translate/core'
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent {
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private translateService: TranslateService
   ) {
     // init translation with browser-language (== device-language)
@@ -25,12 +21,5 @@ export class AppComponent implements AfterViewInit {
     } else {
       this.translateService.use(this.translateService.defaultLang)
     }
-  }
-
-  ngAfterViewInit() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault()
-      this.splashScreen.hide()
-    })
   }
 }

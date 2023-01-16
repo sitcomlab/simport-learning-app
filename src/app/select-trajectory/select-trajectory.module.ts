@@ -13,7 +13,6 @@ import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.compo
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 
 @NgModule({
   imports: [
@@ -30,6 +29,6 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
     TrajectoryCardComponent,
     TrajectoryCardPopoverPage,
   ],
-  providers: [AndroidPermissions, TrajectoryImportExportService],
+  providers: [TrajectoryImportExportService],
 })
 export class SelectTrajectoryPageModule {}

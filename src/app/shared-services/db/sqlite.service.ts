@@ -1,3 +1,5 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core'
 import {
   CapacitorSQLite,
@@ -5,7 +7,6 @@ import {
   SQLiteConnection,
   SQLiteDBConnection,
 } from '@capacitor-community/sqlite'
-import { Plugins } from '@capacitor/core'
 import { Platform } from '@ionic/angular'
 import * as moment from 'moment'
 import { Subject } from 'rxjs'
@@ -30,7 +31,7 @@ export class SqliteService {
   // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
   private static chunkSize = 1000
 
-  private sqlite = Plugins.CapacitorSQLite
+  private sqlite = CapacitorSQLite
   private sqliteConnection: SQLiteConnection
   private db: SQLiteDBConnection
   private dbReady: Promise<void>
@@ -55,18 +56,21 @@ export class SqliteService {
   }
 
   private async initDb() {
-    if (this.platform.is('android')) await CapacitorSQLite.requestPermissions()
     this.sqliteConnection = new SQLiteConnection(this.sqlite)
     this.db = await this.sqliteConnection.createConnection(
       'trajectories',
       false,
       'no-encryption',
-      1
+      1,
+      false
     )
 
     // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
-    const { result, message } = await this.db.open()
-    if (!result) throw new Error(`unable to open DB: ${message}`)
+    try {
+      await this.db.open()
+    } catch (e) {
+      throw new Error(`unable to open DB: ${e}`)
+    }
 
     await runMigrations(this.db, MIGRATIONS)
   }
@@ -162,11 +166,13 @@ export class SqliteService {
       },
     ]
 
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.executeSet(set)
-    if (changes === -1) throw new Error(`couldnt insert trajectory: ${message}`)
+    try {
+      const {
+        changes: { changes },
+      } = await this.db.executeSet(set)
+    } catch (e) {
+      throw new Error(`couldnt insert trajectory: ${e}`)
+    }
 
     await this.upsertPointsForTrajectory(t)
   }
@@ -201,14 +207,13 @@ export class SqliteService {
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO points VALUES ${placeholderString}`
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
-      const {
-        changes: { changes },
-        message,
-      } = await this.db.executeSet(set)
-      if (changes === -1) {
-        throw new Error(
-          `couldnt insert points for trajectory ${t.id}: ${message}`
-        )
+
+      try {
+        const {
+          changes: { changes },
+        } = await this.db.executeSet(set)
+      } catch (e) {
+        throw new Error(`couldnt insert points for trajectory ${t.id}: ${e}`)
       }
     }
   }
@@ -218,16 +223,19 @@ export class SqliteService {
     await this.dbReady
 
     // insert new point
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?,?)',
-      [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.state].map(
-        normalize
+
+    try {
+      const {
+        changes: { changes },
+      } = await this.db.run(
+        'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?,?)',
+        [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.state].map(
+          normalize
+        )
       )
-    )
-    if (changes === -1) throw new Error(`couldnt insert point: ${message}`)
+    } catch (e) {
+      throw new Error(`couldnt insert point: ${e}`)
+    }
 
     // update durationDays of trajectory
     await this.updateDurationDaysInTrajectory(trajectoryId)
@@ -241,22 +249,27 @@ export class SqliteService {
 
     await this.ensureDbReady()
     const statement = `DELETE FROM trajectories WHERE id = '${t.id}';`
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(statement)
-    if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+
+    try {
+      const {
+        changes: { changes },
+      } = await this.db.run(statement)
+    } catch (e) {
+      throw new Error(`couldnt delete trajectory: ${e}`)
+    }
   }
 
   async deletePointsOfTrajectory(t: TrajectoryMeta): Promise<void> {
     await this.ensureDbReady()
     const statement = `DELETE FROM points WHERE trajectory = '${t.id}';`
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(statement)
-    if (changes === -1)
-      throw new Error(`couldnt delete points of trajectory: ${message}`)
+
+    try {
+      const {
+        changes: { changes },
+      } = await this.db.run(statement)
+    } catch (e) {
+      throw new Error(`couldnt delete points of trajectory: ${e}`)
+    }
   }
 
   async upsertInference(inferences: Inference[]): Promise<void> {
@@ -311,12 +324,13 @@ export class SqliteService {
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO inferences VALUES ${placeholderString}`
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
-      const {
-        changes: { changes },
-        message,
-      } = await this.db.executeSet(set)
-      if (changes === -1) {
-        throw new Error(`couldnt insert infernence: ${message}`)
+
+      try {
+        const {
+          changes: { changes },
+        } = await this.db.executeSet(set)
+      } catch (e) {
+        throw new Error(`couldnt insert infernence: ${e}`)
       }
     }
   }
@@ -324,11 +338,14 @@ export class SqliteService {
   async deleteInferences(trajectoryId: string): Promise<void> {
     await this.ensureDbReady()
     const statement = `DELETE FROM inferences WHERE trajectory='${trajectoryId}';`
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(statement)
-    if (changes === -1) throw new Error(`couldnt delete inferences: ${message}`)
+
+    try {
+      const {
+        changes: { changes },
+      } = await this.db.run(statement)
+    } catch (e) {
+      throw new Error(`couldnt delete inferences: ${e}`)
+    }
   }
 
   async getInferences(trajectoryId: string): Promise<Inference[]> {
@@ -433,13 +450,12 @@ export class SqliteService {
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO staypoints VALUES ${placeholderString}`
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
-      const {
-        changes: { changes },
-        message,
-      } = await this.db.executeSet(set)
-      if (changes === -1) {
+
+      try {
+        await this.db.executeSet(set)
+      } catch (e) {
         throw new Error(
-          `couldnt insert staypoints for trajectory ${trajectoryId}: ${message}`
+          `couldnt insert staypoints for trajectory ${trajectoryId}: ${e}`
         )
       }
     }
@@ -448,11 +464,12 @@ export class SqliteService {
   async deleteStaypoints(trajectoryId: string) {
     await this.ensureDbReady()
     const statement = `DELETE FROM staypoints WHERE trajectory = '${trajectoryId}';`
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(statement)
-    if (changes === -1) throw new Error(`couldnt delete staypoints: ${message}`)
+
+    try {
+      await this.db.run(statement)
+    } catch (e) {
+      throw new Error(`couldnt delete staypoints: ${e}`)
+    }
   }
 
   async getMostFrequentVisitByDayAndHour(
@@ -517,12 +534,11 @@ export class SqliteService {
       const placeholderString = placeholders.join(', ')
       const statement = `INSERT OR REPLACE INTO timetable VALUES ${placeholderString}`
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
-      const {
-        changes: { changes },
-        message,
-      } = await this.db.executeSet(set)
-      if (changes === -1) {
-        throw new Error(`couldnt insert visits: ${message}`)
+
+      try {
+        await this.db.executeSet(set)
+      } catch (e) {
+        throw new Error(`couldnt insert visits: ${e}`)
       }
     }
   }
@@ -546,30 +562,28 @@ export class SqliteService {
       reverseGeocoding.originLatLng
     )
     if (!previousCoding) {
-      const {
-        changes: { changes },
-        message,
-      } = await this.db.run(
-        'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?)',
-        [...reverseGeocoding.originLatLng, reverseGeocoding].map(normalize)
-      )
-      if (changes === -1)
-        throw new Error(`couldnt insert reverse-geocoding: ${message}`)
+      try {
+        await this.db.run(
+          'INSERT OR REPLACE INTO reverseGeocoding VALUES (?,?,?)',
+          [...reverseGeocoding.originLatLng, reverseGeocoding].map(normalize)
+        )
+      } catch (e) {
+        throw new Error(`couldnt insert reverse-geocoding: ${e}`)
+      }
     }
   }
 
   async upsertDiaryEntry({ id, created, updated, date, content }: DiaryEntry) {
     await this.ensureDbReady()
 
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      'INSERT OR REPLACE INTO diaryEntry VALUES (?,?,?,?,?)',
-      [id, created, updated, date, content].map(normalize)
-    )
-    if (changes === -1)
-      throw new Error(`couldnt insert diary-entry: ${message}`)
+    try {
+      await this.db.run(
+        'INSERT OR REPLACE INTO diaryEntry VALUES (?,?,?,?,?)',
+        [id, created, updated, date, content].map(normalize)
+      )
+    } catch (e) {
+      throw new Error(`couldnt insert diary-entry: ${e}`)
+    }
   }
 
   async getDiary(): Promise<DiaryEntry[]> {
@@ -597,11 +611,12 @@ export class SqliteService {
     await this.ensureDbReady()
 
     const statement = `DELETE FROM diaryEntry WHERE id = '${id}';`
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(statement)
-    if (changes === -1) throw new Error(`couldnt delete trajectory: ${message}`)
+
+    try {
+      await this.db.run(statement)
+    } catch (e) {
+      throw new Error(`couldnt delete trajectory: ${e}`)
+    }
   }
 
   async upsertLogEntry({
@@ -615,22 +630,22 @@ export class SqliteService {
   }: LogEvent) {
     await this.ensureDbReady()
 
-    const {
-      changes: { changes },
-      message,
-    } = await this.db.run(
-      'INSERT INTO logs VALUES (?,?,?,?,?,?,?)',
-      [
-        type.toString(),
-        scope.toString(),
-        level.toString(),
-        text,
-        timestamp,
-        locationCount,
-        lastLocationTimestamp,
-      ].map(normalize)
-    )
-    if (changes === -1) throw new Error(`couldnt insert log-entry: ${message}`)
+    try {
+      await this.db.run(
+        'INSERT INTO logs VALUES (?,?,?,?,?,?,?)',
+        [
+          type.toString(),
+          scope.toString(),
+          level.toString(),
+          text,
+          timestamp,
+          locationCount,
+          lastLocationTimestamp,
+        ].map(normalize)
+      )
+    } catch (e) {
+      throw new Error(`couldnt insert log-entry: ${e}`)
+    }
   }
 
   async getLogs(): Promise<LogEvent[]> {

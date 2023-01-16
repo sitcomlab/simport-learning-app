@@ -1,17 +1,19 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 export async function runMigrations(
   db: SQLiteDBConnection,
   migrations: string[]
 ) {
-  const init = `CREATE TABLE IF NOT EXISTS migrations (
-    version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-    up TEXT NOT NULL);`
-  const {
-    changes: { changes },
-    message,
-  } = await db.execute(init)
-  if (changes === -1) throw new Error(`can't run DB migrations: ${message}`)
+  try {
+    const init = `CREATE TABLE IF NOT EXISTS migrations (
+      version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+      up TEXT NOT NULL);`
+
+    await db.execute(init)
+  } catch (e) {
+    throw new Error(`can't run DB migrations: ${e}`)
+  }
 
   const { values } = await db.query(
     `SELECT version FROM migrations ORDER BY version DESC LIMIT 1;`
@@ -28,14 +30,12 @@ async function runMigration(
   targetVersion: number
 ) {
   // run migrations
-  const {
-    changes: { changes: changesMigration },
-    message: messageMigration,
-  } = await db.execute(migration)
-  if (changesMigration === -1)
-    throw new Error(
-      `DB migration to v${targetVersion} failed: ${messageMigration}`
-    )
+
+  try {
+    await db.execute(migration)
+  } catch (e) {
+    throw new Error(`DB migration to v${targetVersion} failed: ${e}`)
+  }
 
   // persist migration-info
   const set = [
@@ -44,14 +44,14 @@ async function runMigration(
       values: [targetVersion, migration],
     },
   ]
-  const {
-    changes: { changes: changesMigrationInfo },
-    message: messageMigrationInfo,
-  } = await db.executeSet(set)
-  if (changesMigrationInfo === -1)
+
+  try {
+    await db.executeSet(set)
+  } catch (e) {
     throw new Error(
-      `Persisting DB migration information to v${targetVersion} failed: ${messageMigrationInfo}`
+      `Persisting DB migration information to v${targetVersion} failed: ${e}`
     )
+  }
 }
 
 export const MIGRATIONS = [

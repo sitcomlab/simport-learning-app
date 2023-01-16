@@ -1,7 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { ModalController, Platform } from '@ionic/angular'
-import { Device } from '@ionic-native/device'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
@@ -14,6 +13,7 @@ import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag
 import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
 import { LogfileService } from '../shared-services/logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
+import { Device } from '@capacitor/device'
 
 @Component({
   selector: 'app-tracking',
@@ -247,14 +247,17 @@ export class TrackingPage implements OnInit, OnDestroy {
   }
 
   hasAlwaysAllowLocationOption(): boolean {
-    if (this.platform.is('ios')) {
-      // 'always-allow' exists in all iOS-versions supported by this app
-      return true
-    } else if (this.platform.is('android')) {
-      const osVersion = parseInt(Device.version, 10) || 0
-      // 'always-allow' exists since OS-version 10 = API-level 29
-      return osVersion >= 10
-    }
-    return false
+    return true
+    //   if (this.platform.is('ios')) {
+    //     // 'always-allow' exists in all iOS-versions supported by this app
+    //     return true
+    //   } else if (this.platform.is('android')) {
+    //     const deviceInfo = await Device.getInfo()
+    //     const deviceVersion = deviceInfo.osVersion
+    //     const osVersion = parseInt(deviceVersion, 10) || 0
+    //     // 'always-allow' exists since OS-version 10 = API-level 29
+    //     return osVersion >= 10
+    //   }
+    //   return false
   }
 }

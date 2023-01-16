@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core'
 import { NotificationType } from './types'
-import { LocalNotificationPendingList, Plugins } from '@capacitor/core'
 import { Router } from '@angular/router'
+import {
+  CancelOptions,
+  LocalNotifications,
+} from '@capacitor/local-notifications'
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +14,7 @@ export class NotificationService {
     this.checkPermission()
 
     // listen for notifications sent to unpause tracking
-    Plugins.LocalNotifications.addListener(
+    LocalNotifications.addListener(
       'localNotificationActionPerformed',
       (performed) => {
         if (
@@ -25,18 +28,8 @@ export class NotificationService {
     )
   }
 
-  private checkPermission() {
-    Plugins.LocalNotifications.requestPermission().then(
-      (permissionResponse) => {
-        console.log(
-          'notification permission granted:' + permissionResponse.granted
-        )
-      }
-    )
-  }
-
   notify(type: NotificationType, title: string, text: string) {
-    Plugins.LocalNotifications.schedule({
+    LocalNotifications.schedule({
       notifications: [
         {
           id: type,
@@ -53,7 +46,7 @@ export class NotificationService {
     text: string,
     fireDate: Date
   ) {
-    Plugins.LocalNotifications.schedule({
+    LocalNotifications.schedule({
       notifications: [
         {
           id: type,
@@ -68,13 +61,19 @@ export class NotificationService {
   }
 
   async removeScheduledUnpauseNotifications() {
-    const pendingUnpauseNotifications: LocalNotificationPendingList = {
+    const pendingUnpauseNotifications: CancelOptions = {
       notifications: [
         {
-          id: NotificationType.unpauseTrackingNotification.toString(),
+          id: NotificationType.unpauseTrackingNotification,
         },
       ],
     }
-    await Plugins.LocalNotifications.cancel(pendingUnpauseNotifications)
+    await LocalNotifications.cancel(pendingUnpauseNotifications)
+  }
+
+  private checkPermission() {
+    LocalNotifications.requestPermissions().then((permissionResponse) => {
+      console.log('notification permission granted:' + permissionResponse)
+    })
   }
 }

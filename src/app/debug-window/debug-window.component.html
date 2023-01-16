@@ -25,10 +25,10 @@
     </ion-segment>
 
     <div *ngIf="segment === 'general'">
-      <div *ngIf="myDevice">
+      <!-- <div *ngIf="myDevice">
         <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
         <p><b>App Build: </b> {{ myDevice.appBuild }}</p>
-      </div>
+      </div> -->
 
       <p><b>Location tracking enabled: </b> {{ trackingRunning }}</p>
       <p><b>Notifications enabled: </b> {{ notificationsEnabled }}</p>
@@ -80,9 +80,9 @@
     </div>
 
     <div *ngIf="segment === 'device'">
-      <p *ngFor="let item of myDevice | keyvalue">
+      <!-- <p *ngFor="let item of myDevice | keyvalue">
         <b>{{ item.key }}: </b> {{ item.value }}
-      </p>
+      </p> -->
     </div>
   </ion-card-content>
 </div>

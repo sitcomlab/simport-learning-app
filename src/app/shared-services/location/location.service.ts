@@ -6,7 +6,6 @@ import { SqliteService } from './../db/sqlite.service'
 import { InferenceService } from './../inferences/inference.service'
 import { NotificationService } from './../notification/notification.service'
 import { NotificationType } from './../notification/types'
-import { Plugins } from '@capacitor/core'
 import { TranslateService } from '@ngx-translate/core'
 import { LogfileService } from '../logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../logfile/types'
@@ -14,9 +13,14 @@ import {
   BackgroundGeolocationPlugin,
   Location,
 } from '@capacitor-community/background-geolocation'
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const { App, BackgroundGeolocation } = Plugins
+const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
+  'BackgroundGeolocation'
+)
+
+import { registerPlugin } from '@capacitor/core'
+import { App } from '@capacitor/app'
+
 @Injectable()
 export class LocationService implements OnDestroy {
   trackingRunning: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
@@ -33,8 +37,6 @@ export class LocationService implements OnDestroy {
   private stopEventSubscription: Subscription
   private nextLocationIsStart = false
 
-  private backgroundGeolocation: BackgroundGeolocationPlugin =
-    BackgroundGeolocation as BackgroundGeolocationPlugin
   private backgroundGeolocationWatcherId: string
 
   constructor(
@@ -85,7 +87,7 @@ export class LocationService implements OnDestroy {
     this.notificationsEnabled.next(enabled)
   }
 
-  start() {
+  async start() {
     this.logfileService.log(
       'Tracking started',
       LogEventScope.tracking,
@@ -98,29 +100,30 @@ export class LocationService implements OnDestroy {
       return false
     }
 
-    this.backgroundGeolocationWatcherId = this.backgroundGeolocation.addWatcher(
-      {
-        backgroundMessage: this.translateService.instant(
-          'notification.backgroundGeolocationText'
-        ),
-        backgroundTitle: this.translateService.instant(
-          'notification.backgroundGeolocationTitle'
-        ),
-        requestPermissions: true,
-        stale: false,
-        distanceFilter: 30,
-      },
-      async (location, error) => {
-        if (error) {
-          if (error.code === 'NOT_AUTHORIZED') {
-            await this.showGrantPermissionAlert()
+    this.backgroundGeolocationWatcherId =
+      await BackgroundGeolocation.addWatcher(
+        {
+          backgroundMessage: this.translateService.instant(
+            'notification.backgroundGeolocationText'
+          ),
+          backgroundTitle: this.translateService.instant(
+            'notification.backgroundGeolocationTitle'
+          ),
+          requestPermissions: true,
+          stale: false,
+          distanceFilter: 30,
+        },
+        async (location, error) => {
+          if (error) {
+            if (error.code === 'NOT_AUTHORIZED') {
+              await this.showGrantPermissionAlert()
+            }
+            return console.error(error)
           }
-          return console.error(error)
-        }
 
-        this.locationUpdateSubscription.next(location)
-      }
-    )
+          this.locationUpdateSubscription.next(location)
+        }
+      )
     this.nextLocationIsStart = true
     this.notificationService.removeScheduledUnpauseNotifications()
     this.startEventSubscription.next('START')
@@ -135,15 +138,13 @@ export class LocationService implements OnDestroy {
 
     if (!this.isSupportedPlatform) return
 
-    this.backgroundGeolocation
-      .removeWatcher({
-        id: this.backgroundGeolocationWatcherId,
-      })
-      .then(() => {
-        this.backgroundGeolocationWatcherId = undefined
-        this.nextLocationIsStart = false
-        this.startEventSubscription.next('STOP')
-      })
+    BackgroundGeolocation.removeWatcher({
+      id: this.backgroundGeolocationWatcherId,
+    }).then(() => {
+      this.backgroundGeolocationWatcherId = undefined
+      this.nextLocationIsStart = false
+      this.startEventSubscription.next('STOP')
+    })
   }
 
   sendUnpauseNotificationAtTime(unpauseDate: Date) {
@@ -156,7 +157,7 @@ export class LocationService implements OnDestroy {
   }
 
   openLocationSettings() {
-    this.backgroundGeolocation.openSettings()
+    BackgroundGeolocation.openSettings()
   }
 
   private updateRunningState() {
@@ -272,7 +273,7 @@ export class LocationService implements OnDestroy {
           text: this.translateService.instant('confirm.appSettingsButtonText'),
           cssClass: 'primary',
           handler: () => {
-            this.backgroundGeolocation.openSettings()
+            BackgroundGeolocation.openSettings()
           },
         },
         {

@@ -1,57 +1,91 @@
 PODS:
-  - Capacitor (2.5.0):
+  - Capacitor (4.6.1):
     - CapacitorCordova
+  - CapacitorApp (4.1.1):
+    - Capacitor
   - CapacitorCommunityBackgroundGeolocation (0.0.1):
     - Capacitor
-  - CapacitorCommunitySqlite (2.9.16):
+  - CapacitorCommunitySqlite (4.6.0):
     - Capacitor
     - SQLCipher
-  - CapacitorCordova (2.5.0)
-  - CapacitorFileSelector (0.0.5):
+    - ZIPFoundation
+  - CapacitorCordova (4.6.1)
+  - CapacitorDevice (4.1.0):
     - Capacitor
-  - CordovaPlugins (2.5.0):
-    - CapacitorCordova
-  - SQLCipher (4.5.2):
-    - SQLCipher/standard (= 4.5.2)
-  - SQLCipher/common (4.5.2)
-  - SQLCipher/standard (4.5.2):
+  - CapacitorFilesystem (4.1.4):
+    - Capacitor
+  - CapacitorLocalNotifications (4.1.4):
+    - Capacitor
+  - CapacitorShare (4.1.0):
+    - Capacitor
+  - CapawesomeCapacitorFilePicker (0.5.8):
+    - Capacitor
+  - SQLCipher (4.5.3):
+    - SQLCipher/standard (= 4.5.3)
+  - SQLCipher/common (4.5.3)
+  - SQLCipher/standard (4.5.3):
     - SQLCipher/common
+  - TransistorsoftCapacitorBackgroundFetch (1.0.2):
+    - Capacitor
+  - ZIPFoundation (0.9.16)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCommunityBackgroundGeolocation (from `../../node_modules/@capacitor-community/background-geolocation`)"
   - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
-  - CapacitorFileSelector (from `../../node_modules/capacitor-file-selector`)
-  - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
+  - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
+  - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
+  - "CapawesomeCapacitorFilePicker (from `../../node_modules/@capawesome/capacitor-file-picker`)"
+  - "TransistorsoftCapacitorBackgroundFetch (from `../../node_modules/@transistorsoft/capacitor-background-fetch`)"
 
 SPEC REPOS:
   trunk:
     - SQLCipher
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorApp:
+    :path: "../../node_modules/@capacitor/app"
   CapacitorCommunityBackgroundGeolocation:
     :path: "../../node_modules/@capacitor-community/background-geolocation"
   CapacitorCommunitySqlite:
     :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
-  CapacitorFileSelector:
-    :path: "../../node_modules/capacitor-file-selector"
-  CordovaPlugins:
-    :path: "../capacitor-cordova-ios-plugins"
+  CapacitorDevice:
+    :path: "../../node_modules/@capacitor/device"
+  CapacitorFilesystem:
+    :path: "../../node_modules/@capacitor/filesystem"
+  CapacitorLocalNotifications:
+    :path: "../../node_modules/@capacitor/local-notifications"
+  CapacitorShare:
+    :path: "../../node_modules/@capacitor/share"
+  CapawesomeCapacitorFilePicker:
+    :path: "../../node_modules/@capawesome/capacitor-file-picker"
+  TransistorsoftCapacitorBackgroundFetch:
+    :path: "../../node_modules/@transistorsoft/capacitor-background-fetch"
 
 SPEC CHECKSUMS:
-  Capacitor: cf2174bec9bfe65f1c956616ac1d94afcef7d24d
-  CapacitorCommunityBackgroundGeolocation: 56ea6a55f8b56507c6bb3e2c0f678f0357f9e820
-  CapacitorCommunitySqlite: da1699f18229cb6deafdc829c7e827add8ae76b5
-  CapacitorCordova: 03d0a19b737e65c94825b20222c804d5467e1c5e
-  CapacitorFileSelector: 5c2d14928680d159c2861147974fdc3f204ebe06
-  CordovaPlugins: 0f00bb6d2cb779789b8a0fe361e9a2c608650356
-  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
+  Capacitor: 6b8848492d0b4fec76f53c1504089228d00645bf
+  CapacitorApp: acd42fe8561fe751ad5b5f459aa85e6acd7bee24
+  CapacitorCommunityBackgroundGeolocation: 6f26f4290377dbd1d6dec21e62cb66f008f61ec7
+  CapacitorCommunitySqlite: 9f29194e1b68dc4203c304e76c8826b016ee414a
+  CapacitorCordova: 48a0f6863177473356a4aecb4ee69e2b865202e7
+  CapacitorDevice: 63e8ef8837176b8caf67dc0717b8b1123754a955
+  CapacitorFilesystem: 3d665e5b3719d9f6e240480a7468861b0bb35f93
+  CapacitorLocalNotifications: 5937199b3df1ef0cfe9e579882ca4f5fc4b31ff4
+  CapacitorShare: d81b40de329187f4669ad8a40ce90fe2bbe3eecd
+  CapawesomeCapacitorFilePicker: 59531bacbdc4f93b2a1d6f64f0cb58c28745e73a
+  SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
+  TransistorsoftCapacitorBackgroundFetch: 74ca62dae7ec78639eaf3d0d1e24c595ada213dd
+  ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 5a135ec6f6db949b6eabab108e72da4c96587124
+PODFILE CHECKSUM: 238b8520dbccfe2b0a2d5afe2659828be9def9a8
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { BehaviorSubject } from 'rxjs'
 import { Capacitor, Plugins } from '@capacitor/core'
-import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { BackgroundFetch } from '@transistorsoft/capacitor-background-fetch'
 import { BackgroundService, BackgroundState } from './background.service'
-const { App, BackgroundTask } = Plugins
+import { App } from '@capacitor/app'
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { BackgroundTask } = Plugins
 
 /**
  * Abstract background service class that runs background tasks
@@ -126,6 +130,7 @@ export abstract class AbstractBackgroundService {
 
   /**
    * The background function to run.
+   *
    * @param callback callback function
    */
   protected abstract backgroundFunction(): Promise<void>

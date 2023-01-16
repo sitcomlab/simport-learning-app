@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core'
 import { Capacitor } from '@capacitor/core'
-import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { BackgroundFetch } from '@transistorsoft/capacitor-background-fetch'
 import { BehaviorSubject } from 'rxjs'
 
 type BackgroundFunction = {
