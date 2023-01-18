@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from 'src/app/shared-services/db/sqlite.service'
 import { LocationService } from 'src/app/shared-services/location/location.service'
@@ -17,7 +16,6 @@ describe('TrajectoryCardPopoverPage', () => {
         declarations: [TrajectoryCardPopoverPage],
         imports: APP_TEST_IMPORTS,
         providers: [
-          AndroidPermissions,
           LocationService,
           SqliteService,
           TrajectoryImportExportService,

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core'
+import { Component } from '@angular/core'
 
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
