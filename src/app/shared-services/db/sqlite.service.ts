@@ -1,5 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core'
 import {
   CapacitorSQLite,
@@ -31,12 +29,12 @@ export class SqliteService {
   // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
   private static chunkSize = 1000
 
+  public addPointSub: Subject<Point> = new Subject()
+
   private sqlite = CapacitorSQLite
   private sqliteConnection: SQLiteConnection
   private db: SQLiteDBConnection
   private dbReady: Promise<void>
-
-  public addPointSub: Subject<Point> = new Subject()
 
   constructor(
     private platform: Platform,
@@ -45,34 +43,6 @@ export class SqliteService {
 
   isSupported() {
     return this.platform.is('hybrid') // equivalent to android && ios
-  }
-
-  private ensureDbReady() {
-    // call this.initDb() exactly once and return the resulting promise.
-    if (this.dbReady) return this.dbReady
-    return (this.dbReady = this.isSupported()
-      ? this.initDb()
-      : new Promise(() => {})) // never resolve..
-  }
-
-  private async initDb() {
-    this.sqliteConnection = new SQLiteConnection(this.sqlite)
-    this.db = await this.sqliteConnection.createConnection(
-      'trajectories',
-      false,
-      'no-encryption',
-      1,
-      false
-    )
-
-    // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
-    try {
-      await this.db.open()
-    } catch (e) {
-      throw new Error(`unable to open DB: ${e}`)
-    }
-
-    await runMigrations(this.db, MIGRATIONS)
   }
 
   async getAllTrajectoryMeta(): Promise<TrajectoryMeta[]> {
@@ -167,9 +137,7 @@ export class SqliteService {
     ]
 
     try {
-      const {
-        changes: { changes },
-      } = await this.db.executeSet(set)
+      await this.db.executeSet(set)
     } catch (e) {
       throw new Error(`couldnt insert trajectory: ${e}`)
     }
@@ -209,9 +177,7 @@ export class SqliteService {
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
 
       try {
-        const {
-          changes: { changes },
-        } = await this.db.executeSet(set)
+        await this.db.executeSet(set)
       } catch (e) {
         throw new Error(`couldnt insert points for trajectory ${t.id}: ${e}`)
       }
@@ -225,9 +191,7 @@ export class SqliteService {
     // insert new point
 
     try {
-      const {
-        changes: { changes },
-      } = await this.db.run(
+      await this.db.run(
         'INSERT OR REPLACE INTO points VALUES (?,?,?,?,?,?,?)',
         [trajectoryId, time, ...p.latLng, p.accuracy, p.speed, p.state].map(
           normalize
@@ -251,9 +215,7 @@ export class SqliteService {
     const statement = `DELETE FROM trajectories WHERE id = '${t.id}';`
 
     try {
-      const {
-        changes: { changes },
-      } = await this.db.run(statement)
+      await this.db.run(statement)
     } catch (e) {
       throw new Error(`couldnt delete trajectory: ${e}`)
     }
@@ -264,9 +226,7 @@ export class SqliteService {
     const statement = `DELETE FROM points WHERE trajectory = '${t.id}';`
 
     try {
-      const {
-        changes: { changes },
-      } = await this.db.run(statement)
+      await this.db.run(statement)
     } catch (e) {
       throw new Error(`couldnt delete points of trajectory: ${e}`)
     }
@@ -326,9 +286,7 @@ export class SqliteService {
       const set: capSQLiteSet[] = [{ statement, values: values.map(normalize) }]
 
       try {
-        const {
-          changes: { changes },
-        } = await this.db.executeSet(set)
+        await this.db.executeSet(set)
       } catch (e) {
         throw new Error(`couldnt insert infernence: ${e}`)
       }
@@ -340,9 +298,7 @@ export class SqliteService {
     const statement = `DELETE FROM inferences WHERE trajectory='${trajectoryId}';`
 
     try {
-      const {
-        changes: { changes },
-      } = await this.db.run(statement)
+      await this.db.run(statement)
     } catch (e) {
       throw new Error(`couldnt delete inferences: ${e}`)
     }
@@ -379,29 +335,6 @@ export class SqliteService {
     if (geocoding) inference.geocoding = geocoding
 
     return inference
-  }
-
-  private async updateDurationDaysInTrajectory(
-    trajectoryId: string
-  ): Promise<number> {
-    // update durationDays of trajectory
-    const { values } = await this.db.query(
-      'SELECT MIN(time) as firstPointTime, MAX(time) as lastPointTime FROM points WHERE trajectory = ?;',
-      [trajectoryId].map(normalize)
-    )
-    const { firstPointTime, lastPointTime } = values[0]
-    const firstPointDate = convertTimestampToDate(firstPointTime)
-    const lastPointDate = convertTimestampToDate(lastPointTime)
-    const durationDays = moment(lastPointDate).diff(
-      moment(firstPointDate),
-      'days',
-      true
-    )
-    await this.db.run(
-      'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
-      [durationDays, trajectoryId].map(normalize)
-    )
-    return durationDays
   }
 
   async getStaypoints(trajectoryId: string): Promise<StayPoints> {
@@ -656,6 +589,57 @@ export class SqliteService {
 
     return values.map((v) => LogEvent.fromJSON(v))
   }
+
+  private async updateDurationDaysInTrajectory(
+    trajectoryId: string
+  ): Promise<number> {
+    // update durationDays of trajectory
+    const { values } = await this.db.query(
+      'SELECT MIN(time) as firstPointTime, MAX(time) as lastPointTime FROM points WHERE trajectory = ?;',
+      [trajectoryId].map(normalize)
+    )
+    const { firstPointTime, lastPointTime } = values[0]
+    const firstPointDate = convertTimestampToDate(firstPointTime)
+    const lastPointDate = convertTimestampToDate(lastPointTime)
+    const durationDays = moment(lastPointDate).diff(
+      moment(firstPointDate),
+      'days',
+      true
+    )
+    await this.db.run(
+      'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
+      [durationDays, trajectoryId].map(normalize)
+    )
+    return durationDays
+  }
+
+  private ensureDbReady() {
+    // call this.initDb() exactly once and return the resulting promise.
+    if (this.dbReady) return this.dbReady
+    return (this.dbReady = this.isSupported()
+      ? this.initDb()
+      : new Promise(() => {})) // never resolve..
+  }
+
+  private async initDb() {
+    this.sqliteConnection = new SQLiteConnection(this.sqlite)
+    this.db = await this.sqliteConnection.createConnection(
+      'trajectories',
+      false,
+      'no-encryption',
+      1,
+      false
+    )
+
+    // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
+    try {
+      await this.db.open()
+    } catch (e) {
+      throw new Error(`unable to open DB: ${e}`)
+    }
+
+    await runMigrations(this.db, MIGRATIONS)
+  }
 }
 
 type SqlValue = Date | number | string | object
@@ -663,7 +647,7 @@ type SqlValue = Date | number | string | object
 // Normalize values into a format accepted by sqlite, which is not handled correctly by
 // the SqlitePlugin. There are platform-specific (sqlite-version specific?) differences.
 // Does not do sql-escaping, this is done by the sql driver.
-function normalize(v: SqlValue) {
+const normalize = (v: SqlValue) => {
   if (v === undefined) return null
 
   if (typeof v === 'string') return v
@@ -678,7 +662,6 @@ function normalize(v: SqlValue) {
   if (v instanceof Object) return JSON.stringify(v)
 }
 
-function convertTimestampToDate(timestamp: number): Date {
+const convertTimestampToDate = (timestamp: number): Date =>
   // convert timestamp from seconds to milliseconds and create Date-object
-  return new Date(timestamp * 1000)
-}
+  new Date(timestamp * 1000)

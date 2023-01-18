@@ -1,10 +1,9 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
-export async function runMigrations(
+export const runMigrations = async (
   db: SQLiteDBConnection,
   migrations: string[]
-) {
+) => {
   try {
     const init = `CREATE TABLE IF NOT EXISTS migrations (
       version integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -24,11 +23,11 @@ export async function runMigrations(
     await runMigration(db, migrations[v], v + 1)
 }
 
-async function runMigration(
+const runMigration = async (
   db: SQLiteDBConnection,
   migration: string,
   targetVersion: number
-) {
+) => {
   // run migrations
 
   try {
