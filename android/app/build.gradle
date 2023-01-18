@@ -18,8 +18,9 @@ try {def keystorePropertiesFile = rootProject.file('key.properties')
 }
 
 android {
+
+    namespace 'de.ifgi.simport.learning'
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
     ndkVersion rootProject.ext.ndkVersion
     defaultConfig {
         applicationId "de.ifgi.simport.learning"
