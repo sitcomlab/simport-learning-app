@@ -41,6 +41,7 @@
     "@capacitor/ios": "^4.6.1",
     "@capacitor/local-notifications": "^4.1.4",
     "@capacitor/share": "^4.1.0",
+    "@capawesome/capacitor-background-task": "^2.0.0",
     "@capawesome/capacitor-file-picker": "^0.5.8",
     "@ionic/angular": "^6.0.0",
     "@mapbox/polyline": "^1.1.1",
