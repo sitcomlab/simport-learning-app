@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
-import { Plugins } from '@capacitor/core'
+import { App } from '@capacitor/app'
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { LogEvent } from 'src/app/model/log-event'
 import { SqliteService } from '../db/sqlite.service'
 import { TrajectoryService } from '../trajectory/trajectory.service'
 import { LogEventLevel, LogEventScope, LogEventType } from './types'
-const { App: app } = Plugins
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +20,7 @@ export class LogfileService {
     this.platform.ready().then(() => {
       this.log('App started', LogEventScope.app, LogEventType.start)
 
-      app.addListener('appStateChange', async (state) => {
+      App.addListener('appStateChange', async (state) => {
         this.log(
           'AppStateChange',
           LogEventScope.app,
