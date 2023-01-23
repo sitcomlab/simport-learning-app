@@ -13,7 +13,6 @@ import { FeatureFlagService } from '../shared-services/feature-flag/feature-flag
 import { SettingsConfig } from '../shared-services/settings/settings.fixtures'
 import { LogfileService } from '../shared-services/logfile/logfile.service'
 import { LogEventScope, LogEventType } from '../shared-services/logfile/types'
-import { Device } from '@capacitor/device'
 
 @Component({
   selector: 'app-tracking',
@@ -244,20 +243,5 @@ export class TrackingPage implements OnInit, OnDestroy {
       LogEventType.click
     )
     this.router.navigate(['/settings/privacy-policy'])
-  }
-
-  hasAlwaysAllowLocationOption(): boolean {
-    return true
-    //   if (this.platform.is('ios')) {
-    //     // 'always-allow' exists in all iOS-versions supported by this app
-    //     return true
-    //   } else if (this.platform.is('android')) {
-    //     const deviceInfo = await Device.getInfo()
-    //     const deviceVersion = deviceInfo.osVersion
-    //     const osVersion = parseInt(deviceVersion, 10) || 0
-    //     // 'always-allow' exists since OS-version 10 = API-level 29
-    //     return osVersion >= 10
-    //   }
-    //   return false
   }
 }

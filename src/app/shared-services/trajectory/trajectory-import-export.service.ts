@@ -39,6 +39,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
    * it is for debug-purposes only and must be 'false' when pushed remotely.
    */
   private static importAsUserTrajectory = false
+  private static importMimeType = 'application/json'
 
   constructor(
     http: HttpClient,
@@ -58,34 +59,20 @@ export class TrajectoryImportExportService extends TrajectoryService {
   ): Promise<TrajectoryImportResult> {
     const filePickResult = await FilePicker.pickFiles({
       multiple: false,
-      types: ['*'],
+      readData: true,
+      types: [TrajectoryImportExportService.importMimeType],
     })
     await didSelectFileCallback()
-    const selectedFile = filePickResult.files[0]
-    if (this.platform.is('android')) {
-      const parsedPaths = JSON.parse(selectedFile.path)
-      const parsedOriginalNames = JSON.parse(selectedFile.name)
-      const parsedExtensions = JSON.parse(selectedFile.mimeType)
-      for (let index = 0; index < parsedPaths.length; index++) {
-        const file = await fetch(parsedPaths[index]).then((r) => r.blob())
+    try {
+      const selectedFile = filePickResult.files[0]
+      if (selectedFile.data) {
         return await this.importFile(
-          file,
-          parsedOriginalNames[index],
-          parsedExtensions[index]
+          selectedFile.data,
+          selectedFile.name,
+          selectedFile.mimeType
         )
       }
-    } else if (this.platform.is('ios')) {
-      // for (let index = 0; index < selectedFile.paths.length; index++) {
-      //   const file = await fetch(selectedFile.paths[index]).then((r) =>
-      //     r.blob()
-      //   )
-      //   return await this.importFile(
-      //     file,
-      //     selectedFile.name[index],
-      //     selectedFile.mimeType[index]
-      //   )
-      // }
-    }
+    } catch (e) {}
     return {
       success: false,
       errorMessage: this.translateService.instant(
@@ -141,7 +128,7 @@ export class TrajectoryImportExportService extends TrajectoryService {
   }
 
   async importFile(
-    file: Blob,
+    fileBase64: string,
     name: string,
     extension: string
   ): Promise<TrajectoryImportResult> {
@@ -156,39 +143,21 @@ export class TrajectoryImportExportService extends TrajectoryService {
     }
 
     try {
-      const reader = new FileReader()
-      reader.readAsText(file)
-      return new Promise((resolve) => {
-        reader.onload = async () => {
-          const json = reader.result.toString()
-          const trajectory = this.createTrajectoryFromImport(json, name)
-          return this.addTrajectory(trajectory)
-            .then(async () => {
-              resolve({
-                success: true,
-                trajectoryId: trajectory.id,
-                errorMessage: null,
-              })
-            })
-            .catch(async () => {
-              resolve({
-                success: false,
-                trajectoryId: null,
-                errorMessage: this.translateService.instant(
-                  'trajectory.import.errorMessage'
-                ),
-              })
-            })
-        }
-      })
-    } catch (e) {
+      const file = atob(fileBase64)
+      const trajectory = this.createTrajectoryFromImport(file, name)
+      await this.addTrajectory(trajectory)
       return {
-        success: false,
-        trajectoryId: null,
-        errorMessage: this.translateService.instant(
-          'trajectory.import.errorMessage'
-        ),
+        success: true,
+        trajectoryId: trajectory.id,
+        errorMessage: null,
       }
+    } catch (e) {}
+    return {
+      success: false,
+      trajectoryId: null,
+      errorMessage: this.translateService.instant(
+        'trajectory.import.errorMessage'
+      ),
     }
   }
 
