@@ -13,6 +13,7 @@ import { TrajectoryCardComponent } from './trajectory-card/trajectory-card.compo
 import { TrajectoryCardPopoverPage } from './trajectory-card/trajectory-card-popover/trajectory-card-popover.page'
 import { SharedUiModule } from '../shared-ui/shared-ui.module'
 import { TrajectoryImportExportService } from '../shared-services/trajectory/trajectory-import-export.service'
+import { DebugWindowFormatFileSizePipe } from '../debug-window/debug-window-file-size.pipe'
 
 @NgModule({
   imports: [
@@ -26,6 +27,7 @@ import { TrajectoryImportExportService } from '../shared-services/trajectory/tra
     SelectTrajectoryPage,
     TrajectorySelectorComponent,
     DebugWindowComponent,
+    DebugWindowFormatFileSizePipe,
     TrajectoryCardComponent,
     TrajectoryCardPopoverPage,
   ],
