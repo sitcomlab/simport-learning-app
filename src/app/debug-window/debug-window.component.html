@@ -24,17 +24,12 @@
       </ion-segment-button>
     </ion-segment>
 
-    <div *ngIf="segment === 'general'">
-      <!-- <div *ngIf="myDevice">
-        <p><b>App Version: </b> {{ myDevice.appVersion }}</p>
-        <p><b>App Build: </b> {{ myDevice.appBuild }}</p>
-      </div> -->
-
+    <div class="ion-padding-top" *ngIf="segment === 'general'">
       <p><b>Location tracking enabled: </b> {{ trackingRunning }}</p>
       <p><b>Notifications enabled: </b> {{ notificationsEnabled }}</p>
     </div>
 
-    <div *ngIf="segment === 'trajectories'">
+    <div class="ion-padding-top" *ngIf="segment === 'trajectories'">
       <p *ngIf="loading">Loading...</p>
       <div *ngIf="!loading">
         <p><b>Total number of trajectories: </b> {{ trajectories.length }}</p>
@@ -79,10 +74,31 @@
       </div>
     </div>
 
-    <div *ngIf="segment === 'device'">
-      <!-- <p *ngFor="let item of myDevice | keyvalue">
-        <b>{{ item.key }}: </b> {{ item.value }}
-      </p> -->
+    <div class="ion-padding-top" *ngIf="segment === 'device'">
+      <h2>App Info</h2>
+      <p><b>App Version: </b>{{ appInfo?.version }} ({{ appInfo?.build }})</p>
+      <p><b>App Name: </b>{{ appInfo?.name }}</p>
+      <p><b>App ID: </b>{{ appInfo?.id }}</p>
+
+      <h2 class="ion-padding-top">Device Info</h2>
+      <p><b>Manufacturer: </b>{{ deviceInfo?.manufacturer }}</p>
+      <p><b>Model: </b>{{ deviceInfo?.model }}</p>
+      <p><b>Name: </b>{{ deviceInfo?.name }}</p>
+      <p><b>Platform: </b>{{ deviceInfo?.platform }}</p>
+      <p>
+        <b>OS: </b>{{ deviceInfo?.operatingSystem }} {{ deviceInfo?.osVersion }}
+      </p>
+      <p><b>WebView-Version: </b>{{ deviceInfo?.webViewVersion }}</p>
+      <p><b>Is Virtual: </b>{{ deviceInfo?.isVirtual }}</p>
+
+      <h2 class="ion-padding-top">Storage/Memory</h2>
+      <p>
+        <b>Free Storage: </b>{{ deviceInfo?.realDiskFree | formatFileSize }}
+      </p>
+      <p>
+        <b>Total Storage: </b>{{ deviceInfo?.realDiskTotal | formatFileSize }}
+      </p>
+      <p><b>Used Memory: </b>{{ deviceInfo?.memUsed | formatFileSize }}</p>
     </div>
   </ion-card-content>
 </div>

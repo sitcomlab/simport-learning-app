@@ -66,14 +66,11 @@ export class DiaryService {
     zip.file(`log_${timestamp}.csv`, logfileData)
 
     const data = await zip.generateAsync({ type: 'base64' })
-    const directory = this.isAndroid10OrAbove()
-      ? Directory.Documents
-      : Directory.ExternalStorage
 
     const fileResult = await Filesystem.writeFile({
       data,
       path: `SIMPORT_export_${timestamp}.zip`,
-      directory,
+      directory: Directory.Documents,
     })
 
     Share.share({
@@ -105,15 +102,5 @@ export class DiaryService {
       )
       throw new Error(errorMessage)
     }
-  }
-
-  private isAndroid10OrAbove(): boolean {
-    return true
-    //   if (this.platform.is('android')) {
-    //     const osVersion = parseInt(Device.getInfo()version, 10) || 0
-    //     // 'always-allow' exists since OS-version 10 = API-level 29
-    //     return osVersion >= 10
-    //   }
-    // return false
   }
 }

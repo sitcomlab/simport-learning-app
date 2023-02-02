@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
+import { App, AppInfo } from '@capacitor/app'
 
 @Component({
   selector: 'app-debug-window',
@@ -12,7 +13,8 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
   styleUrls: ['./debug-window.component.scss'],
 })
 export class DebugWindowComponent implements OnInit, OnDestroy {
-  myDevice: DeviceInfo
+  deviceInfo: DeviceInfo
+  appInfo: AppInfo
   trajectories: TrajectoryMeta[]
   userTrajectory: Trajectory
   importedTrajectories: TrajectoryMeta[]
@@ -31,7 +33,8 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    this.myDevice = await Device.getInfo()
+    this.deviceInfo = await Device.getInfo()
+    this.appInfo = await App.getInfo()
 
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {

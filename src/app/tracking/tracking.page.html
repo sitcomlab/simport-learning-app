@@ -51,7 +51,7 @@
         <ion-note *ngIf="!locationService.isSupportedPlatform">
           {{ 'tracking.notSupported' | translate }}
         </ion-note>
-        <ion-note *ngIf="hasAlwaysAllowLocationOption()">
+        <ion-note>
           <span [innerHTML]="'tracking.alwaysAllowHint' | translate"></span>
           <a [routerLink]="" (click)="openLocationSettings()"
             >{{ 'tracking.systemSettings' | translate }}</a

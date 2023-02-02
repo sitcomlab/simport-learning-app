@@ -28,10 +28,11 @@ export class SqliteService {
   // construct query & values array in chunks to prevent to many sql-statements at once
   // since the length limit of a query 'SQLITE_MAX_SQL_LENGTH' defaults to 1 000 000
   private static chunkSize = 1000
+  private static databaseName = 'trajectories'
 
   public addPointSub: Subject<Point> = new Subject()
 
-  private sqlite = CapacitorSQLite
+  private sqlitePlugin = CapacitorSQLite
   private sqliteConnection: SQLiteConnection
   private db: SQLiteDBConnection
   private dbReady: Promise<void>
@@ -622,14 +623,27 @@ export class SqliteService {
   }
 
   private async initDb() {
-    this.sqliteConnection = new SQLiteConnection(this.sqlite)
-    this.db = await this.sqliteConnection.createConnection(
-      'trajectories',
-      false,
-      'no-encryption',
-      1,
+    this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin)
+    const connectionsConsistency =
+      await this.sqliteConnection.checkConnectionsConsistency()
+    const isConnected = await this.sqliteConnection.isConnection(
+      SqliteService.databaseName,
       false
     )
+    if (connectionsConsistency.result && isConnected.result) {
+      this.db = await this.sqliteConnection.retrieveConnection(
+        SqliteService.databaseName,
+        false
+      )
+    } else {
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        false,
+        'no-encryption',
+        1,
+        false
+      )
+    }
 
     // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
     try {
