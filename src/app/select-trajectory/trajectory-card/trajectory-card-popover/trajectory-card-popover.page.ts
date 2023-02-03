@@ -124,26 +124,16 @@ export class TrajectoryCardPopoverPage implements OnInit {
           text: this.translateService.instant('trajectory.export.saveMessage'),
           icon: 'save-outline',
           handler: async () => {
-            const hasPermission = true
-            if (hasPermission) {
-              await this.showLoadingDialog(
-                this.translateService.instant(
-                  'trajectory.export.loadingDialogMessage'
-                )
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.export.loadingDialogMessage'
               )
-              await this.trajectoryImportExportService
-                .exportTrajectoryToDownloads(this.trajectory)
-                .then(async (result) => {
-                  await this.handleExportResult(result)
-                })
-            } else {
-              await this.showToast(
-                this.translateService.instant(
-                  'trajectory.export.permissionErrorMessage'
-                ),
-                true
-              )
-            }
+            )
+            await this.trajectoryImportExportService
+              .exportTrajectoryToDownloads(this.trajectory)
+              .then(async (result) => {
+                await this.handleExportResult(result)
+              })
           },
         },
         {
