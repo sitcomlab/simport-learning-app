@@ -6,7 +6,6 @@ import {
   SQLiteDBConnection,
 } from '@capacitor-community/sqlite'
 import { Platform } from '@ionic/angular'
-import * as moment from 'moment'
 import { Subject } from 'rxjs'
 import { Inference } from 'src/app/model/inference'
 import {
@@ -22,6 +21,7 @@ import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { TranslateService } from '@ngx-translate/core'
 import { LogEvent } from 'src/app/model/log-event'
+import { differenceInDays } from 'date-fns'
 
 @Injectable()
 export class SqliteService {
@@ -602,11 +602,7 @@ export class SqliteService {
     const { firstPointTime, lastPointTime } = values[0]
     const firstPointDate = convertTimestampToDate(firstPointTime)
     const lastPointDate = convertTimestampToDate(lastPointTime)
-    const durationDays = moment(lastPointDate).diff(
-      moment(firstPointDate),
-      'days',
-      true
-    )
+    const durationDays = differenceInDays(firstPointDate, lastPointDate)
     await this.db.run(
       'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
       [durationDays, trajectoryId].map(normalize)

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as polyline from '@mapbox/polyline'
-import Moment from 'moment'
+import { differenceInDays } from 'date-fns'
 
 export enum TrajectoryType {
   EXAMPLE = 'example',
@@ -36,6 +38,51 @@ export interface Point {
 
 export class Trajectory implements TrajectoryMeta, TrajectoryData {
   static trackingTrajectoryID = 'user'
+
+  constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
+    if (data?.coordinates.length !== data?.timestamps.length)
+      throw new Error(
+        `data corruption; coordinates & timestamps don\'t have equal length`
+      )
+  }
+
+  // implement TrajectoryMeta interface
+  get id() {
+    return this.meta.id
+  }
+  get type() {
+    return this.meta.type
+  }
+  get placename() {
+    return this.meta.placename
+  }
+  get durationDays() {
+    // try to compute durationDays for precision
+    const ts = this.data?.timestamps
+
+    if (ts?.length) {
+      return differenceInDays(ts[0], ts[ts.length - 1])
+    }
+    // fall back to stored value
+    return this.meta.durationDays || 0
+  }
+
+  // implement TrajectoryData interface
+  get coordinates() {
+    return this.data?.coordinates || []
+  }
+  get timestamps() {
+    return this.data?.timestamps || []
+  }
+  get accuracy() {
+    return this.data?.accuracy || []
+  }
+  get speed() {
+    return this.data?.speed || []
+  }
+  get state() {
+    return this.data?.state || []
+  }
 
   // Decodes a trajectory that was encoded for assets/trajectories/ via
   // dev/import_example_trajectory.ts
@@ -92,52 +139,6 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
       timeN,
     }
     return trajectoryJson
-  }
-
-  constructor(private meta: TrajectoryMeta, private data?: TrajectoryData) {
-    if (data?.coordinates.length !== data?.timestamps.length)
-      throw new Error(
-        `data corruption; coordinates & timestamps don\'t have equal length`
-      )
-  }
-
-  // implement TrajectoryMeta interface
-  get id() {
-    return this.meta.id
-  }
-  get type() {
-    return this.meta.type
-  }
-  get placename() {
-    return this.meta.placename
-  }
-  get durationDays() {
-    // try to compute durationDays for precision
-    const ts = this.data?.timestamps
-    if (ts?.length) {
-      const t1 = Moment(ts[0])
-      const t2 = Moment(ts[ts.length - 1])
-      return t2.diff(t1, 'days', true)
-    }
-    // fall back to stored value
-    return this.meta.durationDays || 0
-  }
-
-  // implement TrajectoryData interface
-  get coordinates() {
-    return this.data?.coordinates || []
-  }
-  get timestamps() {
-    return this.data?.timestamps || []
-  }
-  get accuracy() {
-    return this.data?.accuracy || []
-  }
-  get speed() {
-    return this.data?.speed || []
-  }
-  get state() {
-    return this.data?.state || []
   }
 
   addPoint({ latLng, time, accuracy, speed, state }: Point) {
