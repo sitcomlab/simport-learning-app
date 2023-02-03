@@ -6,6 +6,7 @@ import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
 import { App, AppInfo } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 
 @Component({
   selector: 'app-debug-window',
@@ -33,8 +34,12 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    // on web @capacitor/app is not working
+    if (Capacitor.getPlatform() !== 'web') {
+      this.appInfo = await App.getInfo()
+    }
+
     this.deviceInfo = await Device.getInfo()
-    this.appInfo = await App.getInfo()
 
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {
