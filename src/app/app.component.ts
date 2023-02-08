@@ -1,4 +1,5 @@
-import { Component } from '@angular/core'
+import { AfterViewInit, Component } from '@angular/core'
+import { StatusBar, Style } from '@capacitor/status-bar'
 
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
@@ -8,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core'
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   constructor(
     private platform: Platform,
     private translateService: TranslateService
@@ -21,5 +22,10 @@ export class AppComponent {
     } else {
       this.translateService.use(this.translateService.defaultLang)
     }
+  }
+
+  async ngAfterViewInit() {
+    await StatusBar.show()
+    await StatusBar.setStyle({ style: Style.Light }) // there is no dark mode (yet)
   }
 }

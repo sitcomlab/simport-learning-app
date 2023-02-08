@@ -18,6 +18,8 @@ PODS:
     - Capacitor
   - CapacitorShare (4.1.0):
     - Capacitor
+  - CapacitorStatusBar (4.1.1):
+    - Capacitor
   - CapawesomeCapacitorBackgroundTask (2.0.0):
     - Capacitor
   - CapawesomeCapacitorFilePicker (0.5.8):
@@ -41,6 +43,7 @@ DEPENDENCIES:
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - "CapawesomeCapacitorBackgroundTask (from `../../node_modules/@capawesome/capacitor-background-task`)"
   - "CapawesomeCapacitorFilePicker (from `../../node_modules/@capawesome/capacitor-file-picker`)"
   - "TransistorsoftCapacitorBackgroundFetch (from `../../node_modules/@transistorsoft/capacitor-background-fetch`)"
@@ -69,6 +72,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/local-notifications"
   CapacitorShare:
     :path: "../../node_modules/@capacitor/share"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
   CapawesomeCapacitorBackgroundTask:
     :path: "../../node_modules/@capawesome/capacitor-background-task"
   CapawesomeCapacitorFilePicker:
@@ -86,12 +91,13 @@ SPEC CHECKSUMS:
   CapacitorFilesystem: 3d665e5b3719d9f6e240480a7468861b0bb35f93
   CapacitorLocalNotifications: 5937199b3df1ef0cfe9e579882ca4f5fc4b31ff4
   CapacitorShare: d81b40de329187f4669ad8a40ce90fe2bbe3eecd
+  CapacitorStatusBar: 65933e554bb5d65b361deaa936a93616086a2608
   CapawesomeCapacitorBackgroundTask: 976a5232fcef545e7253ce25b71037f283475edf
   CapawesomeCapacitorFilePicker: 59531bacbdc4f93b2a1d6f64f0cb58c28745e73a
   SQLCipher: 57fa9f863fa4a3ed9dd3c90ace52315db8c0fdca
   TransistorsoftCapacitorBackgroundFetch: 74ca62dae7ec78639eaf3d0d1e24c595ada213dd
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: c83a670511d57f40fe676071d8ec9b498cfbc078
+PODFILE CHECKSUM: c9fa320c75c589e78b7cdc88ee682fcac7ec8586
 
 COCOAPODS: 1.11.3
