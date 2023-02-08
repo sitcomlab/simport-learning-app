@@ -1,5 +1,5 @@
 {
-  "appId": "de.ifgi.simport.learning",
+  "appId": "de.fh-muenster.simport.learning",
   "appName": "simport-learning",
   "bundledWebRuntime": false,
   "webDir": "www"
