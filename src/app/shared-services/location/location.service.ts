@@ -13,13 +13,13 @@ import {
   BackgroundGeolocationPlugin,
   Location,
 } from '@capacitor-community/background-geolocation'
+import { registerPlugin } from '@capacitor/core'
+import { App } from '@capacitor/app'
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
   'BackgroundGeolocation'
 )
-
-import { registerPlugin } from '@capacitor/core'
-import { App } from '@capacitor/app'
 
 @Injectable()
 export class LocationService implements OnDestroy {
