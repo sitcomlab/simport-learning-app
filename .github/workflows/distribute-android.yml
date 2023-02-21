@@ -20,13 +20,13 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@master
 
-      - name: Prepare ionic build
-        uses: coturiv/setup-ionic@master
-
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Install Ionic
+        run: npm install -g @ionic/cli
 
       - name: Run ionic build
         run: |
