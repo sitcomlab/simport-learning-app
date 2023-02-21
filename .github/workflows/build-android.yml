@@ -26,7 +26,7 @@ jobs:
         uses: coturiv/setup-ionic@master
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -37,13 +37,14 @@ jobs:
           ionic cap build android --no-interactive --no-open --confirm --prod
 
       - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1.0.3
+        uses: nttld/setup-ndk@v1.2.0
         with:
           ndk-version: r21d
 
       - name: Setup JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 11
 
       - name: Setup Android keystore
@@ -55,7 +56,7 @@ jobs:
           ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
 
       - name: Bump version
-        uses: chkfung/android-version-actions@v1.1
+        uses: chkfung/android-version-actions@v1.2.1
         with:
           gradlePath: ./android/app/build.gradle
           versionCode: ${{ github.run_number }}
