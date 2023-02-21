@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { ModalController, Platform, PopoverController } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
-import * as moment from 'moment'
+import { formatDuration, intervalToDuration } from 'date-fns'
+import { de, enUS } from 'date-fns/locale'
 import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { TrajectoryCardPopoverPage } from './trajectory-card-popover/trajectory-card-popover.page'
@@ -36,8 +37,16 @@ export class TrajectoryCardComponent implements OnInit {
   durationString() {
     const days = this.trajectory?.durationDays
     if (days) {
-      moment.locale(this.translateService.currentLang)
-      return moment.duration(days, 'days').humanize()
+      return formatDuration(
+        intervalToDuration({
+          start: 0,
+          end: days * 24 * 60 * 60 * 1000, // days to milliseconds
+        }),
+        {
+          format: ['months', 'days'],
+          locale: this.translateService.currentLang === 'de' ? de : enUS,
+        }
+      )
     }
     return '—'
   }

@@ -44,7 +44,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       - name: Setup Android keystore
         working-directory: ./android
@@ -68,3 +68,9 @@ jobs:
           ANDROID_KEY_STORE_PASSWORD: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Archive build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: apk-artifact
+          path: android/app/build/outputs/apk/release/app-release.apk

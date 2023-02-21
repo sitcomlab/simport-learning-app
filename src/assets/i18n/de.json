@@ -70,8 +70,7 @@
       "saveMessage": "In Downloads speichern",
       "loadingDialogMessage": "Exportiere Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich exportiert",
-      "errorMessage": "Export fehlgeschlagen",
-      "permissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen"
+      "errorMessage": "Export fehlgeschlagen"
     },
     "delete": {
       "alertHeader": "'{{ value }}' löschen",

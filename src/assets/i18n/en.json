@@ -67,8 +67,7 @@
       "saveMessage": "Save to downloads",
       "loadingDialogMessage": "Exporting trajectory…",
       "successfulMessage": "Trajectory successfully exported",
-      "errorMessage": "Trajectory could not be exported",
-      "permissionErrorMessage": "Export failed: Missing permissions"
+      "errorMessage": "Trajectory could not be exported"
     },
     "delete": {
       "alertHeader": "Delete '{{ value }}'",

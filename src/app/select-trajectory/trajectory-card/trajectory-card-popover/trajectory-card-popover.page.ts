@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import {
   AlertController,
   LoadingController,
@@ -28,7 +27,6 @@ export class TrajectoryCardPopoverPage implements OnInit {
 
   constructor(
     private platform: Platform,
-    private androidPermissions: AndroidPermissions,
     private modalController: ModalController,
     private popoverController: PopoverController,
     private alertController: AlertController,
@@ -126,26 +124,16 @@ export class TrajectoryCardPopoverPage implements OnInit {
           text: this.translateService.instant('trajectory.export.saveMessage'),
           icon: 'save-outline',
           handler: async () => {
-            const hasPermission = await this.requestAndroidPermission()
-            if (hasPermission) {
-              await this.showLoadingDialog(
-                this.translateService.instant(
-                  'trajectory.export.loadingDialogMessage'
-                )
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.export.loadingDialogMessage'
               )
-              await this.trajectoryImportExportService
-                .exportTrajectoryToDownloads(this.trajectory)
-                .then(async (result) => {
-                  await this.handleExportResult(result)
-                })
-            } else {
-              await this.showToast(
-                this.translateService.instant(
-                  'trajectory.export.permissionErrorMessage'
-                ),
-                true
-              )
-            }
+            )
+            await this.trajectoryImportExportService
+              .exportTrajectoryToDownloads(this.trajectory)
+              .then(async (result) => {
+                await this.handleExportResult(result)
+              })
           },
         },
         {
@@ -184,24 +172,6 @@ export class TrajectoryCardPopoverPage implements OnInit {
     } else {
       await this.showToast(result.errorMessage, true)
     }
-  }
-
-  private async requestAndroidPermission(): Promise<boolean> {
-    return this.androidPermissions
-      .checkPermission(
-        this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-      )
-      .then(async (status) => {
-        if (status.hasPermission) {
-          return true
-        } else {
-          this.androidPermissions
-            .requestPermission(
-              this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-            )
-            .then(async (requestStatus) => requestStatus.hasPermission)
-        }
-      })
   }
 
   private async showLoadingDialog(message: string) {

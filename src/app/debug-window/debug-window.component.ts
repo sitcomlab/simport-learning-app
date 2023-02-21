@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
-import { DeviceInfo, Plugins } from '@capacitor/core'
+import { Device, DeviceInfo } from '@capacitor/device'
 import { ModalController } from '@ionic/angular'
 import { Subscription } from 'rxjs'
 import { Trajectory, TrajectoryMeta, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
 import { TrajectoryService } from '../shared-services/trajectory/trajectory.service'
+import { App, AppInfo } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 
 @Component({
   selector: 'app-debug-window',
@@ -12,7 +14,8 @@ import { TrajectoryService } from '../shared-services/trajectory/trajectory.serv
   styleUrls: ['./debug-window.component.scss'],
 })
 export class DebugWindowComponent implements OnInit, OnDestroy {
-  myDevice: Record<keyof DeviceInfo, any>
+  deviceInfo: DeviceInfo
+  appInfo: AppInfo
   trajectories: TrajectoryMeta[]
   userTrajectory: Trajectory
   importedTrajectories: TrajectoryMeta[]
@@ -31,10 +34,12 @@ export class DebugWindowComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    this.myDevice = (await Plugins.Device.getInfo()) as Record<
-      keyof DeviceInfo,
-      any
-    >
+    // on web @capacitor/app is not working
+    if (Capacitor.getPlatform() !== 'web') {
+      this.appInfo = await App.getInfo()
+    }
+
+    this.deviceInfo = await Device.getInfo()
 
     this.subscriptions.push(
       this.trajectoryService.getAllMeta().subscribe((ts) => {

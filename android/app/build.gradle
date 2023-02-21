@@ -18,8 +18,9 @@ try {def keystorePropertiesFile = rootProject.file('key.properties')
 }
 
 android {
+
+    namespace 'de.ifgi.simport.learning'
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
     ndkVersion rootProject.ext.ndkVersion
     defaultConfig {
         applicationId "de.ifgi.simport.learning"
@@ -55,6 +56,8 @@ repositories {
 }
 
 dependencies {
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation project(':capacitor-android')

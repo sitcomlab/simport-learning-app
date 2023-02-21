@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { BehaviorSubject } from 'rxjs'
 import { Capacitor, Plugins } from '@capacitor/core'
-import BackgroundFetch from 'cordova-plugin-background-fetch'
+import { BackgroundFetch } from '@transistorsoft/capacitor-background-fetch'
 import { BackgroundService, BackgroundState } from './background.service'
-const { App, BackgroundTask } = Plugins
+import { App } from '@capacitor/app'
+import { BackgroundTask } from '@capawesome/capacitor-background-task'
 
 /**
  * Abstract background service class that runs background tasks
@@ -67,7 +69,7 @@ export abstract class AbstractBackgroundService {
     if (runAsFetch && Capacitor.isNative) {
       this.triggerBackgroundFunctionAsFetch(lastRun)
     } else {
-      this.triggerBackgroundFunctionAsTask(lastRun)
+      await this.triggerBackgroundFunctionAsTask(lastRun)
     }
   }
 
@@ -96,10 +98,10 @@ export abstract class AbstractBackgroundService {
    *
    * @param lastRunTime last run time that is taken as reference for verifying the schedule.
    */
-  private triggerBackgroundFunctionAsTask(lastRunTime: number) {
+  private async triggerBackgroundFunctionAsTask(lastRunTime: number) {
     if (this.isWithinSchedule(this.foregroundInterval, lastRunTime)) {
       this.lastTryTime.next(new Date().getTime())
-      const taskId = BackgroundTask.beforeExit(async () => {
+      const taskId = await BackgroundTask.beforeExit(async () => {
         const callback: () => Promise<void> = async () => {
           BackgroundTask.finish({
             taskId,
@@ -126,6 +128,7 @@ export abstract class AbstractBackgroundService {
 
   /**
    * The background function to run.
+   *
    * @param callback callback function
    */
   protected abstract backgroundFunction(): Promise<void>

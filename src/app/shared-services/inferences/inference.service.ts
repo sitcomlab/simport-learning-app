@@ -21,7 +21,6 @@ import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
-import { Plugins } from '@capacitor/core'
 import { TimetableService } from '../timetable/timetable.service'
 import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
@@ -37,9 +36,7 @@ import {
   LogEventScope,
   LogEventType,
 } from '../../shared-services/logfile/types'
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins
+import { App } from '@capacitor/app'
 
 class InferenceFilterConfiguration {
   confidenceThreshold: number
