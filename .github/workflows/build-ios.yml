@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macOS-12
+    runs-on: macos-12
 
     strategy:
       matrix:
