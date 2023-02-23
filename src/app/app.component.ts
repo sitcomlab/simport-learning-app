@@ -1,8 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core'
+import { StatusBar, Style } from '@capacitor/status-bar'
 
 import { Platform } from '@ionic/angular'
-import { SplashScreen } from '@ionic-native/splash-screen/ngx'
-import { StatusBar } from '@ionic-native/status-bar/ngx'
 import { TranslateService } from '@ngx-translate/core'
 
 @Component({
@@ -13,8 +12,6 @@ import { TranslateService } from '@ngx-translate/core'
 export class AppComponent implements AfterViewInit {
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private translateService: TranslateService
   ) {
     // init translation with browser-language (== device-language)
@@ -27,10 +24,8 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault()
-      this.splashScreen.hide()
-    })
+  async ngAfterViewInit() {
+    await StatusBar.show()
+    await StatusBar.setStyle({ style: Style.Light }) // there is no dark mode (yet)
   }
 }

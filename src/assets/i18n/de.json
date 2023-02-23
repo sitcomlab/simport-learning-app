@@ -21,7 +21,7 @@
     "createNewEntryTitle": "Neuen Eintrag erstellen",
     "updateEntryTitle": "Eintrag aktualisieren",
     "dateTitle": "Datum",
-    "contentTitle": "Haben Sie sich heute Ihre Ortsdaten angeschaut? Falls ja: Welche Beobachtungen haben Sie gemacht?",
+    "contentTitle": "Welche Beobachtungen machen Sie, wenn sie sich Ihren Standortverlauf ansehen? Im Vergleich zu den vorherigen Tagen, welche Gemeinsamkeiten und Unterschiede sind Ihnen aufgefallen?",
     "contentNoLocationTrackingTitle": "Wie hast du heute dein Smartphone genutzt?",
     "contentPlaceholder": "Inhalt",
     "deleteEntryAlertHeader": "Eintrag löschen",
@@ -70,8 +70,7 @@
       "saveMessage": "In Downloads speichern",
       "loadingDialogMessage": "Exportiere Standortverlauf…",
       "successfulMessage": "Standortverlauf erfolgreich exportiert",
-      "errorMessage": "Export fehlgeschlagen",
-      "permissionErrorMessage": "Export fehlgeschlagen: Berechtigungen fehlen"
+      "errorMessage": "Export fehlgeschlagen"
     },
     "delete": {
       "alertHeader": "'{{ value }}' löschen",
@@ -114,7 +113,7 @@
       "predictionSuccess.singular": "Du wirst den markierten Ort wahrscheinlich in der nächsten Stunde besuchen",
       "predictionSuccess.plural": "Du wirst die markierten Orte wahrscheinlich in der nächsten Stunde besuchen",
       "predictionFail": "Dein nächster Aufenthaltsort konnte nicht bestimmt werden",
-      "toggleLocationButtonText": "Position ein- / ausblenden",
+      "toggleLocationButtonText": "Letzter Standort",
       "createInferencesButtonText": "Rückschlüsse generieren",
       "osmContributors": "OpenStreetMap-Mitwirkende",
       "timestampPopup": "Zeitpunkt: {{ value }}"
@@ -144,7 +143,7 @@
     "removeConsentConfirmation": "Bist du sicher?",
     "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
     "informedConsentTitle": "Erfasste Informationen",
-    "informedConsentText": "Die Simport Learning App erfasst Ihre Standortinformationen und speichert sie auf Ihrem Gerät um diese zu visualisieren, aggregieren (häufig besuchte Orte identifizieren) und analysieren (Wohn- und Arbeitsort bestimmen, Vorhersagen treffen) auch wenn Sie die App gerade nicht benutzen oder sie geschlossen ist. <br><br>Die gesammelten Daten verlassen nie Ihr lokales Gerät (Smartphone oder Tablet), es sei denn, Sie exportieren diese von Hand – wir speichern die Daten nicht auf einem Server. Alle Datenverarbeitung findet lokal auf Ihrem Gerät statt."
+    "informedConsentText": "Die Simport Learning App erfasst Ihre Standortinformationen und speichert sie auf Ihrem Gerät, um diese zu visualisieren und zu aggregieren (häufig besuchte Orte identifizieren), auch wenn Sie die App gerade nicht benutzen oder sie geschlossen ist. <br><br>Die gesammelten Daten verlassen nie Ihr lokales Gerät (Smartphone oder Tablet). Wir speichern die Daten nicht auf einem Server. Alle Datenverarbeitung findet lokal auf Ihrem Gerät statt."
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",
@@ -153,7 +152,7 @@
     "inferencesFoundText": "Wir können {{ value }} Rückschlüsse basierend auf deinem Standortverlauf ziehen",
     "inferencesGenerationLoadingDialog": "Generiere Rückschlüsse aus deinem Standortverlauf…",
     "backgroundGeolocationTitle": "Standortverlauf wird aufgezeichnet …",
-    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet um potentielle Rückschlüsse zu ziehen.",
+    "backgroundGeolocationText": "Dein Standortverlauf wird aufgezeichnet.",
     "locationUpdateTitle": "Standort aktualisiert",
     "locationUpdateText": "{{ latitude }} / {{ longitude }} ({{ accuracy }}m)",
     "trackingStarted": "Aufzeichnung gestartet",

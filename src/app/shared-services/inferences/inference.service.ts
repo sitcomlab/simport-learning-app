@@ -21,7 +21,6 @@ import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
 import { LoadingController } from '@ionic/angular'
-import { Plugins } from '@capacitor/core'
 import { TimetableService } from '../timetable/timetable.service'
 import { ReverseGeocodingService } from '../reverse-geocoding/reverse-geocoding.service'
 import { AbstractBackgroundService } from '../background/AbstractBackgroundService'
@@ -32,9 +31,12 @@ import {
 import { FeatureFlagService } from '../feature-flag/feature-flag.service'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 import { TranslateService } from '@ngx-translate/core'
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { App } = Plugins
+import { LogfileService } from '../../shared-services/logfile/logfile.service'
+import {
+  LogEventScope,
+  LogEventType,
+} from '../../shared-services/logfile/types'
+import { App } from '@capacitor/app'
 
 class InferenceFilterConfiguration {
   confidenceThreshold: number
@@ -91,7 +93,8 @@ export class InferenceService
     private staypointService: StaypointService,
     private featureFlagService: FeatureFlagService,
     protected backgroundService: BackgroundService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {
     super(backgroundService, 'com.transistorsoft.fetch')
 
@@ -244,7 +247,10 @@ export class InferenceService
         (inf) =>
           inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
-      if (significantInferencesLength > 0) {
+      if (
+        significantInferencesLength > 0 &&
+        this.featureFlagService.featureFlags.isNotificationsEnabledForInferences
+      ) {
         this.notificationService.notify(
           NotificationType.inferenceUpdate,
           this.translateService.instant('notification.inferencesFoundTitle'),
@@ -253,6 +259,14 @@ export class InferenceService
           })
         )
       }
+      this.logfileService.log(
+        'New inference computed, ' +
+          significantInferencesLength +
+          ' in total for ' +
+          traj.placename,
+        LogEventScope.inference,
+        LogEventType.change
+      )
     }
 
     await this.geocodingService.reverseGeocodeInferences(inference.inferences)

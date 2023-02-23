@@ -1,6 +1,6 @@
 <ion-content>
   <ion-list lines="full">
-    <ion-item (click)="exportTrajectory($event)">
+    <ion-item *ngIf="isExportEnabled" (click)="exportTrajectory($event)">
       <ion-icon name="share-outline" slot="start"></ion-icon>
       <ion-label>{{ 'general.export' | translate}}</ion-label>
     </ion-item>

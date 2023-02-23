@@ -7,6 +7,8 @@ export interface FeatureFlags {
   isHomeExploreTrajectoryEnabled: boolean
   isHomeImportTrajectoryEnabled: boolean
   isHomeDiaryEnabled: boolean
+  // trajectories list
+  isTrajectoryExportEnabled: boolean
   // trajectory-submenu entries
   isTrajectoryInferencesTabEnabled: boolean
   isTrajectoryMapTabEnabled: boolean
@@ -16,6 +18,8 @@ export interface FeatureFlags {
   isPoiInferenceComputationEnabled: boolean
   isReverseGeocodingEnabled: boolean
   isTimetableComputationEnabled: boolean
+  // notifications
+  isNotificationsEnabledForInferences: boolean
 }
 
 // default feature flags
@@ -25,6 +29,7 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: true,
     isHomeImportTrajectoryEnabled: true,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: true,
     isTrajectoryInferencesTabEnabled: true,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: true,
@@ -32,6 +37,7 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: true,
     isReverseGeocodingEnabled: true,
     isTimetableComputationEnabled: true,
+    isNotificationsEnabledForInferences: true,
   }
 
   // feature flags for the first deployment-study incl. control-group
@@ -40,8 +46,9 @@ export class FeatureFlagConfig {
     appModeSwitchPassword: 'wwu',
     isHomeLocationTrackingEnabled: true,
     isHomeExploreTrajectoryEnabled: true,
-    isHomeImportTrajectoryEnabled: true,
+    isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
@@ -49,6 +56,7 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: true,
     isReverseGeocodingEnabled: false,
     isTimetableComputationEnabled: false,
+    isNotificationsEnabledForInferences: false,
   }
 
   static deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
@@ -58,6 +66,7 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: false,
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
+    isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: false,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
@@ -65,5 +74,6 @@ export class FeatureFlagConfig {
     isPoiInferenceComputationEnabled: false,
     isReverseGeocodingEnabled: false,
     isTimetableComputationEnabled: false,
+    isNotificationsEnabledForInferences: false,
   }
 }

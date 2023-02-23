@@ -2,22 +2,27 @@
 
 android {
   compileOptions {
-      sourceCompatibility JavaVersion.VERSION_1_8
-      targetCompatibility JavaVersion.VERSION_1_8
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
   }
 }
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capacitor-community-background-geolocation')
     implementation project(':capacitor-community-sqlite')
-    implementation project(':capacitor-file-selector')
-    implementation "com.google.android.gms:play-services-location:11+"
-    implementation "com.android.support:support-v4:26+"
-    implementation "com.android.support:appcompat-v7:26+"
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-device')
+    implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-local-notifications')
+    implementation project(':capacitor-share')
+    implementation project(':capacitor-status-bar')
+    implementation project(':capawesome-capacitor-background-task')
+    implementation project(':capawesome-capacitor-file-picker')
+    implementation project(':transistorsoft-capacitor-background-fetch')
+
 }
-apply from: "../../node_modules/@mauron85/cordova-plugin-background-geolocation/android/dependencies.gradle"
-apply from: "../../node_modules/cordova-plugin-background-fetch/src/android/build.gradle"
-apply from: "../../node_modules/cordova-plugin-badge/src/android/badge.gradle"
+
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

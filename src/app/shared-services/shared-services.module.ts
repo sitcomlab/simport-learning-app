@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { InferenceService } from './inferences/inference.service'
 import { SqliteService } from './db/sqlite.service'
 import { LocationService } from './location/location.service'
@@ -17,9 +16,6 @@ import { LogfileService } from './logfile/logfile.service'
 
 @NgModule({
   providers: [
-    // service dependencies
-    BackgroundGeolocation,
-
     // providers
     InferenceService,
     LocationService,

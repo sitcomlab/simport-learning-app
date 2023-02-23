@@ -5,11 +5,9 @@ import { SqliteService } from '../db/sqlite.service'
 import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import JSZip from 'jszip'
-import { FilesystemDirectory, Plugins } from '@capacitor/core'
-import { Device } from '@ionic-native/device'
 import { LogfileService } from '../logfile/logfile.service'
-
-const { Filesystem: filesystem, Share: share } = Plugins
+import { Directory, Filesystem } from '@capacitor/filesystem'
+import { Share } from '@capacitor/share'
 
 @Injectable({
   providedIn: 'root',
@@ -68,21 +66,14 @@ export class DiaryService {
     zip.file(`log_${timestamp}.csv`, logfileData)
 
     const data = await zip.generateAsync({ type: 'base64' })
-    const directory = this.isAndroid10OrAbove()
-      ? FilesystemDirectory.Documents
-      : FilesystemDirectory.ExternalStorage
 
-    const fileResult = await filesystem.writeFile({
+    const fileResult = await Filesystem.writeFile({
       data,
       path: `SIMPORT_export_${timestamp}.zip`,
-      directory,
+      directory: Directory.Documents,
     })
 
-    if (this.platform.is('android')) {
-      await share.requestPermissions()
-    }
-
-    share.share({
+    Share.share({
       title: this.translateService.instant('diary.exportFileName'),
       url: fileResult.uri,
     })
@@ -111,14 +102,5 @@ export class DiaryService {
       )
       throw new Error(errorMessage)
     }
-  }
-
-  private isAndroid10OrAbove(): boolean {
-    if (this.platform.is('android')) {
-      const osVersion = parseInt(Device.version, 10) || 0
-      // 'always-allow' exists since OS-version 10 = API-level 29
-      return osVersion >= 10
-    }
-    return false
   }
 }

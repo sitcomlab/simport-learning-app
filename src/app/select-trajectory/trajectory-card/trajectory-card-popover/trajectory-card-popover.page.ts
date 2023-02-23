@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { AndroidPermissions } from '@ionic-native/android-permissions/ngx'
 import {
   AlertController,
   LoadingController,
@@ -11,6 +10,7 @@ import {
 } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
+import { FeatureFlagService } from 'src/app/shared-services/feature-flag/feature-flag.service'
 import { LocationService } from 'src/app/shared-services/location/location.service'
 import {
   TrajectoryExportResult,
@@ -27,7 +27,6 @@ export class TrajectoryCardPopoverPage implements OnInit {
 
   constructor(
     private platform: Platform,
-    private androidPermissions: AndroidPermissions,
     private modalController: ModalController,
     private popoverController: PopoverController,
     private alertController: AlertController,
@@ -36,8 +35,13 @@ export class TrajectoryCardPopoverPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private locationService: LocationService,
     private trajectoryImportExportService: TrajectoryImportExportService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private featureFlagService: FeatureFlagService
   ) {}
+
+  get isExportEnabled() {
+    return this.featureFlagService.featureFlags.isTrajectoryExportEnabled
+  }
 
   ngOnInit() {}
 
@@ -57,94 +61,6 @@ export class TrajectoryCardPopoverPage implements OnInit {
           await this.handleExportResult(result)
         })
     }
-  }
-
-  private async presentExportActionSheet() {
-    const actionSheet = await this.actionSheetController.create({
-      header: this.translateService.instant('trajectory.export.alertHeader'),
-      buttons: [
-        {
-          text: this.translateService.instant('trajectory.export.saveMessage'),
-          icon: 'save-outline',
-          handler: async () => {
-            const hasPermission = await this.requestAndroidPermission()
-            if (hasPermission) {
-              await this.showLoadingDialog(
-                this.translateService.instant(
-                  'trajectory.export.loadingDialogMessage'
-                )
-              )
-              await this.trajectoryImportExportService
-                .exportTrajectoryToDownloads(this.trajectory)
-                .then(async (result) => {
-                  await this.handleExportResult(result)
-                })
-            } else {
-              await this.showToast(
-                this.translateService.instant(
-                  'trajectory.export.permissionErrorMessage'
-                ),
-                true
-              )
-            }
-          },
-        },
-        {
-          text: this.translateService.instant('general.share'),
-          icon: 'share-social-outline',
-          handler: async () => {
-            await this.showLoadingDialog(
-              this.translateService.instant(
-                'trajectory.export.loadingDialogMessage'
-              )
-            )
-            await this.trajectoryImportExportService
-              .exportTrajectoryViaShareDialog(this.trajectory)
-              .then(async (result) => {
-                await this.handleExportResult(result)
-              })
-          },
-        },
-        {
-          text: this.translateService.instant('general.cancel'),
-          icon: 'close',
-          role: 'cancel',
-        },
-      ],
-    })
-    await actionSheet.present()
-  }
-
-  private async handleExportResult(result: TrajectoryExportResult) {
-    await this.hideLoadingDialog()
-    if (result.success) {
-      await this.showToast(
-        this.translateService.instant('trajectory.export.successfulMessage'),
-        false
-      )
-    } else {
-      await this.showToast(result.errorMessage, true)
-    }
-  }
-
-  private async requestAndroidPermission(): Promise<boolean> {
-    return this.androidPermissions
-      .checkPermission(
-        this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-      )
-      .then(async (status) => {
-        if (status.hasPermission) {
-          return true
-        } else {
-          this.androidPermissions
-            .requestPermission(
-              this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE
-            )
-            .then(async (requestStatus) => {
-              return requestStatus.hasPermission
-            })
-        }
-      })
   }
 
   async deleteTrajectory(e: Event) {
@@ -198,6 +114,64 @@ export class TrajectoryCardPopoverPage implements OnInit {
       ],
     })
     await alert.present()
+  }
+
+  private async presentExportActionSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      header: this.translateService.instant('trajectory.export.alertHeader'),
+      buttons: [
+        {
+          text: this.translateService.instant('trajectory.export.saveMessage'),
+          icon: 'save-outline',
+          handler: async () => {
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.export.loadingDialogMessage'
+              )
+            )
+            await this.trajectoryImportExportService
+              .exportTrajectoryToDownloads(this.trajectory)
+              .then(async (result) => {
+                await this.handleExportResult(result)
+              })
+          },
+        },
+        {
+          text: this.translateService.instant('general.share'),
+          icon: 'share-social-outline',
+          handler: async () => {
+            await this.showLoadingDialog(
+              this.translateService.instant(
+                'trajectory.export.loadingDialogMessage'
+              )
+            )
+            await this.trajectoryImportExportService
+              .exportTrajectoryViaShareDialog(this.trajectory)
+              .then(async (result) => {
+                await this.handleExportResult(result)
+              })
+          },
+        },
+        {
+          text: this.translateService.instant('general.cancel'),
+          icon: 'close',
+          role: 'cancel',
+        },
+      ],
+    })
+    await actionSheet.present()
+  }
+
+  private async handleExportResult(result: TrajectoryExportResult) {
+    await this.hideLoadingDialog()
+    if (result.success) {
+      await this.showToast(
+        this.translateService.instant('trajectory.export.successfulMessage'),
+        false
+      )
+    } else {
+      await this.showToast(result.errorMessage, true)
+    }
   }
 
   private async showLoadingDialog(message: string) {

@@ -1,7 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { ModalController, Platform } from '@ionic/angular'
-import { Device } from '@ionic-native/device'
 import { BehaviorSubject, Subscription } from 'rxjs'
 import { Trajectory, TrajectoryType } from '../model/trajectory'
 import { LocationService } from '../shared-services/location/location.service'
@@ -244,17 +243,5 @@ export class TrackingPage implements OnInit, OnDestroy {
       LogEventType.click
     )
     this.router.navigate(['/settings/privacy-policy'])
-  }
-
-  hasAlwaysAllowLocationOption(): boolean {
-    if (this.platform.is('ios')) {
-      // 'always-allow' exists in all iOS-versions supported by this app
-      return true
-    } else if (this.platform.is('android')) {
-      const osVersion = parseInt(Device.version, 10) || 0
-      // 'always-allow' exists since OS-version 10 = API-level 29
-      return osVersion >= 10
-    }
-    return false
   }
 }

@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing'
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation/ngx'
 import { APP_TEST_IMPORTS } from 'src/app/app.declarations'
 import { SqliteService } from './../db/sqlite.service'
 import { LocationService } from './../location/location.service'
@@ -11,12 +10,7 @@ describe('TrajectoryService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: APP_TEST_IMPORTS,
-      providers: [
-        TrajectoryService,
-        SqliteService,
-        LocationService,
-        BackgroundGeolocation,
-      ],
+      providers: [TrajectoryService, SqliteService, LocationService],
     })
     service = TestBed.inject(TrajectoryService)
   })
