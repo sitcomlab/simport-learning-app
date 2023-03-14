@@ -70,7 +70,7 @@ export class InferenceService
     ]),
   })
 
-  inferenceServiceEvent = new Subject<InferenceServiceEvent>()
+  inferenceServiceEvent = new BehaviorSubject<InferenceServiceEvent>(undefined)
 
   protected backgroundFetchId = 'com.transistorsoft.fetch'
   protected foregroundInterval = 720

@@ -83,7 +83,6 @@ export class TrajectoryPage implements OnInit, OnDestroy {
       presentingElement: this.routerOutlet.nativeEl,
       cssClass: 'auto-height',
     })
-    modal.present()
-    const { data: t } = await modal.onWillDismiss<void>()
+    await modal.present()
   }
 }

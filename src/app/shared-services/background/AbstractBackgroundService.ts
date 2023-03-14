@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { BehaviorSubject } from 'rxjs'
-import { Capacitor, Plugins } from '@capacitor/core'
+import { Capacitor } from '@capacitor/core'
 import { BackgroundFetch } from '@transistorsoft/capacitor-background-fetch'
 import { BackgroundService, BackgroundState } from './background.service'
 import { App } from '@capacitor/app'
