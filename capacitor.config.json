@@ -2,5 +2,13 @@
   "appId": "de.ifgi.simport.learning",
   "appName": "simport-learning",
   "bundledWebRuntime": false,
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "CapacitorSQLite": {
+      "iosDatabaseLocation": "Library/CapacitorDatabase",
+      "iosKeychainPrefix": "simport-learning",
+      "iosIsEncryption": true,
+      "androidIsEncryption": true
+    }
+  }
 }

@@ -32,7 +32,7 @@
     "@asymmetrik/ngx-leaflet": "^13.0.0",
     "@babel/helper-validator-option": "^7.12.17",
     "@capacitor-community/background-geolocation": "^1.2.7",
-    "@capacitor-community/sqlite": "^4.6.0",
+    "@capacitor-community/sqlite": "^4.6.3",
     "@capacitor/android": "4.6.1",
     "@capacitor/app": "^4.1.1",
     "@capacitor/core": "4.6.1",
