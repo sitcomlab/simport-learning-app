@@ -624,7 +624,7 @@ export class SqliteService {
    * @param length - The length of the passphrase to generate.
    * @returns - The generated passphrase.
    */
-  private async generatePassphrase(length) {
+  private async generatePassphrase(length: number) {
     const randomBytes = new Uint8Array(length)
     crypto.getRandomValues(randomBytes)
 
@@ -648,6 +648,12 @@ export class SqliteService {
       SqliteService.databaseName
     )
     if (!isEncrypted.result) {
+      const isSecretStored = await this.sqliteConnection.isSecretStored()
+      if (!isSecretStored.result) {
+        const passphrase = await this.generatePassphrase(16)
+        await this.sqliteConnection.setEncryptionSecret(passphrase)
+      }
+
       // encrypt the database
       this.db = await this.sqliteConnection.createConnection(
         SqliteService.databaseName,
