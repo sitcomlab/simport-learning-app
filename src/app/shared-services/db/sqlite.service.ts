@@ -666,6 +666,10 @@ export class SqliteService {
       // open and close the DB to run the encryption https://github.com/capacitor-community/sqlite/issues/375#issuecomment-1417949113
       await this.db.open()
       await this.db.close()
+      await this.sqliteConnection.closeConnection(
+        SqliteService.databaseName,
+        false
+      )
     }
 
     if (connectionsConsistency.result && isConnected.result) {
