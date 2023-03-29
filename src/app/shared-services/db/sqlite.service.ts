@@ -654,6 +654,18 @@ export class SqliteService {
     if (!isEncrypted.result) {
       const passphrase = await this.generatePassphrase(16)
       await this.sqliteConnection.setEncryptionSecret(passphrase)
+
+      // encrypt the database
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        true,
+        'encryption',
+        1,
+        false
+      )
+      // open and close the DB to run the encryption https://github.com/capacitor-community/sqlite/issues/375#issuecomment-1417949113
+      await this.db.open()
+      await this.db.close()
     }
 
     if (connectionsConsistency.result && isConnected.result) {
@@ -671,7 +683,6 @@ export class SqliteService {
       )
     }
 
-    // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
     try {
       await this.db.open()
     } catch (e) {
