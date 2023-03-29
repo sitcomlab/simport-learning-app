@@ -642,19 +642,12 @@ export class SqliteService {
 
   private async initDb() {
     this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin)
-    const connectionsConsistency =
-      await this.sqliteConnection.checkConnectionsConsistency()
-    const isConnected = await this.sqliteConnection.isConnection(
-      SqliteService.databaseName,
-      false
-    )
 
     // check if DB is encrypted and set secret if not
-    const isEncrypted = await this.sqliteConnection.isSecretStored()
+    const isEncrypted = await this.sqliteConnection.isDatabaseEncrypted(
+      SqliteService.databaseName
+    )
     if (!isEncrypted.result) {
-      const passphrase = await this.generatePassphrase(16)
-      await this.sqliteConnection.setEncryptionSecret(passphrase)
-
       // encrypt the database
       this.db = await this.sqliteConnection.createConnection(
         SqliteService.databaseName,
@@ -671,6 +664,13 @@ export class SqliteService {
         false
       )
     }
+
+    const connectionsConsistency =
+      await this.sqliteConnection.checkConnectionsConsistency()
+    const isConnected = await this.sqliteConnection.isConnection(
+      SqliteService.databaseName,
+      false
+    )
 
     if (connectionsConsistency.result && isConnected.result) {
       this.db = await this.sqliteConnection.retrieveConnection(
