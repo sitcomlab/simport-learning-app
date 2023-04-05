@@ -109,7 +109,7 @@ export class DiaryService {
       content
         // eslint-disable-next-line @typescript-eslint/quotes
         .replace(/\"/g, "'")
-        .replace(/\n/g, ' <newline> ')
+        .replace(/\n/g, '	')
     )
   }
 }
