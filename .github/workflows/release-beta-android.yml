@@ -1,9 +1,9 @@
 name: Google-Play-Android-Distribution
 
 on:
-  # Triggers the workflow on push or pull request events but only for the study-1 branch
+  # Triggers the workflow on push or pull request events but only for the study branch
   push:
-    branches: [study-1]
+    branches: [study]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
