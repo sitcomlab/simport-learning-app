@@ -14,10 +14,23 @@
   gap: 15px;
 }
 
+.accordion-content {
+  padding-top: 0;
+}
+
 .accordion-header {
   color: var(--ion-color-medium);
   font-size: 12px;
   text-align: right;
   padding: 0;
   margin: 0;
+}
+
+.divider {
+  background: var(--ion-color-medium);
+  opacity: 0.25;
+  height: 1px;
+  margin: 0px 16px;
+  padding-top: 0;
+  padding-bottom: 0;
 }

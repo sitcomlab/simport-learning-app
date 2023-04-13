@@ -66,11 +66,12 @@
       <ion-accordion-group
         *ngIf="inferences.get(key).secondaryInferences.length > 0"
       >
+        <div class="divider"></div>
         <ion-accordion value="first">
           <ion-item slot="header" class="accordion-header">
             <ion-label>Weitere Rückschlüsse</ion-label>
           </ion-item>
-          <div class="ion-padding" slot="content">
+          <div class="ion-padding accordion-content" slot="content">
             <ion-list lines="none">
               <ion-item
                 *ngFor="let i of inferences.get(key).secondaryInferences"

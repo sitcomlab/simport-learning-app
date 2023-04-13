@@ -141,7 +141,7 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   showInferenceOnMap(inference: Inference) {
-    if (!inference.latLng || !inference.accuracy) return
+    if (!inference.latLng) return
     this.openMap(inference.latLng)
   }
 
