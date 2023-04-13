@@ -7,16 +7,11 @@
       ></ion-back-button>
     </ion-buttons>
     <ion-title> {{ 'trajectory.insights.title' | translate }} </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="openInferenceFilter()">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="!inferences.length" class="centered ion-padding">
+  <div *ngIf="!hasInferences" class="centered ion-padding">
     <div>{{ 'trajectory.insights.noInferences' | translate }}</div>
     <div>
       <a (click)="openMap()"
@@ -25,10 +20,79 @@
     </div>
   </div>
 
-  <app-item-card
+  <ion-list *ngIf="hasInferences">
+    <ion-card *ngFor="let key of inferences.keys()">
+      <ion-card-header>
+        <ion-card-title class="inference-card-title">
+          <ion-icon [name]="getInferenceTypeIcon(key)"></ion-icon>
+          <h5>{{ 'inference.' + key | translate }}</h5>
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item
+          *ngFor="let i of inferences.get(key).primaryInferences"
+          button
+          detail="true"
+          detail-icon="map-outline"
+        >
+          <ion-icon
+            *ngIf="i.type !== 'poi'"
+            slot="start"
+            size="small"
+            name="ellipse"
+            [color]="getInferenceRatingColor(i)"
+          ></ion-icon>
+          <ion-label class="ion-text-wrap">
+            <p>{{ i.addressDisplayName }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-accordion-group
+          *ngIf="inferences.get(key).secondaryInferences.length > 0"
+        >
+          <ion-accordion value="first">
+            <ion-item slot="header" class="accordion-header">
+              <ion-label>Weitere Rückschlüsse</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <ion-list lines="none">
+                <ion-item
+                  *ngFor="let i of inferences.get(key).secondaryInferences"
+                  button
+                  detail="true"
+                  detail-icon="map-outline"
+                >
+                  <ion-icon
+                    *ngIf="i.type !== 'poi'"
+                    slot="start"
+                    size="small"
+                    name="ellipse"
+                    [color]="getInferenceRatingColor(i)"
+                  ></ion-icon>
+                  <ion-label class="ion-text-wrap">
+                    <p>
+                      {{ i.addressDisplayName }}
+                      <br />
+                      ({{i.geocoding.category ?? 'no cat'}})
+
+                      <br />
+                      ({{i.geocoding.type ?? 'no type'}})
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <!-- <app-item-card
     *ngFor="let i of inferences"
     icon="{{ i.outlinedIcon }}"
     subtitle="{{ formatInferenceInfo(i) }}"
     (click)="showInferenceOnMap(i)"
-  ></app-item-card>
+  ></app-item-card> -->
 </ion-content>

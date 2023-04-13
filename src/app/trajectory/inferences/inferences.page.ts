@@ -2,13 +2,45 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
-import { Inference } from 'src/app/model/inference'
+import {
+  Inference,
+  InferenceConfidence,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
 import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
 import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
+import {
+  InferenceResultStatus,
+  InferenceType,
+} from 'src/app/shared-services/inferences/engine/types'
+import { retry } from 'rxjs/operators'
+
+class InferenceListItem {
+  inferences: Inference[]
+  type: InferenceType
+  constructor(inferences: Inference[], type: InferenceType) {
+    this.inferences = inferences
+    this.type = type
+  }
+
+  get primaryInferences(): Inference[] {
+    if (this.type === InferenceType.poi) {
+      return this.inferences.slice(0, 3)
+    }
+    return this.inferences.slice(0, 1)
+  }
+
+  get secondaryInferences(): Inference[] {
+    if (this.type === InferenceType.poi) {
+      return this.inferences.slice(3)
+    }
+    return this.inferences.slice(1)
+  }
+}
 
 @Component({
   selector: 'app-inferences',
@@ -16,7 +48,7 @@ import { TrajectoryPagePath } from '../trajectory.page'
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit, OnDestroy {
-  inferences: Inference[] = []
+  inferences: Map<InferenceType, InferenceListItem> = new Map()
 
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
@@ -27,6 +59,10 @@ export class InferencesPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private translateService: TranslateService
   ) {}
+
+  get hasInferences(): boolean {
+    return this.inferences.size > 0
+  }
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
@@ -54,9 +90,18 @@ export class InferencesPage implements OnInit, OnDestroy {
         this.trajectoryId,
         runGeocoding
       )
-    this.inferences = inferencesResult.inferences.sort(
+    const sortedInferences = inferencesResult.inferences.sort(
       (a, b) => b.confidence - a.confidence
     )
+    Object.keys(InferenceType).forEach((t) => {
+      this.inferences.set(
+        t as InferenceType,
+        new InferenceListItem(
+          sortedInferences.filter((i) => i.type === t),
+          t as InferenceType
+        )
+      )
+    })
   }
 
   formatInferenceName(inference: Inference): string {
@@ -73,6 +118,29 @@ export class InferencesPage implements OnInit, OnDestroy {
       })
     }
     return def.info(inference, this.translateService)
+  }
+
+  getInferenceTypeIcon(type: string): string {
+    return AllInferences[type].outlinedIcon
+  }
+
+  getInferenceRatingColor(inference: Inference): string {
+    const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
+      inference.confidence
+    )
+    switch (rating) {
+      case InferenceConfidence.high:
+        return 'success'
+      case InferenceConfidence.medium:
+        return 'warning'
+      default:
+        return 'danger'
+    }
+  }
+
+  getInferencePoiIcon(inference: Inference): string {
+    // TODO
+    return 'flag'
   }
 
   showInferenceOnMap(inference: Inference) {

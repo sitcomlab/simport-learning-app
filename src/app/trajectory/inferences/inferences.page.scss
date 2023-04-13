@@ -6,3 +6,22 @@
   align-items: center;
   text-align: center;
 }
+
+.inference-card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+
+.accordion-header {
+  color: var(--ion-color-medium);
+  font-size: 12px;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+}
+
+ion-accordion {
+  padding-top: 10px;
+}

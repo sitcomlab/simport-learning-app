@@ -25,14 +25,6 @@ export class InferenceDefinition {
     public scoringConfigurations: InferenceScoringConfig[]
   ) {}
 
-  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
-    return this.scoringConfigurations.find((config) => config.type === type)
-  }
-
-  public getName(translateService: TranslateService): string {
-    return translateService.instant(this.type)
-  }
-
   get icon(): string {
     const def = AllInferences[this.type]
     if (!def) return 'help'
@@ -41,6 +33,14 @@ export class InferenceDefinition {
 
   get outlinedIcon(): string {
     return `${this.icon}-outline`
+  }
+
+  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
+    return this.scoringConfigurations.find((config) => config.type === type)
+  }
+
+  public getName(translateService: TranslateService): string {
+    return translateService.instant(this.type)
   }
 }
 

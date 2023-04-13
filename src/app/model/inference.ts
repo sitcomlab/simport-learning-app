@@ -20,33 +20,6 @@ export class Inference {
     public onSiteTimes?: [Date, Date][]
   ) {}
 
-  static fromObject(val: any): Inference {
-    const {
-      id,
-      name,
-      type,
-      description,
-      trajectory,
-      lat,
-      lon,
-      coordinates,
-      confidence,
-      accuracy,
-    } = val
-
-    return new Inference(
-      id,
-      name,
-      type,
-      description,
-      trajectory,
-      [lat, lon],
-      polyline.decode(coordinates) as [number, number][],
-      confidence,
-      accuracy
-    )
-  }
-
   get hasGeocoding(): boolean {
     return this.geocoding !== undefined
   }
@@ -83,6 +56,39 @@ export class Inference {
   get outlinedIcon(): string {
     return AllInferences[this.type].outlinedIcon
   }
+
+  static fromObject(val: any): Inference {
+    const {
+      id,
+      name,
+      type,
+      description,
+      trajectory,
+      lat,
+      lon,
+      coordinates,
+      confidence,
+      accuracy,
+    } = val
+
+    return new Inference(
+      id,
+      name,
+      type,
+      description,
+      trajectory,
+      [lat, lon],
+      polyline.decode(coordinates) as [number, number][],
+      confidence,
+      accuracy
+    )
+  }
+}
+
+export enum InferenceConfidence {
+  high = 'high',
+  medium = 'medium',
+  low = 'low',
 }
 
 export abstract class InferenceConfidenceThresholds {
@@ -91,8 +97,8 @@ export abstract class InferenceConfidenceThresholds {
   public static low = 0.05
 
   public static getQualitativeConfidence(confidenceValue: number): string {
-    if (confidenceValue >= this.high) return 'high'
-    else if (confidenceValue >= this.medium) return 'medium'
-    else if (confidenceValue >= this.low) return 'low'
+    if (confidenceValue >= this.high) return InferenceConfidence.high
+    else if (confidenceValue >= this.medium) return InferenceConfidence.medium
+    else if (confidenceValue >= this.low) return InferenceConfidence.low
   }
 }
