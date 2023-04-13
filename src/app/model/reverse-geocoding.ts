@@ -1,3 +1,79 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
+enum GeocodingIcon {
+  shop = 'basket',
+  education = 'school',
+  restaurant = 'restaurant',
+  bar = 'beer',
+  cafe = 'cafe',
+  icecream = 'ice-cream',
+  kindergarten = 'balloon',
+  sports = 'tennisball',
+  medical = 'bandages',
+  busstation = 'bus',
+  trainstation = 'train',
+  bank = 'cash',
+  house = 'home',
+}
+
+const geocodingIconPairings = new Map([
+  [GeocodingIcon.shop, ['shop']],
+  [
+    GeocodingIcon.education,
+    [
+      'school',
+      'college',
+      'university',
+      'driving_school',
+      'language_school',
+      'library',
+      'research_institute',
+    ],
+  ],
+  [GeocodingIcon.restaurant, ['restaurant', 'food_court', 'fast_food']],
+  [GeocodingIcon.bar, ['bar', 'pub', 'biergarten']],
+  [GeocodingIcon.cafe, ['cafe']],
+  [GeocodingIcon.icecream, ['ice_cream']],
+  [GeocodingIcon.kindergarten, ['kindergarten', 'playground']],
+  [
+    GeocodingIcon.sports,
+    [
+      'fitness_station',
+      'fitness_centre',
+      'golf_course',
+      'miniature_golf',
+      'sports_centre',
+      'sports_hall',
+    ],
+  ],
+  [
+    GeocodingIcon.medical,
+    ['clinic', 'hospital', 'doctors', 'dentist', 'pharmacy', 'nursing_home'],
+  ],
+  [GeocodingIcon.busstation, ['']],
+  [GeocodingIcon.trainstation, ['']],
+  [GeocodingIcon.bank, ['bank', 'atm', 'bureau_de_change']],
+  [GeocodingIcon.house, ['house', 'detached']],
+])
+
+export class ReverseGeocodingIcon {
+  private static fallbackIcon = 'pin'
+
+  static getGeocodingIcon(geocoding: ReverseGeocoding): string {
+    const typeIcon = [...geocodingIconPairings.keys()].find(
+      (key) => geocodingIconPairings.get(key)?.includes(geocoding.type) ?? false
+    )
+    if (typeIcon) {
+      return typeIcon
+    }
+    const categoryIcon = [...geocodingIconPairings.keys()].find(
+      (key) =>
+        geocodingIconPairings.get(key)?.includes(geocoding.category) ?? false
+    )
+    return categoryIcon ?? ReverseGeocodingIcon.fallbackIcon
+  }
+}
+
 export class ReverseGeocoding {
   constructor(
     public originLatLng: [number, number],

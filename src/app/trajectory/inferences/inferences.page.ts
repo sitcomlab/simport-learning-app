@@ -13,11 +13,8 @@ import {
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
-import {
-  InferenceResultStatus,
-  InferenceType,
-} from 'src/app/shared-services/inferences/engine/types'
-import { retry } from 'rxjs/operators'
+import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
+import { ReverseGeocodingIcon } from 'src/app/model/reverse-geocoding'
 
 class InferenceListItem {
   inferences: Inference[]
@@ -139,8 +136,8 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   getInferencePoiIcon(inference: Inference): string {
-    // TODO
-    return 'flag'
+    const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
+    return `${icon}-outline`
   }
 
   showInferenceOnMap(inference: Inference) {
