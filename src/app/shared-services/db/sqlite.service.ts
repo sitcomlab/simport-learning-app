@@ -618,14 +618,66 @@ export class SqliteService {
       : new Promise(() => {})) // never resolve..
   }
 
+  /**
+   * Generates a random passphrase of the specified length.
+   *
+   * @param length - The length of the passphrase to generate.
+   * @returns - The generated passphrase.
+   */
+  private async generatePassphrase(length: number) {
+    const randomBytes = new Uint8Array(length)
+    crypto.getRandomValues(randomBytes)
+
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~`|}{[]\\:;?><,./-='
+    let passphrase = ''
+
+    for (let i = 0; i < length; i++) {
+      const index = randomBytes[i] % characters.length
+      passphrase += characters[index]
+    }
+
+    return passphrase
+  }
+
   private async initDb() {
     this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin)
+
+    // check if DB is encrypted and set secret if not
+    const isEncrypted = await this.sqliteConnection.isDatabaseEncrypted(
+      SqliteService.databaseName
+    )
+    if (!isEncrypted.result) {
+      const isSecretStored = await this.sqliteConnection.isSecretStored()
+      if (!isSecretStored.result) {
+        const passphrase = await this.generatePassphrase(16)
+        await this.sqliteConnection.setEncryptionSecret(passphrase)
+      }
+
+      // encrypt the database
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        true,
+        'encryption',
+        1,
+        false
+      )
+      // open and close the DB to run the encryption https://github.com/capacitor-community/sqlite/issues/375#issuecomment-1417949113
+      await this.db.open()
+      await this.db.close()
+      await this.sqliteConnection.closeConnection(
+        SqliteService.databaseName,
+        false
+      )
+    }
+
     const connectionsConsistency =
       await this.sqliteConnection.checkConnectionsConsistency()
     const isConnected = await this.sqliteConnection.isConnection(
       SqliteService.databaseName,
       false
     )
+
     if (connectionsConsistency.result && isConnected.result) {
       this.db = await this.sqliteConnection.retrieveConnection(
         SqliteService.databaseName,
@@ -634,14 +686,13 @@ export class SqliteService {
     } else {
       this.db = await this.sqliteConnection.createConnection(
         SqliteService.databaseName,
-        false,
-        'no-encryption',
+        true,
+        'secret',
         1,
         false
       )
     }
 
-    // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
     try {
       await this.db.open()
     } catch (e) {
