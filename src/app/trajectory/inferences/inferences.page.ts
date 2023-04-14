@@ -123,8 +123,14 @@ export class InferencesPage implements OnInit, OnDestroy {
     return def.info(inference, this.translateService)
   }
 
-  getInferenceTypeIcon(type: string): string {
-    return ALL_INFERENCES[type].outlinedIcon
+  getInferenceTypeIcon(type: string, useOutlined: boolean): string {
+    const inf = ALL_INFERENCES[type]
+    return useOutlined ? inf.outlinedIcon : inf.icon
+  }
+
+  getInferenceTypeColor(type: InferenceType): string {
+    const inf = ALL_INFERENCES[type]
+    return inf.color
   }
 
   getInferenceRatingColor(inference: Inference): string {
@@ -153,7 +159,8 @@ export class InferencesPage implements OnInit, OnDestroy {
     return icon !== undefined ? `${icon}-outline` : undefined
   }
 
-  showInferenceOnMap(inference: Inference) {
+  showInferenceOnMap(e: Event, inference: Inference) {
+    e.stopPropagation()
     if (!inference.latLng) return
     this.openMap(inference.latLng)
   }
@@ -169,8 +176,16 @@ export class InferencesPage implements OnInit, OnDestroy {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 
-  async showInferenceRatingToast(e: Event, inference: Inference) {
+  async showInferenceToast(e: Event, inference: Inference) {
     e.stopPropagation()
+    if (inference.type === InferenceType.poi) {
+      await this.showInferencePoiToast(inference)
+    } else {
+      await this.showInferenceRatingToast(inference)
+    }
+  }
+
+  async showInferenceRatingToast(inference: Inference) {
     const header = this.getInferenceRatingString(inference)
     const color = this.getInferenceRatingColor(inference)
     await this.showInfoToast(
@@ -181,8 +196,7 @@ export class InferencesPage implements OnInit, OnDestroy {
     )
   }
 
-  async showInferencePoiToast(e: Event, inference: Inference) {
-    e.stopPropagation()
+  async showInferencePoiToast(inference: Inference) {
     const header = inference.hasGeocoding
       ? `${inference.geocoding.category} / ${inference.geocoding.type}`
       : undefined
@@ -209,7 +223,14 @@ export class InferencesPage implements OnInit, OnDestroy {
       position: 'bottom',
       duration: 2000,
     })
-    await toast.present()
+
+    try {
+      await this.toastController.dismiss()
+    } catch (error) {
+      // no previous toast to dismiss
+    } finally {
+      await toast.present()
+    }
   }
 
   private capitalizeFirstLetter(str: string): string {

@@ -35,6 +35,17 @@ export class InferenceDefinition {
     return `${this.icon}-outline`
   }
 
+  get color(): string {
+    switch (this.type) {
+      case InferenceType.home:
+        return '#347d39'
+      case InferenceType.work:
+        return 'orange'
+      case InferenceType.poi:
+        return '#68347d'
+    }
+  }
+
   public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
     return this.scoringConfigurations.find((config) => config.type === type)
   }

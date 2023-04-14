@@ -45,6 +45,7 @@ import {
   LogEventScope,
   LogEventType,
 } from '../../shared-services/logfile/types'
+import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 
 @Component({
   selector: 'app-map',
@@ -321,7 +322,7 @@ export class MapPage implements OnInit, OnDestroy {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
       const h = new Polygon(inference.coordinates, {
-        color: this.getIconColor(inference),
+        color: ALL_INFERENCES[inference.type].color,
         weight: 2,
         opacity: inference.confidence || 0,
       })
@@ -404,16 +405,5 @@ export class MapPage implements OnInit, OnDestroy {
 
   private async hideLoadingDialog() {
     await this.loadingController.dismiss()
-  }
-
-  private getIconColor(inference: Inference) {
-    switch (inference.type) {
-      case InferenceType.home:
-        return '#347d39'
-      case InferenceType.work:
-        return 'orange'
-      case InferenceType.poi:
-        return '#68347d'
-    }
   }
 }
