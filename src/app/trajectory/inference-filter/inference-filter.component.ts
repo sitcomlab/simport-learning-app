@@ -16,15 +16,16 @@ export class InferenceFilterComponent implements OnDestroy {
 
   constructor(private inferenceService: InferenceService) {}
 
+  get inferenceVisiblities(): Map<string, boolean> {
+    return this.filterConfiguration.inferenceVisiblities
+  }
+
   get confidenceThreshold(): number {
     return this.filterConfiguration.confidenceThreshold
   }
+
   set confidenceThreshold(value: number) {
     this.filterConfiguration.confidenceThreshold = value
-  }
-
-  get inferenceVisiblities(): Map<string, boolean> {
-    return this.filterConfiguration.inferenceVisiblities
   }
 
   onInferenceVisibilityChanged(type: string) {

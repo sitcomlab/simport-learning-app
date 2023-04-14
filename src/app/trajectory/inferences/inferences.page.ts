@@ -137,7 +137,7 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   getInferencePoiIcon(inference: Inference): string {
     const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
-    return `${icon}-outline`
+    return icon !== undefined ? `${icon}-outline` : undefined
   }
 
   showInferenceOnMap(inference: Inference) {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 enum GeocodingIcon {
-  shop = 'basket',
+  shop = 'cart',
   education = 'school',
   restaurant = 'restaurant',
   bar = 'beer',
@@ -53,7 +53,7 @@ const geocodingIconPairings = new Map([
   [GeocodingIcon.busstation, ['']],
   [GeocodingIcon.trainstation, ['']],
   [GeocodingIcon.bank, ['bank', 'atm', 'bureau_de_change']],
-  [GeocodingIcon.house, ['house', 'detached']],
+  [GeocodingIcon.house, ['house', 'detached', 'building']],
 ])
 
 export class ReverseGeocodingIcon {

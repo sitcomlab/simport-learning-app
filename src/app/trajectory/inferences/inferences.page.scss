@@ -14,6 +14,12 @@
   gap: 15px;
 }
 
+.primary-inference-item {
+  p {
+    color: var(--ion-color-dark);
+  }
+}
+
 .accordion-content {
   padding-top: 0;
 }
