@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
-import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
 
 @Component({
@@ -34,7 +34,7 @@ export class InferenceFilterComponent implements OnDestroy {
   }
 
   getIconFromInferenceType(type: string) {
-    return AllInferences[type].outlinedIcon
+    return ALL_INFERENCES[type].outlinedIcon
   }
 
   getTitleKeyFromInferenceType(type: string) {

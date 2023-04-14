@@ -7,7 +7,7 @@ import {
   InferenceConfidence,
   InferenceConfidenceThresholds,
 } from 'src/app/model/inference'
-import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 import {
   InferenceService,
   InferenceServiceEvent,
@@ -102,13 +102,13 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   formatInferenceName(inference: Inference): string {
-    const def = AllInferences[inference.name]
+    const def = ALL_INFERENCES[inference.name]
     if (!def) return inference.name
     return def.getName(this.translateService)
   }
 
   formatInferenceInfo(inference: Inference): string {
-    const def = AllInferences[inference.type]
+    const def = ALL_INFERENCES[inference.type]
     if (!def) {
       return this.translateService.instant('inference.unknown', {
         value: inference.name,
@@ -118,7 +118,7 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   getInferenceTypeIcon(type: string): string {
-    return AllInferences[type].outlinedIcon
+    return ALL_INFERENCES[type].outlinedIcon
   }
 
   getInferenceRatingColor(inference: Inference): string {

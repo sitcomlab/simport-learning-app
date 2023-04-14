@@ -6,7 +6,7 @@ import {
   InferenceScoringConfig,
   InferenceScoringType,
 } from '../scoring/types'
-import { AllInferences } from './definitions'
+import { ALL_INFERENCES } from './definitions'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
@@ -26,7 +26,7 @@ export class InferenceDefinition {
   ) {}
 
   get icon(): string {
-    const def = AllInferences[this.type]
+    const def = ALL_INFERENCES[this.type]
     if (!def) return 'help'
     return def.iconName
   }

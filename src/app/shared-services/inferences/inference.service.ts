@@ -1,10 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import { Trajectory, TrajectoryType, Point } from 'src/app/model/trajectory'
 import {
-  AllInferences,
-  HomeInference,
-  POIInference,
-  WorkInference,
+  ALL_INFERENCES,
+  HOME_INFERENCE,
+  POI_INFERENCE,
+  WORK_INFERENCE,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine/simple-engine'
 import { StaypointEngine } from './engine/staypoint-engine/staypoint-engine'
@@ -63,7 +63,7 @@ export class InferenceService
     confidenceThreshold: InferenceConfidenceThresholds.medium,
     inferenceVisiblities: new Map([
       // show all inference-types by default
-      ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
+      ...Object.entries(ALL_INFERENCES).map<[string, boolean]>(([_, value]) => [
         value.type,
         true,
       ]),
@@ -227,8 +227,8 @@ export class InferenceService
     const inferenceTypes =
       !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
       this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
-        ? [POIInference]
-        : [HomeInference, WorkInference, POIInference]
+        ? [POI_INFERENCE]
+        : [HOME_INFERENCE, WORK_INFERENCE, POI_INFERENCE]
 
     const inference = await this.inferenceEngine.infer(traj, inferenceTypes)
 

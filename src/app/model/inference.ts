@@ -1,4 +1,4 @@
-import { AllInferences } from '../shared-services/inferences/engine/definitions'
+import { ALL_INFERENCES } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
 import { ReverseGeocoding } from './reverse-geocoding'
@@ -50,11 +50,11 @@ export class Inference {
   }
 
   get icon(): string {
-    return AllInferences[this.type].icon
+    return ALL_INFERENCES[this.type].icon
   }
 
   get outlinedIcon(): string {
-    return AllInferences[this.type].outlinedIcon
+    return ALL_INFERENCES[this.type].outlinedIcon
   }
 
   static fromObject(val: any): Inference {
