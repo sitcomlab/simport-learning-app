@@ -15,6 +15,7 @@ import {
 import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import { ReverseGeocodingIcon } from 'src/app/model/reverse-geocoding'
+import { ToastController } from '@ionic/angular'
 
 class InferenceListItem {
   inferences: Inference[]
@@ -22,6 +23,10 @@ class InferenceListItem {
   constructor(inferences: Inference[], type: InferenceType) {
     this.inferences = inferences
     this.type = type
+  }
+
+  get hasInferences(): boolean {
+    return this.inferences.length > 0
   }
 
   get primaryInferences(): Inference[] {
@@ -52,6 +57,7 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   constructor(
     private inferenceService: InferenceService,
+    private toastController: ToastController,
     private router: Router,
     private route: ActivatedRoute,
     private translateService: TranslateService
@@ -135,6 +141,13 @@ export class InferencesPage implements OnInit, OnDestroy {
     }
   }
 
+  getInferenceRatingString(inference: Inference): string {
+    const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
+      inference.confidence
+    )
+    return this.translateService.instant(`inference.confidence.${rating}`)
+  }
+
   getInferencePoiIcon(inference: Inference): string {
     const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
     return icon !== undefined ? `${icon}-outline` : undefined
@@ -154,5 +167,52 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   openInferenceFilter() {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
+  }
+
+  async showInferenceRatingToast(e: Event, inference: Inference) {
+    e.stopPropagation()
+    const header = this.getInferenceRatingString(inference)
+    const color = this.getInferenceRatingColor(inference)
+    await this.showInfoToast(
+      this.capitalizeFirstLetter(header),
+      inference.addressDisplayName,
+      inference.icon,
+      color
+    )
+  }
+
+  async showInferencePoiToast(e: Event, inference: Inference) {
+    e.stopPropagation()
+    const header = inference.hasGeocoding
+      ? `${inference.geocoding.category} / ${inference.geocoding.type}`
+      : undefined
+    const icon = this.getInferencePoiIcon(inference)
+    await this.showInfoToast(
+      this.capitalizeFirstLetter(header),
+      inference.addressDisplayName,
+      icon,
+      'primary'
+    )
+  }
+
+  async showInfoToast(
+    header: string = undefined,
+    message: string,
+    icon: string = undefined,
+    color: string = undefined
+  ) {
+    const toast = await this.toastController.create({
+      header,
+      message,
+      icon,
+      color,
+      position: 'bottom',
+      duration: 2000,
+    })
+    await toast.present()
+  }
+
+  private capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 }

@@ -27,13 +27,13 @@
           <ion-icon [name]="getInferenceTypeIcon(key)"></ion-icon>
           <h5>{{ 'inference.info.' + key + 'Title' | translate }}</h5>
         </ion-card-title>
-        <ion-card-subtitle>
+        <ion-card-subtitle *ngIf="inferences.get(key).hasInferences">
           {{ 'inference.info.' + key + 'Subtitle' | translate }}
         </ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-list lines="none">
+        <ion-list *ngIf="inferences.get(key).hasInferences" lines="none">
           <ion-item
             *ngFor="let i of inferences.get(key).primaryInferences"
             class="primary-inference-item"
@@ -48,18 +48,24 @@
               size="small"
               name="ellipse"
               [color]="getInferenceRatingColor(i)"
+              (click)="showInferenceRatingToast($event, i)"
             ></ion-icon>
             <ion-icon
               *ngIf="i.type === 'poi' && i.geocoding"
               slot="start"
               size="small"
               [name]="getInferencePoiIcon(i)"
+              (click)="showInferencePoiToast($event, i)"
             ></ion-icon>
             <ion-label class="ion-text-wrap">
               <p>{{ i.addressDisplayName }}</p>
             </ion-label>
           </ion-item>
         </ion-list>
+
+        <p *ngIf="!inferences.get(key).hasInferences">
+          <i> {{ 'inference.info.' + key + 'NoInferences' | translate }} </i>
+        </p>
       </ion-card-content>
 
       <ion-accordion-group
@@ -87,12 +93,14 @@
                   size="small"
                   name="ellipse"
                   [color]="getInferenceRatingColor(i)"
+                  (click)="showInferenceRatingToast($event, i)"
                 ></ion-icon>
                 <ion-icon
                   *ngIf="i.type === 'poi'"
                   slot="start"
                   size="small"
                   [name]="getInferencePoiIcon(i)"
+                  (click)="showInferencePoiToast($event, i)"
                 ></ion-icon>
                 <ion-label class="ion-text-wrap">
                   <p>{{ i.addressDisplayName }}</p>
