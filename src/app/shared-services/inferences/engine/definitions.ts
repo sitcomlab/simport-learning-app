@@ -41,7 +41,7 @@ export const WORK_INFERENCE = new InferenceDefinition(
 export const HOME_INFERENCE = new InferenceDefinition(
   'home',
   InferenceType.home,
-  'home',
+  'bed',
   (r: Inference, t: TranslateService) => {
     const confidenceValue =
       InferenceConfidenceThresholds.getQualitativeConfidence(r.confidence)

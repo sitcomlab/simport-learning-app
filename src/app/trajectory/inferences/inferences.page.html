@@ -125,5 +125,8 @@
   </ion-button>
   <ion-label class="ion-text-wrap">
     <p>{{ inference.addressDisplayName }}</p>
+    <p *ngIf="!inference.hasGeocoding" class="inference-subtitle">
+      <i> {{ 'inference.noAddressFound' | translate }} </i>
+    </p>
   </ion-label>
 </ng-template>

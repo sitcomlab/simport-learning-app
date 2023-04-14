@@ -178,50 +178,30 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   async showInferenceToast(e: Event, inference: Inference) {
     e.stopPropagation()
+    let icon: string
+    let color: string
     if (inference.type === InferenceType.poi) {
-      await this.showInferencePoiToast(inference)
+      icon = this.getInferencePoiIcon(inference)
+      color = 'primary'
     } else {
-      await this.showInferenceRatingToast(inference)
+      icon = inference.icon
+      color = this.getInferenceRatingColor(inference)
     }
-  }
-
-  async showInferenceRatingToast(inference: Inference) {
-    const header = this.getInferenceRatingString(inference)
-    const color = this.getInferenceRatingColor(inference)
-    await this.showInfoToast(
-      this.capitalizeFirstLetter(header),
-      inference.addressDisplayName,
-      inference.icon,
-      color
-    )
-  }
-
-  async showInferencePoiToast(inference: Inference) {
-    const header = inference.hasGeocoding
-      ? `${inference.geocoding.category} / ${inference.geocoding.type}`
-      : undefined
-    const icon = this.getInferencePoiIcon(inference)
-    await this.showInfoToast(
-      this.capitalizeFirstLetter(header),
-      inference.addressDisplayName,
-      icon,
-      'primary'
-    )
+    const message = this.formatInferenceInfo(inference)
+    await this.showInfoToast(message, inference.icon, color)
   }
 
   async showInfoToast(
-    header: string = undefined,
     message: string,
     icon: string = undefined,
     color: string = undefined
   ) {
     const toast = await this.toastController.create({
-      header,
       message,
       icon,
       color,
       position: 'bottom',
-      duration: 2000,
+      duration: 4000,
     })
 
     try {
@@ -231,9 +211,5 @@ export class InferencesPage implements OnInit, OnDestroy {
     } finally {
       await toast.present()
     }
-  }
-
-  private capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 }

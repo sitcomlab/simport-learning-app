@@ -60,6 +60,7 @@ export class ReverseGeocodingIcon {
   private static fallbackIcon = 'pin'
 
   static getGeocodingIcon(geocoding: ReverseGeocoding): string {
+    if (!geocoding) return ReverseGeocodingIcon.fallbackIcon
     const typeIcon = [...geocodingIconPairings.keys()].find(
       (key) => geocodingIconPairings.get(key)?.includes(geocoding.type) ?? false
     )

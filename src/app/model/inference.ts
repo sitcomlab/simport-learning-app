@@ -42,7 +42,7 @@ export class Inference {
       const displayName = `${name}${road}${houseNumber}${locationString}`
       if (displayName.trim().length > 0) return displayName
     }
-    return `${this.latLng[0].toFixed(2)}, ${this.latLng[1].toFixed(2)}`
+    return `${this.latLng[0].toFixed(3)}, ${this.latLng[1].toFixed(3)}`
   }
 
   get coordinatesAsPolyline(): string {
