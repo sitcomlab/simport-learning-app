@@ -22,6 +22,9 @@ import { BehaviorSubject } from 'rxjs'
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements AfterViewInit {
+  // this is only used on android
+  activeAuthentication = new BehaviorSubject(false)
+
   constructor(
     private platform: Platform,
     private translateService: TranslateService
@@ -37,6 +40,11 @@ export class AppComponent implements AfterViewInit {
 
     // authenticate on resume
     App.addListener('resume', () => {
+      // the resume event is coming from the biometric authentication dialog
+      if (this.platform.is('android') && this.activeAuthentication.value) {
+        this.activeAuthentication.next(false)
+        return
+      }
       this.authenticate()
     })
   }
@@ -49,6 +57,8 @@ export class AppComponent implements AfterViewInit {
   }
 
   async authenticate() {
+    this.activeAuthentication.next(true)
+
     // check if biometric authentication is available
     const bioAvailable = await BiometricAuth.checkBiometry()
     if (!bioAvailable.isAvailable) {
