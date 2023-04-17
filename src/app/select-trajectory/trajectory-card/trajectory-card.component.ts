@@ -43,7 +43,7 @@ export class TrajectoryCardComponent implements OnInit {
           end: days * 24 * 60 * 60 * 1000, // days to milliseconds
         }),
         {
-          format: ['months', 'days'],
+          format: ['months', 'days', 'hours', 'minutes'],
           locale: this.translateService.currentLang === 'de' ? de : enUS,
         }
       )
