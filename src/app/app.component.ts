@@ -34,6 +34,11 @@ export class AppComponent implements AfterViewInit {
     } else {
       this.translateService.use(this.translateService.defaultLang)
     }
+
+    // authenticate on resume
+    App.addListener('resume', () => {
+      this.authenticate()
+    })
   }
 
   async ngAfterViewInit() {
