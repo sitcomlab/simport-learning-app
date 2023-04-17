@@ -8,6 +8,13 @@ import {
   BiometricAuth,
   BiometryError,
 } from '@aparajita/capacitor-biometric-auth'
+import {
+  AndroidSettings,
+  IOSSettings,
+  NativeSettings,
+} from 'capacitor-native-settings'
+import { App } from '@capacitor/app'
+import { BehaviorSubject } from 'rxjs'
 
 @Component({
   selector: 'app-root',
@@ -33,22 +40,32 @@ export class AppComponent implements AfterViewInit {
     await StatusBar.show()
     await StatusBar.setStyle({ style: Style.Light }) // there is no dark mode (yet)
 
+    this.authenticate()
+  }
+
+  async authenticate() {
     // check if biometric authentication is available
     const bioAvailable = await BiometricAuth.checkBiometry()
     if (!bioAvailable.isAvailable) {
       alert('You should enable Biometric Authentication on your device')
+
+      // open settings if biometric authentication is not enabled
+      NativeSettings.open({
+        optionAndroid: AndroidSettings.Security,
+        optionIOS: IOSSettings.App, // There is no "Security" option in the Enum
+      })
       return
     }
 
-    // if authentication is available, try to authenticate
-    try {
-      alert('We are using Biometric Authentication to secure the app access')
-      await BiometricAuth.authenticate()
-    } catch (e) {
-      const { message, code } = e as BiometryError
+    let isAuthenticated = false
 
-      // if authentication failed, show alert forever
-      while (true) {
+    // try to authenticate
+    while (!isAuthenticated) {
+      try {
+        await BiometricAuth.authenticate()
+        isAuthenticated = true
+      } catch (e) {
+        const { message, code } = e as BiometryError
         alert(message)
       }
     }

@@ -37,3 +37,6 @@ project(':capawesome-capacitor-file-picker').projectDir = new File('../node_modu
 
 include ':transistorsoft-capacitor-background-fetch'
 project(':transistorsoft-capacitor-background-fetch').projectDir = new File('../node_modules/@transistorsoft/capacitor-background-fetch/android')
+
+include ':capacitor-native-settings'
+project(':capacitor-native-settings').projectDir = new File('../node_modules/capacitor-native-settings/android')
