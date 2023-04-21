@@ -101,13 +101,13 @@
   let-inference="inference"
   let-isPrimary="isPrimary"
 >
-  <ion-icon
+  <ion-progress-bar
     *ngIf="inference.type !== 'poi'"
+    class="confidence-bar"
     slot="start"
-    size="small"
-    name="ellipse"
+    [value]="inference.confidence"
     [color]="getInferenceRatingColor(inference)"
-  ></ion-icon>
+  ></ion-progress-bar>
   <ion-icon
     *ngIf="inference.type === 'poi'"
     slot="start"

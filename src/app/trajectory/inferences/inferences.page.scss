@@ -83,6 +83,12 @@ ion-card-header {
   padding-left: 16px;
 }
 
+.confidence-bar {
+  width: 30px;
+  height: 15px;
+  border-radius: 4px;
+}
+
 .divider {
   background: var(--ion-color-medium);
   opacity: 0.25;
