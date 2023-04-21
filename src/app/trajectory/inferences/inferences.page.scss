@@ -21,6 +21,14 @@ ion-item {
   --padding-end: 0;
 }
 
+.ios ion-item {
+  border-radius: 8px;
+}
+
+.md ion-item {
+  border-radius: 4px;
+}
+
 .inference-list {
   margin-left: var(--ion-safe-area-left);
   margin-right: var(--ion-safe-area-right);
