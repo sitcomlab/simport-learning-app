@@ -152,7 +152,8 @@ export class InferenceService
 
   async loadPersistedInferences(
     trajectoryId: string,
-    runGeocoding: boolean = false
+    runGeocoding: boolean = false,
+    useFilter: boolean = true
   ): Promise<InferenceResult> {
     if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
@@ -161,14 +162,15 @@ export class InferenceService
       }
     }
     const filterConfig = this.filterConfiguration.value
-    const inferences = (
-      await this.dbService.getInferences(trajectoryId)
-    ).filter(
-      (inf) =>
-        inf.confidence >= filterConfig.confidenceThreshold &&
-        filterConfig.inferenceVisiblities.has(inf.type) &&
-        filterConfig.inferenceVisiblities.get(inf.type)
-    )
+    let inferences = await this.dbService.getInferences(trajectoryId)
+    if (useFilter) {
+      inferences = inferences.filter(
+        (inf) =>
+          inf.confidence >= filterConfig.confidenceThreshold &&
+          filterConfig.inferenceVisiblities.has(inf.type) &&
+          filterConfig.inferenceVisiblities.get(inf.type)
+      )
+    }
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,

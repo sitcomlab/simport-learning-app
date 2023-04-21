@@ -91,7 +91,8 @@ export class InferencesPage implements OnInit, OnDestroy {
     const inferencesResult =
       await this.inferenceService.loadPersistedInferences(
         this.trajectoryId,
-        runGeocoding
+        runGeocoding,
+        false
       )
     const sortedInferences = inferencesResult.inferences.sort(
       (a, b) => b.confidence - a.confidence
