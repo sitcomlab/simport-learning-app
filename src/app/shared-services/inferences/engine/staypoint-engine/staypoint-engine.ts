@@ -145,7 +145,7 @@ export class StaypointEngine implements IInferenceEngine {
     }
     // process each section after start individually
     let sumDays = 0
-    for (let i = 0; i++; i < startIndices.length - 1) {
+    for (let i = 0; i < startIndices.length - 1; i++) {
       const date1 = trajectory.timestamps[startIndices[i]]
       const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
       sumDays += this.countContinuousDays(date1, date2)
@@ -206,7 +206,7 @@ export class StaypointEngine implements IInferenceEngine {
     }
     // process each section after start individually
     let sumWeekDays = 0
-    for (let i = 0; i++; i < startIndices.length - 1) {
+    for (let i = 0; i < startIndices.length - 1; i++) {
       const date1 = trajectory.timestamps[startIndices[i]]
       const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
       sumWeekDays += this.countContinuousWeekDays(date1, date2)
