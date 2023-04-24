@@ -67,7 +67,7 @@ div.inference-icon {
   backdrop-filter: blur(1px);
 
   &.work {
-    border: 2px solid orange;
+    border: 2px solid #fca311;
   }
   &.home {
     border: 2px solid #347d39;
@@ -84,7 +84,7 @@ div.inference-icon {
     font-size: 20px;
 
     &.inference-work {
-      color: orange;
+      color: #fca311;
     }
     &.inference-home {
       color: #347d39;

@@ -40,7 +40,7 @@ export class InferenceDefinition {
       case InferenceType.home:
         return '#347d39'
       case InferenceType.work:
-        return 'orange'
+        return '#fca311'
       case InferenceType.poi:
         return '#68347d'
     }
