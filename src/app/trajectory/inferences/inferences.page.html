@@ -35,12 +35,9 @@
         <ion-card-title class="inference-card-title">
           <h4>{{ 'inference.info.' + key + 'Title' | translate }}</h4>
         </ion-card-title>
-        <ion-card-subtitle *ngIf="inferences.get(key).hasInferences">
-          {{ 'inference.info.' + key + 'Subtitle' | translate }}
-        </ion-card-subtitle>
       </ion-card-header>
 
-      <ion-card-content>
+      <ion-card-content class="ion-padding">
         <ion-list *ngIf="inferences.get(key).hasInferences" lines="none">
           <ion-item
             *ngFor="let i of inferences.get(key).primaryInferences"
