@@ -166,10 +166,14 @@ export class InferenceService
     if (useFilter) {
       inferences = inferences.filter(
         (inf) =>
+          inf.confidence !== undefined &&
           inf.confidence >= filterConfig.confidenceThreshold &&
           filterConfig.inferenceVisiblities.has(inf.type) &&
           filterConfig.inferenceVisiblities.get(inf.type)
       )
+    } else {
+      // filter for inferences with valid confidence
+      inferences = inferences.filter((inf) => inf.confidence !== undefined)
     }
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,

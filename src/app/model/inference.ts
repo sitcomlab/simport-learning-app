@@ -94,11 +94,11 @@ export enum InferenceConfidence {
 export abstract class InferenceConfidenceThresholds {
   public static high = 0.6
   public static medium = 0.3
-  public static low = 0.05
+  public static low = 0.0
 
   public static getQualitativeConfidence(confidenceValue: number): string {
     if (confidenceValue >= this.high) return InferenceConfidence.high
     else if (confidenceValue >= this.medium) return InferenceConfidence.medium
-    else if (confidenceValue >= this.low) return InferenceConfidence.low
+    else if (confidenceValue > this.low) return InferenceConfidence.low
   }
 }
