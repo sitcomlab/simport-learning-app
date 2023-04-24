@@ -14,6 +14,18 @@ ion-accordion {
   --background: transparent;
 }
 
+ion-accordion {
+  background: rgba($color: black, $alpha: 0.035);
+}
+
+.ios ion-accordion {
+  border-radius: 8px;
+}
+
+.md ion-accordion {
+  border-radius: 4px;
+}
+
 ion-item {
   --inner-padding-start: 0;
   --inner-padding-end: 0;
@@ -43,6 +55,7 @@ ion-item {
 
 ion-card-header {
   padding-top: 0;
+  padding-bottom: 8px;
 }
 
 .inference-card-title {
@@ -89,13 +102,15 @@ ion-card-header {
   border-radius: 4px;
 }
 
-.divider {
-  background: var(--ion-color-medium);
-  opacity: 0.25;
-  height: 1px;
-  margin: 0px 16px;
-  padding-top: 0;
-  padding-bottom: 0;
+ion-progress-bar {
+  &.work {
+    --progress-background: #fca211b8;
+    --background: #fca21150;
+  }
+  &.home {
+    --progress-background: #347d39b8;
+    --background: #347d3950;
+  }
 }
 
 .map-button {

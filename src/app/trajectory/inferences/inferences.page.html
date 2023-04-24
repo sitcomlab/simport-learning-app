@@ -63,7 +63,6 @@
       <ion-accordion-group
         *ngIf="inferences.get(key).secondaryInferences.length > 0"
       >
-        <div class="divider"></div>
         <ion-accordion value="first">
           <ion-item slot="header" class="accordion-header">
             <ion-label>
@@ -101,9 +100,9 @@
   <ion-progress-bar
     *ngIf="inference.type !== 'poi'"
     class="confidence-bar"
+    [class]="inference.type"
     slot="start"
     [value]="inference.confidence"
-    [color]="getInferenceRatingColor(inference)"
   ></ion-progress-bar>
   <ion-icon
     *ngIf="inference.type === 'poi'"
