@@ -180,27 +180,25 @@ export class InferencesPage implements OnInit, OnDestroy {
   async showInferenceToast(e: Event, inference: Inference) {
     e.stopPropagation()
     let icon: string
-    let color: string
     if (inference.type === InferenceType.poi) {
       icon = this.getInferencePoiIcon(inference)
-      color = 'primary'
     } else {
       icon = inference.icon
-      color = this.getInferenceRatingColor(inference)
     }
+    const cssClass = inference.type
     const message = this.formatInferenceInfo(inference)
-    await this.showInfoToast(message, inference.icon, color)
+    await this.showInfoToast(message, inference.icon, cssClass)
   }
 
   async showInfoToast(
     message: string,
     icon: string = undefined,
-    color: string = undefined
+    cssClass: string = undefined
   ) {
     const toast = await this.toastController.create({
       message,
       icon,
-      color,
+      cssClass,
       position: 'bottom',
       duration: 4000,
     })

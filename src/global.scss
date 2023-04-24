@@ -94,3 +94,18 @@ div.inference-icon {
     }
   }
 }
+
+ion-toast {
+  &.work {
+    --color: white;
+    --background: #fca311;
+  }
+  &.home {
+    --color: white;
+    --background: #347d39;
+  }
+  &.poi {
+    --color: white;
+    --background: #68347d;
+  }
+}
