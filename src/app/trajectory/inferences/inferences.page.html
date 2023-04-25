@@ -73,6 +73,7 @@
             <ion-list lines="none">
               <ion-item
                 *ngFor="let i of inferences.get(key).secondaryInferences"
+                class="secondary-inference-item"
                 detail="false"
                 (click)="showInferenceToast($event, i)"
                 button

@@ -65,15 +65,17 @@ ion-card-header {
   gap: 15px;
 }
 
-.primary-inference-item {
-  p {
-    color: var(--ion-color-dark);
-  }
+.primary-inference-item p {
+  color: var(--ion-color-dark);
+}
+
+.secondary-inference-item p {
+  color: var(--ion-color-medium);
 }
 
 .inference-subtitle {
-  font-size: small;
-  opacity: 0.5;
+  font-size: x-small;
+  opacity: 0.75;
 }
 
 .accordion-content {
