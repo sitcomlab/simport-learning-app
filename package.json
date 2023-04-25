@@ -93,7 +93,7 @@
     "capacitor-resources": "^2.0.5",
     "eslint": "^8.12.0",
     "eslint-plugin-import": "latest",
-    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-jsdoc": "^41.1.2",
     "eslint-plugin-prefer-arrow": "latest",
     "gpx-parse": "^0.10.4",
     "husky": "^7.0.0",
