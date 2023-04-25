@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core'
 import { InferenceService } from 'src/app/shared-services/inferences/inference.service'
 import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 import { InferenceConfidenceThresholds } from 'src/app/model/inference'
+import { ModalController } from '@ionic/angular'
 
 @Component({
   selector: 'app-inference-filter',
@@ -14,7 +15,10 @@ export class InferenceFilterComponent implements OnDestroy {
   filterConfiguration = this.inferenceService.filterConfiguration.value
   confidenceThresholdCutoffs = InferenceConfidenceThresholds
 
-  constructor(private inferenceService: InferenceService) {}
+  constructor(
+    private inferenceService: InferenceService,
+    private modalController: ModalController
+  ) {}
 
   get inferenceVisiblities(): Map<string, boolean> {
     return this.filterConfiguration.inferenceVisiblities
@@ -45,5 +49,7 @@ export class InferenceFilterComponent implements OnDestroy {
     this.inferenceService.filterConfiguration.next(this.filterConfiguration)
   }
 
-  closeComponent() {}
+  async closeComponent() {
+    await this.modalController.dismiss()
+  }
 }
