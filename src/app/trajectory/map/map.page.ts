@@ -188,8 +188,6 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    await this.reloadInferences(true)
-
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (
@@ -199,6 +197,8 @@ export class MapPage implements OnInit, OnDestroy {
           await this.reloadInferences()
         }
       })
+
+    await this.reloadInferences(true)
   }
 
   ngOnDestroy() {

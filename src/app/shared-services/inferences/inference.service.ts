@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core'
-import { Trajectory, TrajectoryType, Point } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
   ALL_INFERENCES,
   HOME_INFERENCE,
@@ -16,7 +16,7 @@ import {
 } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
-import { BehaviorSubject, Subject, Subscription } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
