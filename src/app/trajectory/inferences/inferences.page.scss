@@ -70,7 +70,7 @@ ion-card-header {
 }
 
 .secondary-inference-item p {
-  color: var(--ion-color-medium);
+  color: var(--ion-color-dark);
 }
 
 .inference-subtitle {
@@ -83,7 +83,7 @@ ion-card-header {
 }
 
 .accordion-header {
-  color: var(--ion-color-medium);
+  color: var(--ion-color-dark);
   font-size: small;
   text-align: right;
   padding: 0;
@@ -105,14 +105,8 @@ ion-card-header {
 }
 
 ion-progress-bar {
-  &.work {
-    --progress-background: #fca211b8;
-    --background: #fca21150;
-  }
-  &.home {
-    --progress-background: #347d39b8;
-    --background: #347d3950;
-  }
+  --progress-background: gray;
+  --background: lightgray;
 }
 
 .map-button {
