@@ -1,34 +1,38 @@
-<ion-card class="flex-wrapper" (click)="selectTrajectory()">
-  <ion-badge *ngIf="trajectory?.type === 'track'" color="dark">{{
-    'trajectory.select.recordedBadge' | translate
-  }}</ion-badge>
+<div class="container">
+  <ion-card class="flex-wrapper" (click)="selectTrajectory()">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-item lines="none">
+          <ion-icon name="location-outline"></ion-icon>
+          <ion-label class="ion-text-wrap">
+            {{ trajectory?.placename }}
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <ion-label>
+            {{ durationString() }}
+          </ion-label>
+        </ion-item>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-icon
+      *ngIf="showTrajectoryMenu()"
+      name="ellipsis-vertical"
+      (click)="presentPopover($event)"
+    ></ion-icon>
+  </ion-card>
+
+  <ion-badge *ngIf="trajectory?.type === 'track'" color="dark">
+    {{ 'trajectory.select.recordedBadge' | translate }}
+  </ion-badge>
   <ion-badge
     *ngIf="trajectory?.type === 'import' && trajectory?.id !== 'example'"
     color="medium"
-    >{{ 'trajectory.select.importedBadge' | translate }}</ion-badge
   >
-  <ion-badge *ngIf="trajectory?.id === 'example'" color="light">{{
-    'trajectory.select.exampleBadge' | translate
-  }}</ion-badge>
-  <ion-card-header>
-    <ion-card-title>
-      <ion-item lines="none">
-        <ion-icon name="location-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          {{ trajectory?.placename }}
-        </ion-label>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-icon name="calendar-outline"></ion-icon>
-        <ion-label>
-          {{ durationString() }}
-        </ion-label>
-      </ion-item>
-    </ion-card-title>
-  </ion-card-header>
-  <ion-icon
-    *ngIf="showTrajectoryMenu()"
-    name="ellipsis-vertical"
-    (click)="presentPopover($event)"
-  ></ion-icon>
-</ion-card>
+    {{ 'trajectory.select.importedBadge' | translate }}
+  </ion-badge>
+  <ion-badge *ngIf="trajectory?.id === 'example'" color="light">
+    {{ 'trajectory.select.exampleBadge' | translate }}
+  </ion-badge>
+</div>
