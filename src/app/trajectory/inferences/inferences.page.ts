@@ -69,7 +69,6 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    await this.reloadInferences(true)
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (
@@ -85,6 +84,10 @@ export class InferencesPage implements OnInit, OnDestroy {
     if (this.inferenceFilterSubscription) {
       this.inferenceFilterSubscription.unsubscribe()
     }
+  }
+
+  async ionViewDidEnter() {
+    await this.reloadInferences(true)
   }
 
   async reloadInferences(runGeocoding: boolean = false): Promise<void> {
