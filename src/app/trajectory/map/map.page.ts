@@ -197,8 +197,6 @@ export class MapPage implements OnInit, OnDestroy {
           await this.reloadInferences()
         }
       })
-
-    await this.reloadInferences(true)
   }
 
   ngOnDestroy() {
@@ -212,15 +210,21 @@ export class MapPage implements OnInit, OnDestroy {
     )
   }
 
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
     // required after visibility of map changed.
     this.map?.invalidateSize()
 
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      this.mapBounds = latLng(history.state.center).toBounds(200)
+      setTimeout(() => {
+        this.map?.flyTo(latLng(history.state.center), 18, {
+          easeLinearity: 0.1,
+          duration: 3,
+        })
+      }, 500)
     }
+    await this.reloadInferences(true)
   }
 
   onMapReady(map: Map) {
