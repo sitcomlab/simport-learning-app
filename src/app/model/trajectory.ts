@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as polyline from '@mapbox/polyline'
-import { differenceInDays } from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
 
 export enum TrajectoryType {
   EXAMPLE = 'example',
@@ -61,7 +61,8 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
     const ts = this.data?.timestamps
 
     if (ts?.length) {
-      return differenceInDays(ts[0], ts[ts.length - 1])
+      // calculate durationDays from minutes
+      return differenceInMinutes(ts[0], ts[ts.length - 1]) / (24 * 60)
     }
     // fall back to stored value
     return this.meta.durationDays || 0

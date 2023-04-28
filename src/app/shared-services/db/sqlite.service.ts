@@ -21,7 +21,7 @@ import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { TranslateService } from '@ngx-translate/core'
 import { LogEvent } from 'src/app/model/log-event'
-import { differenceInDays } from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
 
 @Injectable()
 export class SqliteService {
@@ -602,7 +602,9 @@ export class SqliteService {
     const { firstPointTime, lastPointTime } = values[0]
     const firstPointDate = convertTimestampToDate(firstPointTime)
     const lastPointDate = convertTimestampToDate(lastPointTime)
-    const durationDays = differenceInDays(firstPointDate, lastPointDate)
+    // calculate durationDays from minutes
+    const durationDays =
+      differenceInMinutes(firstPointDate, lastPointDate) / (24 * 60)
     await this.db.run(
       'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
       [durationDays, trajectoryId].map(normalize)
