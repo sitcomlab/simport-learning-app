@@ -62,7 +62,7 @@ export class Trajectory implements TrajectoryMeta, TrajectoryData {
 
     if (ts?.length) {
       // calculate durationDays from minutes
-      return differenceInMinutes(ts[0], ts[ts.length - 1]) / (24 * 60)
+      return differenceInMinutes(ts[ts.length - 1], ts[0]) / (24 * 60)
     }
     // fall back to stored value
     return this.meta.durationDays || 0

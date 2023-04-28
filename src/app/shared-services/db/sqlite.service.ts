@@ -604,7 +604,7 @@ export class SqliteService {
     const lastPointDate = convertTimestampToDate(lastPointTime)
     // calculate durationDays from minutes
     const durationDays =
-      differenceInMinutes(firstPointDate, lastPointDate) / (24 * 60)
+      differenceInMinutes(lastPointDate, firstPointDate) / (24 * 60)
     await this.db.run(
       'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
       [durationDays, trajectoryId].map(normalize)
