@@ -36,23 +36,27 @@ export class TrajectoryCardComponent implements OnInit {
 
   durationString() {
     const days = this.trajectory?.durationDays
+    console.log('days', days)
     if (days) {
       const duration = intervalToDuration({
         start: 0,
         end: days * 24 * 60 * 60 * 1000, // days to milliseconds
       })
 
-      let format = ['months', 'days', 'hours', 'minutes']
-      if (duration.weeks >= 4) {
-        format = ['months', 'days']
-      } else if (duration.days >= 1) {
-        format = ['days', 'hours']
-      } else {
-        format = ['hours', 'minutes']
+      // calculate the two highest units to display
+      const getFormat = (dur: Duration) => {
+        console.log(dur)
+        if (dur.months > 1 || dur.weeks >= 4) {
+          return ['months', 'days']
+        }
+        if (dur.days >= 1) {
+          return ['days', 'hours']
+        }
+        return ['hours', 'minutes']
       }
 
       return formatDuration(duration, {
-        format,
+        format: getFormat(duration),
         locale: this.translateService.currentLang === 'de' ? de : enUS,
       })
     }
