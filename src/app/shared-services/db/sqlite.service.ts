@@ -643,6 +643,27 @@ export class SqliteService {
   private async initDb() {
     this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin)
 
+    const isDatabase = await this.sqliteConnection.isDatabase(
+      SqliteService.databaseName
+    )
+
+    // create the database if it doesn't exist
+    if (!isDatabase.result) {
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        false,
+        'no-encryption',
+        1,
+        false
+      )
+      await this.db.open()
+      await this.db.close()
+      await this.sqliteConnection.closeConnection(
+        SqliteService.databaseName,
+        false
+      )
+    }
+
     // check if DB is encrypted and set secret if not
     const isEncrypted = await this.sqliteConnection.isDatabaseEncrypted(
       SqliteService.databaseName
