@@ -36,7 +36,6 @@ export class TrajectoryCardComponent implements OnInit {
 
   durationString() {
     const days = this.trajectory?.durationDays
-    console.log('days', days)
     if (days) {
       const duration = intervalToDuration({
         start: 0,
@@ -45,7 +44,6 @@ export class TrajectoryCardComponent implements OnInit {
 
       // calculate the two highest units to display
       const getFormat = (dur: Duration) => {
-        console.log(dur)
         if (dur.months > 1 || dur.weeks >= 4) {
           return ['months', 'days']
         }
