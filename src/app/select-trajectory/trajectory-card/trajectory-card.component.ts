@@ -37,16 +37,26 @@ export class TrajectoryCardComponent implements OnInit {
   durationString() {
     const days = this.trajectory?.durationDays
     if (days) {
-      return formatDuration(
-        intervalToDuration({
-          start: 0,
-          end: days * 24 * 60 * 60 * 1000, // days to milliseconds
-        }),
-        {
-          format: ['months', 'days'],
-          locale: this.translateService.currentLang === 'de' ? de : enUS,
+      const duration = intervalToDuration({
+        start: 0,
+        end: days * 24 * 60 * 60 * 1000, // days to milliseconds
+      })
+
+      // calculate the two highest units to display
+      const getFormat = (dur: Duration) => {
+        if (dur.months > 1 || dur.weeks >= 4) {
+          return ['months', 'days']
         }
-      )
+        if (dur.days >= 1) {
+          return ['days', 'hours']
+        }
+        return ['hours', 'minutes']
+      }
+
+      return formatDuration(duration, {
+        format: getFormat(duration),
+        locale: this.translateService.currentLang === 'de' ? de : enUS,
+      })
     }
     return '—'
   }
