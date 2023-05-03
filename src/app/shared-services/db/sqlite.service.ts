@@ -21,7 +21,7 @@ import { ReverseGeocoding } from 'src/app/model/reverse-geocoding'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { TranslateService } from '@ngx-translate/core'
 import { LogEvent } from 'src/app/model/log-event'
-import { differenceInDays } from 'date-fns'
+import { differenceInMinutes } from 'date-fns'
 
 @Injectable()
 export class SqliteService {
@@ -602,7 +602,9 @@ export class SqliteService {
     const { firstPointTime, lastPointTime } = values[0]
     const firstPointDate = convertTimestampToDate(firstPointTime)
     const lastPointDate = convertTimestampToDate(lastPointTime)
-    const durationDays = differenceInDays(firstPointDate, lastPointDate)
+    // calculate durationDays from minutes
+    const durationDays =
+      differenceInMinutes(lastPointDate, firstPointDate) / (24 * 60)
     await this.db.run(
       'UPDATE trajectories SET durationDays = ? WHERE id = ?;',
       [durationDays, trajectoryId].map(normalize)
@@ -618,14 +620,87 @@ export class SqliteService {
       : new Promise(() => {})) // never resolve..
   }
 
+  /**
+   * Generates a random passphrase of the specified length.
+   *
+   * @param length - The length of the passphrase to generate.
+   * @returns - The generated passphrase.
+   */
+  private async generatePassphrase(length: number) {
+    const randomBytes = new Uint8Array(length)
+    crypto.getRandomValues(randomBytes)
+
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~`|}{[]\\:;?><,./-='
+    let passphrase = ''
+
+    for (let i = 0; i < length; i++) {
+      const index = randomBytes[i] % characters.length
+      passphrase += characters[index]
+    }
+
+    return passphrase
+  }
+
   private async initDb() {
     this.sqliteConnection = new SQLiteConnection(this.sqlitePlugin)
+
+    const isDatabase = await this.sqliteConnection.isDatabase(
+      SqliteService.databaseName
+    )
+
+    // create the database if it doesn't exist
+    if (!isDatabase.result) {
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        false,
+        'no-encryption',
+        1,
+        false
+      )
+      await this.db.open()
+      await this.db.close()
+      await this.sqliteConnection.closeConnection(
+        SqliteService.databaseName,
+        false
+      )
+    }
+
+    // check if DB is encrypted and set secret if not
+    const isEncrypted = await this.sqliteConnection.isDatabaseEncrypted(
+      SqliteService.databaseName
+    )
+    if (!isEncrypted.result) {
+      const isSecretStored = await this.sqliteConnection.isSecretStored()
+      if (!isSecretStored.result) {
+        const passphrase = await this.generatePassphrase(16)
+        await this.sqliteConnection.setEncryptionSecret(passphrase)
+      }
+
+      // encrypt the database
+      this.db = await this.sqliteConnection.createConnection(
+        SqliteService.databaseName,
+        true,
+        'encryption',
+        1,
+        false
+      )
+      // open and close the DB to run the encryption https://github.com/capacitor-community/sqlite/issues/375#issuecomment-1417949113
+      await this.db.open()
+      await this.db.close()
+      await this.sqliteConnection.closeConnection(
+        SqliteService.databaseName,
+        false
+      )
+    }
+
     const connectionsConsistency =
       await this.sqliteConnection.checkConnectionsConsistency()
     const isConnected = await this.sqliteConnection.isConnection(
       SqliteService.databaseName,
       false
     )
+
     if (connectionsConsistency.result && isConnected.result) {
       this.db = await this.sqliteConnection.retrieveConnection(
         SqliteService.databaseName,
@@ -634,14 +709,13 @@ export class SqliteService {
     } else {
       this.db = await this.sqliteConnection.createConnection(
         SqliteService.databaseName,
-        false,
-        'no-encryption',
+        true,
+        'secret',
         1,
         false
       )
     }
 
-    // TODO: ask user to provide encryption password (assuming we keep this sqlite driver..)
     try {
       await this.db.open()
     } catch (e) {
