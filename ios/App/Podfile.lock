@@ -18,8 +18,6 @@ PODS:
     - Capacitor
   - CapacitorLocalNotifications (4.1.4):
     - Capacitor
-  - CapacitorNativeSettings (4.0.3):
-    - Capacitor
   - CapacitorShare (4.1.0):
     - Capacitor
   - CapacitorStatusBar (4.1.1):
@@ -47,7 +45,6 @@ DEPENDENCIES:
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
-  - CapacitorNativeSettings (from `../../node_modules/capacitor-native-settings`)
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - "CapawesomeCapacitorBackgroundTask (from `../../node_modules/@capawesome/capacitor-background-task`)"
@@ -78,8 +75,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/filesystem"
   CapacitorLocalNotifications:
     :path: "../../node_modules/@capacitor/local-notifications"
-  CapacitorNativeSettings:
-    :path: "../../node_modules/capacitor-native-settings"
   CapacitorShare:
     :path: "../../node_modules/@capacitor/share"
   CapacitorStatusBar:
@@ -101,7 +96,6 @@ SPEC CHECKSUMS:
   CapacitorDevice: 63e8ef8837176b8caf67dc0717b8b1123754a955
   CapacitorFilesystem: 3d665e5b3719d9f6e240480a7468861b0bb35f93
   CapacitorLocalNotifications: 5937199b3df1ef0cfe9e579882ca4f5fc4b31ff4
-  CapacitorNativeSettings: b6f40955945bc659f966a43fa54fc6be192d8f9b
   CapacitorShare: d81b40de329187f4669ad8a40ce90fe2bbe3eecd
   CapacitorStatusBar: 65933e554bb5d65b361deaa936a93616086a2608
   CapawesomeCapacitorBackgroundTask: 976a5232fcef545e7253ce25b71037f283475edf
@@ -110,6 +104,6 @@ SPEC CHECKSUMS:
   TransistorsoftCapacitorBackgroundFetch: 74ca62dae7ec78639eaf3d0d1e24c595ada213dd
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: ca674a736a34a94db2b5fb366e2620efcef8eacc
+PODFILE CHECKSUM: b7b6af86e33f78852890ba57b59324d47cd43125
 
 COCOAPODS: 1.11.3

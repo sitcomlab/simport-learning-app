@@ -21,7 +21,6 @@ dependencies {
     implementation project(':capawesome-capacitor-background-task')
     implementation project(':capawesome-capacitor-file-picker')
     implementation project(':transistorsoft-capacitor-background-fetch')
-    implementation project(':capacitor-native-settings')
 
 }
 

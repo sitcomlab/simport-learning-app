@@ -8,11 +8,6 @@ import {
   BiometricAuth,
   BiometryError,
 } from '@aparajita/capacitor-biometric-auth'
-import {
-  AndroidSettings,
-  IOSSettings,
-  NativeSettings,
-} from 'capacitor-native-settings'
 import { App } from '@capacitor/app'
 import { BehaviorSubject } from 'rxjs'
 
@@ -59,28 +54,30 @@ export class AppComponent implements AfterViewInit {
   async authenticate() {
     this.activeAuthentication.next(true)
 
-    // check if biometric authentication is available
-    const bioAvailable = await BiometricAuth.checkBiometry()
-    if (!bioAvailable.isAvailable) {
-      alert('You should enable Biometric Authentication on your device')
-
-      // open settings if biometric authentication is not enabled
-      NativeSettings.open({
-        optionAndroid: AndroidSettings.Security,
-        optionIOS: IOSSettings.App, // There is no "Security" option in the Enum
-      })
-      return
-    }
-
     let isAuthenticated = false
 
     // try to authenticate
     while (!isAuthenticated) {
       try {
-        await BiometricAuth.authenticate()
+        await BiometricAuth.authenticate({
+          allowDeviceCredential: true,
+        })
         isAuthenticated = true
       } catch (e) {
         const { message, code } = e as BiometryError
+
+        // allow authentication when these errors occur
+        const acceptedErrors = [
+          'biometryNotAvailable',
+          'biometryNotEnrolled',
+          'noDeviceCredential',
+        ]
+
+        if (acceptedErrors.includes(code)) {
+          isAuthenticated = true
+          return
+        }
+
         alert(message)
       }
     }
