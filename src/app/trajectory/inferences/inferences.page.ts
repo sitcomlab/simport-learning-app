@@ -55,6 +55,9 @@ export class InferencesPage implements OnInit, OnDestroy {
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
 
+  // factor to enable scaling of a confidence
+  private readonly inferenceConfidenceScaleFactor = 0.9
+
   constructor(
     private inferenceService: InferenceService,
     private toastController: ToastController,
@@ -137,20 +140,6 @@ export class InferencesPage implements OnInit, OnDestroy {
     return inf.color
   }
 
-  getInferenceRatingColor(inference: Inference): string {
-    const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
-      inference.confidence
-    )
-    switch (rating) {
-      case InferenceConfidence.high:
-        return 'success'
-      case InferenceConfidence.medium:
-        return 'warning'
-      default:
-        return 'danger'
-    }
-  }
-
   getInferenceRatingString(inference: Inference): string {
     const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
       inference.confidence
@@ -161,6 +150,10 @@ export class InferencesPage implements OnInit, OnDestroy {
   getInferencePoiIcon(inference: Inference): string {
     const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
     return icon !== undefined ? `${icon}-outline` : undefined
+  }
+
+  getInferenceConfidence(inference: Inference): number {
+    return (inference.confidence ?? 0) * this.inferenceConfidenceScaleFactor
   }
 
   showInferenceOnMap(e: Event, inference: Inference) {
