@@ -63,6 +63,7 @@
     "haversine-distance": "^1.2.1",
     "jszip": "^3.9.1",
     "leaflet": "^1.7.1",
+    "leaflet-spline": "^0.2.0",
     "leaflet.markercluster": "^1.5.3",
     "ng-apexcharts": "^1.7.0",
     "rxjs": "^6.6.7",

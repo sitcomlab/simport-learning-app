@@ -17,11 +17,11 @@ import {
   Map,
   MapOptions,
   Marker,
-  Polygon,
   Polyline,
   tileLayer,
 } from 'leaflet'
 import { MarkerClusterGroup } from 'leaflet.markercluster'
+import { Spline } from 'leaflet-spline'
 import { Subscription } from 'rxjs'
 import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
@@ -388,11 +388,15 @@ export class MapPage implements OnInit, OnDestroy {
         const color = isAmbiguousLatLng
           ? 'gray'
           : ALL_INFERENCES[inference.type].color
-        const polygon = new Polygon(inference.coordinates, {
+        const spline = new Spline(inference.coordinates, {
           color,
+          fill: true,
+          fillColor: color,
+          fillOpacity: 0.35,
+          smoothing: 0.0,
           weight: 2,
         })
-        layers.push(polygon)
+        layers.push(spline)
       }
 
       // add marker
