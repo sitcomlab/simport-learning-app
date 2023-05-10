@@ -57,6 +57,12 @@ export class Inference {
     return ALL_INFERENCES[this.type].outlinedIcon
   }
 
+  get latLngHash(): number {
+    // cantor pairing function
+    const [x, y] = this.latLng
+    return ((x + y) * (x + y + 1)) / 2 + y
+  }
+
   static fromObject(val: any): Inference {
     const {
       id,

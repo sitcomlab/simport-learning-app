@@ -12,6 +12,7 @@ import {
   FeatureGroup,
   latLng,
   LatLngBounds,
+  Layer,
   LayerGroup,
   Map,
   MapOptions,
@@ -20,6 +21,7 @@ import {
   Polyline,
   tileLayer,
 } from 'leaflet'
+import { MarkerClusterGroup } from 'leaflet.markercluster'
 import { Subscription } from 'rxjs'
 import { PointState, TrajectoryType } from 'src/app/model/trajectory'
 import {
@@ -324,44 +326,25 @@ export class MapPage implements OnInit, OnDestroy {
 
   updateInferenceMarkers() {
     this.inferenceHulls.clearLayers()
-    for (const inference of this.inferences) {
-      const h = new Polygon(inference.coordinates, {
-        color: ALL_INFERENCES[inference.type].color,
+    const clusterGroup = new MarkerClusterGroup({
+      animateAddingMarkers: true,
+      maxClusterRadius: 3,
+      spiderLegPolylineOptions: {
         weight: 2,
-        opacity: inference.confidence || 0,
-      })
-      const inferenceName = this.translateService.instant(
-        `inference.${inference.name}`
-      )
-      let popupText: string
-      if (inference.type === InferenceType.poi) {
-        popupText = inferenceName
-      } else {
-        const confidenceValue =
-          InferenceConfidenceThresholds.getQualitativeConfidence(
-            inference.confidence
-          )
-        const confidence = this.translateService.instant(
-          `inference.confidence.${confidenceValue}`
-        )
-        popupText = `${inferenceName} (${confidence})`
-      }
-      const isPredicted = this.predictedInferenceIds.includes(inference.id)
-      const i = new Marker(inference.latLng, {
-        icon: new DivIcon({
-          className: `inference-icon ${inference.type} ${
-            isPredicted ? 'predicted' : ''
-          }`,
+        color: 'gray',
+        opacity: 0.75,
+      },
+      iconCreateFunction: (cluster) =>
+        new DivIcon({
+          className: 'inference-map-cluster',
           iconSize: [32, 32],
           iconAnchor: [16, 16],
-          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+          html: '<b>' + cluster.getChildCount() + '</b>',
         }),
-      }).bindPopup(popupText)
-
-      const l = new LayerGroup([h, i])
-
-      l.addTo(this.inferenceHulls)
-    }
+    })
+    const layerGroup = this.createInferenceLayers()
+    clusterGroup.addLayer(layerGroup)
+    clusterGroup.addTo(this.inferenceHulls)
   }
 
   openInferenceFilter() {
@@ -384,6 +367,65 @@ export class MapPage implements OnInit, OnDestroy {
       },
     })
     modal.present()
+  }
+
+  private createInferenceLayers(): LayerGroup {
+    // count how often each latLng appears within current inferences
+    const latLngCount = {}
+    this.inferences
+      .map((i) => i.latLngHash)
+      .forEach((key) => {
+        latLngCount[key] = (latLngCount[key] || 0) + 1
+      })
+    const addedInferenceLatLng = []
+    const layers: Layer[] = []
+    for (const inference of this.inferences) {
+      // add polygon only, if not already there yet to prevent stacking identical polygons
+      if (!addedInferenceLatLng.includes(inference.latLng)) {
+        addedInferenceLatLng.push(inference.latLng)
+        // color gray, if this polygon is ambiguous
+        const isAmbiguousLatLng = latLngCount[inference.latLngHash] > 1
+        const color = isAmbiguousLatLng
+          ? 'gray'
+          : ALL_INFERENCES[inference.type].color
+        const polygon = new Polygon(inference.coordinates, {
+          color,
+          weight: 2,
+        })
+        layers.push(polygon)
+      }
+
+      // add marker
+      const inferenceName = this.translateService.instant(
+        `inference.${inference.name}`
+      )
+      let popupText: string
+      if (inference.type === InferenceType.poi) {
+        popupText = inferenceName
+      } else {
+        const confidenceValue =
+          InferenceConfidenceThresholds.getQualitativeConfidence(
+            inference.confidence
+          )
+        const confidence = this.translateService.instant(
+          `inference.confidence.${confidenceValue}`
+        )
+        popupText = `${inferenceName} (${confidence})`
+      }
+      const isPredicted = this.predictedInferenceIds.includes(inference.id)
+      const marker = new Marker(inference.latLng, {
+        icon: new DivIcon({
+          className: `inference-icon ${inference.type} ${
+            isPredicted ? 'predicted' : ''
+          }`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+        }),
+      }).bindPopup(popupText)
+      layers.push(marker)
+    }
+    return new LayerGroup(layers)
   }
 
   private async showErrorToast(message: string) {
