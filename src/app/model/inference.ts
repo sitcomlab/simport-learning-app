@@ -1,7 +1,7 @@
 import { ALL_INFERENCES } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
-import { ReverseGeocoding } from './reverse-geocoding'
+import { ReverseGeocoding, ReverseGeocodingIcon } from './reverse-geocoding'
 
 export class Inference {
   public geocoding?: ReverseGeocoding
@@ -58,6 +58,15 @@ export class Inference {
 
   get outlinedIcon(): string {
     return ALL_INFERENCES[this.type].outlinedIcon
+  }
+
+  get poiIcon(): string {
+    const icon = ReverseGeocodingIcon.getGeocodingIcon(this.geocoding)
+    return icon !== undefined ? `${icon}-outline` : undefined
+  }
+
+  get color(): string {
+    return ALL_INFERENCES[this.type].color
   }
 
   get latLngHash(): number {

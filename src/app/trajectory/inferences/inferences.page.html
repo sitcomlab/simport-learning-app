@@ -101,7 +101,6 @@
   <ion-progress-bar
     *ngIf="inference.type !== 'poi'"
     class="confidence-bar"
-    [class]="inference.type"
     slot="start"
     [value]="inference.scaledConfidence"
   ></ion-progress-bar>
@@ -109,7 +108,7 @@
     *ngIf="inference.type === 'poi'"
     slot="start"
     size="small"
-    [name]="getInferencePoiIcon(inference)"
+    [name]="inference.poiIcon"
   ></ion-icon>
   <ion-icon
     slot="end"

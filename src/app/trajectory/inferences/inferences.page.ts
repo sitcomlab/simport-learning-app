@@ -14,7 +14,12 @@ import {
 import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import { ReverseGeocodingIcon } from 'src/app/model/reverse-geocoding'
-import { ToastController } from '@ionic/angular'
+import {
+  IonRouterOutlet,
+  ModalController,
+  ToastController,
+} from '@ionic/angular'
+import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 class InferenceListItem {
   inferences: Inference[]
@@ -57,8 +62,10 @@ export class InferencesPage implements OnInit, OnDestroy {
   constructor(
     private inferenceService: InferenceService,
     private toastController: ToastController,
+    private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
+    private routerOutlet: IonRouterOutlet,
     private translateService: TranslateService
   ) {}
 
@@ -110,22 +117,6 @@ export class InferencesPage implements OnInit, OnDestroy {
     })
   }
 
-  formatInferenceName(inference: Inference): string {
-    const def = ALL_INFERENCES[inference.name]
-    if (!def) return inference.name
-    return def.getName(this.translateService)
-  }
-
-  formatInferenceInfo(inference: Inference): string {
-    const def = ALL_INFERENCES[inference.type]
-    if (!def) {
-      return this.translateService.instant('inference.unknown', {
-        value: inference.name,
-      })
-    }
-    return def.info(inference, this.translateService)
-  }
-
   getInferenceTypeIcon(type: string, useOutlined: boolean): string {
     const inf = ALL_INFERENCES[type]
     return useOutlined ? inf.outlinedIcon : inf.icon
@@ -141,11 +132,6 @@ export class InferencesPage implements OnInit, OnDestroy {
       inference.confidence
     )
     return this.translateService.instant(`inference.confidence.${rating}`)
-  }
-
-  getInferencePoiIcon(inference: Inference): string {
-    const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
-    return icon !== undefined ? `${icon}-outline` : undefined
   }
 
   showInferenceOnMap(e: Event, inference: Inference) {
@@ -167,15 +153,17 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   async showInferenceToast(e: Event, inference: Inference) {
     e.stopPropagation()
-    let icon: string
-    if (inference.type === InferenceType.poi) {
-      icon = this.getInferencePoiIcon(inference)
-    } else {
-      icon = inference.icon
-    }
-    const cssClass = inference.type
-    const message = this.formatInferenceInfo(inference)
-    await this.showInfoToast(message, inference.icon, cssClass)
+
+    const modal = await this.modalController.create({
+      component: InferenceModalComponent,
+      componentProps: {
+        inference,
+      },
+      presentingElement: this.routerOutlet.nativeEl,
+      swipeToClose: true,
+      cssClass: 'auto-height',
+    })
+    await modal.present()
   }
 
   async showInfoToast(

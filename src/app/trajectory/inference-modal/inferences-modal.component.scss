@@ -1,0 +1,14 @@
+.confidence-bar {
+  width: 30px;
+  height: 15px;
+  border-radius: 4px;
+  --progress-background: gray;
+  --background: lightgray;
+  vertical-align: middle;
+}
+
+.modal-container {
+  margin-left: var(--ion-safe-area-left);
+  margin-right: var(--ion-safe-area-right);
+  margin-bottom: var(--ion-safe-area-bottom);
+}

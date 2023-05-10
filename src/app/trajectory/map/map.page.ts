@@ -393,7 +393,7 @@ export class MapPage implements OnInit, OnDestroy {
           fill: true,
           fillColor: color,
           fillOpacity: 0.35,
-          smoothing: 0.0,
+          smoothing: 0.05,
           weight: 2,
         })
         layers.push(spline)

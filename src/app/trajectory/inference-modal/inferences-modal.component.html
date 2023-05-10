@@ -1,0 +1,26 @@
+<div class="modal-container">
+  <ion-header [translucent]="true">
+    <ion-toolbar [style.background-color]="inference.color">
+      <ion-progress-bar
+        *ngIf="inference.type !== 'poi'"
+        class="confidence-bar"
+        slot="start"
+        [value]="inference.scaledConfidence"
+      ></ion-progress-bar>
+      <ion-icon
+        *ngIf="inference.type === 'poi'"
+        slot="start"
+        size="small"
+        [name]="inference.poiIcon"
+      ></ion-icon>
+      <ion-title> {{ inference.addressDisplayName }} </ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="closeComponent()">
+          <ion-icon slot="icon-only" color="medium" name="close"> </ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true"> {{ formattedInferenceInfo }} </ion-content>
+</div>
