@@ -377,12 +377,12 @@ export class MapPage implements OnInit, OnDestroy {
       .forEach((key) => {
         latLngCount[key] = (latLngCount[key] || 0) + 1
       })
-    const addedInferenceLatLng = []
+    const addedLatLngHashes = []
     const layers: Layer[] = []
     for (const inference of this.inferences) {
       // add polygon only, if not already there yet to prevent stacking identical polygons
-      if (!addedInferenceLatLng.includes(inference.latLng)) {
-        addedInferenceLatLng.push(inference.latLng)
+      if (!addedLatLngHashes.includes(inference.latLngHash)) {
+        addedLatLngHashes.push(inference.latLngHash)
         // color gray, if this polygon is ambiguous
         const isAmbiguousLatLng = latLngCount[inference.latLngHash] > 1
         const color = isAmbiguousLatLng
