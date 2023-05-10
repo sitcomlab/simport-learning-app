@@ -6,6 +6,9 @@ import { ReverseGeocoding } from './reverse-geocoding'
 export class Inference {
   public geocoding?: ReverseGeocoding
 
+  // factor to enable scaling of a confidence
+  private readonly confidenceScaleFactor = 0.9
+
   constructor(
     public id: string,
     public name: string,
@@ -61,6 +64,10 @@ export class Inference {
     // cantor pairing function
     const [x, y] = this.latLng
     return ((x + y) * (x + y + 1)) / 2 + y
+  }
+
+  get scaledConfidence(): number {
+    return (this.confidence ?? 0) * this.confidenceScaleFactor
   }
 
   static fromObject(val: any): Inference {

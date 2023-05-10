@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
 import {
   Inference,
-  InferenceConfidence,
   InferenceConfidenceThresholds,
 } from 'src/app/model/inference'
 import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
@@ -54,9 +53,6 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
-
-  // factor to enable scaling of a confidence
-  private readonly inferenceConfidenceScaleFactor = 0.9
 
   constructor(
     private inferenceService: InferenceService,
@@ -150,10 +146,6 @@ export class InferencesPage implements OnInit, OnDestroy {
   getInferencePoiIcon(inference: Inference): string {
     const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
     return icon !== undefined ? `${icon}-outline` : undefined
-  }
-
-  getInferenceConfidence(inference: Inference): number {
-    return (inference.confidence ?? 0) * this.inferenceConfidenceScaleFactor
   }
 
   showInferenceOnMap(e: Event, inference: Inference) {
