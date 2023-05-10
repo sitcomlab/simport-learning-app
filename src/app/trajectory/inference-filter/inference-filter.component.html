@@ -1,12 +1,15 @@
 <div class="inner-content">
-  <ion-card-header>
-    <ion-card-title>{{ 'trajectory.filter.title' | translate }}</ion-card-title>
+  <ion-toolbar>
+    <ion-card-title slot="start">
+      {{ 'trajectory.filter.title' | translate }}
+    </ion-card-title>
+
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="closeComponent()">
-        <ion-icon slot="icon-only" name="close"> </ion-icon>
+        <ion-icon slot="icon-only" color="medium" name="close"> </ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-card-header>
+  </ion-toolbar>
 
   <div style="display: flex; justify-content: center">
     <ion-grid>

@@ -7,16 +7,11 @@
       ></ion-back-button>
     </ion-buttons>
     <ion-title> {{ 'trajectory.insights.title' | translate }} </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="openInferenceFilter()">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="!inferences.length" class="centered ion-padding">
+  <div *ngIf="!hasInferences" class="centered ion-padding">
     <div>{{ 'trajectory.insights.noInferences' | translate }}</div>
     <div>
       <a (click)="openMap()"
@@ -25,10 +20,116 @@
     </div>
   </div>
 
-  <app-item-card
-    *ngFor="let i of inferences"
-    icon="{{ i.outlinedIcon }}"
-    subtitle="{{ formatInferenceInfo(i) }}"
-    (click)="showInferenceOnMap(i)"
-  ></app-item-card>
+  <ion-list *ngIf="hasInferences" class="inference-list">
+    <ion-card *ngFor="let key of inferences.keys()">
+      <div
+        class="card-background"
+        [style.background-color]="getInferenceTypeColor(key)"
+      ></div>
+      <ion-icon
+        class="title-icon"
+        [style.background-color]="getInferenceTypeColor(key)"
+        [name]="getInferenceTypeIcon(key, false)"
+      ></ion-icon>
+      <ion-card-header>
+        <ion-card-title class="inference-card-title">
+          <h4>{{ 'inference.info.' + key + 'Title' | translate }}</h4>
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content class="ion-padding">
+        <ion-list *ngIf="inferences.get(key).hasInferences" lines="none">
+          <ion-item
+            *ngFor="let i of inferences.get(key).primaryInferences"
+            class="primary-inference-item"
+            detail="false"
+            (click)="showInferenceToast($event, i)"
+            button
+          >
+            <ng-template
+              *ngTemplateOutlet="
+                  inferenceItemContent;
+                  context: { inference: i, isPrimary: true }
+                "
+            ></ng-template>
+          </ion-item>
+        </ion-list>
+
+        <p *ngIf="!inferences.get(key).hasInferences">
+          <i> {{ 'inference.info.' + key + 'NoInferences' | translate }} </i>
+        </p>
+      </ion-card-content>
+
+      <ion-accordion-group
+        *ngIf="inferences.get(key).secondaryInferences.length > 0"
+      >
+        <ion-accordion value="first">
+          <ion-item slot="header" class="accordion-header">
+            <ion-label>
+              {{ 'inference.info.moreInferences' | translate }}
+            </ion-label>
+          </ion-item>
+          <div class="ion-padding accordion-content" slot="content">
+            <ion-list lines="none">
+              <ion-item
+                *ngFor="let i of inferences.get(key).secondaryInferences"
+                class="secondary-inference-item"
+                detail="false"
+                (click)="showInferenceToast($event, i)"
+                button
+              >
+                <ng-template
+                  *ngTemplateOutlet="
+                inferenceItemContent;
+                context: { inference: i, isPrimary: false }
+              "
+                ></ng-template>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-card>
+  </ion-list>
 </ion-content>
+
+<ng-template
+  #inferenceItemContent
+  let-inference="inference"
+  let-isPrimary="isPrimary"
+>
+  <ion-progress-bar
+    *ngIf="inference.type !== 'poi'"
+    class="confidence-bar"
+    [class]="inference.type"
+    slot="start"
+    [value]="inference.confidence"
+  ></ion-progress-bar>
+  <ion-icon
+    *ngIf="inference.type === 'poi'"
+    slot="start"
+    size="small"
+    [name]="getInferencePoiIcon(inference)"
+  ></ion-icon>
+  <ion-icon
+    slot="end"
+    size="small"
+    color="medium"
+    name="information-circle-outline"
+  ></ion-icon>
+  <ion-button
+    class="map-button"
+    color="light"
+    shape="round"
+    slot="end"
+    (click)="showInferenceOnMap($event, inference)"
+  >
+    <ion-icon slot="icon-only" size="small" name="map-outline"></ion-icon>
+  </ion-button>
+  <ion-label class="ion-text-wrap">
+    <p>{{ inference.addressDisplayName }}</p>
+    <p *ngIf="!inference.hasGeocoding" class="inference-subtitle">
+      <i> {{ 'inference.noAddressFound' | translate }} </i>
+    </p>
+  </ion-label>
+</ng-template>

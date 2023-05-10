@@ -1,26 +1,31 @@
+.container {
+  position: relative;
+}
+
 .flex-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
   overflow: visible;
+}
 
-  ion-card {
-    flex-grow: 1;
-    overflow: visible;
-    margin-bottom: 0px;
-    &:last-of-type {
-      margin-bottom: 10px;
-    }
+ion-card {
+  flex-grow: 1;
+  overflow: visible;
+  margin-bottom: 0px;
+  &:last-of-type {
+    margin-bottom: 10px;
   }
+}
 
-  ion-badge {
-    position: absolute;
-    top: -0.5rem;
-    right: -0.5rem;
-  }
+ion-badge {
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  z-index: 100;
+}
 
-  ion-icon {
-    font-size: x-large;
-    margin-right: 1rem;
-  }
+ion-icon {
+  font-size: x-large;
+  margin-right: 1rem;
 }

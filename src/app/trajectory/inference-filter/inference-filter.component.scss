@@ -6,6 +6,16 @@ ion-row {
   padding-top: 0.5em;
 }
 
+ion-toolbar {
+  --background: transparent;
+}
+
 .toggle-title {
   padding-left: 0.5em;
+}
+
+.inner-content {
+  margin-left: var(--ion-safe-area-left);
+  margin-right: var(--ion-safe-area-right);
+  margin-bottom: var(--ion-safe-area-bottom);
 }

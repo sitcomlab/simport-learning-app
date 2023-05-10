@@ -168,20 +168,28 @@
     "home": "Home",
     "poi": "Point of interest",
     "unknown": "Unknown inference: {{ value }}",
+    "noAddressFound": "No address found yet…",
     "info": {
-      "work": "We assume you are working at {{ address }} with {{ confidence }}.",
-      "home": "We assume you are living at {{ address }} with {{ confidence }}.",
-      "poi": "We assume you are regularly visiting {{ address }}.",
+      "work": "{{ address }} is your place of work with {{ confidence }}",
+      "workNoInferences": "No workplace found yet.",
+      "workTitle": "Workplace",
+      "home": "{{ address }} is your place of residence with {{ confidence }}",
+      "homeNoInferences": "No home found yet.",
+      "homeTitle": "Home",
+      "poi": "You are regularly visiting {{ address }}",
+      "poiNoInferences": "No point of interest found yet.",
+      "poiTitle": "Points of interest",
+      "moreInferences": "More places",
       "confidence": {
-        "low": "low confidence",
-        "medium": "medium confidence",
-        "high": "high confidence"
+        "low": "low probability",
+        "medium": "medium probability",
+        "high": "high probability"
       }
     },
     "confidence": {
-      "low": "low confidence",
-      "medium": "medium confidence",
-      "high": "high confidence"
+      "low": "low probability",
+      "medium": "medium probability",
+      "high": "high probability"
     }
   },
   "settings": {

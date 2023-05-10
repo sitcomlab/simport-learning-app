@@ -1,10 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core'
-import { Trajectory, TrajectoryType, Point } from 'src/app/model/trajectory'
+import { Trajectory, TrajectoryType } from 'src/app/model/trajectory'
 import {
-  AllInferences,
-  HomeInference,
-  POIInference,
-  WorkInference,
+  ALL_INFERENCES,
+  HOME_INFERENCE,
+  POI_INFERENCE,
+  WORK_INFERENCE,
 } from 'src/app/shared-services/inferences/engine/definitions'
 import { SimpleEngine } from './engine/simple-engine/simple-engine'
 import { StaypointEngine } from './engine/staypoint-engine/staypoint-engine'
@@ -16,7 +16,7 @@ import {
 } from './engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import { take } from 'rxjs/operators'
-import { BehaviorSubject, Subject, Subscription } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/types'
 import { SqliteService } from '../db/sqlite.service'
@@ -63,7 +63,7 @@ export class InferenceService
     confidenceThreshold: InferenceConfidenceThresholds.medium,
     inferenceVisiblities: new Map([
       // show all inference-types by default
-      ...Object.entries(AllInferences).map<[string, boolean]>(([_, value]) => [
+      ...Object.entries(ALL_INFERENCES).map<[string, boolean]>(([_, value]) => [
         value.type,
         true,
       ]),
@@ -152,7 +152,8 @@ export class InferenceService
 
   async loadPersistedInferences(
     trajectoryId: string,
-    runGeocoding: boolean = false
+    runGeocoding: boolean = false,
+    useFilter: boolean = true
   ): Promise<InferenceResult> {
     if (!this.featureFlagService.featureFlags.isInferenceComputationEnabled) {
       return {
@@ -161,14 +162,19 @@ export class InferenceService
       }
     }
     const filterConfig = this.filterConfiguration.value
-    const inferences = (
-      await this.dbService.getInferences(trajectoryId)
-    ).filter(
-      (inf) =>
-        inf.confidence >= filterConfig.confidenceThreshold &&
-        filterConfig.inferenceVisiblities.has(inf.type) &&
-        filterConfig.inferenceVisiblities.get(inf.type)
-    )
+    let inferences = await this.dbService.getInferences(trajectoryId)
+    if (useFilter) {
+      inferences = inferences.filter(
+        (inf) =>
+          inf.confidence !== undefined &&
+          inf.confidence >= filterConfig.confidenceThreshold &&
+          filterConfig.inferenceVisiblities.has(inf.type) &&
+          filterConfig.inferenceVisiblities.get(inf.type)
+      )
+    } else {
+      // filter for inferences with valid confidence
+      inferences = inferences.filter((inf) => inf.confidence !== undefined)
+    }
     const persisted: InferenceResult = {
       status: InferenceResultStatus.successful,
       inferences,
@@ -227,8 +233,8 @@ export class InferenceService
     const inferenceTypes =
       !this.featureFlagService.featureFlags.isInferenceComputationEnabled &&
       this.featureFlagService.featureFlags.isPoiInferenceComputationEnabled
-        ? [POIInference]
-        : [HomeInference, WorkInference, POIInference]
+        ? [POI_INFERENCE]
+        : [HOME_INFERENCE, WORK_INFERENCE, POI_INFERENCE]
 
     const inference = await this.inferenceEngine.infer(traj, inferenceTypes)
 

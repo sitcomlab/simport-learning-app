@@ -6,7 +6,7 @@ import {
 import { InferenceScoringType } from '../scoring/types'
 import { InferenceDefinition, InferenceType } from './types'
 
-export const WorkInference = new InferenceDefinition(
+export const WORK_INFERENCE = new InferenceDefinition(
   'workplace',
   InferenceType.work,
   'business',
@@ -38,10 +38,10 @@ export const WorkInference = new InferenceDefinition(
   ]
 )
 
-export const HomeInference = new InferenceDefinition(
+export const HOME_INFERENCE = new InferenceDefinition(
   'home',
   InferenceType.home,
-  'home',
+  'bed',
   (r: Inference, t: TranslateService) => {
     const confidenceValue =
       InferenceConfidenceThresholds.getQualitativeConfidence(r.confidence)
@@ -70,18 +70,17 @@ export const HomeInference = new InferenceDefinition(
   ]
 )
 
-export const POIInference = new InferenceDefinition(
+export const POI_INFERENCE = new InferenceDefinition(
   'poi',
   InferenceType.poi,
   'flag',
-  (r: Inference, t: TranslateService) => {
-    return t.instant('inference.info.poi', { address: r.addressDisplayName })
-  },
+  (r: Inference, t: TranslateService) =>
+    t.instant('inference.info.poi', { address: r.addressDisplayName }),
   []
 )
 
-export const AllInferences = {
-  [HomeInference.type]: HomeInference,
-  [WorkInference.type]: WorkInference,
-  [POIInference.type]: POIInference,
+export const ALL_INFERENCES = {
+  [HOME_INFERENCE.type]: HOME_INFERENCE,
+  [WORK_INFERENCE.type]: WORK_INFERENCE,
+  [POI_INFERENCE.type]: POI_INFERENCE,
 }

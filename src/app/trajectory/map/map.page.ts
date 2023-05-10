@@ -45,6 +45,7 @@ import {
   LogEventScope,
   LogEventType,
 } from '../../shared-services/logfile/types'
+import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 
 @Component({
   selector: 'app-map',
@@ -187,8 +188,6 @@ export class MapPage implements OnInit, OnDestroy {
         this.changeDetector.detectChanges()
       })
 
-    await this.reloadInferences(true)
-
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (
@@ -211,15 +210,21 @@ export class MapPage implements OnInit, OnDestroy {
     )
   }
 
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
     // required after visibility of map changed.
     this.map?.invalidateSize()
 
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      this.mapBounds = latLng(history.state.center).toBounds(200)
+      setTimeout(() => {
+        this.map?.flyTo(latLng(history.state.center), 18, {
+          easeLinearity: 0.1,
+          duration: 3,
+        })
+      }, 500)
     }
+    await this.reloadInferences(true)
   }
 
   onMapReady(map: Map) {
@@ -321,7 +326,7 @@ export class MapPage implements OnInit, OnDestroy {
     this.inferenceHulls.clearLayers()
     for (const inference of this.inferences) {
       const h = new Polygon(inference.coordinates, {
-        color: this.getIconColor(inference),
+        color: ALL_INFERENCES[inference.type].color,
         weight: 2,
         opacity: inference.confidence || 0,
       })
@@ -404,16 +409,5 @@ export class MapPage implements OnInit, OnDestroy {
 
   private async hideLoadingDialog() {
     await this.loadingController.dismiss()
-  }
-
-  private getIconColor(inference: Inference) {
-    switch (inference.type) {
-      case InferenceType.home:
-        return '#347d39'
-      case InferenceType.work:
-        return 'orange'
-      case InferenceType.poi:
-        return '#68347d'
-    }
   }
 }

@@ -1,7 +1,15 @@
 <div class="inner-content">
-  <ion-card-header>
-    <ion-card-title>{{ 'trajectory.select.title' | translate }}</ion-card-title>
-  </ion-card-header>
+  <ion-toolbar>
+    <ion-card-title slot="start">
+      {{ 'trajectory.select.title' | translate }}
+    </ion-card-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeComponent()">
+        <ion-icon slot="icon-only" color="medium" name="close"> </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 
   <div *ngIf="loading" style="display: flex; justify-content: center">
     <ion-spinner></ion-spinner>

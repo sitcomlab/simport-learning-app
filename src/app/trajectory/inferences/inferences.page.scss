@@ -6,3 +6,132 @@
   align-items: center;
   text-align: center;
 }
+
+ion-list,
+ion-item,
+ion-accordion {
+  background: transparent;
+  --background: transparent;
+}
+
+ion-accordion {
+  background: rgba($color: black, $alpha: 0.035);
+}
+
+.ios ion-accordion {
+  border-radius: 8px;
+}
+
+.md ion-accordion {
+  border-radius: 4px;
+}
+
+ion-item {
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --padding-start: 8px;
+  --padding-end: 0;
+}
+
+.ios ion-item {
+  border-radius: 8px;
+}
+
+.md ion-item {
+  border-radius: 4px;
+}
+
+.inference-list {
+  margin-left: var(--ion-safe-area-left);
+  margin-right: var(--ion-safe-area-right);
+}
+
+.card-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+}
+
+ion-card-header {
+  padding-top: 0;
+  padding-bottom: 8px;
+}
+
+.inference-card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+
+.primary-inference-item p {
+  color: var(--ion-color-dark);
+}
+
+.secondary-inference-item p {
+  color: var(--ion-color-dark);
+}
+
+.inference-subtitle {
+  font-size: x-small;
+  opacity: 0.75;
+}
+
+.accordion-content {
+  padding-top: 0;
+}
+
+.accordion-header {
+  color: var(--ion-color-dark);
+  font-size: small;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  ion-icon {
+    color: var(--ion-color-medium);
+  }
+}
+
+.md .accordion-header {
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.confidence-bar {
+  width: 30px;
+  height: 15px;
+  border-radius: 4px;
+}
+
+ion-progress-bar {
+  --progress-background: gray;
+  --background: lightgray;
+}
+
+.map-button {
+  box-shadow: 0 0 5px rgba($color: var(--ion-color-medium-rgb), $alpha: 0.3);
+  width: 36px;
+  height: 36px;
+  vertical-align: middle;
+  border-radius: 999px;
+}
+
+.title-icon {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  top: 0px;
+  right: 0px;
+  color: white;
+  opacity: 0.7;
+  padding: 10px;
+}
+
+.ios .title-icon {
+  border-radius: 0 0 0 8px;
+}
+
+.md .title-icon {
+  border-radius: 0 0 0 4px;
+}
