@@ -11,6 +11,7 @@
 }
 
 .md .title-icon {
+  margin-left: 8px;
   border-radius: 4px;
 }
 
@@ -26,6 +27,10 @@ div.content {
   border-radius: 5px;
   --progress-background: gray;
   --background: lightgray;
+}
+
+ion-toolbar {
+  border-radius: 4px 4px 0 0;
 }
 
 ion-item {

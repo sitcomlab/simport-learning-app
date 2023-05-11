@@ -154,7 +154,10 @@ export class InferencesPage implements OnInit, OnDestroy {
         inference,
       },
       presentingElement: this.routerOutlet.nativeEl,
-      swipeToClose: true,
+      swipeToClose: false,
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
       cssClass: 'auto-height',
     })
     await modal.present()
