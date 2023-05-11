@@ -24,14 +24,8 @@ import { MarkerClusterGroup } from 'leaflet.markercluster'
 import { Spline } from 'leaflet-spline'
 import { Subscription } from 'rxjs'
 import { PointState, TrajectoryType } from 'src/app/model/trajectory'
-import {
-  Inference,
-  InferenceConfidenceThresholds,
-} from 'src/app/model/inference'
-import {
-  InferenceResultStatus,
-  InferenceType,
-} from 'src/app/shared-services/inferences/engine/types'
+import { Inference } from 'src/app/model/inference'
+import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import {
   InferenceService,
@@ -48,6 +42,7 @@ import {
   LogEventType,
 } from '../../shared-services/logfile/types'
 import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
+import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 @Component({
   selector: 'app-map',
@@ -219,12 +214,7 @@ export class MapPage implements OnInit, OnDestroy {
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      setTimeout(() => {
-        this.map?.flyTo(latLng(history.state.center), 18, {
-          easeLinearity: 0.1,
-          duration: 3,
-        })
-      }, 500)
+      await this.flyTo(history.state.center)
     }
     await this.reloadInferences(true)
   }
@@ -369,6 +359,15 @@ export class MapPage implements OnInit, OnDestroy {
     modal.present()
   }
 
+  private async flyTo(coordinate: [number, number]) {
+    setTimeout(() => {
+      this.map?.flyTo(latLng(coordinate), 18, {
+        easeLinearity: 0.1,
+        duration: 3,
+      })
+    }, 500)
+  }
+
   private createInferenceLayers(): LayerGroup {
     // count how often each latLng appears within current inferences
     const latLngCount = {}
@@ -400,22 +399,6 @@ export class MapPage implements OnInit, OnDestroy {
       }
 
       // add marker
-      const inferenceName = this.translateService.instant(
-        `inference.${inference.name}`
-      )
-      let popupText: string
-      if (inference.type === InferenceType.poi) {
-        popupText = inferenceName
-      } else {
-        const confidenceValue =
-          InferenceConfidenceThresholds.getQualitativeConfidence(
-            inference.confidence
-          )
-        const confidence = this.translateService.instant(
-          `inference.confidence.${confidenceValue}`
-        )
-        popupText = `${inferenceName} (${confidence})`
-      }
       const isPredicted = this.predictedInferenceIds.includes(inference.id)
       const marker = new Marker(inference.latLng, {
         icon: new DivIcon({
@@ -426,10 +409,31 @@ export class MapPage implements OnInit, OnDestroy {
           iconAnchor: [16, 16],
           html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
         }),
-      }).bindPopup(popupText)
+      })
+      marker.on('click', async () => await this.showInferenceModal(inference))
+
       layers.push(marker)
     }
     return new LayerGroup(layers)
+  }
+
+  private async showInferenceModal(inference: Inference) {
+    const modal = await this.modalController.create({
+      component: InferenceModalComponent,
+      componentProps: {
+        inference,
+      },
+      presentingElement: this.routerOutlet.nativeEl,
+      swipeToClose: true,
+      cssClass: 'auto-height',
+    })
+    await modal.present()
+    const {
+      data: { openMap },
+    } = await modal.onWillDismiss()
+    if (openMap) {
+      await this.flyTo(inference.latLng)
+    }
   }
 
   private async showErrorToast(message: string) {
