@@ -25,10 +25,13 @@ ion-segment-button {
   --margin-bottom: 4px;
 }
 
+.md ion-segment-button {
+  --padding-top: 8px;
+}
+
 .confidence-bar {
   width: 30px;
   height: 15px;
-  padding-bottom: 4px;
   border-radius: 4px;
   --progress-background: gray;
   --background: lightgray;
