@@ -186,7 +186,9 @@
         "low": "geringer Wahrscheinlichkeit",
         "medium": "mittlerer Wahrscheinlichkeit",
         "high": "hoher Wahrscheinlichkeit"
-      }
+      },
+      "poiDetailDescription": "Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als ein häufig besuchter Ort identifizieren. Das Piktogramm links ordnet diesen Ort in eine Kategorie ein. Sofern das nicht möglich ist, findest du hier eine einfache Nadel.",
+      "nonPoiDetailDescription": "Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als dein {{ type }} identifizieren. Die Anzeige links zeigt die Qualität dieser Vorhersage. Ein gefüllter Balken bedeutet ein zuverlässigere Aussage. Je weniger diese Anzeige gefüllt ist, desto unzuverlässiger wird die Aussage."
     },
     "confidence": {
       "low": "geringe Wahrscheinlichkeit",

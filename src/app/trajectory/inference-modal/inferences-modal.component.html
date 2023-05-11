@@ -46,11 +46,13 @@
         class="ion-text-wrap"
         color="medium"
       >
-        Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als dein
-        {{ 'inference.info.' + inference.type + 'Title' | translate }}
-        identifizieren. Die Anzeige links zeigt die Qualität dieser Vorhersage.
-        Ein gefüllter Balken bedeutet ein zuverlässigere Aussage. Je weniger
-        diese Anzeige gefüllt ist, desto unzuverlässiger wird die Aussage.
+        {{
+          'inference.info.nonPoiDetailDescription'
+            | translate
+              : {
+                  type: 'inference.info.' + inference.type + 'Title' | translate
+                }
+        }}
       </ion-label>
 
       <!-- poi description label -->
@@ -59,10 +61,7 @@
         class="ion-text-wrap"
         color="medium"
       >
-        Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als ein
-        häufig besuchter Ort identifizieren. Das Piktogramm links ordnet diesen
-        Ort in eine Kategorie ein. Sofern das nicht möglich ist, findest du hier
-        eine einfache Nadel.
+        {{ 'inference.info.poiDetailDescription' | translate }}
       </ion-label>
     </ion-item>
     <ion-button

@@ -184,7 +184,9 @@
         "low": "low probability",
         "medium": "medium probability",
         "high": "high probability"
-      }
+      },
+      "poiDetailDescription": "Based on your previous location data, this place can be identified as a frequently visited place. The pictogram on the left places this location in a category. If this is not possible, you can find a simple pin here.",
+      "nonPoiDetailDescription": "Based on your previous location data, this place can be identified as your {{ type }}. The indicator on the left shows the quality of this prediction. A filled bar means a more reliable prediction. The less filled this indicator is, the less reliable the prediction becomes."
     },
     "confidence": {
       "low": "low probability",
