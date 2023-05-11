@@ -423,7 +423,6 @@ export class MapPage implements OnInit, OnDestroy {
       componentProps: {
         inference,
       },
-      presentingElement: this.routerOutlet.nativeEl,
       swipeToClose: false,
       breakpoints: [0, 1],
       initialBreakpoint: 1,

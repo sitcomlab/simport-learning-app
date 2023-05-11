@@ -13,7 +13,7 @@ import {
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
-import { IonRouterOutlet, ModalController } from '@ionic/angular'
+import { ModalController } from '@ionic/angular'
 import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 class InferenceListItem {
@@ -59,7 +59,6 @@ export class InferencesPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
-    private routerOutlet: IonRouterOutlet,
     private translateService: TranslateService
   ) {}
 
@@ -153,7 +152,6 @@ export class InferencesPage implements OnInit, OnDestroy {
       componentProps: {
         inference,
       },
-      presentingElement: this.routerOutlet.nativeEl,
       swipeToClose: false,
       breakpoints: [0, 1],
       initialBreakpoint: 1,
