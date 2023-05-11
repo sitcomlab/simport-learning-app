@@ -1,6 +1,25 @@
-<div class="modal-container">
+<div>
   <ion-header [translucent]="true">
     <ion-toolbar [style.background-color]="inference.color">
+      <ion-icon
+        class="title-icon"
+        slot="start"
+        [style.background-color]="inference.color"
+        [name]="inference.icon"
+      ></ion-icon>
+      <ion-title>
+        {{ 'inference.info.' + inference.type + 'Title' | translate }}
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="closeComponent()">
+          <ion-icon slot="icon-only" color="dark" name="close"> </ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content ion-padding">
+    <ion-item>
       <ion-progress-bar
         *ngIf="inference.type !== 'poi'"
         class="confidence-bar"
@@ -10,17 +29,49 @@
       <ion-icon
         *ngIf="inference.type === 'poi'"
         slot="start"
-        size="small"
+        size="normal"
         [name]="inference.poiIcon"
       ></ion-icon>
-      <ion-title> {{ inference.addressDisplayName }} </ion-title>
-      <ion-buttons slot="end">
-        <ion-button fill="clear" (click)="closeComponent()">
-          <ion-icon slot="icon-only" color="medium" name="close"> </ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+      <ion-label class="ion-text-wrap">
+        <p>{{ inference.addressDisplayName }}</p>
+        <p *ngIf="!inference.hasGeocoding" class="inference-subtitle">
+          <i> {{ 'inference.noAddressFound' | translate }} </i>
+        </p>
+      </ion-label>
+    </ion-item>
+    <ion-item class="quality-description-item" lines="none">
+      <!-- non-poi description label -->
+      <ion-label
+        *ngIf="inference.type !== 'poi'"
+        class="ion-text-wrap"
+        color="medium"
+      >
+        Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als dein
+        {{ 'inference.info.' + inference.type + 'Title' | translate }}
+        identifizieren. Die Anzeige links zeigt die Qualität dieser Vorhersage.
+        Ein gefüllter Balken bedeutet ein zuverlässigere Aussage. Je weniger
+        diese Anzeige gefüllt ist, desto unzuverlässiger wird die Aussage.
+      </ion-label>
 
-  <ion-content [fullscreen]="true"> {{ formattedInferenceInfo }} </ion-content>
+      <!-- poi description label -->
+      <ion-label
+        *ngIf="inference.type === 'poi'"
+        class="ion-text-wrap"
+        color="medium"
+      >
+        Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als ein
+        häufig besuchter Ort identifizieren. Das Piktogramm links ordnet diesen
+        Ort in eine Kategorie ein. Sofern das nicht möglich ist, findest du hier
+        ein generisches Fähnchen.
+      </ion-label>
+    </ion-item>
+    <ion-button
+      shape="round"
+      [class]="inference.type"
+      (click)="onShowOnMapClick()"
+    >
+      <ion-icon slot="start" size="normal" name="map-outline"></ion-icon>
+      <ion-label class="ion-text-wrap"> Auf Karte anzeigen </ion-label>
+    </ion-button>
+  </div>
 </div>

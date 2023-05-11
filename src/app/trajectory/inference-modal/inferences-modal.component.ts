@@ -27,6 +27,10 @@ export class InferenceModalComponent {
     return def.info(this.inference, this.translateService)
   }
 
+  async onShowOnMapClick() {
+    await this.modalController.dismiss({ openMap: true })
+  }
+
   async closeComponent() {
     await this.modalController.dismiss()
   }

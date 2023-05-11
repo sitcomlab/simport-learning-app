@@ -43,7 +43,7 @@
             *ngFor="let i of inferences.get(key).primaryInferences"
             class="primary-inference-item"
             detail="false"
-            (click)="showInferenceToast($event, i)"
+            (click)="showInferenceModal($event, i)"
             button
           >
             <ng-template
@@ -75,7 +75,7 @@
                 *ngFor="let i of inferences.get(key).secondaryInferences"
                 class="secondary-inference-item"
                 detail="false"
-                (click)="showInferenceToast($event, i)"
+                (click)="showInferenceModal($event, i)"
                 button
               >
                 <ng-template

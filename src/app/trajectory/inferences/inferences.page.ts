@@ -13,12 +13,7 @@ import {
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
-import { ReverseGeocodingIcon } from 'src/app/model/reverse-geocoding'
-import {
-  IonRouterOutlet,
-  ModalController,
-  ToastController,
-} from '@ionic/angular'
+import { IonRouterOutlet, ModalController } from '@ionic/angular'
 import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 class InferenceListItem {
@@ -61,7 +56,6 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   constructor(
     private inferenceService: InferenceService,
-    private toastController: ToastController,
     private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
@@ -135,7 +129,7 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   showInferenceOnMap(e: Event, inference: Inference) {
-    e.stopPropagation()
+    e?.stopPropagation()
     if (!inference.latLng) return
     this.openMap(inference.latLng)
   }
@@ -151,8 +145,8 @@ export class InferencesPage implements OnInit, OnDestroy {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 
-  async showInferenceToast(e: Event, inference: Inference) {
-    e.stopPropagation()
+  async showInferenceModal(e: Event, inference: Inference) {
+    e?.stopPropagation()
 
     const modal = await this.modalController.create({
       component: InferenceModalComponent,
@@ -164,27 +158,11 @@ export class InferencesPage implements OnInit, OnDestroy {
       cssClass: 'auto-height',
     })
     await modal.present()
-  }
-
-  async showInfoToast(
-    message: string,
-    icon: string = undefined,
-    cssClass: string = undefined
-  ) {
-    const toast = await this.toastController.create({
-      message,
-      icon,
-      cssClass,
-      position: 'bottom',
-      duration: 4000,
-    })
-
-    try {
-      await this.toastController.dismiss()
-    } catch (error) {
-      // no previous toast to dismiss
-    } finally {
-      await toast.present()
+    const {
+      data: { openMap },
+    } = await modal.onWillDismiss()
+    if (openMap) {
+      this.showInferenceOnMap(undefined, inference)
     }
   }
 }
