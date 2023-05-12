@@ -66,19 +66,17 @@ export class AppComponent implements AfterViewInit {
       } catch (e) {
         const { message, code } = e as BiometryError
 
-        // allow authentication when these errors occur
-        const acceptedErrors = [
+        const noCredentialsError = [
           'biometryNotAvailable',
           'biometryNotEnrolled',
           'noDeviceCredential',
         ]
 
-        if (acceptedErrors.includes(code)) {
-          isAuthenticated = true
-          return
+        if (noCredentialsError.includes(code)) {
+          alert('Please set up biometric or credential authentication.')
+        } else {
+          alert(message)
         }
-
-        alert(message)
       }
     }
   }
