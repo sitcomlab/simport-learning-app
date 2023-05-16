@@ -391,9 +391,11 @@ export class MapPage implements OnInit, OnDestroy {
           color,
           fill: true,
           fillColor: color,
-          fillOpacity: 0.35,
+          fillOpacity: 0.5,
           smoothing: 0.1,
-          weight: 2,
+          weight: 3,
+          // put hulls on 'shadowPane', which is between polylines and markers
+          pane: 'shadowPane',
         })
         layers.push(spline)
       }
