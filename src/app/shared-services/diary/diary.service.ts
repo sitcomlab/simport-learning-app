@@ -83,15 +83,16 @@ export class DiaryService {
   private async createDiaryExport(): Promise<string> {
     try {
       const diary = await this.getDiary()
-      const diaryHeader = 'date,content\n'
+      const diaryHeader = 'userDate,creationDate,changeDate,content\n'
       const diaryData = diary
         .sort((a, b) => a.date.getTime() - b.date.getTime())
-        .map(
-          (d) =>
-            `${d.date.toISOString()},"${this.getEscapedDiaryContent(
-              d.content
-            )}"`
-        )
+        .map((d) => {
+          const userDate = d.date.toISOString()
+          const creationDate = d.created.toISOString()
+          const changeDate = d.updated.toISOString()
+          const content = this.getEscapedDiaryContent(d.content)
+          return `${userDate},${creationDate},${changeDate},"${content}"`
+        })
 
       return `${diaryHeader}${diaryData.join('\n')}`
     } catch (e) {
