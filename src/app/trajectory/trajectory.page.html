@@ -1,5 +1,5 @@
 <ion-tabs *ngIf="tabs.length > 0">
-  <ion-tab-bar [ngClass]="{'hidden': tabs.length == 1}" slot="bottom">
+  <ion-tab-bar [ngClass]="{'hidden': tabs.length === 1}" slot="bottom">
     <ion-tab-button *ngFor="let tab of tabs" tab="{{ tab.path }}">
       <ion-icon name="{{ tab.icon }}"></ion-icon>
       <ion-label>{{ tab.title }}</ion-label>

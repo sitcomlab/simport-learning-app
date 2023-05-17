@@ -1,10 +1,13 @@
 import { ALL_INFERENCES } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
-import { ReverseGeocoding } from './reverse-geocoding'
+import { ReverseGeocoding, ReverseGeocodingIcon } from './reverse-geocoding'
 
 export class Inference {
   public geocoding?: ReverseGeocoding
+
+  // factor to enable scaling of a confidence
+  private readonly confidenceScaleFactor = 0.9
 
   constructor(
     public id: string,
@@ -55,6 +58,25 @@ export class Inference {
 
   get outlinedIcon(): string {
     return ALL_INFERENCES[this.type].outlinedIcon
+  }
+
+  get poiIcon(): string {
+    const icon = ReverseGeocodingIcon.getGeocodingIcon(this.geocoding)
+    return icon !== undefined ? `${icon}-outline` : undefined
+  }
+
+  get color(): string {
+    return ALL_INFERENCES[this.type].color
+  }
+
+  get latLngHash(): number {
+    // cantor pairing function
+    const [x, y] = this.latLng
+    return ((x + y) * (x + y + 1)) / 2 + y
+  }
+
+  get scaledConfidence(): number {
+    return (this.confidence ?? 0) * this.confidenceScaleFactor
   }
 
   static fromObject(val: any): Inference {

@@ -12,24 +12,20 @@ import {
   FeatureGroup,
   latLng,
   LatLngBounds,
+  Layer,
   LayerGroup,
   Map,
   MapOptions,
   Marker,
-  Polygon,
   Polyline,
   tileLayer,
 } from 'leaflet'
+import { MarkerClusterGroup } from 'leaflet.markercluster'
+import { Spline } from 'leaflet-spline'
 import { Subscription } from 'rxjs'
 import { PointState, TrajectoryType } from 'src/app/model/trajectory'
-import {
-  Inference,
-  InferenceConfidenceThresholds,
-} from 'src/app/model/inference'
-import {
-  InferenceResultStatus,
-  InferenceType,
-} from 'src/app/shared-services/inferences/engine/types'
+import { Inference } from 'src/app/model/inference'
+import { InferenceResultStatus } from 'src/app/shared-services/inferences/engine/types'
 import { TrajectoryService } from 'src/app/shared-services/trajectory/trajectory.service'
 import {
   InferenceService,
@@ -46,6 +42,7 @@ import {
   LogEventType,
 } from '../../shared-services/logfile/types'
 import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
+import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 @Component({
   selector: 'app-map',
@@ -217,12 +214,7 @@ export class MapPage implements OnInit, OnDestroy {
     // TODO: rework this with optional inference type parameter,
     //   which we subscribe to and use to set zoom & open popup
     if (history.state.center) {
-      setTimeout(() => {
-        this.map?.flyTo(latLng(history.state.center), 18, {
-          easeLinearity: 0.1,
-          duration: 3,
-        })
-      }, 500)
+      await this.flyTo(history.state.center)
     }
     await this.reloadInferences(true)
   }
@@ -324,44 +316,25 @@ export class MapPage implements OnInit, OnDestroy {
 
   updateInferenceMarkers() {
     this.inferenceHulls.clearLayers()
-    for (const inference of this.inferences) {
-      const h = new Polygon(inference.coordinates, {
-        color: ALL_INFERENCES[inference.type].color,
+    const clusterGroup = new MarkerClusterGroup({
+      animateAddingMarkers: true,
+      maxClusterRadius: 3,
+      spiderLegPolylineOptions: {
         weight: 2,
-        opacity: inference.confidence || 0,
-      })
-      const inferenceName = this.translateService.instant(
-        `inference.${inference.name}`
-      )
-      let popupText: string
-      if (inference.type === InferenceType.poi) {
-        popupText = inferenceName
-      } else {
-        const confidenceValue =
-          InferenceConfidenceThresholds.getQualitativeConfidence(
-            inference.confidence
-          )
-        const confidence = this.translateService.instant(
-          `inference.confidence.${confidenceValue}`
-        )
-        popupText = `${inferenceName} (${confidence})`
-      }
-      const isPredicted = this.predictedInferenceIds.includes(inference.id)
-      const i = new Marker(inference.latLng, {
-        icon: new DivIcon({
-          className: `inference-icon ${inference.type} ${
-            isPredicted ? 'predicted' : ''
-          }`,
+        color: 'gray',
+        opacity: 0.75,
+      },
+      iconCreateFunction: (cluster) =>
+        new DivIcon({
+          className: 'inference-map-cluster',
           iconSize: [32, 32],
           iconAnchor: [16, 16],
-          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+          html: '<b>' + cluster.getChildCount() + '</b>',
         }),
-      }).bindPopup(popupText)
-
-      const l = new LayerGroup([h, i])
-
-      l.addTo(this.inferenceHulls)
-    }
+    })
+    const layerGroup = this.createInferenceLayers()
+    clusterGroup.addLayer(layerGroup)
+    clusterGroup.addTo(this.inferenceHulls)
   }
 
   openInferenceFilter() {
@@ -384,6 +357,87 @@ export class MapPage implements OnInit, OnDestroy {
       },
     })
     modal.present()
+  }
+
+  private async flyTo(coordinate: [number, number]) {
+    setTimeout(() => {
+      this.map?.flyTo(latLng(coordinate), 18, {
+        easeLinearity: 0.1,
+        duration: 3,
+      })
+    }, 500)
+  }
+
+  private createInferenceLayers(): LayerGroup {
+    // count how often each latLng appears within current inferences
+    const latLngCount = {}
+    this.inferences
+      .map((i) => i.latLngHash)
+      .forEach((key) => {
+        latLngCount[key] = (latLngCount[key] || 0) + 1
+      })
+    const addedLatLngHashes = []
+    const layers: Layer[] = []
+    for (const inference of this.inferences) {
+      // add polygon only, if not already there yet to prevent stacking identical polygons
+      if (!addedLatLngHashes.includes(inference.latLngHash)) {
+        addedLatLngHashes.push(inference.latLngHash)
+        // color gray, if this polygon is ambiguous
+        const isAmbiguousLatLng = latLngCount[inference.latLngHash] > 1
+        const color = isAmbiguousLatLng
+          ? 'gray'
+          : ALL_INFERENCES[inference.type].color
+        const spline = new Spline(inference.coordinates, {
+          color,
+          fill: true,
+          fillColor: color,
+          fillOpacity: 0.5,
+          smoothing: 0.1,
+          weight: 3,
+          // put hulls on 'shadowPane', which is between polylines and markers
+          pane: 'shadowPane',
+        })
+        layers.push(spline)
+      }
+
+      // add marker
+      const isPredicted = this.predictedInferenceIds.includes(inference.id)
+      const marker = new Marker(inference.latLng, {
+        icon: new DivIcon({
+          className: `inference-icon ${inference.type} ${
+            isPredicted ? 'predicted' : ''
+          }`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          html: `<ion-icon class="inference-${inference.type}" name="${inference.icon}"></ion-icon>`,
+        }),
+      })
+      marker.on('click', async () => await this.showInferenceModal(inference))
+
+      layers.push(marker)
+    }
+    return new LayerGroup(layers)
+  }
+
+  private async showInferenceModal(inference: Inference) {
+    const modal = await this.modalController.create({
+      component: InferenceModalComponent,
+      componentProps: {
+        inference,
+      },
+      swipeToClose: false,
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+      cssClass: 'auto-height',
+    })
+    await modal.present()
+    const {
+      data: { openMap },
+    } = await modal.onWillDismiss()
+    if (openMap) {
+      await this.flyTo(inference.latLng)
+    }
   }
 
   private async showErrorToast(message: string) {

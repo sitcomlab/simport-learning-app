@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
 import {
   Inference,
-  InferenceConfidence,
   InferenceConfidenceThresholds,
 } from 'src/app/model/inference'
 import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
@@ -14,8 +13,8 @@ import {
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
-import { ReverseGeocodingIcon } from 'src/app/model/reverse-geocoding'
-import { ToastController } from '@ionic/angular'
+import { ModalController } from '@ionic/angular'
+import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
 
 class InferenceListItem {
   inferences: Inference[]
@@ -57,7 +56,7 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   constructor(
     private inferenceService: InferenceService,
-    private toastController: ToastController,
+    private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
     private translateService: TranslateService
@@ -111,22 +110,6 @@ export class InferencesPage implements OnInit, OnDestroy {
     })
   }
 
-  formatInferenceName(inference: Inference): string {
-    const def = ALL_INFERENCES[inference.name]
-    if (!def) return inference.name
-    return def.getName(this.translateService)
-  }
-
-  formatInferenceInfo(inference: Inference): string {
-    const def = ALL_INFERENCES[inference.type]
-    if (!def) {
-      return this.translateService.instant('inference.unknown', {
-        value: inference.name,
-      })
-    }
-    return def.info(inference, this.translateService)
-  }
-
   getInferenceTypeIcon(type: string, useOutlined: boolean): string {
     const inf = ALL_INFERENCES[type]
     return useOutlined ? inf.outlinedIcon : inf.icon
@@ -137,20 +120,6 @@ export class InferencesPage implements OnInit, OnDestroy {
     return inf.color
   }
 
-  getInferenceRatingColor(inference: Inference): string {
-    const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
-      inference.confidence
-    )
-    switch (rating) {
-      case InferenceConfidence.high:
-        return 'success'
-      case InferenceConfidence.medium:
-        return 'warning'
-      default:
-        return 'danger'
-    }
-  }
-
   getInferenceRatingString(inference: Inference): string {
     const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
       inference.confidence
@@ -158,13 +127,8 @@ export class InferencesPage implements OnInit, OnDestroy {
     return this.translateService.instant(`inference.confidence.${rating}`)
   }
 
-  getInferencePoiIcon(inference: Inference): string {
-    const icon = ReverseGeocodingIcon.getGeocodingIcon(inference.geocoding)
-    return icon !== undefined ? `${icon}-outline` : undefined
-  }
-
   showInferenceOnMap(e: Event, inference: Inference) {
-    e.stopPropagation()
+    e?.stopPropagation()
     if (!inference.latLng) return
     this.openMap(inference.latLng)
   }
@@ -180,38 +144,26 @@ export class InferencesPage implements OnInit, OnDestroy {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 
-  async showInferenceToast(e: Event, inference: Inference) {
-    e.stopPropagation()
-    let icon: string
-    if (inference.type === InferenceType.poi) {
-      icon = this.getInferencePoiIcon(inference)
-    } else {
-      icon = inference.icon
-    }
-    const cssClass = inference.type
-    const message = this.formatInferenceInfo(inference)
-    await this.showInfoToast(message, inference.icon, cssClass)
-  }
+  async showInferenceModal(e: Event, inference: Inference) {
+    e?.stopPropagation()
 
-  async showInfoToast(
-    message: string,
-    icon: string = undefined,
-    cssClass: string = undefined
-  ) {
-    const toast = await this.toastController.create({
-      message,
-      icon,
-      cssClass,
-      position: 'bottom',
-      duration: 4000,
+    const modal = await this.modalController.create({
+      component: InferenceModalComponent,
+      componentProps: {
+        inference,
+      },
+      swipeToClose: false,
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+      cssClass: 'auto-height',
     })
-
-    try {
-      await this.toastController.dismiss()
-    } catch (error) {
-      // no previous toast to dismiss
-    } finally {
-      await toast.present()
+    await modal.present()
+    const {
+      data: { openMap },
+    } = await modal.onWillDismiss()
+    if (openMap) {
+      this.showInferenceOnMap(undefined, inference)
     }
   }
 }

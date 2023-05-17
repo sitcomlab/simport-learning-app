@@ -53,6 +53,11 @@ ion-item {
   opacity: 0.1;
 }
 
+.md ion-card {
+  margin: 20px;
+  box-shadow: 0 0 15px rgba($color: var(--ion-color-medium-rgb), $alpha: 0.3);
+}
+
 ion-card-header {
   padding-top: 0;
   padding-bottom: 8px;
@@ -102,9 +107,6 @@ ion-card-header {
   width: 30px;
   height: 15px;
   border-radius: 4px;
-}
-
-ion-progress-bar {
   --progress-background: gray;
   --background: lightgray;
 }

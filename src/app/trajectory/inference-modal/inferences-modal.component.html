@@ -1,0 +1,77 @@
+<div>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-icon
+        class="title-icon"
+        slot="start"
+        [style.background-color]="inference?.color"
+        [name]="inference?.icon"
+      ></ion-icon>
+      <ion-title>
+        {{ 'inference.info.' + inference?.type + 'Title' | translate }}
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="closeComponent()">
+          <ion-icon slot="icon-only" color="dark" name="close"> </ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content ion-padding">
+    <ion-item>
+      <ion-progress-bar
+        *ngIf="inference?.type !== 'poi'"
+        class="confidence-bar"
+        slot="start"
+        [value]="inference?.scaledConfidence"
+      ></ion-progress-bar>
+      <ion-icon
+        *ngIf="inference?.type === 'poi'"
+        slot="start"
+        size="normal"
+        [name]="inference?.poiIcon"
+      ></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <p>{{ inference?.addressDisplayName }}</p>
+        <p *ngIf="!inference?.hasGeocoding" class="inference-subtitle">
+          <i> {{ 'inference.noAddressFound' | translate }} </i>
+        </p>
+      </ion-label>
+    </ion-item>
+    <ion-item class="quality-description-item" lines="none">
+      <!-- non-poi description label -->
+      <ion-label
+        *ngIf="inference?.type !== 'poi'"
+        class="ion-text-wrap"
+        color="medium"
+      >
+        {{
+          'inference.info.nonPoiDetailDescription'
+            | translate
+              : {
+                  type:
+                    'inference.info.' + inference?.type + 'Title' | translate
+                }
+        }}
+      </ion-label>
+
+      <!-- poi description label -->
+      <ion-label
+        *ngIf="inference?.type === 'poi'"
+        class="ion-text-wrap"
+        color="medium"
+      >
+        {{ 'inference.info.poiDetailDescription' | translate }}
+      </ion-label>
+    </ion-item>
+    <ion-button
+      shape="round"
+      [class]="inference?.type"
+      (click)="onShowOnMapClick()"
+    >
+      <ion-icon slot="start" size="normal" name="map-outline"></ion-icon>
+      <ion-label class="ion-text-wrap"> Auf Karte anzeigen </ion-label>
+    </ion-button>
+  </div>
+</div>

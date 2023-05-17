@@ -455,7 +455,10 @@ export class StaypointEngine implements IInferenceEngine {
         description = `Location that was visited ${clusterScore.toString()} times`
         break
     }
-    const convexHull = concaveman(stayPointCluster.componentCoordinates)
+    const convexHull = concaveman(
+      stayPointCluster.componentCoordinates,
+      Infinity // Infinity: convex hull
+    )
     return new Inference(
       uuid(),
       inferenceType,

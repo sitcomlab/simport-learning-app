@@ -43,7 +43,7 @@
             *ngFor="let i of inferences.get(key).primaryInferences"
             class="primary-inference-item"
             detail="false"
-            (click)="showInferenceToast($event, i)"
+            (click)="showInferenceModal($event, i)"
             button
           >
             <ng-template
@@ -75,7 +75,7 @@
                 *ngFor="let i of inferences.get(key).secondaryInferences"
                 class="secondary-inference-item"
                 detail="false"
-                (click)="showInferenceToast($event, i)"
+                (click)="showInferenceModal($event, i)"
                 button
               >
                 <ng-template
@@ -101,15 +101,14 @@
   <ion-progress-bar
     *ngIf="inference.type !== 'poi'"
     class="confidence-bar"
-    [class]="inference.type"
     slot="start"
-    [value]="inference.confidence"
+    [value]="inference.scaledConfidence"
   ></ion-progress-bar>
   <ion-icon
     *ngIf="inference.type === 'poi'"
     slot="start"
     size="small"
-    [name]="getInferencePoiIcon(inference)"
+    [name]="inference.poiIcon"
   ></ion-icon>
   <ion-icon
     slot="end"

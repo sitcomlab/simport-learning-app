@@ -57,6 +57,7 @@ ion-modal.auto-height {
 }
 
 @import '~leaflet/dist/leaflet.css';
+@import '~leaflet.markercluster/dist/MarkerCluster.css';
 
 div.inference-icon {
   border-radius: 50%;
@@ -64,7 +65,6 @@ div.inference-icon {
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(1px);
 
   &.work {
     border: 2px solid #fca311;
@@ -93,6 +93,16 @@ div.inference-icon {
       color: #68347d;
     }
   }
+}
+
+div.inference-map-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 3px;
+  border-radius: 50%;
+  border: 3px solid gray;
 }
 
 ion-toast {
