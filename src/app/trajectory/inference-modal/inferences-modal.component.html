@@ -4,11 +4,11 @@
       <ion-icon
         class="title-icon"
         slot="start"
-        [style.background-color]="inference.color"
-        [name]="inference.icon"
+        [style.background-color]="inference?.color"
+        [name]="inference?.icon"
       ></ion-icon>
       <ion-title>
-        {{ 'inference.info.' + inference.type + 'Title' | translate }}
+        {{ 'inference.info.' + inference?.type + 'Title' | translate }}
       </ion-title>
       <ion-buttons slot="end">
         <ion-button fill="clear" (click)="closeComponent()">
@@ -21,20 +21,20 @@
   <div class="content ion-padding">
     <ion-item>
       <ion-progress-bar
-        *ngIf="inference.type !== 'poi'"
+        *ngIf="inference?.type !== 'poi'"
         class="confidence-bar"
         slot="start"
-        [value]="inference.scaledConfidence"
+        [value]="inference?.scaledConfidence"
       ></ion-progress-bar>
       <ion-icon
-        *ngIf="inference.type === 'poi'"
+        *ngIf="inference?.type === 'poi'"
         slot="start"
         size="normal"
-        [name]="inference.poiIcon"
+        [name]="inference?.poiIcon"
       ></ion-icon>
       <ion-label class="ion-text-wrap">
-        <p>{{ inference.addressDisplayName }}</p>
-        <p *ngIf="!inference.hasGeocoding" class="inference-subtitle">
+        <p>{{ inference?.addressDisplayName }}</p>
+        <p *ngIf="!inference?.hasGeocoding" class="inference-subtitle">
           <i> {{ 'inference.noAddressFound' | translate }} </i>
         </p>
       </ion-label>
@@ -42,7 +42,7 @@
     <ion-item class="quality-description-item" lines="none">
       <!-- non-poi description label -->
       <ion-label
-        *ngIf="inference.type !== 'poi'"
+        *ngIf="inference?.type !== 'poi'"
         class="ion-text-wrap"
         color="medium"
       >
@@ -50,14 +50,15 @@
           'inference.info.nonPoiDetailDescription'
             | translate
               : {
-                  type: 'inference.info.' + inference.type + 'Title' | translate
+                  type:
+                    'inference.info.' + inference?.type + 'Title' | translate
                 }
         }}
       </ion-label>
 
       <!-- poi description label -->
       <ion-label
-        *ngIf="inference.type === 'poi'"
+        *ngIf="inference?.type === 'poi'"
         class="ion-text-wrap"
         color="medium"
       >
@@ -66,7 +67,7 @@
     </ion-item>
     <ion-button
       shape="round"
-      [class]="inference.type"
+      [class]="inference?.type"
       (click)="onShowOnMapClick()"
     >
       <ion-icon slot="start" size="normal" name="map-outline"></ion-icon>
