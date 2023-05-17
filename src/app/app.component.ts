@@ -73,7 +73,7 @@ export class AppComponent implements AfterViewInit {
         ]
 
         if (noCredentialsError.includes(code)) {
-          alert('Please set up biometric or credential authentication.')
+          alert(this.translateService.instant('pinLock.noAuthMessage'))
         } else {
           alert(message)
         }

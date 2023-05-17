@@ -237,5 +237,8 @@
     "switchModeProceedButton": "Switch mode",
     "switchModeSuccessMessage": "App mode switched",
     "switchModeWrongPasswordMessage": "Invalid password"
+  },
+  "pinLock": {
+    "noAuthMessage": "Please set up biometric or credential authentication."
   }
 }
