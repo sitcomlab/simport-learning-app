@@ -247,5 +247,8 @@
     "switchModeProceedButton": "Modus wechseln",
     "switchModeSuccessMessage": "App-Modus gewechselt",
     "switchModeWrongPasswordMessage": "Ungültiges Passwort"
+  },
+  "pinLock": {
+    "noAuthMessage": "Bitte richte eine biometrische oder PIN/Muster-Authentifizierung ein."
   }
 }

@@ -29,6 +29,7 @@
     "@angular/platform-browser": "^13.2.0",
     "@angular/platform-browser-dynamic": "^13.2.0",
     "@angular/router": "^13.2.0",
+    "@aparajita/capacitor-biometric-auth": "^3.1.4",
     "@asymmetrik/ngx-leaflet": "^13.0.0",
     "@babel/helper-validator-option": "^7.12.17",
     "@capacitor-community/background-geolocation": "^1.2.7",
