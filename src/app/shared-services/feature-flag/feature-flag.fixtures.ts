@@ -40,8 +40,8 @@ export class FeatureFlagConfig {
     isNotificationsEnabledForInferences: true,
   }
 
-  // feature flags for the first deployment-study incl. control-group
-  static deploymentStudy1FeatureFlags: FeatureFlags = {
+  // feature flags for the second deployment-study
+  static deploymentStudyFeatureFlags: FeatureFlags = {
     canSwitchAppMode: false,
     appModeSwitchPassword: 'wwu',
     isHomeLocationTrackingEnabled: true,
@@ -49,31 +49,13 @@ export class FeatureFlagConfig {
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
     isTrajectoryExportEnabled: false,
-    isTrajectoryInferencesTabEnabled: false,
+    isTrajectoryInferencesTabEnabled: true,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
-    isInferenceComputationEnabled: false,
+    isInferenceComputationEnabled: true,
     isPoiInferenceComputationEnabled: true,
-    isReverseGeocodingEnabled: false,
+    isReverseGeocodingEnabled: true,
     isTimetableComputationEnabled: false,
-    isNotificationsEnabledForInferences: false,
-  }
-
-  static deploymentStudy1ControlGroupFeatureFlags: FeatureFlags = {
-    canSwitchAppMode: true,
-    appModeSwitchPassword: 'wwu',
-    isHomeLocationTrackingEnabled: false,
-    isHomeExploreTrajectoryEnabled: false,
-    isHomeImportTrajectoryEnabled: false,
-    isHomeDiaryEnabled: true,
-    isTrajectoryExportEnabled: false,
-    isTrajectoryInferencesTabEnabled: false,
-    isTrajectoryMapTabEnabled: true,
-    isTrajectoryExplorationTabEnabled: false,
-    isInferenceComputationEnabled: false,
-    isPoiInferenceComputationEnabled: false,
-    isReverseGeocodingEnabled: false,
-    isTimetableComputationEnabled: false,
-    isNotificationsEnabledForInferences: false,
+    isNotificationsEnabledForInferences: true,
   }
 }
