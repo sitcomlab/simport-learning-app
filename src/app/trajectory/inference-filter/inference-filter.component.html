@@ -39,12 +39,24 @@
       <ion-row>
         <ion-segment [(ngModel)]="confidenceThreshold">
           <ion-segment-button value="{{ confidenceThresholdCutoffs.low }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.low"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.low' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.medium }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.medium"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.medium' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.high }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.high"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.high' | translate }}</ion-label>
           </ion-segment-button>
         </ion-segment>
