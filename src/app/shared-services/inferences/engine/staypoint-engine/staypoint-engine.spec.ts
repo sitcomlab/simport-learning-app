@@ -1,4 +1,4 @@
-import { HomeInference, POIInference, WorkInference } from '../definitions'
+import { HOME_INFERENCE, POI_INFERENCE, WORK_INFERENCE } from '../definitions'
 import * as fixtures from './staypoint-engine.spec.fixtures'
 import { InferenceResultStatus, InferenceType } from '../types'
 import { StaypointEngine } from './staypoint-engine'
@@ -45,7 +45,7 @@ describe('StaypointEngine', () => {
       Promise.resolve(undefined)
     )
     engine
-      .infer(fixtures.oneWeekTrajectory, [WorkInference, HomeInference])
+      .infer(fixtures.oneWeekTrajectory, [WORK_INFERENCE, HOME_INFERENCE])
       .then((value) => {
         expect(value.status).toEqual(InferenceResultStatus.noInferencesFound)
         expect(value.inferences.length).toEqual(0)
@@ -71,7 +71,7 @@ describe('StaypointEngine', () => {
       Promise.resolve(fixtures.emptyClusters)
     )
     engine
-      .infer(fixtures.oneWeekTrajectory, [WorkInference, HomeInference])
+      .infer(fixtures.oneWeekTrajectory, [WORK_INFERENCE, HOME_INFERENCE])
       .then((value) => {
         expect(value.status).toEqual(InferenceResultStatus.noInferencesFound)
         expect(value.inferences.length).toEqual(0)
@@ -96,7 +96,7 @@ describe('StaypointEngine', () => {
     staypointServiceSpy.computeStayPointClusters.and.returnValue(
       Promise.resolve(fixtures.oneWeekRegularHomeWorkClusters)
     )
-    engine.infer(fixtures.oneWeekTrajectory, [WorkInference]).then((value) => {
+    engine.infer(fixtures.oneWeekTrajectory, [WORK_INFERENCE]).then((value) => {
       expect(value.status).toEqual(InferenceResultStatus.successful)
       expect(value.inferences.length).toEqual(2)
       expect(value.inferences[0].type).toEqual(InferenceType.work)
@@ -129,7 +129,7 @@ describe('StaypointEngine', () => {
     staypointServiceSpy.computeStayPointClusters.and.returnValue(
       Promise.resolve(fixtures.oneWeekRegularHomeWorkClusters)
     )
-    engine.infer(fixtures.oneWeekTrajectory, [HomeInference]).then((value) => {
+    engine.infer(fixtures.oneWeekTrajectory, [HOME_INFERENCE]).then((value) => {
       expect(value.status).toEqual(InferenceResultStatus.successful)
       expect(value.inferences.length).toEqual(2)
       expect(value.inferences[0].type).toEqual(InferenceType.home)
@@ -162,7 +162,7 @@ describe('StaypointEngine', () => {
     staypointServiceSpy.computeStayPointClusters.and.returnValue(
       Promise.resolve(fixtures.twoWeekmixedHomeCluster)
     )
-    engine.infer(fixtures.twoWeekTrajectory, [HomeInference]).then((value) => {
+    engine.infer(fixtures.twoWeekTrajectory, [HOME_INFERENCE]).then((value) => {
       expect(value.status).toEqual(InferenceResultStatus.successful)
       expect(value.inferences.length).toEqual(3)
       expect(value.inferences[0].type).toEqual(InferenceType.home)
@@ -199,14 +199,14 @@ describe('StaypointEngine', () => {
     )
     engine
       .infer(fixtures.homeSportHomeTrajectory, [
-        POIInference,
-        WorkInference,
-        HomeInference,
+        POI_INFERENCE,
+        WORK_INFERENCE,
+        HOME_INFERENCE,
       ])
       .then((value) => {
-        const poiInferences = value.inferences.filter((inf) => {
-          return inf.type === InferenceType.poi
-        })
+        const poiInferences = value.inferences.filter(
+          (inf) => inf.type === InferenceType.poi
+        )
         expect(value.status).toEqual(InferenceResultStatus.successful)
         expect(poiInferences.length).toEqual(1)
         expect(poiInferences[0].type).toEqual(InferenceType.poi)

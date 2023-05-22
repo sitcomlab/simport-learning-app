@@ -2,13 +2,46 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { Subscription } from 'rxjs'
-import { Inference } from 'src/app/model/inference'
-import { AllInferences } from 'src/app/shared-services/inferences/engine/definitions'
+import {
+  Inference,
+  InferenceConfidenceThresholds,
+} from 'src/app/model/inference'
+import { ALL_INFERENCES } from 'src/app/shared-services/inferences/engine/definitions'
 import {
   InferenceService,
   InferenceServiceEvent,
 } from 'src/app/shared-services/inferences/inference.service'
 import { TrajectoryPagePath } from '../trajectory.page'
+import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
+import { ModalController } from '@ionic/angular'
+import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
+
+class InferenceListItem {
+  inferences: Inference[]
+  type: InferenceType
+  constructor(inferences: Inference[], type: InferenceType) {
+    this.inferences = inferences
+    this.type = type
+  }
+
+  get hasInferences(): boolean {
+    return this.inferences.length > 0
+  }
+
+  get primaryInferences(): Inference[] {
+    if (this.type === InferenceType.poi) {
+      return this.inferences.slice(0, 3)
+    }
+    return this.inferences.slice(0, 1)
+  }
+
+  get secondaryInferences(): Inference[] {
+    if (this.type === InferenceType.poi) {
+      return this.inferences.slice(3)
+    }
+    return this.inferences.slice(1)
+  }
+}
 
 @Component({
   selector: 'app-inferences',
@@ -16,21 +49,25 @@ import { TrajectoryPagePath } from '../trajectory.page'
   styleUrls: ['./inferences.page.scss'],
 })
 export class InferencesPage implements OnInit, OnDestroy {
-  inferences: Inference[] = []
+  inferences: Map<InferenceType, InferenceListItem> = new Map()
 
   private trajectoryId: string
   private inferenceFilterSubscription: Subscription
 
   constructor(
     private inferenceService: InferenceService,
+    private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
     private translateService: TranslateService
   ) {}
 
+  get hasInferences(): boolean {
+    return this.inferences.size > 0
+  }
+
   async ngOnInit() {
     this.trajectoryId = this.route.snapshot.paramMap.get('trajectoryId')
-    await this.reloadInferences(true)
     this.inferenceFilterSubscription =
       this.inferenceService.inferenceServiceEvent.subscribe(async (event) => {
         if (
@@ -48,35 +85,51 @@ export class InferencesPage implements OnInit, OnDestroy {
     }
   }
 
+  async ionViewDidEnter() {
+    await this.reloadInferences(true)
+  }
+
   async reloadInferences(runGeocoding: boolean = false): Promise<void> {
     const inferencesResult =
       await this.inferenceService.loadPersistedInferences(
         this.trajectoryId,
-        runGeocoding
+        runGeocoding,
+        false
       )
-    this.inferences = inferencesResult.inferences.sort(
+    const sortedInferences = inferencesResult.inferences.sort(
       (a, b) => b.confidence - a.confidence
     )
+    Object.keys(InferenceType).forEach((t) => {
+      this.inferences.set(
+        t as InferenceType,
+        new InferenceListItem(
+          sortedInferences.filter((i) => i.type === t),
+          t as InferenceType
+        )
+      )
+    })
   }
 
-  formatInferenceName(inference: Inference): string {
-    const def = AllInferences[inference.name]
-    if (!def) return inference.name
-    return def.getName(this.translateService)
+  getInferenceTypeIcon(type: string, useOutlined: boolean): string {
+    const inf = ALL_INFERENCES[type]
+    return useOutlined ? inf.outlinedIcon : inf.icon
   }
 
-  formatInferenceInfo(inference: Inference): string {
-    const def = AllInferences[inference.type]
-    if (!def) {
-      return this.translateService.instant('inference.unknown', {
-        value: inference.name,
-      })
-    }
-    return def.info(inference, this.translateService)
+  getInferenceTypeColor(type: InferenceType): string {
+    const inf = ALL_INFERENCES[type]
+    return inf.color
   }
 
-  showInferenceOnMap(inference: Inference) {
-    if (!inference.latLng || !inference.accuracy) return
+  getInferenceRatingString(inference: Inference): string {
+    const rating = InferenceConfidenceThresholds.getQualitativeConfidence(
+      inference.confidence
+    )
+    return this.translateService.instant(`inference.confidence.${rating}`)
+  }
+
+  showInferenceOnMap(e: Event, inference: Inference) {
+    e?.stopPropagation()
+    if (!inference.latLng) return
     this.openMap(inference.latLng)
   }
 
@@ -89,5 +142,28 @@ export class InferencesPage implements OnInit, OnDestroy {
 
   openInferenceFilter() {
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
+  }
+
+  async showInferenceModal(e: Event, inference: Inference) {
+    e?.stopPropagation()
+
+    const modal = await this.modalController.create({
+      component: InferenceModalComponent,
+      componentProps: {
+        inference,
+      },
+      swipeToClose: false,
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      handle: false,
+      cssClass: 'auto-height',
+    })
+    await modal.present()
+    const {
+      data: { openMap },
+    } = await modal.onWillDismiss()
+    if (openMap) {
+      this.showInferenceOnMap(undefined, inference)
+    }
   }
 }

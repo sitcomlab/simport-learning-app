@@ -7,7 +7,7 @@ import {
   TrajectoryMeta,
   TrajectoryType,
 } from 'src/app/model/trajectory'
-import { HomeInference, WorkInference } from '../definitions'
+import { HOME_INFERENCE, WORK_INFERENCE } from '../definitions'
 import { SimpleEngine } from './simple-engine'
 import * as fixtures from './simple-engine.spec.fixtures'
 import { IInferenceEngine, InferenceDefinition } from '../types'
@@ -25,7 +25,7 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for 0 points', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryEmpty,
-        [HomeInference],
+        [HOME_INFERENCE],
         []
       )
       await t.test(new SimpleEngine())
@@ -34,7 +34,7 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for mobile only trajectory', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
-        [HomeInference],
+        [HOME_INFERENCE],
         []
       )
       await t.test(new SimpleEngine())
@@ -43,7 +43,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for home-work data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWork,
-        [HomeInference],
+        [HOME_INFERENCE],
         [fixtures.trajectoryHomeResult]
       )
       await t.test(new SimpleEngine())
@@ -52,7 +52,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for spatially dense data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
-        [HomeInference],
+        [HOME_INFERENCE],
         [fixtures.trajectoryHomeResult]
       )
       await t.test(new SimpleEngine())
@@ -61,7 +61,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for temporally sparse data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
-        [HomeInference],
+        [HOME_INFERENCE],
         [fixtures.trajectoryHomeResult]
       )
       await t.test(new SimpleEngine())
@@ -87,7 +87,7 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for 0 points', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryEmpty,
-        [WorkInference],
+        [WORK_INFERENCE],
         []
       )
       await t.test(new SimpleEngine())
@@ -96,7 +96,7 @@ describe('inferences/SimpleEngine', () => {
     it('should not infer for mobile only trajectory', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryMobileOnly,
-        [WorkInference],
+        [WORK_INFERENCE],
         []
       )
       await t.test(new SimpleEngine())
@@ -105,7 +105,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for home-work data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWork,
-        [WorkInference],
+        [WORK_INFERENCE],
         [fixtures.trajectoryWorkResult]
       )
       await t.test(new SimpleEngine())
@@ -114,7 +114,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for spatially dense data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkSpatiallyDense,
-        [WorkInference],
+        [WORK_INFERENCE],
         [fixtures.trajectoryWorkResult]
       )
       await t.test(new SimpleEngine())
@@ -123,7 +123,7 @@ describe('inferences/SimpleEngine', () => {
     it('should infer for temporally sparse data', async () => {
       const t = new InferenceTestCase(
         fixtures.trajectoryHomeWorkTemporallySparse,
-        [WorkInference],
+        [WORK_INFERENCE],
         [fixtures.trajectoryWorkResult]
       )
       await t.test(new SimpleEngine())
@@ -148,9 +148,7 @@ class InferenceTestCase {
     }
     const trajectory = new Trajectory(meta, this.trajectoryData)
     const result = await e.infer(trajectory, this.inferences)
-    result.inferences = result.inferences.filter((res) => {
-      return res.confidence >= 0.5
-    })
+    result.inferences = result.inferences.filter((res) => res.confidence >= 0.5)
 
     // inference count
     expect(result.inferences.length).toEqual(
@@ -181,6 +179,7 @@ class InferenceTestCase {
   }
 }
 
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 function computeHaversineDistance(
   firstCoordinate: [number, number],
   secondCoordinate: [number, number]

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core'
 import { v4 as uuid } from 'uuid'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { SqliteService } from '../db/sqlite.service'
-import { Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import JSZip from 'jszip'
 import { LogfileService } from '../logfile/logfile.service'
@@ -15,7 +14,6 @@ import { Share } from '@capacitor/share'
 export class DiaryService {
   constructor(
     private dbService: SqliteService,
-    private platform: Platform,
     private translateService: TranslateService,
     private logfileService: LogfileService
   ) {}
@@ -85,16 +83,18 @@ export class DiaryService {
   private async createDiaryExport(): Promise<string> {
     try {
       const diary = await this.getDiary()
+      const diaryHeader = 'userDate,creationDate,changeDate,content\n'
+      const diaryData = diary
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .map((d) => {
+          const userDate = d.date.toISOString()
+          const creationDate = d.created.toISOString()
+          const changeDate = d.updated.toISOString()
+          const content = this.getEscapedDiaryContent(d.content)
+          return `${userDate},${creationDate},${changeDate},"${content}"`
+        })
 
-      const diaryHeader = 'date,content\n'
-
-      const fileData =
-        diaryHeader +
-        diary
-          .sort((a, b) => a.date.getTime() - b.date.getTime())
-          .map((d) => `${d.date.toISOString()},${d.content}\n`)
-
-      return fileData
+      return `${diaryHeader}${diaryData.join('\n')}`
     } catch (e) {
       const errorMessage = this.translateService.instant(
         'diary.exportFileErrorTitle',
@@ -102,5 +102,15 @@ export class DiaryService {
       )
       throw new Error(errorMessage)
     }
+  }
+
+  private getEscapedDiaryContent(content: string): string {
+    // replace double-quotes in content with single-quotes
+    return (
+      content
+        // eslint-disable-next-line @typescript-eslint/quotes
+        .replace(/\"/g, "'")
+        .replace(/\n/g, '	')
+    )
   }
 }

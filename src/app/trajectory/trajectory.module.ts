@@ -8,6 +8,7 @@ import { TrajectoryPageRoutingModule } from './trajectory-routing.module'
 
 import { TrajectoryPage } from './trajectory.page'
 import { InferenceFilterModule } from './inference-filter/inference-filter.module'
+import { InferenceModalModule } from './inference-modal/inference-modal.module'
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { InferenceFilterModule } from './inference-filter/inference-filter.modul
     FormsModule,
     IonicModule,
     InferenceFilterModule,
+    InferenceModalModule,
     TrajectoryPageRoutingModule,
   ],
   declarations: [TrajectoryPage],

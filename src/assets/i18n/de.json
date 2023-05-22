@@ -170,15 +170,25 @@
     "home": "Wohnort",
     "poi": "Häufig besuchter Ort",
     "unknown": "Unbekannter Rückschluss: {{ value }}",
+    "noAddressFound": "Noch keine Adresse gefunden…",
     "info": {
-      "work": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Arbeitsort ist.",
-      "home": "Wir glauben mit {{ confidence }}, dass {{ address }} dein Wohnort ist.",
-      "poi": "Wir glauben, dass du {{ address }} regelmäßig besuchst.",
+      "work": "{{ address }} ist mit {{ confidence }} dein Arbeitsort",
+      "workNoInferences": "Noch kein Arbeitsort gefunden.",
+      "workTitle": "Arbeitsort",
+      "home": "{{ address }} ist mit {{ confidence }} dein Wohnort",
+      "homeNoInferences": "Noch kein Wohnort gefunden.",
+      "homeTitle": "Wohnort",
+      "poi": "Du besuchst {{ address }} regelmäßig",
+      "poiNoInferences": "Noch kein häufig besuchter Ort gefunden.",
+      "poiTitle": "Häufig besuchte Orte",
+      "moreInferences": "Weitere Orte",
       "confidence": {
         "low": "geringer Wahrscheinlichkeit",
         "medium": "mittlerer Wahrscheinlichkeit",
         "high": "hoher Wahrscheinlichkeit"
-      }
+      },
+      "poiDetailDescription": "Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als ein häufig besuchter Ort identifizieren. Das Piktogramm links ordnet diesen Ort in eine Kategorie ein. Sofern das nicht möglich ist, findest du hier eine einfache Nadel.",
+      "nonPoiDetailDescription": "Anhand deiner bisherigen Standortdaten lässt sich dieser Ort als dein {{ type }} identifizieren. Die Anzeige links zeigt die Qualität dieser Vorhersage. Ein gefüllter Balken bedeutet ein zuverlässigere Aussage. Je weniger diese Anzeige gefüllt ist, desto unzuverlässiger wird die Aussage."
     },
     "confidence": {
       "low": "geringe Wahrscheinlichkeit",
@@ -239,5 +249,8 @@
     "switchModeProceedButton": "Modus wechseln",
     "switchModeSuccessMessage": "App-Modus gewechselt",
     "switchModeWrongPasswordMessage": "Ungültiges Passwort"
+  },
+  "pinLock": {
+    "noAuthMessage": "Bitte richte eine biometrische oder PIN/Muster-Authentifizierung ein."
   }
 }

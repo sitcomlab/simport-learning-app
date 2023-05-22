@@ -1,11 +1,13 @@
 PODS:
+  - AparajitaCapacitorBiometricAuth (3.1.4):
+    - Capacitor
   - Capacitor (4.6.1):
     - CapacitorCordova
   - CapacitorApp (4.1.1):
     - Capacitor
   - CapacitorCommunityBackgroundGeolocation (0.0.1):
     - Capacitor
-  - CapacitorCommunitySqlite (4.6.0):
+  - CapacitorCommunitySqlite (4.6.3):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
@@ -34,6 +36,7 @@ PODS:
   - ZIPFoundation (0.9.16)
 
 DEPENDENCIES:
+  - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCommunityBackgroundGeolocation (from `../../node_modules/@capacitor-community/background-geolocation`)"
@@ -54,6 +57,8 @@ SPEC REPOS:
     - ZIPFoundation
 
 EXTERNAL SOURCES:
+  AparajitaCapacitorBiometricAuth:
+    :path: "../../node_modules/@aparajita/capacitor-biometric-auth"
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
@@ -82,10 +87,11 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@transistorsoft/capacitor-background-fetch"
 
 SPEC CHECKSUMS:
+  AparajitaCapacitorBiometricAuth: 7f99c1ec95963aff24f19eba5bb904c14dc4c4b3
   Capacitor: 6b8848492d0b4fec76f53c1504089228d00645bf
   CapacitorApp: acd42fe8561fe751ad5b5f459aa85e6acd7bee24
   CapacitorCommunityBackgroundGeolocation: 6f26f4290377dbd1d6dec21e62cb66f008f61ec7
-  CapacitorCommunitySqlite: 9f29194e1b68dc4203c304e76c8826b016ee414a
+  CapacitorCommunitySqlite: 0cedf148089efc47a43b4bef88d31f4c235dfbf2
   CapacitorCordova: 48a0f6863177473356a4aecb4ee69e2b865202e7
   CapacitorDevice: 63e8ef8837176b8caf67dc0717b8b1123754a955
   CapacitorFilesystem: 3d665e5b3719d9f6e240480a7468861b0bb35f93
@@ -98,6 +104,6 @@ SPEC CHECKSUMS:
   TransistorsoftCapacitorBackgroundFetch: 74ca62dae7ec78639eaf3d0d1e24c595ada213dd
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: c9fa320c75c589e78b7cdc88ee682fcac7ec8586
+PODFILE CHECKSUM: b7b6af86e33f78852890ba57b59324d47cd43125
 
 COCOAPODS: 1.11.3

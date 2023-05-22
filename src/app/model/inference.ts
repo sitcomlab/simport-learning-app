@@ -1,10 +1,13 @@
-import { AllInferences } from '../shared-services/inferences/engine/definitions'
+import { ALL_INFERENCES } from '../shared-services/inferences/engine/definitions'
 import { InferenceType } from '../shared-services/inferences/engine/types'
 import * as polyline from '@mapbox/polyline'
-import { ReverseGeocoding } from './reverse-geocoding'
+import { ReverseGeocoding, ReverseGeocodingIcon } from './reverse-geocoding'
 
 export class Inference {
   public geocoding?: ReverseGeocoding
+
+  // factor to enable scaling of a confidence
+  private readonly confidenceScaleFactor = 0.9
 
   constructor(
     public id: string,
@@ -19,6 +22,62 @@ export class Inference {
     // onSiteTimes are not saved in the database, therefore not present in fromObject()
     public onSiteTimes?: [Date, Date][]
   ) {}
+
+  get hasGeocoding(): boolean {
+    return this.geocoding !== undefined
+  }
+
+  get addressDisplayName(): string {
+    if (this.hasGeocoding) {
+      const name = this.geocoding.name ? `${this.geocoding.name}, ` : ''
+      const road = this.geocoding.road ? `${this.geocoding.road} ` : ''
+      const houseNumber = this.geocoding.houseNumber
+        ? this.geocoding.houseNumber
+        : ''
+      const location =
+        this.geocoding.city ||
+        this.geocoding.town ||
+        this.geocoding.village ||
+        this.geocoding.country ||
+        ''
+      const locationString = location.length > 0 ? ` (${location})` : location
+
+      const displayName = `${name}${road}${houseNumber}${locationString}`
+      if (displayName.trim().length > 0) return displayName
+    }
+    return `${this.latLng[0].toFixed(3)}, ${this.latLng[1].toFixed(3)}`
+  }
+
+  get coordinatesAsPolyline(): string {
+    return polyline.encode(this.coordinates)
+  }
+
+  get icon(): string {
+    return ALL_INFERENCES[this.type].icon
+  }
+
+  get outlinedIcon(): string {
+    return ALL_INFERENCES[this.type].outlinedIcon
+  }
+
+  get poiIcon(): string {
+    const icon = ReverseGeocodingIcon.getGeocodingIcon(this.geocoding)
+    return icon !== undefined ? `${icon}-outline` : undefined
+  }
+
+  get color(): string {
+    return ALL_INFERENCES[this.type].color
+  }
+
+  get latLngHash(): number {
+    // cantor pairing function
+    const [x, y] = this.latLng
+    return ((x + y) * (x + y + 1)) / 2 + y
+  }
+
+  get scaledConfidence(): number {
+    return (this.confidence ?? 0) * this.confidenceScaleFactor
+  }
 
   static fromObject(val: any): Inference {
     const {
@@ -46,53 +105,22 @@ export class Inference {
       accuracy
     )
   }
+}
 
-  get hasGeocoding(): boolean {
-    return this.geocoding !== undefined
-  }
-
-  get addressDisplayName(): string {
-    if (this.hasGeocoding) {
-      const name = this.geocoding.name ? `${this.geocoding.name}, ` : ''
-      const road = this.geocoding.road ? `${this.geocoding.road} ` : ''
-      const houseNumber = this.geocoding.houseNumber
-        ? this.geocoding.houseNumber
-        : ''
-      const location =
-        this.geocoding.city ||
-        this.geocoding.town ||
-        this.geocoding.village ||
-        this.geocoding.country ||
-        ''
-      const locationString = location.length > 0 ? ` (${location})` : location
-
-      const displayName = `${name}${road}${houseNumber}${locationString}`
-      if (displayName.trim().length > 0) return displayName
-    }
-    return `${this.latLng[0].toFixed(2)}, ${this.latLng[1].toFixed(2)}`
-  }
-
-  get coordinatesAsPolyline(): string {
-    return polyline.encode(this.coordinates)
-  }
-
-  get icon(): string {
-    return AllInferences[this.type].icon
-  }
-
-  get outlinedIcon(): string {
-    return AllInferences[this.type].outlinedIcon
-  }
+export enum InferenceConfidence {
+  high = 'high',
+  medium = 'medium',
+  low = 'low',
 }
 
 export abstract class InferenceConfidenceThresholds {
   public static high = 0.6
   public static medium = 0.3
-  public static low = 0.05
+  public static low = 0.0
 
   public static getQualitativeConfidence(confidenceValue: number): string {
-    if (confidenceValue >= this.high) return 'high'
-    else if (confidenceValue >= this.medium) return 'medium'
-    else if (confidenceValue >= this.low) return 'low'
+    if (confidenceValue >= this.high) return InferenceConfidence.high
+    else if (confidenceValue >= this.medium) return InferenceConfidence.medium
+    else if (confidenceValue > this.low) return InferenceConfidence.low
   }
 }

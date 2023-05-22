@@ -176,20 +176,18 @@ export class SimpleEngine implements IInferenceEngine {
     clusters: [[number]],
     trajectory: Trajectory
   ): Point[][] {
-    return clusters.map((cluster) => {
-      return cluster.map((coordinateIndex) => {
-        return {
-          latLng: [
-            trajectory.coordinates[coordinateIndex][0],
-            trajectory.coordinates[coordinateIndex][1],
-          ],
-          time: trajectory.timestamps[coordinateIndex],
-          accuracy: trajectory.accuracy
-            ? trajectory.accuracy[coordinateIndex]
-            : null,
-          speed: trajectory.speed ? trajectory.speed[coordinateIndex] : null,
-        }
-      })
-    })
+    return clusters.map((cluster) =>
+      cluster.map((coordinateIndex) => ({
+        latLng: [
+          trajectory.coordinates[coordinateIndex][0],
+          trajectory.coordinates[coordinateIndex][1],
+        ],
+        time: trajectory.timestamps[coordinateIndex],
+        accuracy: trajectory.accuracy
+          ? trajectory.accuracy[coordinateIndex]
+          : null,
+        speed: trajectory.speed ? trajectory.speed[coordinateIndex] : null,
+      }))
+    )
   }
 }

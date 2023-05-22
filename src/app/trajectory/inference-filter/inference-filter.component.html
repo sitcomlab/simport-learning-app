@@ -1,12 +1,15 @@
 <div class="inner-content">
-  <ion-card-header>
-    <ion-card-title>{{ 'trajectory.filter.title' | translate }}</ion-card-title>
+  <ion-toolbar>
+    <ion-card-title slot="start">
+      {{ 'trajectory.filter.title' | translate }}
+    </ion-card-title>
+
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="closeComponent()">
-        <ion-icon slot="icon-only" name="close"> </ion-icon>
+        <ion-icon slot="icon-only" color="medium" name="close"> </ion-icon>
       </ion-button>
     </ion-buttons>
-  </ion-card-header>
+  </ion-toolbar>
 
   <div style="display: flex; justify-content: center">
     <ion-grid>
@@ -36,12 +39,24 @@
       <ion-row>
         <ion-segment [(ngModel)]="confidenceThreshold">
           <ion-segment-button value="{{ confidenceThresholdCutoffs.low }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.low"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.low' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.medium }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.medium"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.medium' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="{{ confidenceThresholdCutoffs.high }}">
+            <ion-progress-bar
+              class="confidence-bar"
+              [value]="confidenceThresholdCutoffs.high"
+            ></ion-progress-bar>
             <ion-label>{{ 'trajectory.filter.high' | translate }}</ion-label>
           </ion-segment-button>
         </ion-segment>

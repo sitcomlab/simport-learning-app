@@ -22,12 +22,12 @@ export class StaypointEngine implements IInferenceEngine {
     new WorkHoursScoring(),
   ]
 
+  private inputCoordinatesLimit = 100000
+
   constructor(
     private staypointService: StaypointService,
     private timetableService: TimetableService
   ) {}
-
-  private inputCoordinatesLimit = 100000
 
   async infer(
     trajectory: Trajectory,
@@ -100,29 +100,27 @@ export class StaypointEngine implements IInferenceEngine {
       (inference) => inference.type === InferenceType.home
     )
     if (homeInferences.length > 0) {
-      const topHomeInference = homeInferences.reduce((prev, curr) => {
-        return prev.confidence > curr.confidence ? prev : curr
-      })
-      inferences = inferences.filter((inference) => {
-        return (
+      const topHomeInference = homeInferences.reduce((prev, curr) =>
+        prev.confidence > curr.confidence ? prev : curr
+      )
+      inferences = inferences.filter(
+        (inference) =>
           inference.type !== InferenceType.poi ||
           inference.latLng !== topHomeInference.latLng
-        )
-      })
+      )
     }
     const workInferences = inferences.filter(
       (inference) => inference.type === InferenceType.work
     )
     if (workInferences.length > 0) {
-      const topWorkInference = workInferences.reduce((prev, curr) => {
-        return prev.confidence > curr.confidence ? prev : curr
-      })
-      inferences = inferences.filter((inference) => {
-        return (
+      const topWorkInference = workInferences.reduce((prev, curr) =>
+        prev.confidence > curr.confidence ? prev : curr
+      )
+      inferences = inferences.filter(
+        (inference) =>
           inference.type !== InferenceType.poi ||
           inference.latLng !== topWorkInference.latLng
-        )
-      })
+      )
     }
     return inferences
   }
@@ -147,7 +145,7 @@ export class StaypointEngine implements IInferenceEngine {
     }
     // process each section after start individually
     let sumDays = 0
-    for (let i = 0; i++; i < startIndices.length - 1) {
+    for (let i = 0; i < startIndices.length - 1; i++) {
       const date1 = trajectory.timestamps[startIndices[i]]
       const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
       sumDays += this.countContinuousDays(date1, date2)
@@ -208,7 +206,7 @@ export class StaypointEngine implements IInferenceEngine {
     }
     // process each section after start individually
     let sumWeekDays = 0
-    for (let i = 0; i++; i < startIndices.length - 1) {
+    for (let i = 0; i < startIndices.length - 1; i++) {
       const date1 = trajectory.timestamps[startIndices[i]]
       const date2 = trajectory.timestamps[startIndices[i + 1] - 1]
       sumWeekDays += this.countContinuousWeekDays(date1, date2)
@@ -254,6 +252,7 @@ export class StaypointEngine implements IInferenceEngine {
 
   /**
    * Get the location of the three clusters of staypoints where the most nights (12pm to 4am) were spent.
+   *
    * @param stayPointClusters The clusters of staypoints from which home location is to be extracted
    * @param daysInTrajectory The number of days for which the trajectory has been recorded,
    * used to calculate the "confidence" value (number of nights spent at staypoint/number of days in trajectory)
@@ -266,40 +265,41 @@ export class StaypointEngine implements IInferenceEngine {
     if (stayPointClusters === undefined || stayPointClusters.length === 0) {
       return undefined
     }
-    const clusterScores = stayPointClusters.map((stayPointCluster) => {
-      return this.calculateHomeScore(stayPointCluster)
-    })
+    const clusterScores = stayPointClusters.map((stayPointCluster) =>
+      this.calculateHomeScore(stayPointCluster)
+    )
     // here we return inferences for all clusters
     if (stayPointClusters.length <= 3) {
       return clusterScores
-        .map((score, index) => {
-          return this.createInferenceForCluster(
+        .map((score, index) =>
+          this.createInferenceForCluster(
             InferenceType.home,
             stayPointClusters[index],
             score,
             daysInTrajectory
           )
-        })
+        )
         .sort((a, b) => b.confidence - a.confidence)
     }
     // if more than three clusters, we return only inferences of top three results
     const topThreeInferenceIndices =
       this.getIndicesOfThreeMaxValues(clusterScores)
     return topThreeInferenceIndices
-      .map((topInferenceIndex) => {
-        return this.createInferenceForCluster(
+      .map((topInferenceIndex) =>
+        this.createInferenceForCluster(
           InferenceType.home,
           stayPointClusters[topInferenceIndex],
           clusterScores[topInferenceIndex],
           daysInTrajectory
         )
-      })
+      )
       .sort((a, b) => b.confidence - a.confidence)
   }
 
   /**
    * Get the location of the three clusters of staypoints where the most workdays were spent.
    * Each interval from 10am to 12am and from 2pm to 4pm on Mon-Fri contained within staypoint is counted.
+   *
    * @param stayPointClusters The staypoint clusters from which work location is to be extracted
    * @param weekDaysInTrajectory The number of working days (Mon-Fri) for which the trajectory has been recorded,
    * used to calculate the "confidence" value (number of full days worked/number of week days in trajectory)
@@ -311,34 +311,34 @@ export class StaypointEngine implements IInferenceEngine {
   ): Inference[] {
     if (stayPointClusters === undefined || stayPointClusters.length === 0)
       return undefined
-    const clusterScores = stayPointClusters.map((stayPointCluster) => {
-      return this.calculateWorkScore(stayPointCluster)
-    })
+    const clusterScores = stayPointClusters.map((stayPointCluster) =>
+      this.calculateWorkScore(stayPointCluster)
+    )
     // here we return inferences for all clusters
     if (stayPointClusters.length <= 3) {
       return clusterScores
-        .map((score, index) => {
-          return this.createInferenceForCluster(
+        .map((score, index) =>
+          this.createInferenceForCluster(
             InferenceType.work,
             stayPointClusters[index],
             score,
             weekDaysInTrajectory
           )
-        })
+        )
         .sort((a, b) => b.confidence - a.confidence)
     }
     // if more than three clusters, we return only inferences of top three results
     const topThreeInferenceIndices =
       this.getIndicesOfThreeMaxValues(clusterScores)
     return topThreeInferenceIndices
-      .map((topInferenceIndex) => {
-        return this.createInferenceForCluster(
+      .map((topInferenceIndex) =>
+        this.createInferenceForCluster(
           InferenceType.work,
           stayPointClusters[topInferenceIndex],
           clusterScores[topInferenceIndex],
           weekDaysInTrajectory
         )
-      })
+      )
       .sort((a, b) => b.confidence - a.confidence)
   }
 
@@ -352,9 +352,9 @@ export class StaypointEngine implements IInferenceEngine {
       return undefined
     }
     // filter out clusters which will not be POIs (for now, those with only one visit)
-    const poiClusters = stayPointClusters.filter((stayPointCluster) => {
-      return stayPointCluster.onSiteTimes.length > 1
-    })
+    const poiClusters = stayPointClusters.filter(
+      (stayPointCluster) => stayPointCluster.onSiteTimes.length > 1
+    )
     if (poiClusters.length === 0) return undefined
     return poiClusters.map((poiCluster) => {
       // TODO here we assign a confidence value of 1/1 =1 (100%) to each POI - are there other options?
@@ -455,7 +455,10 @@ export class StaypointEngine implements IInferenceEngine {
         description = `Location that was visited ${clusterScore.toString()} times`
         break
     }
-    const convexHull = concaveman(stayPointCluster.componentCoordinates)
+    const convexHull = concaveman(
+      stayPointCluster.componentCoordinates,
+      Infinity // Infinity: convex hull
+    )
     return new Inference(
       uuid(),
       inferenceType,

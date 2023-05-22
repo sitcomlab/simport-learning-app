@@ -6,7 +6,7 @@ import {
   InferenceScoringConfig,
   InferenceScoringType,
 } from '../scoring/types'
-import { AllInferences } from './definitions'
+import { ALL_INFERENCES } from './definitions'
 
 export interface IInferenceEngine {
   scorings: IInferenceScoring[]
@@ -25,22 +25,33 @@ export class InferenceDefinition {
     public scoringConfigurations: InferenceScoringConfig[]
   ) {}
 
-  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
-    return this.scoringConfigurations.find((config) => config.type === type)
-  }
-
-  public getName(translateService: TranslateService): string {
-    return translateService.instant(this.type)
-  }
-
   get icon(): string {
-    const def = AllInferences[this.type]
+    const def = ALL_INFERENCES[this.type]
     if (!def) return 'help'
     return def.iconName
   }
 
   get outlinedIcon(): string {
     return `${this.icon}-outline`
+  }
+
+  get color(): string {
+    switch (this.type) {
+      case InferenceType.home:
+        return '#347d39'
+      case InferenceType.work:
+        return '#fca311'
+      case InferenceType.poi:
+        return '#68347d'
+    }
+  }
+
+  public getScoringConfig(type: InferenceScoringType): InferenceScoringConfig {
+    return this.scoringConfigurations.find((config) => config.type === type)
+  }
+
+  public getName(translateService: TranslateService): string {
+    return translateService.instant(this.type)
   }
 }
 

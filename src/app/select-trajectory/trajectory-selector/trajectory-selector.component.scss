@@ -1,0 +1,9 @@
+.inner-content {
+  margin-left: var(--ion-safe-area-left);
+  margin-right: var(--ion-safe-area-right);
+  margin-bottom: var(--ion-safe-area-bottom);
+}
+
+ion-toolbar {
+  --background: transparent;
+}
