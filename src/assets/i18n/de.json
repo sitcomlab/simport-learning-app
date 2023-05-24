@@ -143,7 +143,7 @@
     "removeConsentConfirmation": "Bist du sicher?",
     "removeConsentConfirmationText": "Dadurch beendet die App die Verfolgung deines Standorts.",
     "informedConsentTitle": "Erfasste Informationen",
-    "informedConsentText": "Die Simport Learning App erfasst Ihre Standortinformationen und speichert sie auf Ihrem Gerät, um diese zu visualisieren und zu aggregieren (häufig besuchte Orte identifizieren), auch wenn Sie die App gerade nicht benutzen oder sie geschlossen ist. <br><br>Die gesammelten Daten verlassen nie Ihr lokales Gerät (Smartphone oder Tablet). Wir speichern die Daten nicht auf einem Server. Alle Datenverarbeitung findet lokal auf Ihrem Gerät statt."
+    "informedConsentText": "Die Simport Learning App erfasst Ihre Standortinformationen und speichert sie auf Ihrem Gerät, um diese zu visualisieren und lokal Rückschlüsse (Wohn- und Arbeitsort, häufig besuchte Orte) zu ziehen, auch wenn Sie die App gerade nicht benutzen oder sie geschlossen ist. <br><br>Die Koordinaten der Rückschlüsse werden an einen externen Service (nominatim) geschickt, um zusätzliche Informationen (wie z.B. Adressen) abzurufen. Weitere Details zu diesem Schritt finden Sie in der Datenschutzerklärung. Die übrigen gesammelten Standortdaten verlassen nie Ihr lokales Gerät (Smartphone oder Tablet). Wir speichern die Daten nicht auf einem Server. Alle Datenverarbeitung findet lokal auf Ihrem Gerät statt."
   },
   "notification": {
     "predictionTitle": "Du wirst {{ value }} besuchen",

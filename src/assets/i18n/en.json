@@ -141,7 +141,7 @@
     "removeConsentConfirmation": "Are you sure?",
     "removeConsentConfirmationText": "By doing this the app will stop tracking your location.",
     "informedConsentTitle": "Provided Information",
-    "informedConsentText": "The Simport Learning App collects your location data to enable visualization and aggregation (identify frequently visited locations), even when the app is closed or not in use. <br><br>This data never leaves your local device (i.e., phone or tablet). We do not upload or save the location data collected to a server. All processing is done locally on the device."
+    "informedConsentText": "The Simport Learning App collects your location data to enable visualization and local inferences (home and work location, frequently visited locations), even when the app is closed or not in use. <br><br> The coordinates of the infereces are sent to an external service (nominatim) to retreive additional information (like addresses). Further details regarding this procedure can be found in the privacy policy. The remaining location data never leaves your local device (i.e., phone or tablet). We do not save the location data collected to a server. All processing is done locally on the device."
   },
   "notification": {
     "predictionTitle": "You will visit {{ value }}",
