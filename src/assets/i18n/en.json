@@ -88,7 +88,7 @@
     "filter": {
       "title": "Filter insights",
       "byInferenceType": "Filter by inference type",
-      "byConfidence": "Filter by confidence in inference. At least:",
+      "byConfidence": "Filter by confidence in home and work location. At least:",
       "low": "Low",
       "medium": "Medium",
       "high": "High"

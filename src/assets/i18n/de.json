@@ -91,7 +91,7 @@
     "filter": {
       "title": "Rückschlüsse filtern",
       "byInferenceType": "Filtern nach Typ",
-      "byConfidence": "Filtern nach Vertrauen in Rückschluss. Mindestens:",
+      "byConfidence": "Filtern nach Vertrauen in Wohn- und Arbeitsort. Mindestens:",
       "low": "Gering",
       "medium": "Mittel",
       "high": "Hoch"
