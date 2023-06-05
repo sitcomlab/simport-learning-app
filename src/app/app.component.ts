@@ -17,8 +17,12 @@ import { BehaviorSubject } from 'rxjs'
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements AfterViewInit {
+  // authentication is valid for 60 seconds
+  private static authenticationValidTime = 60
+
   // this is only used on android
   activeAuthentication = new BehaviorSubject(false)
+  lastSuccessfulAuthentication = new BehaviorSubject(-1)
 
   constructor(
     private platform: Platform,
@@ -44,6 +48,10 @@ export class AppComponent implements AfterViewInit {
     })
   }
 
+  get timestamp(): number {
+    return new Date().getTime() / 1000
+  }
+
   async ngAfterViewInit() {
     await StatusBar.show()
     await StatusBar.setStyle({ style: Style.Light }) // there is no dark mode (yet)
@@ -52,6 +60,9 @@ export class AppComponent implements AfterViewInit {
   }
 
   async authenticate() {
+    if (!this.needsAuthentication()) {
+      return
+    }
     this.activeAuthentication.next(true)
 
     let isAuthenticated = false
@@ -63,6 +74,7 @@ export class AppComponent implements AfterViewInit {
           allowDeviceCredential: true,
         })
         isAuthenticated = true
+        this.lastSuccessfulAuthentication.next(this.timestamp)
       } catch (e) {
         const { message, code } = e as BiometryError
 
@@ -79,5 +91,13 @@ export class AppComponent implements AfterViewInit {
         }
       }
     }
+  }
+
+  private needsAuthentication(): boolean {
+    const authTime = this.lastSuccessfulAuthentication.value
+    return (
+      authTime < 0 ||
+      this.timestamp - authTime > AppComponent.authenticationValidTime
+    )
   }
 }
