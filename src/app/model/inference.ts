@@ -76,7 +76,9 @@ export class Inference {
   }
 
   get scaledConfidence(): number {
-    return (this.confidence ?? 0) * this.confidenceScaleFactor
+    // force confidence to range from 0 to 1
+    const confidence = Math.min(Math.abs(this.confidence ?? 0), 1)
+    return confidence * this.confidenceScaleFactor
   }
 
   static fromObject(val: any): Inference {

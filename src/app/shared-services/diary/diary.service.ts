@@ -5,7 +5,7 @@ import { SqliteService } from '../db/sqlite.service'
 import { TranslateService } from '@ngx-translate/core'
 import JSZip from 'jszip'
 import { LogfileService } from '../logfile/logfile.service'
-import { Directory, Filesystem } from '@capacitor/filesystem'
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
 
 @Injectable({
@@ -68,7 +68,8 @@ export class DiaryService {
     const fileResult = await Filesystem.writeFile({
       data,
       path: `SIMPORT_export_${timestamp}.zip`,
-      directory: Directory.Documents,
+      directory: Directory.Cache, // write in cache as temp folder
+      encoding: Encoding.UTF8,
     })
 
     Share.share({
