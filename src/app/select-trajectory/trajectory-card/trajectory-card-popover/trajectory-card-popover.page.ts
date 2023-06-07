@@ -5,8 +5,6 @@ import {
   ModalController,
   PopoverController,
   ToastController,
-  Platform,
-  ActionSheetController,
 } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 import { TrajectoryMeta, TrajectoryType } from 'src/app/model/trajectory'
@@ -26,13 +24,11 @@ export class TrajectoryCardPopoverPage implements OnInit {
   @Input() trajectory: TrajectoryMeta
 
   constructor(
-    private platform: Platform,
     private modalController: ModalController,
     private popoverController: PopoverController,
     private alertController: AlertController,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private actionSheetController: ActionSheetController,
     private locationService: LocationService,
     private trajectoryImportExportService: TrajectoryImportExportService,
     private translateService: TranslateService,
@@ -49,18 +45,14 @@ export class TrajectoryCardPopoverPage implements OnInit {
     e.stopPropagation()
     this.popoverController.dismiss()
 
-    if (this.platform.is('android')) {
-      await this.presentExportActionSheet()
-    } else {
-      await this.showLoadingDialog(
-        this.translateService.instant('trajectory.export.loadingDialogMessage')
-      )
-      await this.trajectoryImportExportService
-        .exportTrajectoryViaShareDialog(this.trajectory)
-        .then(async (result) => {
-          await this.handleExportResult(result)
-        })
-    }
+    await this.showLoadingDialog(
+      this.translateService.instant('trajectory.export.loadingDialogMessage')
+    )
+    await this.trajectoryImportExportService
+      .exportTrajectoryViaShareDialog(this.trajectory)
+      .then(async (result) => {
+        await this.handleExportResult(result)
+      })
   }
 
   async deleteTrajectory(e: Event) {
@@ -114,52 +106,6 @@ export class TrajectoryCardPopoverPage implements OnInit {
       ],
     })
     await alert.present()
-  }
-
-  private async presentExportActionSheet() {
-    const actionSheet = await this.actionSheetController.create({
-      header: this.translateService.instant('trajectory.export.alertHeader'),
-      buttons: [
-        {
-          text: this.translateService.instant('trajectory.export.saveMessage'),
-          icon: 'save-outline',
-          handler: async () => {
-            await this.showLoadingDialog(
-              this.translateService.instant(
-                'trajectory.export.loadingDialogMessage'
-              )
-            )
-            await this.trajectoryImportExportService
-              .exportTrajectoryToDownloads(this.trajectory)
-              .then(async (result) => {
-                await this.handleExportResult(result)
-              })
-          },
-        },
-        {
-          text: this.translateService.instant('general.share'),
-          icon: 'share-social-outline',
-          handler: async () => {
-            await this.showLoadingDialog(
-              this.translateService.instant(
-                'trajectory.export.loadingDialogMessage'
-              )
-            )
-            await this.trajectoryImportExportService
-              .exportTrajectoryViaShareDialog(this.trajectory)
-              .then(async (result) => {
-                await this.handleExportResult(result)
-              })
-          },
-        },
-        {
-          text: this.translateService.instant('general.cancel'),
-          icon: 'close',
-          role: 'cancel',
-        },
-      ],
-    })
-    await actionSheet.present()
   }
 
   private async handleExportResult(result: TrajectoryExportResult) {
