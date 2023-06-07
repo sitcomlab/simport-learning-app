@@ -185,11 +185,11 @@ describe('StaypointService', () => {
     })
   })
 
-  it('#computeStayPointClusters should compute no clusters for staypoints from home-work trajectory (neighborhood radius of three in clustering)', (done: DoneFn) => {
+  it('#computeStayPointClusters should compute home clusters for staypoints from home-work trajectory (neighborhood radius of two in clustering)', (done: DoneFn) => {
     service
       .computeStayPointClusters(fixtures.homeWorkStayPoints)
       .then((value) => {
-        expect(value.length).toEqual(0)
+        expect(value.length).toEqual(1)
         done()
       })
   })
