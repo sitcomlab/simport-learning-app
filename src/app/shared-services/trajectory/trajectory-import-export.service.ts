@@ -6,7 +6,6 @@ import {
 } from '../../model/trajectory'
 import { TrajectoryService } from '../../shared-services/trajectory/trajectory.service'
 import { v4 as uuid } from 'uuid'
-import { Platform } from '@ionic/angular'
 import { HttpClient } from '@angular/common/http'
 import { SqliteService } from '../db/sqlite.service'
 
@@ -44,7 +43,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
   constructor(
     http: HttpClient,
     db: SqliteService,
-    private platform: Platform,
     private translateService: TranslateService
   ) {
     super(http, db)
@@ -181,10 +179,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
         encoding: Encoding.UTF8,
       })
 
-      if (this.platform.is('android')) {
-        // await Share.requestPermissions()
-      }
-
       // share file
       await Share.share({
         title: this.translateService.instant('trajectory.export.alertHeader'),
@@ -206,36 +200,6 @@ export class TrajectoryImportExportService extends TrajectoryService {
         errorMessage: `${this.translateService.instant(
           'trajectory.export.errorMessage'
         )}: ${error.errorMessage ? error.errorMessage : error}`,
-      }
-    }
-  }
-
-  /**
-   * This is android-only.
-   *
-   * @param t trajectory to export
-   */
-  async exportTrajectoryToDownloads(
-    trajectoryMeta: TrajectoryMeta
-  ): Promise<TrajectoryExportResult> {
-    const trajectoryFile = await this.createTrajectoryExportFileFromMeta(
-      trajectoryMeta,
-      false
-    )
-    try {
-      await Filesystem.writeFile({
-        path: `Download/${trajectoryFile.filename}.json`,
-        data: trajectoryFile.trajectory,
-        directory: Directory.ExternalStorage,
-        encoding: Encoding.UTF8,
-      })
-      return { success: true, errorMessage: null }
-    } catch (e) {
-      return {
-        success: false,
-        errorMessage: this.translateService.instant(
-          'trajectory.export.errorMessage'
-        ),
       }
     }
   }

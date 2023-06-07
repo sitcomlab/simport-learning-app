@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core'
 import { StatusBar, Style } from '@capacitor/status-bar'
 
-import { Platform } from '@ionic/angular'
+import { AlertController, Platform } from '@ionic/angular'
 import { TranslateService } from '@ngx-translate/core'
 
 import {
@@ -17,12 +17,19 @@ import { BehaviorSubject } from 'rxjs'
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements AfterViewInit {
+  // authentication is valid for 60 seconds
+  private static authenticationValidTime = 60
+
   // this is only used on android
   activeAuthentication = new BehaviorSubject(false)
+  lastSuccessfulAuthentication = new BehaviorSubject(-1)
+
+  private authenticationAlert?: HTMLIonAlertElement = undefined
 
   constructor(
     private platform: Platform,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private alertController: AlertController
   ) {
     // init translation with browser-language (== device-language)
     this.translateService.addLangs(['en', 'de'])
@@ -44,6 +51,10 @@ export class AppComponent implements AfterViewInit {
     })
   }
 
+  get timestamp(): number {
+    return new Date().getTime() / 1000
+  }
+
   async ngAfterViewInit() {
     await StatusBar.show()
     await StatusBar.setStyle({ style: Style.Light }) // there is no dark mode (yet)
@@ -52,6 +63,9 @@ export class AppComponent implements AfterViewInit {
   }
 
   async authenticate() {
+    if (!this.needsAuthentication()) {
+      return
+    }
     this.activeAuthentication.next(true)
 
     let isAuthenticated = false
@@ -63,6 +77,7 @@ export class AppComponent implements AfterViewInit {
           allowDeviceCredential: true,
         })
         isAuthenticated = true
+        this.lastSuccessfulAuthentication.next(this.timestamp)
       } catch (e) {
         const { message, code } = e as BiometryError
 
@@ -73,11 +88,40 @@ export class AppComponent implements AfterViewInit {
         ]
 
         if (noCredentialsError.includes(code)) {
-          alert(this.translateService.instant('pinLock.noAuthMessage'))
+          this.showAlert(this.translateService.instant('pinLock.noAuthMessage'))
         } else {
-          alert(message)
+          this.showAlert(message)
         }
       }
     }
+  }
+
+  private async showAlert(message: string) {
+    if (this.authenticationAlert !== undefined) {
+      return
+    }
+
+    this.authenticationAlert = await this.alertController.create({
+      message,
+      buttons: [
+        {
+          text: this.translateService.instant('general.ok'),
+          handler: () => {
+            this.authenticationAlert?.dismiss()
+            this.authenticationAlert = undefined
+          },
+        },
+      ],
+      backdropDismiss: false,
+    })
+    await this.authenticationAlert?.present()
+  }
+
+  private needsAuthentication(): boolean {
+    const authTime = this.lastSuccessfulAuthentication.value
+    return (
+      authTime < 0 ||
+      this.timestamp - authTime > AppComponent.authenticationValidTime
+    )
   }
 }
