@@ -50,7 +50,7 @@ export class FeatureFlagConfig {
     isHomeExploreTrajectoryEnabled: true,
     isHomeImportTrajectoryEnabled: false,
     isHomeDiaryEnabled: true,
-    isTrajectoryExportEnabled: true,
+    isTrajectoryExportEnabled: false,
     isTrajectoryInferencesTabEnabled: true,
     isTrajectoryMapTabEnabled: true,
     isTrajectoryExplorationTabEnabled: false,
