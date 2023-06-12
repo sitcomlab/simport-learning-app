@@ -74,11 +74,11 @@ export class LogfileService {
    */
   async exportLog() {
     try {
+      const separator = ';'
       const logs = await this.dbService.getLogs()
-
       const csvHeader = `${Object.getOwnPropertyNames(
         new (LogEvent as any)()
-      ).join()}\n`
+      ).join(separator)}\n`
 
       const fileData =
         csvHeader +
@@ -86,7 +86,7 @@ export class LogfileService {
           .map((l) =>
             Object.values(l)
               .map((v) => (v instanceof Date ? (v as Date).toISOString() : v)) // return ISOString if value is a date
-              .join()
+              .join(separator)
           )
           .join('\n')
 
