@@ -253,6 +253,19 @@ export class InferenceService
         (inf) =>
           inf.confidence > this.filterConfiguration.value.confidenceThreshold
       ).length
+
+      const poiInferencesLength = poiInferences.length
+      const significantWorkInferencesLength = inference.inferences.filter(
+        (inf) =>
+          inf.confidence > this.filterConfiguration.value.confidenceThreshold &&
+          inf.type === InferenceType.work
+      ).length
+      const significantHomeInferencesLength = inference.inferences.filter(
+        (inf) =>
+          inf.confidence > this.filterConfiguration.value.confidenceThreshold &&
+          inf.type === InferenceType.home
+      ).length
+
       if (
         significantInferencesLength > 0 &&
         this.featureFlagService.featureFlags.isNotificationsEnabledForInferences
@@ -269,6 +282,19 @@ export class InferenceService
         'New inference computed, ' +
           significantInferencesLength +
           ' in total for ' +
+          traj.placename,
+        LogEventScope.inference,
+        LogEventType.change
+      )
+      this.logfileService.log(
+        'Inferences details:' +
+          ' home: ' +
+          significantHomeInferencesLength +
+          ', work: ' +
+          significantWorkInferencesLength +
+          ', POI: ' +
+          poiInferencesLength +
+          ', for' +
           traj.placename,
         LogEventScope.inference,
         LogEventType.change
