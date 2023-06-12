@@ -3,7 +3,6 @@ import { v4 as uuid } from 'uuid'
 import { DiaryEntry } from 'src/app/model/diary-entry'
 import { SqliteService } from '../db/sqlite.service'
 import { TranslateService } from '@ngx-translate/core'
-import JSZip from 'jszip'
 import { LogfileService } from '../logfile/logfile.service'
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem'
 import { Share } from '@capacitor/share'
@@ -58,23 +57,24 @@ export class DiaryService {
     const diaryData = await this.createDiaryExport()
     const logfileData = await this.logfileService.exportLog()
     const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0]
-    const zip = new JSZip()
 
-    zip.file(`diary_${timestamp}.csv`, diaryData)
-    zip.file(`log_${timestamp}.csv`, logfileData)
-
-    const data = await zip.generateAsync({ type: 'base64' })
-
-    const fileResult = await Filesystem.writeFile({
-      data,
-      path: `SIMPORT_export_${timestamp}.zip`,
+    const diaryFileResult = await Filesystem.writeFile({
+      data: diaryData,
+      path: `diary_${timestamp}.csv`,
       directory: Directory.Cache, // write in cache as temp folder
       encoding: Encoding.UTF8,
     })
 
-    Share.share({
+    const logFileResult = await Filesystem.writeFile({
+      data: logfileData,
+      path: `logs_${timestamp}.csv`,
+      directory: Directory.Cache, // write in cache as temp folder
+      encoding: Encoding.UTF8,
+    })
+
+    await Share.share({
       title: this.translateService.instant('diary.exportFileName'),
-      url: fileResult.uri,
+      files: [diaryFileResult.uri, logFileResult.uri],
     })
   }
 
