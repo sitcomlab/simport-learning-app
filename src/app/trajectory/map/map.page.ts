@@ -338,6 +338,11 @@ export class MapPage implements OnInit, OnDestroy {
   }
 
   openInferenceFilter() {
+    this.logfileService.log(
+      'Open inference filter',
+      LogEventScope.other,
+      LogEventType.click
+    )
     this.inferenceService.triggerEvent(InferenceServiceEvent.configureFilter)
   }
 

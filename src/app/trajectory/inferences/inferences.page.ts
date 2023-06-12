@@ -15,6 +15,11 @@ import { TrajectoryPagePath } from '../trajectory.page'
 import { InferenceType } from 'src/app/shared-services/inferences/engine/types'
 import { ModalController } from '@ionic/angular'
 import { InferenceModalComponent } from '../inference-modal/inferences-modal.component'
+import { LogfileService } from 'src/app/shared-services/logfile/logfile.service'
+import {
+  LogEventScope,
+  LogEventType,
+} from 'src/app/shared-services/logfile/types'
 
 class InferenceListItem {
   inferences: Inference[]
@@ -59,7 +64,8 @@ export class InferencesPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private router: Router,
     private route: ActivatedRoute,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private logfileService: LogfileService
   ) {}
 
   get hasInferences(): boolean {
@@ -86,6 +92,11 @@ export class InferencesPage implements OnInit, OnDestroy {
   }
 
   async ionViewDidEnter() {
+    this.logfileService.log(
+      'Enter inferences page',
+      LogEventScope.other,
+      LogEventType.other
+    )
     await this.reloadInferences(true)
   }
 
